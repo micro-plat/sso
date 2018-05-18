@@ -7,6 +7,7 @@ import (
 	"github.com/micro-plat/hydra/component"
 	"github.com/micro-plat/hydra/context"
 	"github.com/micro-plat/hydra/hydra"
+	mem "github.com/micro-plat/sso/modules/member"
 	"github.com/micro-plat/sso/services/member"
 )
 
@@ -19,7 +20,7 @@ func bindConf(app *hydra.MicroApp) {
 	app.Conf.API.SetSubConf("auth", `
 		{
 			"jwt": {
-				"exclude": ["/member/login"],
+				"exclude": ["/member/login","/member/check"],
 				"expireAt": 36000,
 				"mode": "HS512",
 				"name": "__jwt__",
@@ -36,6 +37,24 @@ func bind(r *hydra.MicroApp) {
 
 	//每个请求执行前执行
 	r.Handling(func(ctx *context.Context) (rt interface{}) {
+		if r.IsDebug {
+			return
+		}
+		jwt, err := ctx.Request.GetJWTConfig() //获取jwt配置
+		if err != nil {
+			return err
+		}
+		for _, u := range jwt.Exclude { //排除指定请求
+			if u == ctx.Service {
+				return nil
+			}
+		}
+		//检查jwt配置，并使用member中提供的函数缓存login信息到context中
+		var m mem.Member
+		if err := ctx.Request.GetJWT(&m); err != nil {
+			return context.NewError(context.ERR_FORBIDDEN, err)
+		}
+		mem.Save(ctx, &m)
 		return nil
 	})
 
@@ -63,4 +82,6 @@ func bind(r *hydra.MicroApp) {
 		return nil
 	})
 	r.Micro("/member/login", member.NewLoginHandler)
+	r.Micro("/member/check", member.NewCheckHandler)
+	r.Micro("/member/menu", member.NewMenuHandler)
 }
