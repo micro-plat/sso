@@ -9,6 +9,7 @@ import (
 	"github.com/micro-plat/hydra/hydra"
 	mem "github.com/micro-plat/sso/modules/member"
 	"github.com/micro-plat/sso/services/member"
+	"github.com/micro-plat/sso/services/menu"
 )
 
 //AppConf 应用程序配置
@@ -83,5 +84,6 @@ func bind(r *hydra.MicroApp) {
 	})
 	r.Micro("/member/login", member.NewLoginHandler)
 	r.Micro("/member/check", member.NewCheckHandler)
-	r.Micro("/member/menu", member.NewMenuHandler)
+	r.Micro("/member/get", member.NewGetHandler)
+	r.Micro("/menu/get", menu.NewGetHandler)
 }

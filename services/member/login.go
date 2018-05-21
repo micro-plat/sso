@@ -11,15 +11,15 @@ import (
 
 //LoginHandler 用户登录对象
 type LoginHandler struct {
-	c     component.IContainer
-	login member.ILogin
+	c component.IContainer
+	m member.IMember
 }
 
 //NewLoginHandler 创建登录对象
 func NewLoginHandler(container component.IContainer) (u *LoginHandler) {
 	return &LoginHandler{
-		c:     container,
-		login: member.NewLogin(container),
+		c: container,
+		m: member.NewMember(container),
 	}
 }
 
@@ -32,7 +32,7 @@ func (u *LoginHandler) Handle(ctx *context.Context) (r interface{}) {
 	}
 
 	//处理用户登录
-	member, url, err := u.login.Login(ctx.Request.GetString("username"),
+	member, url, err := u.m.Login(ctx.Request.GetString("username"),
 		ctx.Request.GetString("password"),
 		ctx.Request.GetInt("sysid"))
 	if err != nil {
