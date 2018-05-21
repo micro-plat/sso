@@ -29,6 +29,13 @@ func bindConf(app *hydra.MicroApp) {
 			}
 		}
 		`)
+	app.Conf.Plat.SetVarConf("db", "db", `{			
+			"provider":"ora",
+			"connString":"sso/123456@orcl136",
+			"maxOpen":10,
+			"maxIdle":1,
+			"lifeTime":10		
+	}`)
 
 }
 
