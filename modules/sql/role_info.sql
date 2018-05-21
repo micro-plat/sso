@@ -1,6 +1,7 @@
 create table sso_role_info(
 	role_id number(20) not null,
   name varchar2(64) not null,
+  status number(1) not null,  
   create_time date default sysdate not null
   );
 
@@ -15,7 +16,7 @@ alter table sso_role_info
 add constraint pk_role_info primary key(role_id);
 
 alter table sso_role_info
-add constraint pk_role_info unique(name);
+add constraint unq_role_info unique(name);
 
 
 create sequence seq_role_info_id

@@ -22,7 +22,7 @@ alter table sso_user_info
 add constraint pk_user_info primary key(user_id);
 
 alter table sso_user_info
-add constraint pk_user_info unique(user_name);
+add constraint unq_user_info unique(user_name);
 
 
 create sequence seq_user_info_id
