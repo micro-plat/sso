@@ -13,10 +13,10 @@ comment on column sso_system_info.enable is '状态 1：启用 0:禁用';
 
 
 alter table sso_system_info
-add constraint pk_user_info primary key(id);
+add constraint pk_system_info primary key(id);
 
 alter table sso_system_info
-add constraint pk_user_info unique(name);
+add constraint unq_system_info unique(name);
 
 
 create sequence seq_system_info_id

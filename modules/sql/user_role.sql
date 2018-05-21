@@ -15,10 +15,10 @@ comment on column sso_user_role.enable is '状态 1：启用 0:禁用';
 
 
 alter table sso_user_role
-add constraint pk_user_info primary key(id);
+add constraint pk_user_role primary key(id);
 
 alter table sso_user_role
-add constraint unq_user_info unique(user_id,sys_id,role_id);
+add constraint unq_user_role unique(user_id,sys_id,role_id);
 
 
 create sequence seq_user_role_id
