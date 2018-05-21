@@ -15,7 +15,7 @@ comment on column sso_role_menu.role_id is '角色编号';
 comment on column sso_role_menu.menu_id is '菜单编号';
 comment on column sso_role_menu.status is '状态 0:正常 2:禁用';
 comment on column sso_role_menu.create_time is '创建时间';
-comment on column sso_menu_info.sortrank is '排序编号';
+comment on column sso_role_menu.sortrank is '排序编号';
 
 
 alter table sso_role_menu

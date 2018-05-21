@@ -1,5 +1,5 @@
 create table sso_user_role(
-  id number number(20) not null,
+  id number(20) not null,
   user_id number(20) not null,
 	sys_id number(20) not null,
 	role_id number(20) not null,
