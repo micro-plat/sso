@@ -1,4 +1,4 @@
-create table sso_role_menu_info(
+create table sso_role_menu(
 	id number(20) not null,
   sys_id number(20) not null,
   role_id number(20) not null,
@@ -8,21 +8,21 @@ create table sso_role_menu_info(
   sortrank number(20) not null
   );
 
-comment on table sso_role_menu_info is '功能信息';
-comment on column sso_role_menu_info.id is '功能编号';
-comment on column sso_role_menu_info.sys_id is '系统编号';
-comment on column sso_role_menu_info.role_id is '角色编号';
-comment on column sso_role_menu_info.menu_id is '菜单编号';
-comment on column sso_role_menu_info.status is '状态 0:正常 2:禁用';
-comment on column sso_role_menu_info.create_time is '创建时间';
+comment on table sso_role_menu is '功能信息';
+comment on column sso_role_menu.id is '功能编号';
+comment on column sso_role_menu.sys_id is '系统编号';
+comment on column sso_role_menu.role_id is '角色编号';
+comment on column sso_role_menu.menu_id is '菜单编号';
+comment on column sso_role_menu.status is '状态 0:正常 2:禁用';
+comment on column sso_role_menu.create_time is '创建时间';
 comment on column sso_menu_info.sortrank is '排序编号';
 
 
-alter table sso_role_menu_info
-add constraint pk_role_menu_info primary key(id);
+alter table sso_role_menu
+add constraint pk_role_menu primary key(id);
 
-alter table sso_user_info
-add constraint unq_role_menu_info unique(sys_id,role_id,menu_id);
+alter table sso_role_menu
+add constraint unq_role_menu unique(sys_id,role_id,menu_id);
 
 
 create sequence seq_role_menu_id
