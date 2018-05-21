@@ -2,12 +2,12 @@ create table sso_menu_info(
 	id number(20) not null,
   name varchar2(64) not null,
   parent number(20) not null,
-  sys_id number(20) not null
-  level number(2) not null
+  sys_id number(20) not null,
+  level_id number(2) not null,
   icon varchar2(32) not null,
-  path varchar2(32) not null
-  status number(1) default 0 not null
-  create_time date default sysdate not null
+  path varchar2(32) not null,
+  status number(1) default 0 not null,
+  create_time date default sysdate not null,
   sortrank number(20) not null
   );
 
@@ -16,7 +16,7 @@ comment on column sso_menu_info.id is '功能编号';
 comment on column sso_menu_info.name is '功能名称';
 comment on column sso_menu_info.parent is '父级编号';
 comment on column sso_menu_info.sys_id is '系统编号';
-comment on column sso_menu_info.level is '等级';
+comment on column sso_menu_info.level_id is '等级';
 comment on column sso_menu_info.icon is '图标';
 comment on column sso_menu_info.path is '地址';
 comment on column sso_menu_info.status is '状态 0:正常 2:禁用';

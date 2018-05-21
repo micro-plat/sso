@@ -1,5 +1,5 @@
 create table sso_system_info(
-  id number number(20) not null,
+  id number(20) not null,
   name varchar2(32) not null,
 	index_url varchar2(64) not null,
   enable number(1) default 1 not null
