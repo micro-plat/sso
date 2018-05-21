@@ -1,6 +1,8 @@
 package member
 
 import (
+	"fmt"
+
 	"github.com/micro-plat/hydra/component"
 	"github.com/micro-plat/hydra/context"
 	"github.com/micro-plat/lib4go/db"
@@ -67,7 +69,7 @@ func (l *Member) Login(u string, p string, sys int) (*LoginState, string, error)
 	}
 	var member LoginState
 	if err := data.Get(0).ToStruct(&u); err != nil {
-		return nil, "", context.NewError(context.ERR_SERVICE_UNAVAILABLE, "暂时无法登录系统")
+		return nil, "", context.NewError(context.ERR_SERVICE_UNAVAILABLE, fmt.Sprintf("暂时无法登录系统:%v", err))
 	}
 
 	//查询用户所在系统的登录地址及角色编号
@@ -76,7 +78,7 @@ func (l *Member) Login(u string, p string, sys int) (*LoginState, string, error)
 		"sys_id":  sys,
 	})
 	if roles.IsEmpty() {
-		return nil, "", context.NewError(4031, "不允许登录系统")
+		return nil, "", context.NewError(403, "不允许登录系统")
 	}
 	member.SystemID = sys
 	member.RoleID = roles.Get(0).GetInt("role_id")

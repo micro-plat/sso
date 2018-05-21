@@ -27,7 +27,7 @@ func NewLoginHandler(container component.IContainer) (u *LoginHandler) {
 func (u *LoginHandler) Handle(ctx *context.Context) (r interface{}) {
 
 	//检查输入参数
-	if err := ctx.Request.Form.Check("username", "password", "sysid"); err != nil {
+	if err := ctx.Request.Check("username", "password", "sysid"); err != nil {
 		return context.NewError(context.ERR_NOT_ACCEPTABLE, err)
 	}
 

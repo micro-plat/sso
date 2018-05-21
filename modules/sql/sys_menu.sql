@@ -6,7 +6,7 @@ create table sso_system_menu(
   level_id number(2) not null,
   icon varchar2(32) not null,
   path varchar2(32) not null,
-  status number(1) default 0 not null,
+  enable number(1) default 0 not null,
   create_time date default sysdate not null,
   sortrank number(20) not null
   );
@@ -19,7 +19,7 @@ comment on column sso_system_menu.sys_id is '系统编号';
 comment on column sso_system_menu.level_id is '等级';
 comment on column sso_system_menu.icon is '图标';
 comment on column sso_system_menu.path is '地址';
-comment on column sso_system_menu.status is '状态 0:正常 2:禁用';
+comment on column sso_system_menu.status is '状态 1:正常 0:禁用';
 comment on column sso_system_menu.create_time is '创建时间';
 comment on column sso_system_menu.sortrank is '排序编号';
 

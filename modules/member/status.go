@@ -4,8 +4,8 @@ import "github.com/micro-plat/hydra/context"
 
 //LoginState 用户信息
 type LoginState struct {
-	UserID   int64  `json:"user_id"`
-	UserName string `json:"user_name"`
+	UserID   int64  `json:"user_id" m2s:"user_id"`
+	UserName string `json:"user_name" m2s:"user_name"`
 	SystemID int    `json:"sys_id"`
 	RoleID   int    `json:"role_id"`
 }

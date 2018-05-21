@@ -3,7 +3,7 @@ create table sso_role_menu(
   sys_id number(20) not null,
   role_id number(20) not null,
   menu_id number(20) not null,
-  status number(1) default 0 not null,
+  enable number(1) default 0 not null,
   create_time date default sysdate not null,
   sortrank number(20) not null
   );
@@ -13,7 +13,7 @@ comment on column sso_role_menu.id is '功能编号';
 comment on column sso_role_menu.sys_id is '系统编号';
 comment on column sso_role_menu.role_id is '角色编号';
 comment on column sso_role_menu.menu_id is '菜单编号';
-comment on column sso_role_menu.status is '状态 0:正常 2:禁用';
+comment on column sso_role_menu.status is '状态 1:正常 0:禁用';
 comment on column sso_role_menu.create_time is '创建时间';
 comment on column sso_role_menu.sortrank is '排序编号';
 

@@ -1,9 +1,6 @@
 package main
 
 import (
-	"fmt"
-
-	"github.com/asaskevich/govalidator"
 	"github.com/micro-plat/hydra/component"
 	"github.com/micro-plat/hydra/context"
 	"github.com/micro-plat/hydra/hydra"
@@ -12,16 +9,12 @@ import (
 	"github.com/micro-plat/sso/services/menu"
 )
 
-//AppConf 应用程序配置
-type AppConf struct {
-}
-
 //bindConf 绑定启动配置， 启动时检查注册中心配置是否存在，不存在则引导用户输入配置参数并自动创建到注册中心
 func bindConf(app *hydra.MicroApp) {
 	app.Conf.API.SetSubConf("auth", `
 		{
 			"jwt": {
-				"exclude": ["/member/login","/member/check"],
+				"exclude": ["/sso/login"],
 				"expireAt": 36000,
 				"mode": "HS512",
 				"name": "__jwt__",
@@ -58,7 +51,7 @@ func bind(r *hydra.MicroApp) {
 			}
 		}
 		//检查jwt配置，并使用member中提供的函数缓存login信息到context中
-		var m mem.Member
+		var m mem.LoginState
 		if err := ctx.Request.GetJWT(&m); err != nil {
 			return context.NewError(context.ERR_FORBIDDEN, err)
 		}
@@ -69,28 +62,15 @@ func bind(r *hydra.MicroApp) {
 	//初始化
 	r.Initializing(func(c component.IContainer) error {
 
-		//获取配置
-		var conf AppConf
-		if err := c.GetAppConf(&conf); err != nil {
-			return err
-		}
-		if b, err := govalidator.ValidateStruct(&conf); !b {
-			return fmt.Errorf("app 配置文件有误:%v", err)
-		}
-
 		//检查db配置是否正确
 		if _, err := c.GetDB(); err != nil {
 			return err
 		}
-
-		//检查cache配置是否正确
-		if _, err := c.GetCache(); err != nil {
-			return err
-		}
 		return nil
 	})
-	r.Micro("/member/login", member.NewLoginHandler)
-	r.Micro("/member/check", member.NewCheckHandler)
-	r.Micro("/member/get", member.NewGetHandler)
-	r.Micro("/menu/get", menu.NewGetHandler)
+	r.Micro("/sso/login", member.NewLoginHandler)       //用户登录，登录后自动转跳到系统配置地址
+	r.Micro("/sso/login/check", member.NewCheckHandler) //用户登录状态检查，检查用户jwt是否有效
+	r.Micro("/sso/member/get", member.NewGetHandler)    //获取用户信息（不包括角色信息）
+	r.Micro("/sso/menu/get", menu.NewGetHandler)        //获取用户菜单
+	r.Micro("/sso/menu/verify", menu.NewVerifyHandler)  //检查用户菜单权限
 }
