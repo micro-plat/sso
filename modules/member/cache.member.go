@@ -5,12 +5,15 @@ import (
 	"fmt"
 
 	"github.com/micro-plat/hydra/component"
-	"github.com/micro-plat/lib4go/db"
+	"github.com/micro-plat/lib4go/transform"
+	"github.com/micro-plat/lib4go/types"
 )
 
 type ICacheMember interface {
-	Login(u string, p string, sys int) (*LoginState, string, error)
-	Query(uid int64) (db.QueryRow, error)
+	Query(u string, p string, sys int) (ls *MemberState, err error)
+	Save(s *MemberState) error
+	SetLoginSuccess(u string) error
+	SetLoginFail(u string) (int, error)
 }
 
 //CacheMember 控制用户登录
@@ -18,33 +21,85 @@ type CacheMember struct {
 	c           component.IContainer
 	cacheFormat string
 	lockFormat  string
+	maxFailCnt  int
+	cacheTime   int
 }
 
 //NewCacheMember 创建登录对象
 func NewCacheMember(c component.IContainer) *CacheMember {
 	return &CacheMember{
 		c:           c,
-		cacheFormat: "sso:login:state:%s",
+		maxFailCnt:  5,
+		cacheTime:   3600 * 24,
+		cacheFormat: "sso:login:state:{@userName}-{@sysid}",
+		lockFormat:  "sso:login:locker:{@userName}",
 	}
 }
 
-func (l *CacheMember) save2Cache(u string, s *LoginState) error {
+//SetLoginSuccess 设置为登录成功
+func (l *CacheMember) SetLoginSuccess(u string) error {
+	cache := l.c.GetRegularCache()
+	key := transform.Translate(l.lockFormat, "userName", u)
+	return cache.Delete(key)
+}
+
+//SetLoginFail 设置登录失败次数
+func (l *CacheMember) SetLoginFail(u string) (int, error) {
+	cache := l.c.GetRegularCache()
+	key := transform.Translate(l.lockFormat, "userName", u)
+	v, err := cache.Increment(key, 1)
+	if err != nil {
+		return 0, err
+	}
+	return int(v), nil
+}
+func (l *CacheMember) getLoginFailCnt(u string) (int, error) {
+	cache := l.c.GetRegularCache()
+	key := transform.Translate(l.lockFormat, "userName", u)
+	s, err := cache.Get(key)
+	if err != nil {
+		return 0, err
+	}
+	if s == "" {
+		return 0, nil
+	}
+	return types.ToInt(s, 0), nil
+}
+
+//Save 缓存用户信息
+func (l *CacheMember) Save(s *MemberState) error {
 	buff, err := json.Marshal(s)
 	if err != nil {
 		return err
 	}
 	cache := l.c.GetRegularCache()
-	return cache.Set(fmt.Sprintf(l.cacheFormat, u), string(buff), 3600*24)
+	key := transform.Translate(l.cacheFormat, "userName", s.UserName, "sysid", s.SystemID)
+	return cache.Set(key, string(buff), l.cacheTime)
 }
 
 //Query 用户登录
-func (l *CacheMember) Query(u string, p string, sys int) (*LoginState, string, bool, error) {
+func (l *CacheMember) Query(u string, p string, sys int) (ls *MemberState, err error) {
 	//从缓存中查询用户数据
 	cache := l.c.GetRegularCache()
-	key := fmt.Sprintf(l.lockFormat, u)
+	key := transform.Translate(l.cacheFormat, "userName", u, "sysid", sys)
 	v, err := cache.Get(key)
-	if err == nil && v != "" {
-		return nil, "", false, fmt.Errorf("未缓存用户信息")
+	if err != nil {
+		return nil, err
+	}
+	if v == "" {
+		return nil, fmt.Errorf("未缓存用户数据")
+	}
+	if err = json.Unmarshal([]byte(v), &ls); err != nil {
+		return nil, err
 	}
 
+	//检查用户登录失败次数是否超过限制，超过时标记用户状态为锁定
+	c, err := l.getLoginFailCnt(u)
+	if err != nil {
+		return nil, err
+	}
+	if c >= l.maxFailCnt {
+		ls.Status = UserLock
+	}
+	return ls, err
 }

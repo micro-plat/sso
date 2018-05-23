@@ -2,24 +2,26 @@ package member
 
 import (
 	"fmt"
+	"strings"
 
 	"github.com/micro-plat/hydra/component"
 	"github.com/micro-plat/hydra/context"
-	"github.com/micro-plat/lib4go/security/jwt"
 	"github.com/micro-plat/sso/modules/member"
 )
 
 //LoginHandler 用户登录对象
 type LoginHandler struct {
-	c component.IContainer
-	m member.IMember
+	c    component.IContainer
+	m    member.IMember
+	code member.ICodeMember
 }
 
 //NewLoginHandler 创建登录对象
 func NewLoginHandler(container component.IContainer) (u *LoginHandler) {
 	return &LoginHandler{
-		c: container,
-		m: member.NewMember(container),
+		c:    container,
+		m:    member.NewMember(container),
+		code: member.NewCodeMember(container),
 	}
 }
 
@@ -32,25 +34,27 @@ func (u *LoginHandler) Handle(ctx *context.Context) (r interface{}) {
 	}
 
 	//处理用户登录
-	member, url, err := u.m.Login(ctx.Request.GetString("username"),
+	member, err := u.m.Login(ctx.Request.GetString("username"),
 		ctx.Request.GetString("password"),
 		ctx.Request.GetInt("sysid"))
 	if err != nil {
 		return err
 	}
-
-	//处理jwt参数
-	jwtAuth, err := ctx.Request.GetJWTConfig() //获取jwt配置
+	url := ctx.Request.GetString("redirect_uri")
+	if url == "" {
+		url = member.IndexURL
+	}
+	//保存用户信息
+	code, err := u.code.Save(member)
 	if err != nil {
 		return err
 	}
-
-	//jwt加密
-	token, err := jwt.Encrypt(jwtAuth.Secret, jwtAuth.Mode, member, jwtAuth.ExpireAt)
-	if err != nil {
-		err = fmt.Errorf("jwt.encrypt:%v", err)
+	//设置jwt数据
+	ctx.Response.SetJWT(member)
+	if strings.Contains(url, "?") {
+		ctx.Response.Redirect(301, fmt.Sprintf("%s&code=%s", url, code))
 		return
 	}
-	ctx.Response.Redirect(301, fmt.Sprintf("%s?name=%s&token=%s", url, jwtAuth.Name, token))
+	ctx.Response.Redirect(301, fmt.Sprintf("%s?code=%s", url, code))
 	return
 }
