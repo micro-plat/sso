@@ -30,6 +30,25 @@ func bindConf(app *hydra.MicroApp) {
 			"lifeTime":10		
 	}`)
 
+	app.Conf.Plat.SetVarConf("cache", "cache", `
+		{
+			"proto":"redis",
+			"addrs":[
+					"192.168.0.110:6379",
+					"192.168.0.122:6379",
+					"192.168.0.134:6379",
+					"192.168.0.122:6380",
+					"192.168.0.110:6380",
+					"192.168.0.134:6380"
+			],
+			"dial_timeout":10,
+			"read_timeout":10,
+			"write_timeout":10,
+			"pool_size":10
+	}
+		
+		`)
+
 }
 
 //bind 检查应用程序配置文件，并根据配置初始化服务

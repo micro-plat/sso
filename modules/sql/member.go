@@ -10,4 +10,4 @@ where u.user_id=@user_id `
 //QueryUserRole 查询系统角色列表
 const QueryUserRole = `select r.role_id,s.index_url,s.login_timeout from sso_user_role r inner join sso_system_info s
  on r.sys_id=s.id
- where r.user_id=@user_id and r.sys_id@sys_id and r.enable=1 and s.enable=1`
+ where r.user_id=@user_id and r.sys_id=@sys_id and r.enable=1 and s.enable=1`

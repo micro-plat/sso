@@ -44,6 +44,7 @@ func (u *LoginHandler) Handle(ctx *context.Context) (r interface{}) {
 	if url == "" {
 		url = member.IndexURL
 	}
+
 	//保存用户信息
 	code, err := u.code.Save(member)
 	if err != nil {

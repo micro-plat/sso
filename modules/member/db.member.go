@@ -1,6 +1,8 @@
 package member
 
 import (
+	"fmt"
+
 	"github.com/micro-plat/hydra/component"
 	"github.com/micro-plat/hydra/context"
 	"github.com/micro-plat/lib4go/db"
@@ -52,9 +54,11 @@ func (l *DBMember) Query(u string, p string, sysid int) (s *MemberState, err err
 	if data.IsEmpty() {
 		return nil, context.NewError(context.ERR_FORBIDDEN, "用户名或密码错误")
 	}
-	if err = data.Get(0).ToStruct(&s); err != nil {
+	s = &MemberState{}
+	if err = data.Get(0).ToStruct(s); err != nil {
 		return nil, err
 	}
+	fmt.Println("user:", data.Get(0), s)
 	//查询用户所在系统的登录地址及角色编号
 	roles, _, _, err := db.Query(sql.QueryUserRole, map[string]interface{}{
 		"user_id": s.UserID,
