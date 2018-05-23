@@ -66,6 +66,11 @@ func bind(r *hydra.MicroApp) {
 		if _, err := c.GetDB(); err != nil {
 			return err
 		}
+
+		//检查缓存配置是否正确
+		if _, err := c.GetCache(); err != nil {
+			return err
+		}
 		return nil
 	})
 	r.Micro("/sso/login", member.NewLoginHandler)       //用户登录，登录后自动转跳到系统配置地址

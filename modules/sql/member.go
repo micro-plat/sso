@@ -1,7 +1,7 @@
 package sql
 
-//QueryUserLoginInfo 获取用户登录信息
-const QueryUserLoginInfo = `select user_id,user_name,status from sso_user_info where user_name=@user_name and password=@password and rownum<=1`
+//QueryUserByLogin 获取用户登录信息
+const QueryUserByLogin = `select user_id,user_name,status from sso_user_info where user_name=@user_name and password=@password and rownum<=1`
 
 //QueryUserInfoByUID 查询用户信息
 const QueryUserInfoByUID = `select u.user_id,u.user_name,u.mobile,u.wx_openid,u.status from sso_user_info u 
