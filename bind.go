@@ -57,9 +57,9 @@ func bind(r *hydra.MicroApp) {
 
 	//每个请求执行前执行
 	r.Handling(func(ctx *context.Context) (rt interface{}) {
-		if r.IsDebug {
-			return
-		}
+		// if r.IsDebug {
+		// 	return
+		// }
 		jwt, err := ctx.Request.GetJWTConfig() //获取jwt配置
 		if err != nil {
 			return err
