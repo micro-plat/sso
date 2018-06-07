@@ -40,6 +40,10 @@ func (w *MqcResponsiveServer) NeedRestart(cnf conf.IServerConf) (bool, error) {
 	if !comparer.IsChanged() {
 		return false, nil
 	}
+	if comparer.IsVarChanged() {
+		return true, nil
+	}
+
 	if comparer.IsValueChanged("status", "sharding") {
 		return true, nil
 	}
@@ -57,6 +61,9 @@ func (w *MqcResponsiveServer) NeedRestart(cnf conf.IServerConf) (bool, error) {
 	}
 	if err != nil {
 		return false, fmt.Errorf("queue未配置或配置有误:%v", err)
+	}
+	if ok := comparer.IsSubConfChanged("app"); ok {
+		return ok, nil
 	}
 	return false, nil
 

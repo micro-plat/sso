@@ -41,6 +41,9 @@ func (w *RpcResponsiveServer) NeedRestart(cnf conf.IServerConf) (bool, error) {
 	if !comparer.IsChanged() {
 		return false, nil
 	}
+	if comparer.IsVarChanged() {
+		return true, nil
+	}
 	if comparer.IsValueChanged("status", "address", "host") {
 		return true, nil
 	}
@@ -50,6 +53,9 @@ func (w *RpcResponsiveServer) NeedRestart(cnf conf.IServerConf) (bool, error) {
 	}
 	if err != nil {
 		return ok, fmt.Errorf("路由未配置或配置有误:%s(%+v)", cnf.GetServerName(), err)
+	}
+	if ok := comparer.IsSubConfChanged("app"); ok {
+		return ok, nil
 	}
 	return false, nil
 
@@ -84,13 +90,13 @@ func (w *RpcResponsiveServer) SetConf(restart bool, conf conf.IServerConf) (err 
 	if ok, err = SetMetric(w.server, conf); err != nil {
 		return err
 	}
-	servers.TraceIf(ok, w.Infof, w.Debugf,  getEnableName(ok), "metric设置")
+	servers.TraceIf(ok, w.Infof, w.Debugf, getEnableName(ok), "metric设置")
 
 	//设置host
 	if ok, err = SetHosts(w.server, conf); err != nil {
 		return err
 	}
-	servers.TraceIf(ok, w.Infof, w.Debugf,  getEnableName(ok), "host设置")
+	servers.TraceIf(ok, w.Infof, w.Debugf, getEnableName(ok), "host设置")
 	return nil
 }
 func getEnableName(b bool) string {

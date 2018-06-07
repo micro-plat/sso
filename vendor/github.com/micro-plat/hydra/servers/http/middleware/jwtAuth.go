@@ -14,7 +14,10 @@ import (
 //JwtAuth jwt
 func JwtAuth(cnf *conf.MetadataConf) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
-
+		if strings.ToUpper(ctx.Request.Method) == "OPTIONS" {
+			ctx.Next()
+			return
+		}
 		jwtAuth, ok := cnf.GetMetadata("jwt").(*conf.Auth)
 		if !ok || jwtAuth == nil || jwtAuth.Disable {
 			ctx.Next()
@@ -36,6 +39,21 @@ func JwtAuth(cnf *conf.MetadataConf) gin.HandlerFunc {
 				ctx.Next()
 				return
 			}
+		}
+		if jwtAuth.Redirect != "" {
+			uris := strings.Split(ctx.Request.RequestURI, "?")
+			url := jwtAuth.Redirect
+			if len(uris) <= 1 {
+				ctx.Redirect(301, url)
+				return
+			}
+			if strings.Contains(url, "?") {
+				url += "&" + uris[1]
+			} else {
+				url += "?" + uris[1]
+			}
+			ctx.Redirect(301, url)
+			return
 		}
 		//jwt.token错误，返回错误码
 		getLogger(ctx).Error(err.GetError())

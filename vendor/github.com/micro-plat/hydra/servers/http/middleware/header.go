@@ -10,26 +10,23 @@ import (
 //Header 头设置
 func Header(cnf *conf.MetadataConf) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
-		ctx.Next()
+		if strings.ToUpper(ctx.Request.Method) != "OPTIONS" {
+			ctx.Next()
+		}
 		headers, ok := cnf.GetMetadata("headers").(conf.Headers)
-		if !ok {
-			return
-		}
-		for k, v := range headers {
-			if strings.Contains(v, ",") && k == "Access-Control-Allow-Origin" {
-				if strings.Contains(v, ctx.Request.Host) {
-					hosts := strings.Split(v, ",")
-					for _, h := range hosts {
-						if strings.Contains(h, ctx.Request.Host) {
-							ctx.Header(k, h)
-							continue
-						}
-					}
+		if ok {
+			origin := ctx.Request.Header.Get("Origin")
+			for k, v := range headers {
+				if k != "Access-Control-Allow-Origin" { //非跨域设置
+					ctx.Header(k, v)
+					continue
 				}
-				continue
+				if origin != "" && (origin == "*" || strings.Contains(v, origin)) {
+					ctx.Header(k, origin)
+				}
 			}
-			ctx.Header(k, v)
 		}
+
 		context := getCTX(ctx)
 		if context == nil {
 			return

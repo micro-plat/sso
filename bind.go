@@ -18,6 +18,7 @@ func bindConf(app *hydra.MicroApp) {
 				"expireAt": 36000,
 				"mode": "HS512",
 				"name": "__jwt__",
+				"redirect":"/sso/login",
 				"secret": "12345678"
 			}
 		}
