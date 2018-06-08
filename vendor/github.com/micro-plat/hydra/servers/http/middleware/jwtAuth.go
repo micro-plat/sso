@@ -2,6 +2,7 @@ package middleware
 
 import (
 	"fmt"
+	"net/url"
 	"strings"
 
 	"github.com/gin-gonic/gin"
@@ -33,26 +34,27 @@ func JwtAuth(cnf *conf.MetadataConf) gin.HandlerFunc {
 		}
 
 		//不需要校验的URL自动跳过
-		url := ctx.Request.URL.Path
+		curl := ctx.Request.URL.Path
 		for _, u := range jwtAuth.Exclude {
-			if u == url {
+			if u == curl {
 				ctx.Next()
 				return
 			}
 		}
 		if jwtAuth.Redirect != "" {
-			uris := strings.Split(ctx.Request.RequestURI, "?")
-			url := jwtAuth.Redirect
-			if len(uris) <= 1 {
-				ctx.Redirect(301, url)
+			l, errx := url.Parse(jwtAuth.Redirect)
+			if errx != nil {
+				getLogger(ctx).Error(errx)
+				ctx.AbortWithStatus(err.GetCode())
 				return
 			}
-			if strings.Contains(url, "?") {
-				url += "&" + uris[1]
-			} else {
-				url += "?" + uris[1]
+			values := l.Query()
+			values.Add("redirect", ctx.Request.RequestURI)
+			if l.IsAbs() {
+				ctx.Redirect(301, fmt.Sprintf("%s://%s%s?%s\n", l.Scheme, l.Host, l.Path, values.Encode()))
+				return
 			}
-			ctx.Redirect(301, url)
+			ctx.Redirect(301, fmt.Sprintf("%s?%s\n", l.Path, values.Encode()))
 			return
 		}
 		//jwt.token错误，返回错误码
