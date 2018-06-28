@@ -11,6 +11,7 @@ import (
 
 type IGet interface {
 	Query(uid int64, sysid int) (db.QueryRows, error)
+	QueryPopular(uid int64, sysid int) (db.QueryRows, error)
 	Verify(uid int64, sysid int, menuURL string) error
 }
 
@@ -27,8 +28,20 @@ func NewGet(c component.IContainer) *Get {
 //Query 获取用户指定系统的菜单信息
 func (l *Get) Query(uid int64, sysid int) (db.QueryRows, error) {
 	db := l.c.GetRegularDB()
-	//根据用户名密码，查询用户信息
 	data, _, _, err := db.Query(sql.QueryUserMenus, map[string]interface{}{
+		"user_id": uid,
+		"sys_id":  sysid,
+	})
+	if err != nil {
+		return nil, err
+	}
+	return data, nil
+}
+
+//QueryPopular 获取用户指定系统的菜单信息
+func (l *Get) QueryPopular(uid int64, sysid int) (db.QueryRows, error) {
+	db := l.c.GetRegularDB()
+	data, _, _, err := db.Query(sql.QueryUserPopularMenus, map[string]interface{}{
 		"user_id": uid,
 		"sys_id":  sysid,
 	})
