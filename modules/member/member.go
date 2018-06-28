@@ -1,6 +1,9 @@
 package member
 
 import (
+	"fmt"
+	"strings"
+
 	"github.com/micro-plat/hydra/component"
 	"github.com/micro-plat/hydra/context"
 	"github.com/micro-plat/lib4go/db"
@@ -38,19 +41,19 @@ func (m *Member) Query(uid int64) (db.QueryRow, error) {
 }
 
 //Login 登录系统
-func (m *Member) Login(u string, p string, sys int) (*LoginState, error) {
+func (m *Member) Login(u string, p string, sys int) (s *LoginState, err error) {
 	//从缓存中获取用户信息，不存在时从数据库中获取
-	ls, err := m.cache.Query(u, p, sys)
-	if ls == nil || err != nil {
-		if ls, err = m.db.Query(u, p, sys); err != nil {
-			return nil, err
-		}
+	// ls, err := m.cache.Query(u, p, sys)
+	// if ls == nil || err != nil {
+	var ls *MemberState
+	if ls, err = m.db.Query(u, p, sys); err != nil {
+		return nil, err
 	}
+	// }
 	//保存用户数据到缓存
 	if err = m.cache.Save(ls); err != nil {
 		return nil, err
 	}
-
 	//检查用户是否已锁定
 	if ls.Status == UserLock {
 		return nil, context.NewError(context.ERR_LOCKED, "用户被锁定暂时无法登录")
@@ -60,9 +63,9 @@ func (m *Member) Login(u string, p string, sys int) (*LoginState, error) {
 		return nil, context.NewError(context.ERR_FORBIDDEN, "用户被禁用请联系管理员")
 	}
 	//检查密码是否有效，无效时累加登录失败次数
-	if ls.Password != p {
-		m.cache.SetLoginFail(u)
-		return nil, context.NewError(context.ERR_FORBIDDEN, "用户名或密码错误")
+	if strings.ToLower(ls.Password) != p {
+		v, _ := m.cache.SetLoginFail(u)
+		return nil, context.NewError(context.ERR_FORBIDDEN, fmt.Sprintf("用户名或密码错误:%d", v))
 	}
 	//设置登录成功
 	err = m.cache.SetLoginSuccess(u)

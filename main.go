@@ -4,9 +4,9 @@ import "github.com/micro-plat/hydra/hydra"
 
 func main() {
 	app := hydra.NewApp(
-		hydra.WithPlatName("sso"),
+		hydra.WithPlatName("ums"),
 		hydra.WithSystemName("sso"),
-		hydra.WithServerTypes("api-rpc"),
+		hydra.WithServerTypes("api-ws"),
 		hydra.WithDebug())
 	bind(app)
 	app.Start()

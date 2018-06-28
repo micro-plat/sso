@@ -151,6 +151,11 @@
 			"Rev": "2e65f85255dbc3072edf28d6b5b8efc472979f5a"
 		},
 		{
+			"ImportPath": "github.com/gorilla/websocket",
+			"Comment": "v1.2.0-44-g5ed622c",
+			"Rev": "5ed622c449da6d44c3c8329331ff47a9e5844f71"
+		},
+		{
 			"ImportPath": "github.com/huin/mqtt",
 			"Rev": "c2d0e7ca9387fcfe29274b4b32ac80798d57ad4d"
 		},
@@ -170,263 +175,267 @@
 		},
 		{
 			"ImportPath": "github.com/micro-plat/hydra/component",
-			"Rev": "54c09d7e794529ac60e72e66c5d7becff654a117"
+			"Rev": "0bb9d66b7999bf22346c3a7c4b5e9d889ca41f6b"
 		},
 		{
 			"ImportPath": "github.com/micro-plat/hydra/conf",
-			"Rev": "54c09d7e794529ac60e72e66c5d7becff654a117"
+			"Rev": "0bb9d66b7999bf22346c3a7c4b5e9d889ca41f6b"
 		},
 		{
 			"ImportPath": "github.com/micro-plat/hydra/conf/creator",
-			"Rev": "54c09d7e794529ac60e72e66c5d7becff654a117"
+			"Rev": "0bb9d66b7999bf22346c3a7c4b5e9d889ca41f6b"
 		},
 		{
 			"ImportPath": "github.com/micro-plat/hydra/context",
-			"Rev": "54c09d7e794529ac60e72e66c5d7becff654a117"
+			"Rev": "0bb9d66b7999bf22346c3a7c4b5e9d889ca41f6b"
 		},
 		{
 			"ImportPath": "github.com/micro-plat/hydra/engines",
-			"Rev": "54c09d7e794529ac60e72e66c5d7becff654a117"
+			"Rev": "0bb9d66b7999bf22346c3a7c4b5e9d889ca41f6b"
 		},
 		{
 			"ImportPath": "github.com/micro-plat/hydra/hydra",
-			"Rev": "54c09d7e794529ac60e72e66c5d7becff654a117"
+			"Rev": "0bb9d66b7999bf22346c3a7c4b5e9d889ca41f6b"
 		},
 		{
 			"ImportPath": "github.com/micro-plat/hydra/hydra/impt",
-			"Rev": "54c09d7e794529ac60e72e66c5d7becff654a117"
+			"Rev": "0bb9d66b7999bf22346c3a7c4b5e9d889ca41f6b"
 		},
 		{
 			"ImportPath": "github.com/micro-plat/hydra/hydra/rpclog",
-			"Rev": "54c09d7e794529ac60e72e66c5d7becff654a117"
+			"Rev": "0bb9d66b7999bf22346c3a7c4b5e9d889ca41f6b"
 		},
 		{
 			"ImportPath": "github.com/micro-plat/hydra/hydra/rqs",
-			"Rev": "54c09d7e794529ac60e72e66c5d7becff654a117"
+			"Rev": "0bb9d66b7999bf22346c3a7c4b5e9d889ca41f6b"
 		},
 		{
 			"ImportPath": "github.com/micro-plat/hydra/registry",
-			"Rev": "54c09d7e794529ac60e72e66c5d7becff654a117"
+			"Rev": "0bb9d66b7999bf22346c3a7c4b5e9d889ca41f6b"
 		},
 		{
 			"ImportPath": "github.com/micro-plat/hydra/registry/local",
-			"Rev": "54c09d7e794529ac60e72e66c5d7becff654a117"
+			"Rev": "0bb9d66b7999bf22346c3a7c4b5e9d889ca41f6b"
 		},
 		{
 			"ImportPath": "github.com/micro-plat/hydra/registry/watcher",
-			"Rev": "54c09d7e794529ac60e72e66c5d7becff654a117"
+			"Rev": "0bb9d66b7999bf22346c3a7c4b5e9d889ca41f6b"
 		},
 		{
 			"ImportPath": "github.com/micro-plat/hydra/registry/zookeeper",
-			"Rev": "54c09d7e794529ac60e72e66c5d7becff654a117"
+			"Rev": "0bb9d66b7999bf22346c3a7c4b5e9d889ca41f6b"
 		},
 		{
 			"ImportPath": "github.com/micro-plat/hydra/rpc",
-			"Rev": "54c09d7e794529ac60e72e66c5d7becff654a117"
+			"Rev": "0bb9d66b7999bf22346c3a7c4b5e9d889ca41f6b"
 		},
 		{
 			"ImportPath": "github.com/micro-plat/hydra/rpc/balancer",
-			"Rev": "54c09d7e794529ac60e72e66c5d7becff654a117"
+			"Rev": "0bb9d66b7999bf22346c3a7c4b5e9d889ca41f6b"
 		},
 		{
 			"ImportPath": "github.com/micro-plat/hydra/servers",
-			"Rev": "54c09d7e794529ac60e72e66c5d7becff654a117"
+			"Rev": "0bb9d66b7999bf22346c3a7c4b5e9d889ca41f6b"
 		},
 		{
 			"ImportPath": "github.com/micro-plat/hydra/servers/cron",
-			"Rev": "54c09d7e794529ac60e72e66c5d7becff654a117"
+			"Rev": "0bb9d66b7999bf22346c3a7c4b5e9d889ca41f6b"
 		},
 		{
 			"ImportPath": "github.com/micro-plat/hydra/servers/http",
-			"Rev": "54c09d7e794529ac60e72e66c5d7becff654a117"
+			"Rev": "0bb9d66b7999bf22346c3a7c4b5e9d889ca41f6b"
 		},
 		{
 			"ImportPath": "github.com/micro-plat/hydra/servers/http/middleware",
-			"Rev": "54c09d7e794529ac60e72e66c5d7becff654a117"
+			"Rev": "0bb9d66b7999bf22346c3a7c4b5e9d889ca41f6b"
 		},
 		{
 			"ImportPath": "github.com/micro-plat/hydra/servers/mqc",
-			"Rev": "54c09d7e794529ac60e72e66c5d7becff654a117"
+			"Rev": "0bb9d66b7999bf22346c3a7c4b5e9d889ca41f6b"
 		},
 		{
 			"ImportPath": "github.com/micro-plat/hydra/servers/pkg/circuit",
-			"Rev": "54c09d7e794529ac60e72e66c5d7becff654a117"
+			"Rev": "0bb9d66b7999bf22346c3a7c4b5e9d889ca41f6b"
 		},
 		{
 			"ImportPath": "github.com/micro-plat/hydra/servers/pkg/dispatcher",
-			"Rev": "54c09d7e794529ac60e72e66c5d7becff654a117"
+			"Rev": "0bb9d66b7999bf22346c3a7c4b5e9d889ca41f6b"
 		},
 		{
 			"ImportPath": "github.com/micro-plat/hydra/servers/pkg/dispatcher/render",
-			"Rev": "54c09d7e794529ac60e72e66c5d7becff654a117"
+			"Rev": "0bb9d66b7999bf22346c3a7c4b5e9d889ca41f6b"
 		},
 		{
 			"ImportPath": "github.com/micro-plat/hydra/servers/pkg/json",
-			"Rev": "54c09d7e794529ac60e72e66c5d7becff654a117"
+			"Rev": "0bb9d66b7999bf22346c3a7c4b5e9d889ca41f6b"
 		},
 		{
 			"ImportPath": "github.com/micro-plat/hydra/servers/pkg/middleware",
-			"Rev": "54c09d7e794529ac60e72e66c5d7becff654a117"
+			"Rev": "0bb9d66b7999bf22346c3a7c4b5e9d889ca41f6b"
 		},
 		{
 			"ImportPath": "github.com/micro-plat/hydra/servers/pkg/timer",
-			"Rev": "54c09d7e794529ac60e72e66c5d7becff654a117"
+			"Rev": "0bb9d66b7999bf22346c3a7c4b5e9d889ca41f6b"
 		},
 		{
 			"ImportPath": "github.com/micro-plat/hydra/servers/rpc",
-			"Rev": "54c09d7e794529ac60e72e66c5d7becff654a117"
+			"Rev": "0bb9d66b7999bf22346c3a7c4b5e9d889ca41f6b"
 		},
 		{
 			"ImportPath": "github.com/micro-plat/hydra/servers/rpc/pb",
-			"Rev": "54c09d7e794529ac60e72e66c5d7becff654a117"
+			"Rev": "0bb9d66b7999bf22346c3a7c4b5e9d889ca41f6b"
+		},
+		{
+			"ImportPath": "github.com/micro-plat/hydra/servers/ws",
+			"Rev": "0bb9d66b7999bf22346c3a7c4b5e9d889ca41f6b"
 		},
 		{
 			"ImportPath": "github.com/micro-plat/lib4go/cache",
-			"Rev": "3ef0f0c9b2908bb835c28b5e949c3aa853d0cde0"
+			"Rev": "0d88450e980fb852403544193d7a15f7897d92bd"
 		},
 		{
 			"ImportPath": "github.com/micro-plat/lib4go/cache/memcache",
-			"Rev": "3ef0f0c9b2908bb835c28b5e949c3aa853d0cde0"
+			"Rev": "0d88450e980fb852403544193d7a15f7897d92bd"
 		},
 		{
 			"ImportPath": "github.com/micro-plat/lib4go/cache/redis",
-			"Rev": "3ef0f0c9b2908bb835c28b5e949c3aa853d0cde0"
+			"Rev": "0d88450e980fb852403544193d7a15f7897d92bd"
 		},
 		{
 			"ImportPath": "github.com/micro-plat/lib4go/concurrent/cmap",
-			"Rev": "3ef0f0c9b2908bb835c28b5e949c3aa853d0cde0"
+			"Rev": "0d88450e980fb852403544193d7a15f7897d92bd"
 		},
 		{
 			"ImportPath": "github.com/micro-plat/lib4go/db",
-			"Rev": "3ef0f0c9b2908bb835c28b5e949c3aa853d0cde0"
+			"Rev": "0d88450e980fb852403544193d7a15f7897d92bd"
 		},
 		{
 			"ImportPath": "github.com/micro-plat/lib4go/db/tpl",
-			"Rev": "3ef0f0c9b2908bb835c28b5e949c3aa853d0cde0"
+			"Rev": "0d88450e980fb852403544193d7a15f7897d92bd"
 		},
 		{
 			"ImportPath": "github.com/micro-plat/lib4go/encoding",
-			"Rev": "3ef0f0c9b2908bb835c28b5e949c3aa853d0cde0"
+			"Rev": "0d88450e980fb852403544193d7a15f7897d92bd"
 		},
 		{
 			"ImportPath": "github.com/micro-plat/lib4go/file",
-			"Rev": "3ef0f0c9b2908bb835c28b5e949c3aa853d0cde0"
+			"Rev": "0d88450e980fb852403544193d7a15f7897d92bd"
 		},
 		{
 			"ImportPath": "github.com/micro-plat/lib4go/influxdb",
-			"Rev": "3ef0f0c9b2908bb835c28b5e949c3aa853d0cde0"
+			"Rev": "0d88450e980fb852403544193d7a15f7897d92bd"
 		},
 		{
 			"ImportPath": "github.com/micro-plat/lib4go/influxdb/escape",
-			"Rev": "3ef0f0c9b2908bb835c28b5e949c3aa853d0cde0"
+			"Rev": "0d88450e980fb852403544193d7a15f7897d92bd"
 		},
 		{
 			"ImportPath": "github.com/micro-plat/lib4go/influxdb/models",
-			"Rev": "3ef0f0c9b2908bb835c28b5e949c3aa853d0cde0"
+			"Rev": "0d88450e980fb852403544193d7a15f7897d92bd"
 		},
 		{
 			"ImportPath": "github.com/micro-plat/lib4go/jsons",
-			"Rev": "3ef0f0c9b2908bb835c28b5e949c3aa853d0cde0"
+			"Rev": "0d88450e980fb852403544193d7a15f7897d92bd"
 		},
 		{
 			"ImportPath": "github.com/micro-plat/lib4go/logger",
-			"Rev": "3ef0f0c9b2908bb835c28b5e949c3aa853d0cde0"
+			"Rev": "0d88450e980fb852403544193d7a15f7897d92bd"
 		},
 		{
 			"ImportPath": "github.com/micro-plat/lib4go/metrics",
-			"Rev": "3ef0f0c9b2908bb835c28b5e949c3aa853d0cde0"
+			"Rev": "0d88450e980fb852403544193d7a15f7897d92bd"
 		},
 		{
 			"ImportPath": "github.com/micro-plat/lib4go/mq",
-			"Rev": "3ef0f0c9b2908bb835c28b5e949c3aa853d0cde0"
+			"Rev": "0d88450e980fb852403544193d7a15f7897d92bd"
 		},
 		{
 			"ImportPath": "github.com/micro-plat/lib4go/mq/mqtt",
-			"Rev": "3ef0f0c9b2908bb835c28b5e949c3aa853d0cde0"
+			"Rev": "0d88450e980fb852403544193d7a15f7897d92bd"
 		},
 		{
 			"ImportPath": "github.com/micro-plat/lib4go/mq/redis",
-			"Rev": "3ef0f0c9b2908bb835c28b5e949c3aa853d0cde0"
+			"Rev": "0d88450e980fb852403544193d7a15f7897d92bd"
 		},
 		{
 			"ImportPath": "github.com/micro-plat/lib4go/mq/stomp",
-			"Rev": "3ef0f0c9b2908bb835c28b5e949c3aa853d0cde0"
+			"Rev": "0d88450e980fb852403544193d7a15f7897d92bd"
 		},
 		{
 			"ImportPath": "github.com/micro-plat/lib4go/mq/xmq",
-			"Rev": "3ef0f0c9b2908bb835c28b5e949c3aa853d0cde0"
+			"Rev": "0d88450e980fb852403544193d7a15f7897d92bd"
 		},
 		{
 			"ImportPath": "github.com/micro-plat/lib4go/net",
-			"Rev": "3ef0f0c9b2908bb835c28b5e949c3aa853d0cde0"
+			"Rev": "0d88450e980fb852403544193d7a15f7897d92bd"
 		},
 		{
 			"ImportPath": "github.com/micro-plat/lib4go/osext",
-			"Rev": "3ef0f0c9b2908bb835c28b5e949c3aa853d0cde0"
+			"Rev": "0d88450e980fb852403544193d7a15f7897d92bd"
 		},
 		{
 			"ImportPath": "github.com/micro-plat/lib4go/queue",
-			"Rev": "3ef0f0c9b2908bb835c28b5e949c3aa853d0cde0"
+			"Rev": "0d88450e980fb852403544193d7a15f7897d92bd"
 		},
 		{
 			"ImportPath": "github.com/micro-plat/lib4go/queue/redis",
-			"Rev": "3ef0f0c9b2908bb835c28b5e949c3aa853d0cde0"
+			"Rev": "0d88450e980fb852403544193d7a15f7897d92bd"
 		},
 		{
 			"ImportPath": "github.com/micro-plat/lib4go/redis",
-			"Rev": "3ef0f0c9b2908bb835c28b5e949c3aa853d0cde0"
+			"Rev": "0d88450e980fb852403544193d7a15f7897d92bd"
 		},
 		{
 			"ImportPath": "github.com/micro-plat/lib4go/registry",
-			"Rev": "3ef0f0c9b2908bb835c28b5e949c3aa853d0cde0"
+			"Rev": "0d88450e980fb852403544193d7a15f7897d92bd"
 		},
 		{
 			"ImportPath": "github.com/micro-plat/lib4go/rpc",
-			"Rev": "3ef0f0c9b2908bb835c28b5e949c3aa853d0cde0"
+			"Rev": "0d88450e980fb852403544193d7a15f7897d92bd"
 		},
 		{
 			"ImportPath": "github.com/micro-plat/lib4go/security/crc32",
-			"Rev": "3ef0f0c9b2908bb835c28b5e949c3aa853d0cde0"
+			"Rev": "0d88450e980fb852403544193d7a15f7897d92bd"
 		},
 		{
 			"ImportPath": "github.com/micro-plat/lib4go/security/des",
-			"Rev": "3ef0f0c9b2908bb835c28b5e949c3aa853d0cde0"
+			"Rev": "0d88450e980fb852403544193d7a15f7897d92bd"
 		},
 		{
 			"ImportPath": "github.com/micro-plat/lib4go/security/jwt",
-			"Rev": "3ef0f0c9b2908bb835c28b5e949c3aa853d0cde0"
+			"Rev": "0d88450e980fb852403544193d7a15f7897d92bd"
 		},
 		{
 			"ImportPath": "github.com/micro-plat/lib4go/security/md5",
-			"Rev": "3ef0f0c9b2908bb835c28b5e949c3aa853d0cde0"
+			"Rev": "0d88450e980fb852403544193d7a15f7897d92bd"
 		},
 		{
 			"ImportPath": "github.com/micro-plat/lib4go/sysinfo/cpu",
-			"Rev": "3ef0f0c9b2908bb835c28b5e949c3aa853d0cde0"
+			"Rev": "0d88450e980fb852403544193d7a15f7897d92bd"
 		},
 		{
 			"ImportPath": "github.com/micro-plat/lib4go/sysinfo/disk",
-			"Rev": "3ef0f0c9b2908bb835c28b5e949c3aa853d0cde0"
+			"Rev": "0d88450e980fb852403544193d7a15f7897d92bd"
 		},
 		{
 			"ImportPath": "github.com/micro-plat/lib4go/sysinfo/memory",
-			"Rev": "3ef0f0c9b2908bb835c28b5e949c3aa853d0cde0"
+			"Rev": "0d88450e980fb852403544193d7a15f7897d92bd"
 		},
 		{
 			"ImportPath": "github.com/micro-plat/lib4go/transform",
-			"Rev": "3ef0f0c9b2908bb835c28b5e949c3aa853d0cde0"
+			"Rev": "0d88450e980fb852403544193d7a15f7897d92bd"
 		},
 		{
 			"ImportPath": "github.com/micro-plat/lib4go/types",
-			"Rev": "3ef0f0c9b2908bb835c28b5e949c3aa853d0cde0"
+			"Rev": "0d88450e980fb852403544193d7a15f7897d92bd"
 		},
 		{
 			"ImportPath": "github.com/micro-plat/lib4go/utility",
-			"Rev": "3ef0f0c9b2908bb835c28b5e949c3aa853d0cde0"
+			"Rev": "0d88450e980fb852403544193d7a15f7897d92bd"
 		},
 		{
 			"ImportPath": "github.com/micro-plat/lib4go/zk",
-			"Rev": "3ef0f0c9b2908bb835c28b5e949c3aa853d0cde0"
+			"Rev": "0d88450e980fb852403544193d7a15f7897d92bd"
 		},
 		{
 			"ImportPath": "github.com/modern-go/concurrent",

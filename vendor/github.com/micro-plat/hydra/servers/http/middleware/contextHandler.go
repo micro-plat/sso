@@ -9,6 +9,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/gin-gonic/gin/binding"
+	"github.com/micro-plat/hydra/conf"
 	"github.com/micro-plat/hydra/context"
 	"github.com/micro-plat/hydra/servers"
 	"github.com/micro-plat/lib4go/encoding"
@@ -92,6 +93,17 @@ func getCTX(c *gin.Context) *context.Context {
 	return result.(*context.Context)
 }
 
+func setMetadataConf(c *gin.Context, cnf *conf.MetadataConf) {
+	c.Set("__metadata-conf_", cnf)
+}
+func getMetadataConf(c *gin.Context) *conf.MetadataConf {
+	v, ok := c.Get("__metadata-conf_")
+	if !ok {
+		return nil
+	}
+	return v.(*conf.MetadataConf)
+}
+
 //ContextHandler api请求处理程序
 func ContextHandler(exhandler interface{}, name string, engine string, service string, mSetting map[string]string) gin.HandlerFunc {
 	handler, ok := exhandler.(servers.IExecuter)
@@ -118,12 +130,8 @@ func ContextHandler(exhandler interface{}, name string, engine string, service s
 			if !servers.IsDebug {
 				err = errors.New("error:Internal Server Error")
 			}
-			return
-		}
-		//处理跳转3xx
-		if url, ok := ctx.Response.IsRedirect(); ok {
-			c.Redirect(ctx.Response.GetStatus(), url)
-			return
+			getLogger(c).Error(err)
+			ctx.Response.ShouldContent(err)
 		}
 	}
 }
@@ -137,6 +145,11 @@ func makeQueyStringData(ctx *gin.Context) InputData {
 func makeParamsData(ctx *gin.Context) InputData {
 	return ctx.Params.Get
 }
+
+func makeMapData(m map[string]interface{}) MapData {
+	return m
+}
+
 func makeSettingData(ctx *gin.Context, m map[string]string) ParamData {
 	return m
 }
@@ -147,9 +160,11 @@ func makeExtData(c *gin.Context) map[string]interface{} {
 	input["__method_"] = strings.ToLower(c.Request.Method)
 	input["__header_"] = c.Request.Header
 	input["__is_circuit_breaker_"] = getIsCircuitBreaker(c)
-	input["__jwt_"] = getJWTRaw(c)
+	input["__jwt_"] = func() interface{} {
+		return getJWTRaw(c)
+	}
 	input["__func_http_request_"] = c.Request
-	input["__func_http_response_"] = c.Request.Response
+	input["__func_http_response_"] = c.Writer
 	input["__binding_"] = c.ShouldBind
 	input["__binding_with_"] = func(v interface{}, ct string) error {
 		return c.BindWith(v, binding.Default(c.Request.Method, ct))
@@ -176,6 +191,7 @@ func makeExtData(c *gin.Context) map[string]interface{} {
 				data[k] = strings.Join(v, ",")
 			}
 		}
+
 		return data
 	}
 
@@ -188,6 +204,14 @@ func makeExtData(c *gin.Context) map[string]interface{} {
 
 	}
 	return input
+}
+
+type MapData map[string]interface{}
+
+//Get 获取指定键对应的数据
+func (i MapData) Get(key string) (interface{}, bool) {
+	r, ok := i[key]
+	return r, ok
 }
 
 //InputData 输入参数

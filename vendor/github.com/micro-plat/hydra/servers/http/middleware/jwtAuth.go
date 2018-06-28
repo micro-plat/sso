@@ -19,6 +19,7 @@ func JwtAuth(cnf *conf.MetadataConf) gin.HandlerFunc {
 			ctx.Next()
 			return
 		}
+
 		jwtAuth, ok := cnf.GetMetadata("jwt").(*conf.Auth)
 		if !ok || jwtAuth == nil || jwtAuth.Disable {
 			ctx.Next()
@@ -41,24 +42,30 @@ func JwtAuth(cnf *conf.MetadataConf) gin.HandlerFunc {
 				return
 			}
 		}
-		if jwtAuth.Redirect != "" {
+		if jwtAuth.Redirect != "" && strings.ToUpper(ctx.Request.Method) == "GET" {
 			l, errx := url.Parse(jwtAuth.Redirect)
 			if errx != nil {
 				getLogger(ctx).Error(errx)
+				setHeader(cnf, ctx)
 				ctx.AbortWithStatus(err.GetCode())
 				return
 			}
 			values := l.Query()
 			values.Add("redirect", ctx.Request.RequestURI)
 			if l.IsAbs() {
-				ctx.Redirect(301, fmt.Sprintf("%s://%s%s?%s\n", l.Scheme, l.Host, l.Path, values.Encode()))
+				ctx.Redirect(302, fmt.Sprintf("%s://%s%s?%s\n", l.Scheme, l.Host, l.Path, values.Encode()))
+				setHeader(cnf, ctx)
+				ctx.Abort()
 				return
 			}
-			ctx.Redirect(301, fmt.Sprintf("%s?%s\n", l.Path, values.Encode()))
+			ctx.Redirect(302, fmt.Sprintf("%s?%s\n", l.Path, values.Encode()))
+			setHeader(cnf, ctx)
+			ctx.Abort()
 			return
 		}
 		//jwt.token错误，返回错误码
 		getLogger(ctx).Error(err.GetError())
+		setHeader(cnf, ctx)
 		ctx.AbortWithStatus(err.GetCode())
 		return
 
@@ -93,7 +100,7 @@ func checkJWT(ctx *gin.Context, auth *conf.Auth) (data interface{}, err context.
 	data, er := jwt.Decrypt(token, auth.Secret)
 	if er != nil {
 		if strings.Contains(er.Error(), "Token is expired") {
-			return nil, context.NewError(types.ToInt(auth.FailedCode, 401), er)
+			return nil, context.NewError(types.ToInt(auth.FailedCode, 403), er)
 		}
 		return data, context.NewError(types.ToInt(auth.FailedCode, 403), er)
 	}

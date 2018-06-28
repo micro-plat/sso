@@ -18,35 +18,36 @@ type ICacheMember interface {
 
 //CacheMember 控制用户登录
 type CacheMember struct {
-	c           component.IContainer
-	cacheFormat string
-	lockFormat  string
-	maxFailCnt  int
-	cacheTime   int
+	c          component.IContainer
+	maxFailCnt int
+	cacheTime  int
 }
+
+const (
+	cacheFormat = "sso:login:state:{@userName}-{@sysid}"
+	lockFormat  = "sso:login:locker:{@userName}"
+)
 
 //NewCacheMember 创建登录对象
 func NewCacheMember(c component.IContainer) *CacheMember {
 	return &CacheMember{
-		c:           c,
-		maxFailCnt:  5,
-		cacheTime:   3600 * 24,
-		cacheFormat: "sso:login:state:{@userName}-{@sysid}",
-		lockFormat:  "sso:login:locker:{@userName}",
+		c:          c,
+		maxFailCnt: 5,
+		cacheTime:  3600 * 24,
 	}
 }
 
 //SetLoginSuccess 设置为登录成功
 func (l *CacheMember) SetLoginSuccess(u string) error {
 	cache := l.c.GetRegularCache()
-	key := transform.Translate(l.lockFormat, "userName", u)
+	key := transform.Translate(lockFormat, "userName", u)
 	return cache.Delete(key)
 }
 
 //SetLoginFail 设置登录失败次数
 func (l *CacheMember) SetLoginFail(u string) (int, error) {
 	cache := l.c.GetRegularCache()
-	key := transform.Translate(l.lockFormat, "userName", u)
+	key := transform.Translate(lockFormat, "userName", u)
 	v, err := cache.Increment(key, 1)
 	if err != nil {
 		return 0, err
@@ -55,7 +56,7 @@ func (l *CacheMember) SetLoginFail(u string) (int, error) {
 }
 func (l *CacheMember) getLoginFailCnt(u string) (int, error) {
 	cache := l.c.GetRegularCache()
-	key := transform.Translate(l.lockFormat, "userName", u)
+	key := transform.Translate(lockFormat, "userName", u)
 	s, err := cache.Get(key)
 	if err != nil {
 		return 0, err
@@ -73,7 +74,7 @@ func (l *CacheMember) Save(s *MemberState) error {
 		return err
 	}
 	cache := l.c.GetRegularCache()
-	key := transform.Translate(l.cacheFormat, "userName", s.UserName, "sysid", s.SystemID)
+	key := transform.Translate(cacheFormat, "userName", s.UserName, "sysid", s.SystemID)
 	return cache.Set(key, string(buff), l.cacheTime)
 }
 
@@ -81,7 +82,7 @@ func (l *CacheMember) Save(s *MemberState) error {
 func (l *CacheMember) Query(u string, p string, sys int) (ls *MemberState, err error) {
 	//从缓存中查询用户数据
 	cache := l.c.GetRegularCache()
-	key := transform.Translate(l.cacheFormat, "userName", u, "sysid", sys)
+	key := transform.Translate(cacheFormat, "userName", u, "sysid", sys)
 	v, err := cache.Get(key)
 	if err != nil {
 		return nil, err

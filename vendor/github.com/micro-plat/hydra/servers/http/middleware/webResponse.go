@@ -1,13 +1,12 @@
 package middleware
 
 import (
-	"errors"
 	"fmt"
 	"path/filepath"
+	"strings"
 
 	"github.com/micro-plat/hydra/conf"
 	"github.com/micro-plat/hydra/context"
-	"github.com/micro-plat/hydra/servers"
 
 	"github.com/gin-gonic/gin"
 )
@@ -15,40 +14,54 @@ import (
 //WebResponse 处理web返回值
 func WebResponse(conf *conf.MetadataConf) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
-
 		ctx.Next()
 		nctx := getCTX(ctx)
 		if nctx == nil {
 			return
 		}
-		defer nctx.Close()
-		if err := nctx.Response.GetError(); err != nil {
-			getLogger(ctx).Error(err)
-			if !servers.IsDebug {
-				nctx.Response.ShouldContent(errors.New("请求发生错误"))
-			}
-			//ctx.AbortWithStatus(nctx.Response.GetStatus())
-			//return
+		if url, ok := nctx.Response.IsRedirect(); ok {
+			ctx.Redirect(nctx.Response.GetStatus(), url)
+			return
 		}
+
 		if ctx.Writer.Written() {
 			return
 		}
-		switch nctx.Response.GetContentType() {
+
+		tp, content, err := nctx.Response.GetHTMLRenderContent()
+		if err != nil {
+			getLogger(ctx).Error(err)
+			ctx.JSON(nctx.Response.GetStatus(), map[string]interface{}{"err": err})
+			return
+		}
+		tpName := context.ContentTypes[tp]
+		switch tp {
 		case context.CT_JSON:
-			ctx.JSON(nctx.Response.GetStatus(), getMessage(nctx.Response.GetContent()))
+			ctx.JSON(nctx.Response.GetStatus(), content)
 		case context.CT_XML:
-			ctx.XML(nctx.Response.GetStatus(), getMessage(nctx.Response.GetContent()))
+			if v, ok := content.([]byte); ok {
+				ctx.Data(nctx.Response.GetStatus(), tpName, v)
+				return
+			}
+			ctx.XML(nctx.Response.GetStatus(), content)
 		case context.CT_YMAL:
-			ctx.YAML(nctx.Response.GetStatus(), getMessage(nctx.Response.GetContent()))
+			if v, ok := content.([]byte); ok {
+				ctx.Data(nctx.Response.GetStatus(), tpName, v)
+				return
+			}
+			ctx.YAML(nctx.Response.GetStatus(), content)
 		case context.CT_PLAIN:
-			ctx.Data(nctx.Response.GetStatus(), "text/plain", []byte(fmt.Sprint(nctx.Response.GetContent())))
-		case context.CT_HTML:
-			ctx.Data(nctx.Response.GetStatus(), "text/html", []byte(fmt.Sprint(nctx.Response.GetContent())))
+			ctx.Data(nctx.Response.GetStatus(), tpName, content.([]byte))
 		default:
 			if renderHTML(ctx, nctx.Response, conf) {
 				return
 			}
-			ctx.Data(nctx.Response.GetStatus(), "text/plain", []byte(fmt.Sprint(nctx.Response.GetContent())))
+			html := fmt.Sprint(content)
+			if strings.HasPrefix(html, "<!DOCTYPE html") {
+				ctx.Data(nctx.Response.GetStatus(), tpName, []byte(html))
+				return
+			}
+			ctx.Data(nctx.Response.GetStatus(), context.ContentTypes[context.CT_PLAIN], []byte(html))
 		}
 	}
 }

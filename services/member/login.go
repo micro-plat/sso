@@ -6,6 +6,7 @@ import (
 
 	"github.com/micro-plat/hydra/component"
 	"github.com/micro-plat/hydra/context"
+	"github.com/micro-plat/lib4go/security/md5"
 	"github.com/micro-plat/sso/modules/member"
 )
 
@@ -35,7 +36,7 @@ func (u *LoginHandler) Handle(ctx *context.Context) (r interface{}) {
 
 	//处理用户登录
 	member, err := u.m.Login(ctx.Request.GetString("username"),
-		ctx.Request.GetString("password"),
+		md5.Encrypt(ctx.Request.GetString("password")),
 		ctx.Request.GetInt("sysid"))
 	if err != nil {
 		return err
@@ -52,10 +53,12 @@ func (u *LoginHandler) Handle(ctx *context.Context) (r interface{}) {
 	}
 	//设置jwt数据
 	ctx.Response.SetJWT(member)
+	curl := fmt.Sprintf("%s?code=%s", url, code)
 	if strings.Contains(url, "?") {
-		ctx.Response.Redirect(301, fmt.Sprintf("%s&code=%s", url, code))
+		curl = fmt.Sprintf("%s&code=%s", url, code)
 		return
 	}
-	ctx.Response.Redirect(301, fmt.Sprintf("%s?code=%s", url, code))
-	return
+	return map[string]interface{}{
+		"url": curl,
+	}
 }

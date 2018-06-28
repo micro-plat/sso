@@ -8,7 +8,8 @@ import (
 var (
 	microServerType   = []string{"api", "rpc", "web"}
 	flowServerType    = []string{"cron", "mqc"}
-	supportServerType = []string{"api", "rpc", "web", "cron", "mqc", "micro", "flow"}
+	wsServerType      = []string{"ws"}
+	supportServerType = []string{"api", "rpc", "ws", "web", "cron", "mqc", "micro", "flow"}
 )
 
 type option struct {
@@ -79,7 +80,7 @@ func WithRemoteQueryService(remoteQueryService bool) Option {
 	}
 }
 
-//WithName 设置系统全名
+//WithName 设置系统全名 格式:/[platName]/[sysName]/[typeName]/[clusterName]
 func WithName(name string) Option {
 	return func(o *option) {
 		o.Name = name

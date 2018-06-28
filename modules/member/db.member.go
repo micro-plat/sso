@@ -1,12 +1,10 @@
 package member
 
 import (
-	"fmt"
-
 	"github.com/micro-plat/hydra/component"
 	"github.com/micro-plat/hydra/context"
 	"github.com/micro-plat/lib4go/db"
-	"github.com/micro-plat/sso/modules/sql"
+	"github.com/micro-plat/sso/modules/const/sql"
 )
 
 type IDBMember interface {
@@ -46,7 +44,6 @@ func (l *DBMember) Query(u string, p string, sysid int) (s *MemberState, err err
 	db := l.c.GetRegularDB()
 	data, _, _, err := db.Query(sql.QueryUserByLogin, map[string]interface{}{
 		"user_name": u,
-		"password":  p,
 	})
 	if err != nil {
 		return nil, context.NewError(context.ERR_SERVICE_UNAVAILABLE, "暂时无法登录系统")
@@ -58,15 +55,17 @@ func (l *DBMember) Query(u string, p string, sysid int) (s *MemberState, err err
 	if err = data.Get(0).ToStruct(s); err != nil {
 		return nil, err
 	}
-	fmt.Println("user:", data.Get(0), s)
 	//查询用户所在系统的登录地址及角色编号
 	roles, _, _, err := db.Query(sql.QueryUserRole, map[string]interface{}{
 		"user_id": s.UserID,
 		"sys_id":  sysid,
 	})
 	if roles.IsEmpty() {
-		return nil, context.NewError(context.ERR_BAD_REQUEST, "不允许登录系统")
+		return nil, context.NewError(context.ERR_UNSUPPORTED_MEDIA_TYPE, "不允许登录系统")
 	}
+	s.UserID = data.Get(0).GetInt64("user_id", -1)
+	s.Password = data.Get(0).GetString("password")
+	s.UserName = data.Get(0).GetString("user_name")
 	s.RoleID = roles.Get(0).GetInt("role_id")
 	s.IndexURL = roles.Get(0).GetString("index_url")
 	s.SystemID = sysid

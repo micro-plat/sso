@@ -86,12 +86,16 @@ func (r *Request) BindWith(obj interface{}, contentType string) error {
 
 //Check 检查输入参数和配置参数是否为空
 func (r *Request) Check(field ...string) error {
+	data, _ := r.GetBodyMap()
 	for _, fd := range field {
 		if err := r.Form.Check(fd); err == nil {
 			continue
 		}
-		if err := r.QueryString.Check(fd); err != nil {
-			return fmt.Errorf("输入参数:%v", err)
+		if err := r.QueryString.Check(fd); err == nil {
+			continue
+		}
+		if v, ok := data[fd]; !ok && fmt.Sprint(v) != "" {
+			return fmt.Errorf("输入参数:%s值不能为空", fd)
 		}
 	}
 	return nil
@@ -121,7 +125,12 @@ func (r *Request) Get(name string) (result string, b bool) {
 	if result, b = r.QueryString.Get(name); b {
 		return result, b
 	}
-	return "", false
+	m, err := r.GetBodyMap()
+	if err != nil {
+		return "", false
+	}
+	v, b := m[name]
+	return fmt.Sprint(v), b
 }
 
 func (r *Request) GetString(name string, p ...string) string {

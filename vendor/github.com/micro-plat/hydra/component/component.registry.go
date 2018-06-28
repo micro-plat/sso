@@ -11,7 +11,11 @@ var _ IServiceRegistry = &ServiceRegistry{}
 var _ IComponentHandler = &ServiceRegistry{}
 
 type IComponentRegistry interface {
-	IComponentHandler
+	GetServices() map[string]map[string]interface{}
+	GetHandlings() []ServiceFunc
+	GetHandleds() []ServiceFunc
+	GetInitializings() []ComponentFunc
+	GetClosings() []ComponentFunc
 	IServiceRegistry
 }
 
@@ -21,18 +25,25 @@ type IComponentHandler interface {
 	GetHandleds() []ServiceFunc
 	GetInitializings() []ComponentFunc
 	GetClosings() []ComponentFunc
+	GetTags(name string) []string
 }
 
 //IServiceRegistry 服务注册接口
 type IServiceRegistry interface {
 	//Customer 添加自定义服务
-	Customer(group string, name string, h interface{})
+	Customer(group string, name string, h interface{}, tags ...string)
+
 	//Micro 添加微服务（api,rpc）
-	Micro(name string, h interface{})
-	//Autoflow 添加自动流程(mqc,cron)
-	Autoflow(name string, h interface{})
+	Micro(name string, h interface{}, tags ...string)
+
+	//Flow 添加自动流程(mqc,cron)
+	Flow(name string, h interface{}, tags ...string)
+
+	//WS 添加websocket(mqc,cron)
+	WS(name string, h interface{}, tags ...string)
+
 	//Page 添加web页面服务(web)
-	Page(name string, h interface{}, pages ...string)
+	Page(name string, h interface{}, tags ...string)
 
 	//Fallback 默认降级函数
 	Fallback(name string, h interface{})
@@ -45,16 +56,19 @@ type IServiceRegistry interface {
 
 	//Post RESTful POST请求服务
 	Post(name string, h interface{})
+
 	//PostFallback RESTful POST请求服务的降级服务
 	PostFallback(name string, h interface{})
 
 	//Delete RESTful DELETE请求服务
 	Delete(name string, h interface{})
+
 	//DeleteFallback RESTful DELETE请求服务的降级服务
 	DeleteFallback(name string, h interface{})
 
 	//Put RESTful PUT请求服务
 	Put(name string, h interface{})
+
 	//PutFallback RESTful PUT请求服务的降级服务
 	PutFallback(name string, h interface{})
 
@@ -68,6 +82,8 @@ type IServiceRegistry interface {
 
 	//Handled 请求后处理函数
 	Handled(h func(c *context.Context) (rs interface{}))
+
+	GetTags(name string) []string
 }
 
 //ServiceRegistry 服务注册组件
@@ -77,7 +93,7 @@ type ServiceRegistry struct {
 	handledFuncs      []ServiceFunc
 	initializingFuncs []ComponentFunc
 	closingFuncs      []ComponentFunc
-	pages             map[string][]string
+	tags              map[string][]string
 }
 
 //NewServiceRegistry 创建ServiceRegistry
@@ -88,7 +104,7 @@ func NewServiceRegistry() *ServiceRegistry {
 		initializingFuncs: make([]ComponentFunc, 0, 1),
 		closingFuncs:      make([]ComponentFunc, 0, 1),
 		services:          make(map[string]map[string]interface{}),
-		pages:             make(map[string][]string),
+		tags:              make(map[string][]string),
 	}
 }
 
@@ -116,12 +132,13 @@ func (s *ServiceRegistry) add(group string, name string, h interface{}) {
 }
 
 //Customer 自定义服务
-func (s *ServiceRegistry) Customer(group string, name string, h interface{}) {
+func (s *ServiceRegistry) Customer(group string, name string, h interface{}, tags ...string) {
 	if _, ok := s.services[group][name]; ok {
 		return
 	}
 	if s.isConstructor(h) {
 		s.add(group, name, h)
+		s.tags[name] = tags
 		return
 	}
 	if !s.isHandler(h) {
@@ -135,23 +152,28 @@ func (s *ServiceRegistry) Customer(group string, name string, h interface{}) {
 	default:
 		panic("不是有效的服务类型")
 	}
+	s.tags[name] = tags
 
 }
 
 //Micro 微服务
-func (s *ServiceRegistry) Micro(name string, h interface{}) {
-	s.Customer(MicroService, name, h)
+func (s *ServiceRegistry) Micro(name string, h interface{}, tags ...string) {
+	s.Customer(MicroService, name, h, tags...)
 }
 
-//Autoflow 流程服务
-func (s *ServiceRegistry) Autoflow(name string, h interface{}) {
-	s.Customer(AutoflowService, name, h)
+//Flow 流程服务
+func (s *ServiceRegistry) Flow(name string, h interface{}, tags ...string) {
+	s.Customer(FlowService, name, h, tags...)
+}
+
+//WS websocket服务
+func (s *ServiceRegistry) WS(name string, h interface{}, tags ...string) {
+	s.Customer(WSService, name, h, tags...)
 }
 
 //Page 页面服务
-func (s *ServiceRegistry) Page(name string, h interface{}, pages ...string) {
-	s.Customer(PageService, name, h)
-	s.pages[name] = pages
+func (s *ServiceRegistry) Page(name string, h interface{}, tags ...string) {
+	s.Customer(PageService, name, h, tags...)
 }
 
 //Fallback 降级服务
@@ -312,6 +334,10 @@ func (s *ServiceRegistry) Closing(c func(c IContainer) error) {
 func (s *ServiceRegistry) GetServices() map[string]map[string]interface{} {
 	return s.services
 }
+func (s *ServiceRegistry) GetTags(name string) []string {
+	return s.tags[name]
+}
+
 func (s *ServiceRegistry) GetHandlings() []ServiceFunc {
 	return s.handlingFuncs
 }
