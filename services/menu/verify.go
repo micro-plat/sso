@@ -10,14 +10,14 @@ import (
 //VerifyHandler 菜单权限验证对象
 type VerifyHandler struct {
 	c component.IContainer
-	m menu.IGet
+	m menu.IMenu
 }
 
 //NewVerifyHandler 创建菜单验证对象
 func NewVerifyHandler(container component.IContainer) (u *VerifyHandler) {
 	return &VerifyHandler{
 		c: container,
-		m: menu.NewGet(container),
+		m: menu.NewMenu(container),
 	}
 }
 

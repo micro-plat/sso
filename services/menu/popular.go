@@ -1,6 +1,8 @@
 package menu
 
 import (
+	"strings"
+
 	"github.com/micro-plat/hydra/component"
 	"github.com/micro-plat/hydra/context"
 	"github.com/micro-plat/sso/modules/member"
@@ -9,35 +11,43 @@ import (
 
 type PopularHandler struct {
 	container component.IContainer
-	m         menu.IGet
+	m         menu.IPopular
 }
 
 func NewPopularHandler(container component.IContainer) (u *PopularHandler) {
 	return &PopularHandler{
 		container: container,
-		m:         menu.NewGet(container),
+		m:         menu.NewPopular(container),
 	}
 }
 
-func (u *PopularHandler) Handle(ctx *context.Context) (r interface{}) {
+//GetHandle 查询常用菜单
+func (u *PopularHandler) GetHandle(ctx *context.Context) (r interface{}) {
 	uid := member.Get(ctx).UserID
 	sysid := member.Get(ctx).SystemID
-	data, err := u.m.QueryPopular(uid, sysid)
+	data, err := u.m.Query(uid, sysid)
 	if err != nil {
 		return err
 	}
-	result := make([]map[string]interface{}, 0, 4)
-	for _, row1 := range data {
-		if row1.GetInt("parent") == 0 && row1.GetInt("level_id") == 2 {
-			children1 := make([]map[string]interface{}, 0, 4)
-			for _, row2 := range data {
-				if row2.GetInt("parent") == row1.GetInt("id") && row2.GetInt("level_id") == 3 {
-					children1 = append(children1, row2)
-				}
-			}
-			row1["children"] = children1
-			result = append(result, row1)
-		}
+	return data
+}
+
+//PostHandle 添加常用菜单
+func (u *PopularHandler) PostHandle(ctx *context.Context) (r interface{}) {
+	if err := ctx.Request.Check("menu_ids", "pids"); err != nil {
+		return err
 	}
-	return result
+	menuIds := strings.Split(ctx.Request.GetString("menu_ids"), ",")
+	pids := strings.Split(ctx.Request.GetString("pids"), ",")
+	if len(menuIds) != len(pids) || len(menuIds) > 20 {
+		return context.NewError(context.ERR_NOT_ACCEPTABLE, "菜单个数错误")
+	}
+
+	uid := member.Get(ctx).UserID
+	sysid := member.Get(ctx).SystemID
+	err := u.m.Save(uid, sysid, pids, menuIds)
+	if err != nil {
+		return err
+	}
+	return "success"
 }

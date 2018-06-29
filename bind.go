@@ -121,7 +121,7 @@ func bind(r *hydra.MicroApp) {
 		return nil
 	})
 	r.Micro("/sso/login", member.NewLoginHandler)       //用户登录，登录后自动转跳到系统配置地址
-	r.Micro("/sso/menu/get", menu.NewGetHandler)        //获取用户菜单
+	r.Micro("/sso/menu/get", menu.NewMenuHandler)       //获取用户菜单
 	r.Micro("/sso/popular/get", menu.NewPopularHandler) //获取用户常用菜单
 
 	r.Micro("/sso/sys/get", system.NewSystemHandler) //获取系统信息
