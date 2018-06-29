@@ -23,7 +23,7 @@ func NewMenuHandler(container component.IContainer) (u *MenuHandler) {
 }
 
 //Handle 查询指定用户在指定系统的菜单列表
-func (u *MenuHandler) GetHandle(ctx *context.Context) (r interface{}) {
+func (u *MenuHandler) Handle(ctx *context.Context) (r interface{}) {
 	uid := member.Get(ctx).UserID
 	sysid := member.Get(ctx).SystemID
 	data, err := u.m.Query(uid, sysid)

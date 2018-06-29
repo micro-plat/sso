@@ -74,6 +74,7 @@ func (m *Member) Login(u string, p string, sys int) (s *LoginState, err error) {
 		UserName:     ls.UserName,
 		SystemID:     ls.SystemID,
 		RoleID:       ls.RoleID,
+		Code:         ls.Code,
 		Status:       ls.Status,
 		IndexURL:     ls.IndexURL,
 		LoginTimeout: ls.LoginTimeout,

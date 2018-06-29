@@ -94,8 +94,7 @@ func bind(r *hydra.MicroApp) {
 		if err := ctx.Request.GetJWT(&m); err != nil {
 			return context.NewError(context.ERR_FORBIDDEN, err)
 		}
-		mem.Save(ctx, &m)
-		return nil
+		return mem.Save(ctx, &m)
 	})
 
 	//初始化
@@ -121,10 +120,9 @@ func bind(r *hydra.MicroApp) {
 		return nil
 	})
 	r.Micro("/sso/login", member.NewLoginHandler)       //用户登录，登录后自动转跳到系统配置地址
+	r.Micro("/sso/sys/get", system.NewSystemHandler)    //获取系统信息
 	r.Micro("/sso/menu/get", menu.NewMenuHandler)       //获取用户菜单
 	r.Micro("/sso/popular/get", menu.NewPopularHandler) //获取用户常用菜单
-
-	r.Micro("/sso/sys/get", system.NewSystemHandler) //获取系统信息
 
 	r.WS("/qrcode/query", member.NewQRCodeHandler) //登录二维码获取
 
@@ -133,5 +131,4 @@ func bind(r *hydra.MicroApp) {
 	r.Micro("/sso/member/get", member.NewGetHandler)    //获取用户信息（不包括角色信息）
 
 	r.Micro("/sso/menu/verify", menu.NewVerifyHandler) //检查用户菜单权限
-
 }
