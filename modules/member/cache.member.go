@@ -70,11 +70,11 @@ func (l *CacheMember) getLoginFailCnt(u string) (int, error) {
 
 //Save 缓存用户信息
 func (l *CacheMember) Save(s *MemberState) error {
+	s.ReflushCode()
 	buff, err := json.Marshal(s)
 	if err != nil {
 		return err
 	}
-	s.ReflushCode()
 	cache := l.c.GetRegularCache()
 	key := transform.Translate(cacheFormat, "userName", s.UserName, "sysid", s.SystemID)
 	return cache.Set(key, string(buff), l.cacheTime)

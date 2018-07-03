@@ -32,9 +32,11 @@ func (l *Popular) Query(uid int64, sysid int) ([]map[string]interface{}, error) 
 	if err != nil {
 		return nil, err
 	}
+	level2 := make(map[string]int)
 	result := make([]map[string]interface{}, 0, 4)
 	for _, row1 := range data {
-		if row1.GetInt("level_id") == 2 {
+		if _, ok := level2[row1.GetString("id")]; !ok && row1.GetInt("level_id") == 2 {
+			level2[row1.GetString("id")] = 0
 			children1 := make([]map[string]interface{}, 0, 4)
 			for _, row2 := range data {
 				if row2.GetInt("parent") == row1.GetInt("id") && row2.GetInt("level_id") == 3 {
