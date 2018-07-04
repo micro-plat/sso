@@ -67,6 +67,7 @@ func (l *DBMember) Query(u string, p string, sysid int) (s *MemberState, err err
 	s.Password = data.Get(0).GetString("password")
 	s.UserName = data.Get(0).GetString("user_name")
 	s.RoleID = roles.Get(0).GetInt("role_id")
+	s.RoleName = roles.Get(0).GetString("role_name")
 	s.IndexURL = roles.Get(0).GetString("index_url")
 	s.SystemID = sysid
 	return s, err

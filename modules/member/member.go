@@ -69,14 +69,5 @@ func (m *Member) Login(u string, p string, sys int) (s *LoginState, err error) {
 	}
 	//设置登录成功
 	err = m.cache.SetLoginSuccess(u)
-	return &LoginState{
-		UserID:       ls.UserID,
-		UserName:     ls.UserName,
-		SystemID:     ls.SystemID,
-		RoleID:       ls.RoleID,
-		Code:         ls.Code,
-		Status:       ls.Status,
-		IndexURL:     ls.IndexURL,
-		LoginTimeout: ls.LoginTimeout,
-	}, err
+	return (*LoginState)(ls), err
 }

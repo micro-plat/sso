@@ -45,7 +45,7 @@ values
 
 //UpdateUserPopularMenu 累加用户使用次数
 const UpdateUserPopularMenu = `update sso_user_popular t
-set  t.used_cnt = t.used_cnt+1,
+set  t.used_cnt = t.used_cnt+1
 where t.user_id=@user_id
 and t.menu_id=@menu_id
 and t.sys_id=@sys_id

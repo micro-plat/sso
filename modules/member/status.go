@@ -1,6 +1,7 @@
 package member
 
 import (
+	"encoding/json"
 	"fmt"
 
 	"github.com/micro-plat/hydra/context"
@@ -11,27 +12,28 @@ const maxErrorCnt = 5
 
 //MemberState 用户信息
 type MemberState struct {
-	Password     string `m2s:"password"`
-	UserID       int64  `json:"user_id" m2s:"user_id"`
-	UserName     string `json:"user_name" m2s:"user_name"`
-	SystemID     int    `json:"sys_id" `
-	RoleID       int    `json:"role_id"`
-	Status       int    `json:"status" m2s:"status"`
-	IndexURL     string `json:"index_url"`
-	Code         string `json:"code"`
-	LoginTimeout int    `json:"login_timeout" m2s:"login_timeout"`
+	Password       string `json:"password,omitempty"`
+	UserID         int64  `json:"user_id" m2s:"user_id"`
+	UserName       string `json:"user_name" m2s:"user_name"`
+	RoleName       string `json:"role_name" m2s:"role_name"`
+	SystemID       int    `json:"sys_id" `
+	RoleID         int    `json:"role_id"`
+	Status         int    `json:"status" m2s:"status"`
+	IndexURL       string `json:"index_url"`
+	Code           string `json:"code"`
+	ProfilePercent int    `json:"profile_percent"`
+	LoginTimeout   int    `json:"login_timeout" m2s:"login_timeout"`
 }
 
-//LoginState 用户信息
-type LoginState struct {
-	UserID       int64  `json:"user_id" m2s:"user_id"`
-	UserName     string `json:"user_name" m2s:"user_name"`
-	SystemID     int    `json:"sys_id" `
-	Code         string `json:"code"`
-	RoleID       int    `json:"role_id"`
-	Status       int    `json:"status" m2s:"status"`
-	IndexURL     string `json:"index_url"`
-	LoginTimeout int    `json:"login_timeout" m2s:"login_timeout"`
+//LoginState 用户登录状态
+type LoginState MemberState
+
+//MarshalJSON 修改marshal行为，去掉敏感字段
+func (m LoginState) MarshalJSON() ([]byte, error) {
+	type mem MemberState
+	current := mem(m)
+	current.Password = ""
+	return json.Marshal((*mem)(&current))
 }
 
 //ReflushCode 刷新登录code

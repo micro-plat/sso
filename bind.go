@@ -126,9 +126,10 @@ func bind(r *hydra.MicroApp) {
 
 	r.WS("/qrcode/query", member.NewQRCodeHandler) //登录二维码获取
 
-	r.Micro("/sso/wxcode/get", member.NewWxcodeHandler) //获取已发送的微信验证码
-	r.Micro("/sso/login/check", member.NewCheckHandler) //用户登录状态检查，检查用户jwt是否有效
-	r.Micro("/sso/member/get", member.NewGetHandler)    //获取用户信息（不包括角色信息）
+	r.Micro("/sso/wxcode/get", member.NewWxcodeHandler)  //获取已发送的微信验证码
+	r.Micro("/sso/login/check", member.NewCheckHandler)  //用户登录状态检查，检查用户jwt是否有效
+	r.Micro("/sso/member/get", member.NewGetHandler)     //获取用户信息（不包括角色信息）
+	r.Micro("/sso/member/query", member.NewQueryHandler) //查询登录用户信息
 
 	r.Micro("/sso/menu/verify", menu.NewVerifyHandler) //检查用户菜单权限
 }
