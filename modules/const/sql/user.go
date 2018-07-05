@@ -16,8 +16,9 @@ from (select L.*
 						from sso_user_info t
 						left join sso_user_role r on r.user_id = t.user_id
 						left join sso_role_info ri on ri.role_id = r.role_id
-					   where ri.role_id = nvl(@roleid, ri.role_id)
-						 	 #username_sql
+						where 1=1 
+						&r.role_id
+						&user_name
 					   order by t.user_id, r.role_id) R
 			   where rownum <= @pi * @ps) L
 	   where L.LINENUM > @ps * (@pi - 1)) TAB1
@@ -37,6 +38,7 @@ from (select t.user_id,
 		from sso_user_info t
 		left join sso_user_role r on r.user_id = t.user_id
 		left join sso_role_info ri on ri.role_id = r.role_id
-	   where ri.role_id = nvl(@roleid, ri.role_id)
-			  #username_sql
+		 where 1=1 
+			 &r.role_id
+			 &user_name
 	   order by t.user_id, r.role_id) R`

@@ -6,23 +6,24 @@ import (
 )
 
 type IUser interface {
-	QueryUserList(params map[string]interface{}) (data db.QueryRows, count interface{}, err error)
+	Query(params map[string]interface{}) (data db.QueryRows, count interface{}, err error)
 }
 
 type User struct {
-	c component.IContainer
+	c  component.IContainer
+	db IDbUser
 }
 
 func NewUser(c component.IContainer) *User {
 	return &User{
-		c: c,
+		c:  c,
+		db: NewDbUser(c),
 	}
 }
 
-//QueryUserList 获取用户信息列表
-func (u *User) QueryUserList(params map[string]interface{}) (data db.QueryRows, count interface{}, err error) {
-	params["username_sql"] = " and t.user_name like '%" + params["username"].(string) + "%'"
-	data, count, err = u.DbQueryUserList(params)
+//Query 获取用户信息列表
+func (u *User) Query(input map[string]interface{}) (data db.QueryRows, count interface{}, err error) {
+	data, count, err = u.db.Query(input)
 	if err != nil {
 		return nil, nil, err
 	}
