@@ -6,9 +6,11 @@ import (
 	"github.com/micro-plat/hydra/hydra"
 	"github.com/micro-plat/sso/modules/app"
 	mem "github.com/micro-plat/sso/modules/member"
+	"github.com/micro-plat/sso/services/base"
 	"github.com/micro-plat/sso/services/member"
 	"github.com/micro-plat/sso/services/menu"
 	"github.com/micro-plat/sso/services/system"
+	"github.com/micro-plat/sso/services/user"
 )
 
 //bindConf 绑定启动配置， 启动时检查注册中心配置是否存在，不存在则引导用户输入配置参数并自动创建到注册中心
@@ -132,4 +134,7 @@ func bind(r *hydra.MicroApp) {
 	r.Micro("/sso/member/query", member.NewQueryHandler) //查询登录用户信息
 
 	r.Micro("/sso/menu/verify", menu.NewVerifyHandler) //检查用户菜单权限
+
+	r.Micro("/sso/user/index", user.NewUserHandler)
+	r.Micro("/sso/base/userrole", base.NewBaseUserHandler)
 }
