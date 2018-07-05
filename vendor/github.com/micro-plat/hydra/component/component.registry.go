@@ -36,8 +36,20 @@ type IServiceRegistry interface {
 	//Micro 添加微服务（api,rpc）
 	Micro(name string, h interface{}, tags ...string)
 
+	//API 添加微服务
+	API(name string, h interface{}, tags ...string)
+
+	//RPC 添加微服务
+	RPC(name string, h interface{}, tags ...string)
+
 	//Flow 添加自动流程(mqc,cron)
 	Flow(name string, h interface{}, tags ...string)
+
+	//MQC 添加自动流程
+	MQC(name string, h interface{}, tags ...string)
+
+	//CRON 添加自动流程
+	CRON(name string, h interface{}, tags ...string)
 
 	//WS 添加websocket(mqc,cron)
 	WS(name string, h interface{}, tags ...string)
@@ -156,14 +168,36 @@ func (s *ServiceRegistry) Customer(group string, name string, h interface{}, tag
 
 }
 
-//Micro 微服务
-func (s *ServiceRegistry) Micro(name string, h interface{}, tags ...string) {
-	s.Customer(MicroService, name, h, tags...)
+//API http api服务
+func (s *ServiceRegistry) API(name string, h interface{}, tags ...string) {
+	s.Customer(APIService, name, h, tags...)
 }
 
-//Flow 流程服务
+//RPC rpc服务
+func (s *ServiceRegistry) RPC(name string, h interface{}, tags ...string) {
+	s.Customer(RPCService, name, h, tags...)
+}
+
+//Micro 微服务
+func (s *ServiceRegistry) Micro(name string, h interface{}, tags ...string) {
+	s.API(name, h, tags...)
+	s.RPC(name, h, tags...)
+}
+
+//MQC MQC流程服务
+func (s *ServiceRegistry) MQC(name string, h interface{}, tags ...string) {
+	s.Customer(MQCService, name, h, tags...)
+}
+
+//CRON Cron服务
+func (s *ServiceRegistry) CRON(name string, h interface{}, tags ...string) {
+	s.Customer(CRONService, name, h, tags...)
+}
+
+//Flow rpc服务
 func (s *ServiceRegistry) Flow(name string, h interface{}, tags ...string) {
-	s.Customer(FlowService, name, h, tags...)
+	s.Customer(CRONService, name, h, tags...)
+	s.Customer(MQCService, name, h, tags...)
 }
 
 //WS websocket服务
@@ -179,14 +213,14 @@ func (s *ServiceRegistry) Page(name string, h interface{}, tags ...string) {
 //Fallback 降级服务
 func (s *ServiceRegistry) Fallback(name string, h interface{}) {
 	if s.isConstructor(h) {
-		s.add(MicroService, name, h)
+		s.add(APIService, name, h)
 		return
 	}
 	if !s.isHandler(h) {
 		panic("不是有效的服务类型")
 	}
 	if f, ok := h.(FallbackServiceFunc); ok {
-		s.add(MicroService, name, f)
+		s.add(APIService, name, f)
 	}
 	panic("不是有效的FallbackServiceFunc")
 }
@@ -194,14 +228,14 @@ func (s *ServiceRegistry) Fallback(name string, h interface{}) {
 //Get get请求
 func (s *ServiceRegistry) Get(name string, h interface{}) {
 	if s.isConstructor(h) {
-		s.add(MicroService, name, h)
+		s.add(APIService, name, h)
 		return
 	}
 	if !s.isHandler(h) {
 		panic("不是有效的服务类型")
 	}
 	if f, ok := h.(GetHandler); ok {
-		s.add(MicroService, name, f)
+		s.add(APIService, name, f)
 	}
 	panic("不是有效的GetHandler")
 }
@@ -209,14 +243,14 @@ func (s *ServiceRegistry) Get(name string, h interface{}) {
 //Post post请求
 func (s *ServiceRegistry) Post(name string, h interface{}) {
 	if s.isConstructor(h) {
-		s.add(MicroService, name, h)
+		s.add(APIService, name, h)
 		return
 	}
 	if !s.isHandler(h) {
 		panic("不是有效的服务类型")
 	}
 	if f, ok := h.(PostHandler); ok {
-		s.add(MicroService, name, f)
+		s.add(APIService, name, f)
 	}
 	panic("不是有效的PostHandler")
 }
@@ -224,14 +258,14 @@ func (s *ServiceRegistry) Post(name string, h interface{}) {
 //Delete delete请求
 func (s *ServiceRegistry) Delete(name string, h interface{}) {
 	if s.isConstructor(h) {
-		s.add(MicroService, name, h)
+		s.add(APIService, name, h)
 		return
 	}
 	if !s.isHandler(h) {
 		panic("不是有效的服务类型")
 	}
 	if f, ok := h.(DeleteHandler); ok {
-		s.add(MicroService, name, f)
+		s.add(APIService, name, f)
 	}
 	panic("不是有效的DeleteHandler")
 }
@@ -239,14 +273,14 @@ func (s *ServiceRegistry) Delete(name string, h interface{}) {
 //Put put请求
 func (s *ServiceRegistry) Put(name string, h interface{}) {
 	if s.isConstructor(h) {
-		s.add(MicroService, name, h)
+		s.add(APIService, name, h)
 		return
 	}
 	if !s.isHandler(h) {
 		panic("不是有效的服务类型")
 	}
 	if f, ok := h.(PutHandler); ok {
-		s.add(MicroService, name, f)
+		s.add(APIService, name, f)
 	}
 	panic("不是有效的PutHandler")
 }
@@ -254,14 +288,14 @@ func (s *ServiceRegistry) Put(name string, h interface{}) {
 //GetFallback get降级请求
 func (s *ServiceRegistry) GetFallback(name string, h interface{}) {
 	if s.isConstructor(h) {
-		s.add(MicroService, name, h)
+		s.add(APIService, name, h)
 		return
 	}
 	if !s.isHandler(h) {
 		panic("不是有效的服务类型")
 	}
 	if f, ok := h.(GetFallbackHandler); ok {
-		s.add(MicroService, name, f)
+		s.add(APIService, name, f)
 	}
 	panic("不是有效的GetFallback")
 }
@@ -269,14 +303,14 @@ func (s *ServiceRegistry) GetFallback(name string, h interface{}) {
 //PostFallback post降级请求
 func (s *ServiceRegistry) PostFallback(name string, h interface{}) {
 	if s.isConstructor(h) {
-		s.add(MicroService, name, h)
+		s.add(APIService, name, h)
 		return
 	}
 	if !s.isHandler(h) {
 		panic("不是有效的服务类型")
 	}
 	if f, ok := h.(PostFallbackHandler); ok {
-		s.add(MicroService, name, f)
+		s.add(APIService, name, f)
 	}
 	panic("不是有效的PostFallbackHandler")
 }
@@ -284,14 +318,14 @@ func (s *ServiceRegistry) PostFallback(name string, h interface{}) {
 //DeleteFallback delete降级请求
 func (s *ServiceRegistry) DeleteFallback(name string, h interface{}) {
 	if s.isConstructor(h) {
-		s.add(MicroService, name, h)
+		s.add(APIService, name, h)
 		return
 	}
 	if !s.isHandler(h) {
 		panic("不是有效的服务类型")
 	}
 	if f, ok := h.(DeleteFallbackHandler); ok {
-		s.add(MicroService, name, f)
+		s.add(APIService, name, f)
 	}
 	panic("不是有效的DeleteFallbackHandler")
 }
@@ -299,14 +333,14 @@ func (s *ServiceRegistry) DeleteFallback(name string, h interface{}) {
 //PutFallback put降级请求
 func (s *ServiceRegistry) PutFallback(name string, h interface{}) {
 	if s.isConstructor(h) {
-		s.add(MicroService, name, h)
+		s.add(APIService, name, h)
 		return
 	}
 	if !s.isHandler(h) {
 		panic("不是有效的服务类型")
 	}
 	if f, ok := h.(PutFallbackHandler); ok {
-		s.add(MicroService, name, f)
+		s.add(APIService, name, f)
 	}
 	panic("不是有效的PutFallbackHandler")
 }
