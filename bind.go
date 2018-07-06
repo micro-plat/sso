@@ -16,14 +16,13 @@ import (
 //bindConf 绑定启动配置， 启动时检查注册中心配置是否存在，不存在则引导用户输入配置参数并自动创建到注册中心
 func bindConf(app *hydra.MicroApp) {
 	app.Conf.API.SetMainConf(`{"address":":9091"}`)
-	app.Conf.WS.SetSubConf("app", `
-		{
-			"qrcode-login-check-url":"http://192.168.5.71:8090"
-		}		
-		`)
+
 	app.Conf.API.SetSubConf("app", `
 			{
-				"qrcode-login-check-url":"http://192.168.5.71:8090"
+				"qrcode-login-check-url":"http://192.168.5.71:8090",
+				"appid":"wx9e02ddcc88e13fd4",
+				"secret":"6acb2b999177524beba3d97d54df2de5",
+				"wechat-url":"http://59.151.30.153:9999/wx9e02ddcc88e13fd4/wechat/token/get"
 			}			
 			`)
 	app.Conf.API.SetSubConf("header", `
@@ -46,6 +45,15 @@ func bindConf(app *hydra.MicroApp) {
 			}
 		}
 		`)
+
+	app.Conf.WS.SetSubConf("app", `
+			{
+				"qrcode-login-check-url":"http://192.168.5.71:8090",
+				"appid":"wx9e02ddcc88e13fd4",
+				"secret":"45d25cb71f3bee254c2bc6fc0dc0caf1",
+				"wechat-url":"http://59.151.30.153:9999/wx9e02ddcc88e13fd4/wechat/token/get"
+			}			
+			`)
 	app.Conf.Plat.SetVarConf("db", "db", `{			
 			"provider":"ora",
 			"connString":"sso/123456@orcl136",
@@ -118,6 +126,7 @@ func bind(r *hydra.MicroApp) {
 		if _, err := c.GetCache(); err != nil {
 			return err
 		}
+		r.Micro("/sso/wxcode/get", member.NewWxcodeHandler(conf.AppID, conf.Secret, conf.WechatTSAddr)) //获取已发送的微信验证码
 		return nil
 	})
 	r.Micro("/sso/login", member.NewLoginHandler)    //用户登录，登录后自动转跳到系统配置地址
@@ -127,7 +136,6 @@ func bind(r *hydra.MicroApp) {
 
 	r.WS("/qrcode/query", member.NewQRCodeHandler) //登录二维码获取
 
-	r.Micro("/sso/wxcode/get", member.NewWxcodeHandler)  //获取已发送的微信验证码
 	r.Micro("/sso/login/check", member.NewCheckHandler)  //用户登录状态检查，检查用户jwt是否有效
 	r.Micro("/sso/member/get", member.NewGetHandler)     //获取用户信息（不包括角色信息）
 	r.Micro("/sso/member/query", member.NewQueryHandler) //查询登录用户信息
