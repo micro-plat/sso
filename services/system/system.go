@@ -1,8 +1,6 @@
 package system
 
 import (
-	"github.com/micro-plat/sso/modules/member"
-
 	"github.com/micro-plat/hydra/component"
 	"github.com/micro-plat/hydra/context"
 	"github.com/micro-plat/sso/modules/system"
@@ -21,7 +19,7 @@ func NewSystemHandler(container component.IContainer) (u *SystemHandler) {
 }
 
 func (u *SystemHandler) Handle(ctx *context.Context) (r interface{}) {
-	sysid := member.Get(ctx).SystemID
+	sysid := ctx.Request.GetInt("sysid", 0)
 	data, err := u.sys.Query(sysid)
 	if err != nil {
 		return err

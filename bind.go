@@ -38,7 +38,7 @@ func bindConf(app *hydra.MicroApp) {
 	app.Conf.API.SetSubConf("auth", `
 		{
 			"jwt": {
-				"exclude": ["/sso/login","/sso/wxcode/get"],
+				"exclude": ["/sso/login","/sso/wxcode/get","/sso/sys/get"],
 				"expireAt": 36000,
 				"mode": "HS512",
 				"name": "__jwt__",
