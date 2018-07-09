@@ -11,6 +11,7 @@ import (
 	"github.com/micro-plat/sso/services/menu"
 	"github.com/micro-plat/sso/services/system"
 	"github.com/micro-plat/sso/services/user"
+	"github.com/micro-plat/sso/services/subsystem"
 )
 
 //bindConf 绑定启动配置， 启动时检查注册中心配置是否存在，不存在则引导用户输入配置参数并自动创建到注册中心
@@ -19,12 +20,12 @@ func bindConf(app *hydra.MicroApp) {
 	app.Conf.WS.SetSubConf("app", `
 		{
 			"qrcode-login-check-url":"http://192.168.5.71:8090"
-		}		
+		}
 		`)
 	app.Conf.API.SetSubConf("app", `
 			{
 				"qrcode-login-check-url":"http://192.168.5.71:8090"
-			}			
+			}
 			`)
 	app.Conf.API.SetSubConf("header", `
 				{
@@ -136,4 +137,7 @@ func bind(r *hydra.MicroApp) {
 
 	r.Micro("/sso/user/index", user.NewUserHandler)
 	r.Micro("/sso/base/userrole", base.NewBaseUserHandler)
+
+	r.Micro("/sso/subsys/manage",subsystem.NewSystemHandler)
+	r.Micro("/sso/subsys/query",subsystem.NewSystemQueryHandler)
 }
