@@ -9,6 +9,7 @@ import (
 	"github.com/micro-plat/sso/services/base"
 	"github.com/micro-plat/sso/services/member"
 	"github.com/micro-plat/sso/services/menu"
+	"github.com/micro-plat/sso/services/qrcode"
 	"github.com/micro-plat/sso/services/system"
 	"github.com/micro-plat/sso/services/user"
 )
@@ -19,7 +20,7 @@ func bindConf(app *hydra.MicroApp) {
 
 	app.Conf.API.SetSubConf("app", `
 			{
-				"qrcode-login-check-url":"http://192.168.5.71:8090",
+				"wxlogin-url":"http://sso.100bm.cn/member/wxlogin",
 				"appid":"wx9e02ddcc88e13fd4",
 				"secret":"6acb2b999177524beba3d97d54df2de5",
 				"wechat-url":"http://59.151.30.153:9999/wx9e02ddcc88e13fd4/wechat/token/get"
@@ -37,7 +38,7 @@ func bindConf(app *hydra.MicroApp) {
 	app.Conf.API.SetSubConf("auth", `
 		{
 			"jwt": {
-				"exclude": ["/sso/login","/sso/wxcode/get","/sso/sys/get"],
+				"exclude": ["/sso/login","/sso/wxcode/get","/sso/sys/get","/qrcode/login","/qrcode/login/put","/sso/login/code"],
 				"expireAt": 36000,
 				"mode": "HS512",
 				"name": "__jwt__",
@@ -48,7 +49,7 @@ func bindConf(app *hydra.MicroApp) {
 
 	app.Conf.WS.SetSubConf("app", `
 			{
-				"qrcode-login-check-url":"http://192.168.5.71:8090",
+				"wxlogin-url":"http://192.168.5.71:8080/member/wxlogin",
 				"appid":"wx9e02ddcc88e13fd4",
 				"secret":"45d25cb71f3bee254c2bc6fc0dc0caf1",
 				"wechat-url":"http://59.151.30.153:9999/wx9e02ddcc88e13fd4/wechat/token/get"
@@ -89,6 +90,9 @@ func bind(r *hydra.MicroApp) {
 
 	//每个请求执行前执行
 	r.Handling(func(ctx *context.Context) (rt interface{}) {
+		if ctx.GetContainer().GetServerType() != "api" {
+			return nil
+		}
 		jwt, err := ctx.Request.GetJWTConfig() //获取jwt配置
 		if err != nil {
 			return err
@@ -112,7 +116,7 @@ func bind(r *hydra.MicroApp) {
 		if err := c.GetAppConf(&conf); err != nil {
 			return err
 		}
-
+		app.SaveConf(c, &conf)
 		if err := conf.Valid(); err != nil {
 			return err
 		}
@@ -129,15 +133,17 @@ func bind(r *hydra.MicroApp) {
 		r.Micro("/sso/wxcode/get", member.NewWxcodeHandler(conf.AppID, conf.Secret, conf.WechatTSAddr)) //获取已发送的微信验证码
 		return nil
 	})
-	r.Micro("/sso/login", member.NewLoginHandler)    //用户登录，登录后自动转跳到系统配置地址
-	r.Micro("/sso/sys/get", system.NewSystemHandler) //获取系统信息
-	r.Micro("/sso/menu/get", menu.NewMenuHandler)    //获取用户菜单
-	r.Micro("/sso/popular", menu.NewPopularHandler)  //获取用户常用菜单
+	r.Micro("/sso/login", member.NewLoginHandler)     //用户名密码登录
+	r.Micro("/sso/sys/get", system.NewSystemHandler)  //根据系统编号获取系统信息
+	r.Micro("/sso/menu/get", menu.NewMenuHandler)     //获取用户所在系统的菜单信息
+	r.Micro("/sso/popular", menu.NewPopularHandler)   //获取用户所在系统的常用菜单
+	r.Micro("/sso/login/code", member.NewCodeHandler) //根据用户登录code设置jwt信息
 
-	r.WS("/qrcode/query", member.NewQRCodeHandler) //登录二维码获取
+	r.WS("/qrcode/login", qrcode.NewLoginHandler)    //二维码登录（获取二维码登录地址,接收用户扫码后的消息推送）
+	r.Micro("/qrcode/login", qrcode.NewLoginHandler) //二维码登录(调用二维码登录接口地址，推送到PC端登录消息)
 
-	r.Micro("/sso/login/check", member.NewCheckHandler)  //用户登录状态检查，检查用户jwt是否有效
-	r.Micro("/sso/member/get", member.NewGetHandler)     //获取用户信息（不包括角色信息）
+	r.Micro("/sso/login/check", member.NewCheckHandler) //用户登录状态检查，检查用户jwt是否有效
+	//r.Micro("/sso/member/get", member.NewGetHandler)     //获取用户信息（不包括角色信息）
 	r.Micro("/sso/member/query", member.NewQueryHandler) //查询登录用户信息
 
 	r.Micro("/sso/menu/verify", menu.NewVerifyHandler) //检查用户菜单权限
