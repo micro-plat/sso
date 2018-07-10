@@ -13,6 +13,8 @@ type IDbSystem interface {
 	QueryWithField(input map[string]interface{}) (data db.QueryRows,err error)
 	DeleteById(id int) (err error)
 	Add(input map[string]interface{}) (err error)
+	UpdateEnable(input map[string]interface{}) (err error)
+	UpdateEdit(input map[string]interface{}) (err error)
 }
 
 type DbSystem struct {
@@ -88,3 +90,34 @@ func(u *DbSystem) Add(input map[string]interface{}) (err error){
 	}
 	return nil
 }
+
+func (u *DbSystem) UpdateEnable(input map[string]interface{}) (err error){
+	Db := u.c.GetRegularDB()
+	params := map[string]interface{}{
+		"id": input["id"],
+		"enable": input["status"],
+	}
+	_,_,_,err = Db.Execute(sql.UpdateEnable,params)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (u *DbSystem) UpdateEdit(input map[string]interface{}) (err error){
+	Db := u.c.GetRegularDB()
+	params := map[string]interface{}{
+		"enable": input["enable"],
+		"id": input["id"],
+		"index_url": input["index_url"],
+		"login_timeout": input["login_timeout"],
+		"logo": input["logo"],
+		"name": input["name"],
+	}
+	_,_,_,err = Db.Execute(sql.UpdateEdit,params)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+

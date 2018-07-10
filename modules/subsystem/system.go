@@ -10,6 +10,8 @@ type ISystem interface {
 	QueryWithField(input map[string]interface{}) (data db.QueryRows, err error)
 	DeleteByID(id int) (err error)
 	Add(input map[string]interface{}) (err error)
+	UpdateEnable(input map[string]interface{}) (err error)
+	UpdateEdit(input map[string]interface{}) (err error)
 }
 
 type System struct {
@@ -51,6 +53,22 @@ func (u *System) DeleteByID(id int) (err error){
 
 func (u *System) Add(input map[string]interface{}) (err error) {
 	err = u.db.Add(input)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func(u *System) UpdateEnable(input map[string]interface{}) (err error){
+	err = u.db.UpdateEnable(input)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (u *System) UpdateEdit(input map[string]interface{}) (err error){
+	err = u.db.UpdateEdit(input)
 	if err != nil {
 		return err
 	}
