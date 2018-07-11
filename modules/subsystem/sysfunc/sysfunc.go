@@ -10,6 +10,7 @@ type ISystemFunc interface {
 	Enable(input map[string]interface{}) (err error)
 	Delete(id int) (err error)
 	Edit(input map[string]interface{}) (err error)
+	Add(input map[string]interface{}) (err error)
 }
 
 type SystemFunc struct {
@@ -71,6 +72,14 @@ func (u *SystemFunc) Delete(id int) (err error){
 
 func (u *SystemFunc) Edit(input map[string]interface{}) (err error){
 	err = u.db.Edit(input)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (u *SystemFunc) Add(input map[string]interface{}) (err error){
+	err = u.db.Add(input)
 	if err != nil {
 		return err
 	}

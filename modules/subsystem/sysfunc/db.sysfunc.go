@@ -13,6 +13,7 @@ type IDbSystemFunc interface {
 	Enable(input map[string]interface{}) (err error)
 	Delete(id int) (err error)
 	Edit(input map[string]interface{}) (err error)
+	Add(input map[string]interface{}) (err error)
 }
 
 type DbSystemFunc struct {
@@ -44,9 +45,9 @@ func (u *DbSystemFunc) Enable(input map[string]interface{}) (err error) {
 		"id": input["Id"],
 		"enable": input["Status"],
 	}
-	_,_,_,err = Db.Execute(sql.EnableSysFunc,params)
+	_,q,a,err := Db.Execute(sql.EnableSysFunc,params)
 	if err != nil {
-		return err
+		return fmt.Errorf("禁用/启用系统功能发生错误(err:%v),sql:%s,参数：%v", err, q,a)
 	}
 	return   nil
 }
@@ -56,9 +57,9 @@ func (u *DbSystemFunc) Delete(id int) (err error){
 	params := map[string]interface{}{
 		"id": id,
 	}
-	_,_,_,err = Db.Execute(sql.DeleteSysFunc,params)
+	_,q,a,err := Db.Execute(sql.DeleteSysFunc,params)
 	if err != nil {
-		return err
+		return fmt.Errorf("删除系统功能发生错误(err:%v),sql:%s,参数：%v", err, q,a)
 	}
 	return   nil
 }
@@ -71,10 +72,29 @@ func (u *DbSystemFunc) Edit(input map[string]interface{}) (err error){
 		"icon": input["icon"],
 		"path": input["path"],
 	}
-	_,_,_,err = Db.Execute(sql.EditSysFunc,params)
+	_,q,a,err := Db.Execute(sql.EditSysFunc,params)
 	if err != nil {
-		return err
+		return fmt.Errorf("编辑系统功能发生错误(err:%v),sql:%s,参数：%v", err, q,a)
 	}
 	return   nil
+}
+
+func (u *DbSystemFunc) Add(input map[string]interface{}) (err error){
+	Db := u.c.GetRegularDB()
+
+	params := map[string]interface{}{
+		"sys_id": input["sys_id"],
+		"name": input["name"],
+		"icon": input["icon"],
+		"path": input["path"],
+		"parent": input["parentid"],
+		"level_id": input["level_id"],
+	}
+	_,q,a,err := Db.Execute(sql.AddSysFunc,params)
+
+	if err != nil {
+		return fmt.Errorf("添加系统功能发生错误(err:%v),sql:%s,参数：%v", err, q,a)
+	}
+	return nil
 }
 

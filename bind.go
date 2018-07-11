@@ -139,15 +139,15 @@ func bind(r *hydra.MicroApp) {
 	r.Micro("/sso/user/index", user.NewUserHandler)
 	r.Micro("/sso/base/userrole", base.NewBaseUserHandler)
 
-	r.Micro("/sso/subsys/manage",subsystem.NewSystemHandler)   //系统管理
-	r.Micro("/sso/subsys/query",subsystem.NewSystemQueryHandler)  //系统管理查询
-	r.Micro("/sso/subsys/enable",subsystem.NewSystemEnableHandler)  //系统禁用
-	r.Micro("/sso/subsys/edit",subsystem.NewSystemEditHandler)   //系统编辑
+	r.Micro("/sso/subsys/manage",subsystem.NewSystemHandler)   		//系统管理
+	r.Micro("/sso/subsys/query",subsystem.NewSystemQueryHandler)  		//系统管理查询
+	r.Micro("/sso/subsys/enable",subsystem.NewSystemEnableHandler)  	//系统禁用
+	r.Micro("/sso/subsys/edit",subsystem.NewSystemEditHandler)   		//系统编辑
 
-	r.Micro("/sso/sysfunc/query",sysfunc.NewSystemFuncQueryHandler)
-	r.Micro("/sso/sysfunc/enable",sysfunc.NewSystemFuncEnableHandler)
-	r.Micro("/sso/sysfunc/delete",sysfunc.NewSystemFuncDeleteHandler)
-	r.Micro("/sso/sysfunc/edit",sysfunc.NewSystemFuncEditHandler)
-
+	r.Micro("/sso/sysfunc/query",sysfunc.NewSystemFuncQueryHandler)  	//获取功能列表
+	r.Micro("/sso/sysfunc/enable",sysfunc.NewSystemFuncEnableHandler) //功能禁用/启用
+	r.Micro("/sso/sysfunc/delete",sysfunc.NewSystemFuncDeleteHandler) //功能删除
+	r.Micro("/sso/sysfunc/edit",sysfunc.NewSystemFuncEditHandler)   	//功能编辑
+	r.Micro("/sso/sysfunc/add",sysfunc.NewSystemFuncAddHandler)   		//功能添加
 
 }
