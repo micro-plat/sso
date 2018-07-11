@@ -152,6 +152,10 @@ func bind(r *hydra.MicroApp) {
 	r.Micro("/sso/menu/verify", menu.NewVerifyHandler) //检查用户菜单权限
 
 	r.Micro("/sso/user/index", user.NewUserHandler)
+	r.Micro("/sso/user/change", user.NewUserChangeHandler)
+	r.Micro("/sso/user/delete", user.NewUserDelHandler)
+	r.Micro("/sso/user/info", user.NewUserInfoHandler)
+	r.Micro("/sso/user/edit", user.NewUserEditHandler)
 	r.Micro("/sso/base/userrole", base.NewBaseUserHandler)
 
 	r.Micro("/sso/subsys/manage",subsystem.NewSystemHandler)   		//系统管理

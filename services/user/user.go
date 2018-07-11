@@ -44,7 +44,7 @@ func (u *UserHandler) Handle(ctx *context.Context) (r interface{}) {
 		return context.NewError(context.ERR_NOT_IMPLEMENTED, err)
 	}
 
-	ctx.Log.Info("3.返回数据。")
+	ctx.Log.Info("2.返回数据。")
 	return map[string]interface{}{
 		"count": count.(string),
 		"list":  rows,
