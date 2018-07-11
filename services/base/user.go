@@ -1,8 +1,6 @@
 package base
 
 import (
-	"fmt"
-
 	"github.com/micro-plat/hydra/component"
 	"github.com/micro-plat/hydra/context"
 	"github.com/micro-plat/sso/modules/base"
@@ -28,7 +26,6 @@ func (u *BaseUserHandler) Handle(ctx *context.Context) (r interface{}) {
 		return context.NewError(context.ERR_NOT_IMPLEMENTED, err)
 	}
 
-	fmt.Println("rolelist:", rows)
 	ctx.Log.Info("2.返回数据。")
 	return map[string]interface{}{
 		"rolelist": rows,
