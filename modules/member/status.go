@@ -2,8 +2,6 @@ package member
 
 import (
 	"encoding/json"
-	"fmt"
-
 	"github.com/micro-plat/hydra/context"
 	"github.com/micro-plat/lib4go/utility"
 )
@@ -45,27 +43,27 @@ func (m *MemberState) ReflushCode() string {
 //Save 保存member信息
 func Save(ctx *context.Context, m *LoginState) error {
 	//不允许同一个账户多处登录
-	container := ctx.GetContainer()
-	v, ok := container.Get("login-code").(ICacheMember)
-	if !ok {
-		v = NewCacheMember(container)
-		container.Set("login-code", v)
-	}
-	ms, err := v.Query(m.UserName, m.SystemID)
-	if err != nil {
-		return context.NewError(403, fmt.Sprintf("登录信息已过期，请重新登录%v", err))
-	}
-	if ms.Code != m.Code {
-		return context.NewError(403, "用户登录code已过期，请重新登录")
-	}
-	//检查用户是否已锁定
-	if ms.Status == UserLock {
-		return context.NewError(context.ERR_LOCKED, "用户被锁定暂时无法登录")
-	}
-	//检查用户是否已禁用
-	if ms.Status == UserDisable {
-		return context.NewError(context.ERR_FORBIDDEN, "用户被禁用请联系管理员")
-	}
+	//container := ctx.GetContainer()
+	//v, ok := container.Get("login-code").(ICacheMember)
+	//if !ok {
+	//	v = NewCacheMember(container)
+	//	container.Set("login-code", v)
+	//}
+	//ms, err := v.Query(m.UserName, m.SystemID)
+	//if err != nil {
+	//	return context.NewError(403, fmt.Sprintf("登录信息已过期，请重新登录%v", err))
+	//}
+	//if ms.Code != m.Code {
+	//	return context.NewError(403, "用户登录code已过期，请重新登录")
+	//}
+	////检查用户是否已锁定
+	//if ms.Status == UserLock {
+	//	return context.NewError(context.ERR_LOCKED, "用户被锁定暂时无法登录")
+	//}
+	////检查用户是否已禁用
+	//if ms.Status == UserDisable {
+	//	return context.NewError(context.ERR_FORBIDDEN, "用户被禁用请联系管理员")
+	//}
 	ctx.Meta.Set("login-state", m)
 	return nil
 }

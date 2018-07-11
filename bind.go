@@ -12,11 +12,14 @@ import (
 	"github.com/micro-plat/sso/services/qrcode"
 	"github.com/micro-plat/sso/services/system"
 	"github.com/micro-plat/sso/services/user"
+	"github.com/micro-plat/sso/services/subsystem"
+	"github.com/micro-plat/sso/services/subsystem/sysfunc"
 )
 
 //bindConf 绑定启动配置， 启动时检查注册中心配置是否存在，不存在则引导用户输入配置参数并自动创建到注册中心
 func bindConf(app *hydra.MicroApp) {
 	app.Conf.API.SetMainConf(`{"address":":9091"}`)
+
 
 	app.Conf.API.SetSubConf("app", `
 			{
@@ -150,4 +153,16 @@ func bind(r *hydra.MicroApp) {
 
 	r.Micro("/sso/user/index", user.NewUserHandler)
 	r.Micro("/sso/base/userrole", base.NewBaseUserHandler)
+
+	r.Micro("/sso/subsys/manage",subsystem.NewSystemHandler)   		//系统管理
+	r.Micro("/sso/subsys/query",subsystem.NewSystemQueryHandler)  		//系统管理查询
+	r.Micro("/sso/subsys/enable",subsystem.NewSystemEnableHandler)  	//系统禁用
+	r.Micro("/sso/subsys/edit",subsystem.NewSystemEditHandler)   		//系统编辑
+
+	r.Micro("/sso/sysfunc/query",sysfunc.NewSystemFuncQueryHandler)  	//获取功能列表
+	r.Micro("/sso/sysfunc/enable",sysfunc.NewSystemFuncEnableHandler) //功能禁用/启用
+	r.Micro("/sso/sysfunc/delete",sysfunc.NewSystemFuncDeleteHandler) //功能删除
+	r.Micro("/sso/sysfunc/edit",sysfunc.NewSystemFuncEditHandler)   	//功能编辑
+	r.Micro("/sso/sysfunc/add",sysfunc.NewSystemFuncAddHandler)   		//功能添加
+
 }
