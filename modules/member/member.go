@@ -19,6 +19,7 @@ const (
 type IMember interface {
 	Login(u string, p string, sys int) (*LoginState, error)
 	Query(uid int64) (db.QueryRow, error)
+	LoginByOpenID(string, int) (*LoginState, error)
 }
 
 //Member 用户登录管理
@@ -38,6 +39,17 @@ func NewMember(c component.IContainer) *Member {
 //Query 查询用户信息
 func (m *Member) Query(uid int64) (db.QueryRow, error) {
 	return m.db.QueryByID(uid)
+}
+
+//LoginByOpenID 使用open_id进行登录
+func (m *Member) LoginByOpenID(openid string, sys int) (s *LoginState, err error) {
+	row, err := m.db.QueryByOpenID(openid)
+	if err != nil {
+		return nil, err
+	}
+	u := row.GetString("user_name")
+	p := row.GetString("password")
+	return m.Login(u, p, sys)
 }
 
 //Login 登录系统
@@ -63,7 +75,7 @@ func (m *Member) Login(u string, p string, sys int) (s *LoginState, err error) {
 		return nil, context.NewError(context.ERR_FORBIDDEN, "用户被禁用请联系管理员")
 	}
 	//检查密码是否有效，无效时累加登录失败次数
-	if strings.ToLower(ls.Password) != p {
+	if strings.ToLower(ls.Password) != strings.ToLower(p) {
 		v, _ := m.cache.SetLoginFail(u)
 		return nil, context.NewError(context.ERR_FORBIDDEN, fmt.Sprintf("用户名或密码错误:%d", v))
 	}
