@@ -30,12 +30,14 @@ func NewLoginHandler(container component.IContainer) (u *LoginHandler) {
 }
 
 func (u *LoginHandler) GetHandle(ctx *context.Context) (r interface{}) {
+	ctx.Log.Info("1.获取二维码登录地址")
 	conf := app.GetConf(u.c)
-	url := conf.WXLoginURL
+	url := conf.QRLoginCheckURL
 	uuid := ctx.Request.GetUUID()
 	sysid := ctx.Request.GetString("sysid", "0")
 	rt := fmt.Sprintf("%s?uid=%s&sysid=%s", url, uuid, sysid)
 	rurl := oauth2.AuthCodeURL(conf.AppID, rt, "snsapi_base", "")
+	ctx.Log.Info("2.实际登录地址:", rt)
 	wectx := conf.GetWeChatContext(u.c)
 	surl, err := qrcode.ShortURL(wectx, rurl)
 	if err != nil {
