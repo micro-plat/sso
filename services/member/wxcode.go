@@ -7,14 +7,22 @@ import (
 )
 
 type WxcodeHandler struct {
-	container component.IContainer
-	wx        member.IWxcode
+	container  component.IContainer
+	wx         member.IWxcode
+	appid      string
+	secret     string
+	serverAddr string
 }
 
-func NewWxcodeHandler(container component.IContainer) (u *WxcodeHandler) {
-	return &WxcodeHandler{
-		container: container,
-		wx:        member.NewWxcode(container),
+func NewWxcodeHandler(appid string, secret string, serverAddr string) func(c component.IContainer) (u *WxcodeHandler) {
+	return func(c component.IContainer) (u *WxcodeHandler) {
+		return &WxcodeHandler{
+			container:  c,
+			wx:         member.NewWxcode(c),
+			appid:      appid,
+			secret:     secret,
+			serverAddr: serverAddr,
+		}
 	}
 }
 
@@ -24,9 +32,16 @@ func (u *WxcodeHandler) Handle(ctx *context.Context) (r interface{}) {
 	if err := ctx.Request.Check("username", "sysid"); err != nil {
 		return context.NewError(context.ERR_NOT_ACCEPTABLE, err)
 	}
-	_, err := u.wx.GetWXCode(ctx.Request.GetString("username"), ctx.Request.GetString("sysid"))
-	if err != nil {
+	code := u.wx.GetWXCode()
+	if err := u.wx.Send(
+		ctx.Request.GetString("username"),
+		ctx.Request.GetInt("sysid"),
+		u.appid,
+		u.secret,
+		u.serverAddr,
+		code); err != nil {
 		return err
 	}
+
 	return "success"
 }

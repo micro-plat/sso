@@ -1,6 +1,8 @@
 package member
 
 import (
+	"fmt"
+
 	"github.com/micro-plat/hydra/component"
 	"github.com/micro-plat/hydra/context"
 	"github.com/micro-plat/lib4go/db"
@@ -10,6 +12,7 @@ import (
 type IDBMember interface {
 	QueryByID(uid int64) (db.QueryRow, error)
 	Query(u string, p string, sysid int) (s *MemberState, err error)
+	GetUserInfo(u string) (db.QueryRow, error)
 }
 
 //DBMember 控制用户登录
@@ -34,6 +37,21 @@ func (l *DBMember) QueryByID(uid int64) (db.QueryRow, error) {
 	})
 	if err != nil {
 		return nil, err
+	}
+	return data.Get(0), nil
+}
+
+//GetUserInfo 根据用户名获取用户信息
+func (l *DBMember) GetUserInfo(u string) (db.QueryRow, error) {
+	db := l.c.GetRegularDB()
+	data, _, _, err := db.Query(sql.QueryUserByLogin, map[string]interface{}{
+		"user_name": u,
+	})
+	if err != nil {
+		return nil, context.NewError(context.ERR_SERVICE_UNAVAILABLE, "暂时无法登录系统")
+	}
+	if data.IsEmpty() {
+		return nil, context.NewError(context.ERR_SERVICE_UNAVAILABLE, fmt.Sprintf("用户(%s)不存在", u))
 	}
 	return data.Get(0), nil
 }
