@@ -17,7 +17,7 @@ type IDbUser interface {
 	Delete(input map[string]interface{}) (err error)
 	Edit(input map[string]interface{}) (err error)
 	Add(input map[string]interface{}) (err error)
-	CheckPswd(input map[string]interface{}) (data string, err error)
+	CheckPswd(input map[string]interface{}) (code int, err error)
 }
 
 type DbUser struct {
@@ -162,13 +162,15 @@ func (u *DbUser) Add(input map[string]interface{}) (err error) {
 }
 
 //CheckPswd 检查用户原密码是否匹配
-func (u *DbUser) CheckPswd(input map[string]interface{}) (data string, err error) {
+func (u *DbUser) CheckPswd(input map[string]interface{}) (code int, err error) {
 	db := u.c.GetRegularDB()
 	row, q, a, err := db.Scalar(sql.QueryUserInfo, input)
 	if err != nil {
-		return "", fmt.Errorf("查询用户信息发生错误(err:%v),sql:%s,输入参数:%v", err, q, a)
+		return 406, fmt.Errorf("查询用户信息发生错误(err:%v),sql:%s,输入参数:%v", err, q, a)
 	}
-	data = md5.EncryptBytes([]byte(row.(string)))
-	input[]
-	return data, nil
+	data := md5.EncryptBytes([]byte(row.(string)))
+	if input["expassword"].(string) != data {
+		return 403, fmt.Errorf("输入的原密码不正确")
+	}
+	return 400, nil
 }

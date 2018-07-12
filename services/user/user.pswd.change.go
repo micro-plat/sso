@@ -42,10 +42,10 @@ func (u *UserPasswordHandler) Handle(ctx *context.Context) (r interface{}) {
 	input["user_id"] = uid
 
 	ctx.Log.Info("2.校验旧密码")
-	err = u.userLib.UserPassword(input)
-	if err != nil {
-		return context.NewError(context.ERR_NOT_IMPLEMENTED, err)
-	}
+	// err = u.userLib.UserPassword(input)
+	// if err != nil {
+	// 	return context.NewError(context.ERR_NOT_IMPLEMENTED, err)
+	// }
 
 	ctx.Log.Info("3.返回结果。")
 	return map[string]interface{}{

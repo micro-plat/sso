@@ -80,10 +80,9 @@ func (u *User) UserEdit(input map[string]interface{}) (err error) {
 
 //CheckPswd 检查用户原密码是否匹配
 func (u *User) CheckPswd(input map[string]interface{}) (err error) {
-	data, err := u.db.CheckPswd(input)
-	if err != nil {
-		return err
-	}
-	data.
+	// data, err := u.db.CheckPswd(input)
+	// if err != nil {
+	// 	return err
+	// }
 	return nil
 }
