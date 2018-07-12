@@ -458,6 +458,10 @@
 			"Rev": "a6d74e9afa53d0e2ebf1342e2b3f221b385cda45"
 		},
 		{
+			"ImportPath": "github.com/micro-plat/wechat/mp/menu",
+			"Rev": "a6d74e9afa53d0e2ebf1342e2b3f221b385cda45"
+		},
+		{
 			"ImportPath": "github.com/micro-plat/wechat/mp/message/template",
 			"Rev": "a6d74e9afa53d0e2ebf1342e2b3f221b385cda45"
 		},
