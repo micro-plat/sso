@@ -80,9 +80,15 @@ func (u *SystemHandler) DeleteHandle(ctx *context.Context)(r interface{}){
 	Id := ctx.Request.GetInt("id")
 
 	ctx.Log.Info("2.从数据库删除数据")
-	u.subLib.DeleteByID(Id)
+	ctx.Log.Info("请求参数 id：",Id)
+	err := u.subLib.DeleteByID(Id)
+	if err != nil {
+		return context.NewError(context.ERR_NOT_IMPLEMENTED, err)
+	}
 
-	return
+	return map[string]interface{}{
+		"msg":  "success",
+	}
 }
 
 
