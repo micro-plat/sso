@@ -105,7 +105,6 @@ func (u *DbUser) UserInfo(input map[string]interface{}) (data interface{}, err e
 
 //Edit 编辑用户信息
 func (u *DbUser) Edit(input map[string]interface{}) (err error) {
-	fmt.Println("UserInfo:", input)
 	db := u.c.GetRegularDB()
 	dbTrans, err := db.Begin()
 	if err != nil {
@@ -164,7 +163,7 @@ func (u *DbUser) Add(input map[string]interface{}) (err error) {
 //CheckPswd 检查用户原密码是否匹配
 func (u *DbUser) CheckPswd(input map[string]interface{}) (code int, err error) {
 	db := u.c.GetRegularDB()
-	row, q, a, err := db.Scalar(sql.QueryUserInfo, input)
+	row, q, a, err := db.Scalar(sql.QueryUserPswd, input)
 	if err != nil {
 		return 406, fmt.Errorf("查询用户信息发生错误(err:%v),sql:%s,输入参数:%v", err, q, a)
 	}

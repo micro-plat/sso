@@ -97,3 +97,10 @@ const AddUserRole = `insert into sso_user_role
 values
 (seq_user_role_id.nextval, @user_id, @role_id, 0, 1)
 `
+
+//QueryUserPswd 查询用户密码
+const QueryUserPswd = `select t.password
+  from sso_user_info t
+ where 1 = 1 
+       &user_id
+`
