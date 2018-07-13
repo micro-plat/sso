@@ -20,9 +20,9 @@ func NewRoleAuthHandler(container component.IContainer) (u *RoleAuthHandler) {
 }
 
 type QueryRoleAuthInput struct {
-	RoleID     int64    `form:"role_id" json:"role_id"`
-	SysID      int64    `form:"sys_id" json:"sys_id"`
-	SelectAuth []string `form:"selectauth" json:"selectauth"`
+	RoleID     int64  `form:"role_id" json:"role_id"`
+	SysID      int64  `form:"sys_id" json:"sys_id"`
+	SelectAuth string `form:"selectauth" json:"selectauth"`
 }
 
 func (u *RoleAuthHandler) Handle(ctx *context.Context) (r interface{}) {
