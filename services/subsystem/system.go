@@ -2,6 +2,7 @@
 package subsystem
 
 import (
+	"fmt"
 	"github.com/micro-plat/hydra/component"
 	"github.com/micro-plat/hydra/context"
 	sub "github.com/micro-plat/sso/modules/subsystem"
@@ -34,9 +35,9 @@ func (u *SystemHandler) Handle(ctx *context.Context) (r interface{}) {
 //获取系统管理列表
 func (u *SystemHandler) GetHandle(ctx *context.Context) (r interface{}){
 	ctx.Log.Info("--------查询系统管理数据--------")
-
 	ctx.Log.Info("1.从数据库查询数据--------")
-	rows, count, err := u.subLib.Query()
+	page := ctx.Request.GetInt("page",1)
+	rows, count, err := u.subLib.Query(page)
 	if err != nil {
 		return context.NewError(context.ERR_NOT_IMPLEMENTED, err)
 	}
@@ -81,6 +82,9 @@ func (u *SystemHandler) DeleteHandle(ctx *context.Context)(r interface{}){
 
 	ctx.Log.Info("2.从数据库删除数据")
 	ctx.Log.Info("请求参数 id：",Id)
+	if Id == 0 {
+		return context.NewError(context.ERR_NOT_IMPLEMENTED,fmt.Errorf("不能删除当前系统，系统编号：%v",Id))
+	}
 	err := u.subLib.DeleteByID(Id)
 	if err != nil {
 		return context.NewError(context.ERR_NOT_IMPLEMENTED, err)

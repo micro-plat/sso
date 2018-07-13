@@ -6,7 +6,7 @@ import (
 )
 
 type ISystem interface {
-	Query() (data db.QueryRows, count interface{}, err error)
+	Query(page int) (data db.QueryRows, count interface{}, err error)
 	QueryWithField(input map[string]interface{}) (data db.QueryRows, err error)
 	DeleteByID(id int) (err error)
 	Add(input map[string]interface{}) (err error)
@@ -27,8 +27,8 @@ func NewSystem(c component.IContainer) *System {
 }
 
 //Query 获取用系统管理列表
-func (u *System) Query() (data db.QueryRows, count interface{}, err error) {
-	data, count, err = u.db.Query()
+func (u *System) Query(page int) (data db.QueryRows, count interface{}, err error) {
+	data, count, err = u.db.Query(page)
 	if err != nil {
 		return nil, nil, err
 	}
