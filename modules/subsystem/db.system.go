@@ -66,7 +66,6 @@ func (u *DbSystem) DeleteById(id int) (err error) {
 		"id":  id,
 	}
 	_,q,a,err := Db.Execute(sql.DeleteSubSystemById,params)
-	fmt.Errorf("sql:%s,", q)
 	if err != nil {
 		return  fmt.Errorf("删除系统管理列表发生错误(err:%v),sql:%s,输入参数:%v,", err, q, a)
 	}
