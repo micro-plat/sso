@@ -10,10 +10,11 @@ import (
 
 //Conf 应用程序配置
 type Conf struct {
-	WXLoginURL   string `json:"wxlogin-url" valid:"required"`
-	AppID        string `json:"appid" valid:"ascii,required"`
-	Secret       string `json:"secret" valid:"ascii,required"`
-	WechatTSAddr string `json:"wechat-url" valid:"required"`
+	QRLoginCheckURL string `json:"qrlogin-check-url" valid:"required"`
+	WXLoginURL      string `json:"wx-login-url"`
+	AppID           string `json:"appid" valid:"ascii,required"`
+	Secret          string `json:"secret" valid:"ascii,required"`
+	WechatTSAddr    string `json:"wechat-url" valid:"required"`
 }
 
 //Valid 验证配置参数是否合法

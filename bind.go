@@ -10,22 +10,24 @@ import (
 	"github.com/micro-plat/sso/services/member"
 	"github.com/micro-plat/sso/services/menu"
 	"github.com/micro-plat/sso/services/qrcode"
-	"github.com/micro-plat/sso/services/system"
-	"github.com/micro-plat/sso/services/user"
+	"github.com/micro-plat/sso/services/role"
 	"github.com/micro-plat/sso/services/subsystem"
 	"github.com/micro-plat/sso/services/subsystem/sysfunc"
+	"github.com/micro-plat/sso/services/system"
+	"github.com/micro-plat/sso/services/user"
+	"github.com/micro-plat/sso/services/wx"
 )
 
 //bindConf 绑定启动配置， 启动时检查注册中心配置是否存在，不存在则引导用户输入配置参数并自动创建到注册中心
 func bindConf(app *hydra.MicroApp) {
 	app.Conf.API.SetMainConf(`{"address":":9091"}`)
 
-
 	app.Conf.API.SetSubConf("app", `
 			{
-				"wxlogin-url":"http://sso.100bm.cn/member/wxlogin",
+				"qrlogin-check-url":"http://sso.100bm.cn/member/wxlogin",
+				"wx-login-url":"http://sso.100bm.cn/member/wxlogin",
 				"appid":"wx9e02ddcc88e13fd4",
-				"secret":"6acb2b999177524beba3d97d54df2de5",
+				"secret":"45d25cb71f3bee254c2bc6fc0dc0caf1",
 				"wechat-url":"http://59.151.30.153:9999/wx9e02ddcc88e13fd4/wechat/token/get"
 			}			
 			`)
@@ -52,7 +54,8 @@ func bindConf(app *hydra.MicroApp) {
 
 	app.Conf.WS.SetSubConf("app", `
 			{
-				"wxlogin-url":"http://192.168.5.71:8080/member/wxlogin",
+				"qrlogin-check-url":"http://sso.100bm.cn/member/wxlogin",
+				"wx-login-url":"http://sso.100bm.cn/member/wxlogin",
 				"appid":"wx9e02ddcc88e13fd4",
 				"secret":"45d25cb71f3bee254c2bc6fc0dc0caf1",
 				"wechat-url":"http://59.151.30.153:9999/wx9e02ddcc88e13fd4/wechat/token/get"
@@ -84,6 +87,12 @@ func bindConf(app *hydra.MicroApp) {
 	}
 		
 		`)
+	app.Conf.Plat.SetVarConf("cache", "abc", `
+			{
+				"name":"杨磊"
+		}
+			
+			`)
 
 }
 
@@ -145,6 +154,8 @@ func bind(r *hydra.MicroApp) {
 	r.WS("/qrcode/login", qrcode.NewLoginHandler)    //二维码登录（获取二维码登录地址,接收用户扫码后的消息推送）
 	r.Micro("/qrcode/login", qrcode.NewLoginHandler) //二维码登录(调用二维码登录接口地址，推送到PC端登录消息)
 
+	r.Micro("/wx/login", wx.NewLoginHandler) //微信端登录
+
 	r.Micro("/sso/login/check", member.NewCheckHandler) //用户登录状态检查，检查用户jwt是否有效
 	//r.Micro("/sso/member/get", member.NewGetHandler)     //获取用户信息（不包括角色信息）
 	r.Micro("/sso/member/query", member.NewQueryHandler) //查询登录用户信息
@@ -152,6 +163,10 @@ func bind(r *hydra.MicroApp) {
 	r.Micro("/sso/menu/verify", menu.NewVerifyHandler) //检查用户菜单权限
 
 	r.Micro("/sso/user/index", user.NewUserHandler)
+	r.Micro("/sso/user/change", user.NewUserChangeHandler)
+	r.Micro("/sso/user/delete", user.NewUserDelHandler)
+	r.Micro("/sso/user/info", user.NewUserInfoHandler)
+	r.Micro("/sso/user/edit", user.NewUserEditHandler)
 	r.Micro("/sso/base/userrole", base.NewBaseUserHandler)
 
 	r.Micro("/sso/subsys/manage",subsystem.NewSystemHandler)   		//系统管理
@@ -164,5 +179,11 @@ func bind(r *hydra.MicroApp) {
 	r.Micro("/sso/sysfunc/delete",sysfunc.NewSystemFuncDeleteHandler) //功能删除
 	r.Micro("/sso/sysfunc/edit",sysfunc.NewSystemFuncEditHandler)   	//功能编辑
 	r.Micro("/sso/sysfunc/add",sysfunc.NewSystemFuncAddHandler)   		//功能添加
+
+	r.Micro("/sso/sysfunc/query", sysfunc.NewSystemFuncQueryHandler)   //获取功能列表
+	r.Micro("/sso/sysfunc/enable", sysfunc.NewSystemFuncEnableHandler) //功能禁用/启用
+	r.Micro("/sso/sysfunc/delete", sysfunc.NewSystemFuncDeleteHandler) //功能删除
+	r.Micro("/sso/sysfunc/edit", sysfunc.NewSystemFuncEditHandler)     //功能编辑
+	r.Micro("/sso/sysfunc/add", sysfunc.NewSystemFuncAddHandler)       //功能添加
 
 }
