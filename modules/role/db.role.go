@@ -130,14 +130,26 @@ func (r *DbRole) Auth(input map[string]interface{}) (err error) {
 		return fmt.Errorf("开启DB事务出错(err:%v)", err)
 	}
 
-	fmt.Println(input)
+	//删除原权限
+	_, q, a, err := dbTrans.Execute(sql.DelRoleAuth, map[string]interface{}{
+		"role_id": input["role_id"],
+		"sys_id":  input["sys_id"],
+	})
+	if err != nil {
+		dbTrans.Rollback()
+		return fmt.Errorf("删除角色原权限发生错误(err:%v),sql:%s,输入参数:%v", err, q, a)
+	}
+
+	if input["selectauth"].(string) == "" {
+		return nil
+	}
 	s := strings.Split(input["selectauth"].(string), ",")
 	for i := 0; i < len(s); i++ {
 		_, q, a, err := dbTrans.Execute(sql.AddRoleAuth, map[string]interface{}{
 			"role_id":  input["role_id"],
 			"sys_id":   input["sys_id"],
 			"menu_id":  s[i],
-			"sortrank": i,
+			"sortrank": i + 1,
 		})
 		if err != nil {
 			dbTrans.Rollback()
