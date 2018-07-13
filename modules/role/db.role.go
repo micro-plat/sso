@@ -2,6 +2,7 @@ package role
 
 import (
 	"fmt"
+	"strings"
 
 	"github.com/micro-plat/hydra/component"
 	"github.com/micro-plat/lib4go/db"
@@ -130,12 +131,13 @@ func (r *DbRole) Auth(input map[string]interface{}) (err error) {
 	}
 
 	fmt.Println(input)
-	s := input["selectauth"].([]string)
+	s := strings.Split(input["selectauth"].(string), ",")
 	for i := 0; i < len(s); i++ {
 		_, q, a, err := dbTrans.Execute(sql.AddRoleAuth, map[string]interface{}{
-			"role_id": input["role_id"],
-			"sys_id":  input["sys_id"],
-			"menu_id": s[i],
+			"role_id":  input["role_id"],
+			"sys_id":   input["sys_id"],
+			"menu_id":  s[i],
+			"sortrank": i,
 		})
 		if err != nil {
 			dbTrans.Rollback()
