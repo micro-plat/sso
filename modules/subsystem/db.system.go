@@ -64,11 +64,11 @@ func (u *DbSystem) DeleteById(id int) (err error) {
 	Db := u.c.GetRegularDB()
 	params := map[string]interface{}{
 		"id":  id,
-
 	}
-	_,_,_,err = Db.Execute(sql.DeleteSubSystemById,params)
+	_,q,a,err := Db.Execute(sql.DeleteSubSystemById,params)
+	fmt.Errorf("sql:%s,", q)
 	if err != nil {
-		return err
+		return  fmt.Errorf("删除系统管理列表发生错误(err:%v),sql:%s,输入参数:%v,", err, q, a)
 	}
 	return nil
 }
