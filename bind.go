@@ -9,6 +9,7 @@ import (
 	"github.com/micro-plat/sso/services/base"
 	"github.com/micro-plat/sso/services/member"
 	"github.com/micro-plat/sso/services/menu"
+	"github.com/micro-plat/sso/services/role"	
 	"github.com/micro-plat/sso/services/qrcode"
 	"github.com/micro-plat/sso/services/subsystem"
 	"github.com/micro-plat/sso/services/subsystem/sysfunc"
