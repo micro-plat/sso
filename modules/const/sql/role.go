@@ -58,7 +58,7 @@ values
 
 //AddRoleAuth 添加角色权限
 const AddRoleAuth = `insert into sso_role_menu t
-(id, sys_id, role_id, menu_id, enable)
+(id, sys_id, role_id, menu_id, enable, sortrank)
 values
-(seq_role_menu_id.nextval, @sys_id, @role_id, @menu_id, 1)
+(seq_role_menu_id.nextval, @sys_id, @role_id, @menu_id, 1, @sortrank)
 `
