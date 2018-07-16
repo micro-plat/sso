@@ -26,8 +26,8 @@ const QuerySubSystemListByName = `select t.* from sso_system_info t where t.name
 const QuerySubSystemListByEnable = `select t.* from sso_system_info t where t.enable=@enable`
 
 
-const AddSubSystem  = `insert into sso_system_info(id,name,index_url,login_timeout,logo) 
-values(seq_system_info_id.nextval,@name,@addr,@time_out,@logo)`
+const AddSubSystem  = `insert into sso_system_info(id,name,index_url,login_timeout,logo,theme,layout) 
+values(seq_system_info_id.nextval,@name,@addr,@time_out,@logo,@theme,@style)`
 
 const UpdateEnable = `update sso_system_info t
 set  t.enable = @enable
@@ -35,6 +35,6 @@ where t.id=@id
 `
 
 const UpdateEdit = `update sso_system_info t
-set  t.enable = @enable,t.index_url=@index_url,t.login_timeout=@login_timeout,t.logo=@logo,t.name=@name
+set  t.enable = @enable,t.index_url=@index_url,t.login_timeout=@login_timeout,t.logo=@logo,t.name=@name,t.theme=@theme,t.layout=@layout
 where t.id=@id
 `

@@ -18,6 +18,8 @@ type UpdateSystemInput struct {
 	Addr string `form:"addr"`
 	Time_out string `form:"time_out"`
 	Logo string `form:"logo"`
+	Style string `form:"style"`
+	Theme string `form:"theme"`
 }
 
 func NewSystemHandler(container component.IContainer) (u *SystemHandler) {
@@ -49,6 +51,7 @@ func (u *SystemHandler) GetHandle(ctx *context.Context) (r interface{}){
 	}
 }
 
+//添加系统
 func (u *SystemHandler) PostHandle(ctx *context.Context) (r interface{}){
 	ctx.Log.Info("------添加系统管理数据------")
 	ctx.Log.Info("1. 参数检查")
@@ -61,6 +64,8 @@ func (u *SystemHandler) PostHandle(ctx *context.Context) (r interface{}){
 		"addr": input.Addr,
 		"time_out":   input.Time_out,
 		"logo":  input.Logo,
+		"style": input.Style,
+		"theme": input.Theme,
 	}
 
 	ctx.Log.Info("2.添加数据库查询--------")

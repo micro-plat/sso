@@ -18,6 +18,8 @@ type SystemEditInput struct {
 	Login_timeout string `form:"login_timeout"`
 	Logo string `form:"logo"`
 	Name string `form:"name"`
+	Theme string `form:"theme"`
+	Layout string `form:"layout"`
 }
 
 
@@ -43,6 +45,8 @@ func (u *SystemEditHandler) Handle(ctx *context.Context) (r interface{}) {
 		"login_timeout": input.Login_timeout,
 		"logo": input.Logo,
 		"name": input.Name,
+		"layout": input.Layout,
+		"theme": input.Theme,
 	}
 	ctx.Log.Info("2.更新数据库--------")
 	err := u.subLib.UpdateEdit(dbInput)

@@ -88,14 +88,14 @@ func (u *DbSystem) DeleteById(id int) (err error) {
 
 func(u *DbSystem) Add(input map[string]interface{}) (err error){
 	Db := u.c.GetRegularDB()
-
 	params := map[string]interface{}{
 		"name": input["name"],
 		"addr": input["addr"],
 		"time_out": input["time_out"],
 		"logo": input["logo"],
+		"style": input["style"],
+		"theme": input["theme"],
 	}
-
 	_,_,_,err = Db.Execute(sql.AddSubSystem,params)
 	if err != nil {
 		return err
@@ -125,6 +125,8 @@ func (u *DbSystem) UpdateEdit(input map[string]interface{}) (err error){
 		"login_timeout": input["login_timeout"],
 		"logo": input["logo"],
 		"name": input["name"],
+		"layout": input["layout"],
+		"theme": input["theme"],
 	}
 	_,_,_,err = Db.Execute(sql.UpdateEdit,params)
 	if err != nil {
