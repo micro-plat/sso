@@ -2,8 +2,10 @@ package member
 
 import (
 	"fmt"
+	"net/smtp"
 	"strings"
 
+	"github.com/jordan-wright/email"
 	"github.com/micro-plat/hydra/component"
 	"github.com/micro-plat/hydra/context"
 	"github.com/micro-plat/lib4go/db"
@@ -39,6 +41,16 @@ func NewMember(c component.IContainer) *Member {
 //Query 查询用户信息
 func (m *Member) Query(uid int64) (db.QueryRow, error) {
 	return m.db.QueryByID(uid)
+}
+
+//SendCheckMail 发送确认邮件
+func (m *Member) SendCheckMail(from string, password string, host string, port string, to string, link string) error {
+	e := email.NewEmail()
+	e.From = fmt.Sprintf("系统管理员<%s>", from)
+	e.To = []string{to}
+	e.Subject = "用户账户确认"
+	e.HTML = []byte(fmt.Sprintf("<h1>%s!</h1>", link))
+	return e.Send(host+":"+port, smtp.PlainAuth("", from, password, host))
 }
 
 //LoginByOpenID 使用open_id进行登录

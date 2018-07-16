@@ -8,12 +8,13 @@ import (
 	"github.com/micro-plat/hydra/component"
 	"github.com/micro-plat/hydra/context"
 	"github.com/micro-plat/lib4go/transform"
+	"github.com/micro-plat/sso/modules/app"
 	"github.com/micro-plat/sso/modules/system"
-	"github.com/micro-plat/wechat/mp"
 	"github.com/micro-plat/wechat/mp/message/template"
 )
 
 type IWxcode interface {
+	Check(un string, code string) error
 	GetWXCode() string
 	Send(un string, sysid int, appid string, secret string, serverAddr string, code string) error
 }
@@ -43,10 +44,24 @@ func (l *Wxcode) GetWXCode() string {
 	rand.Seed(time.Now().UnixNano())
 	var num string
 	for i := 0; i < 4; i++ {
-		x := rand.Intn(100)
+		x := rand.Intn(10)
 		num = fmt.Sprintf("%s%d", num, x)
 	}
 	return num
+}
+
+//Check 验证微信验证码
+func (l *Wxcode) Check(un string, code string) error {
+	key := transform.Translate(wxCodeCacheFormat, "userName", un)
+	cache := l.c.GetRegularCache()
+	ccode, err := cache.Get(key)
+	if err != nil {
+		return err
+	}
+	if ccode != code {
+		return context.NewError(901, fmt.Errorf("微信验证码错误"))
+	}
+	return nil
 }
 
 //Send 发送微信验证码
@@ -61,15 +76,13 @@ func (l *Wxcode) Send(un string, sysid int, appid string, secret string, serverA
 		return context.NewError(406, err)
 	}
 
-	tk := mp.NewDefaultAccessTokenByURL(appid, secret, serverAddr)
-	ctx := mp.NewContext(tk)
+	ctx := app.GetWeChatContext(l.c)
 	if _, err := template.Send(ctx, &template.TemplateMessage2{
 		ToUser:     row.GetString("wx_openid"),
 		TemplateId: "_DL41WrU7r6uNYyjD45c5B11ECkOAhwdDG8qqQxbvGs",
 		Data: map[string]interface{}{
 			"first": map[string]string{
-				"value": fmt.Sprintf("%s登录验证码", sys.GetString("name")),
-				"color": "#3CB371",
+				"value": fmt.Sprintf("您正在登录[%s]", sys.GetString("name")),
 			},
 			"keyword1": map[string]string{
 				"value": code,
@@ -80,14 +93,13 @@ func (l *Wxcode) Send(un string, sysid int, appid string, secret string, serverA
 			},
 			"keyword3": map[string]string{
 				"value": time.Now().Format("2006/01/02 15:04:05"),
-				"color": "#3CB371",
 			},
 			"remark": map[string]string{
-				"value": "若非本人操作请联系管理员",
+				"value": "若非本人操作请注意账户安全",
 			},
 		},
 	}); err != nil {
-		return fmt.Errorf("发送验证码失败:%v()%v", err, serverAddr)
+		return fmt.Errorf("发送验证码失败:%v(%s)%v", err, row.GetString("wx_openid"), serverAddr)
 	}
 	key := transform.Translate(wxCodeCacheFormat, "userName", un)
 	cache := l.c.GetRegularCache()

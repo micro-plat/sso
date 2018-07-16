@@ -64,7 +64,7 @@ func (l *DBMember) GetUserInfo(u string) (db.QueryRow, error) {
 		"user_name": u,
 	})
 	if err != nil {
-		return nil, context.NewError(context.ERR_SERVICE_UNAVAILABLE, "暂时无法登录系统")
+		return nil, context.NewError(context.ERR_SERVICE_UNAVAILABLE, err)
 	}
 	if data.IsEmpty() {
 		return nil, context.NewError(context.ERR_SERVICE_UNAVAILABLE, fmt.Sprintf("用户(%s)不存在", u))

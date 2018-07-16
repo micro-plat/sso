@@ -164,6 +164,11 @@
 			"Rev": "5387cfa89df03a54fd8791e873878cc7ad9ec021"
 		},
 		{
+			"ImportPath": "github.com/jordan-wright/email",
+			"Comment": "v3.0",
+			"Rev": "94ae17dedda217a49e3b47d68f1b54b3c946e16b"
+		},
+		{
 			"ImportPath": "github.com/json-iterator/go",
 			"Comment": "1.1.3-16-g2ddf6d7",
 			"Rev": "2ddf6d758266fcb080a4f9e054b9f292c85e6798"
@@ -455,10 +460,6 @@
 		},
 		{
 			"ImportPath": "github.com/micro-plat/wechat/mp/base",
-			"Rev": "a6d74e9afa53d0e2ebf1342e2b3f221b385cda45"
-		},
-		{
-			"ImportPath": "github.com/micro-plat/wechat/mp/menu",
 			"Rev": "a6d74e9afa53d0e2ebf1342e2b3f221b385cda45"
 		},
 		{
