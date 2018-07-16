@@ -4,7 +4,7 @@ package sql
 const QueryUserInfoList = `select TAB1.*
 from (select L.*
 		from (select rownum LINENUM, R.*
-				from (select t.user_id,
+				from (select to_char(t.user_id) user_id,
 							 t.user_name,
 							 t.status,
 							 decode(t.status,0,'正常',1,'锁定',2,'禁用') status_label,
@@ -18,7 +18,7 @@ from (select L.*
 						left join sso_user_role r on r.user_id = t.user_id
 						left join sso_role_info ri on ri.role_id = r.role_id
 						where 1=1 
-						&r.role_id
+						and r.role_id = nvl(@role_id, r.role_id)
 						&user_name
 					   order by t.user_id, r.role_id) R
 			   where rownum <= @pi * @ps) L
@@ -40,7 +40,7 @@ from (select t.user_id,
 		left join sso_user_role r on r.user_id = t.user_id
 		left join sso_role_info ri on ri.role_id = r.role_id
 		 where 1=1 
-			 &r.role_id
+		 and r.role_id = nvl(@role_id, r.role_id)
 			 &user_name
 	   order by t.user_id, r.role_id) R`
 

@@ -62,3 +62,9 @@ const AddRoleAuth = `insert into sso_role_menu t
 values
 (seq_role_menu_id.nextval, @sys_id, @role_id, @menu_id, 1, @sortrank)
 `
+
+//DelRoleAuth 添加角色权限
+const DelRoleAuth = `delete from sso_role_menu t
+where t.sys_id = @sys_id
+and t.role_id = @role_id
+`

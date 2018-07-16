@@ -2,14 +2,13 @@ package user
 
 import (
 	"fmt"
-
 	"github.com/micro-plat/hydra/component"
 	"github.com/micro-plat/lib4go/db"
 	"github.com/micro-plat/sso/modules/const/sql"
 )
 
 type IDbSystem interface {
-	Query() (data db.QueryRows, count interface{}, err error)
+	Query(page int) (data db.QueryRows, count interface{}, err error)
 	QueryWithField(input map[string]interface{}) (data db.QueryRows,err error)
 	DeleteById(id int) (err error)
 	Add(input map[string]interface{}) (err error)
@@ -27,18 +26,20 @@ func NewDbSystem(c component.IContainer) *DbSystem {
 	}
 }
 
-//Query 获取用户信息列表
-func (u *DbSystem) Query() (data db.QueryRows, count interface{}, err error) {
+//Query 获取用系统列表
+func (u *DbSystem) Query(page int) (data db.QueryRows, count interface{}, err error) {
 	Db := u.c.GetRegularDB()
 	params := map[string]interface{}{
 		"id":  0,
-
 	}
 	count, q, a, err := Db.Scalar(sql.QuerySubSystemListCount, params)
 	if err != nil {
 		return nil, nil, fmt.Errorf("获取系统管理列表条数发生错误(err:%v),sql:%s,输入参数:%v,", err, q, a)
 	}
-	data, q, a, err = Db.Query(sql.QuerySubSystemList, params)
+	data, q, a, err = Db.Query(sql.QuerySubSystemPageList, map[string]interface{}{
+		"page":page,
+		"pageSize": 10,
+	})
 	if err != nil {
 		return nil, nil, fmt.Errorf("获取系统管理列表发生错误(err:%v),sql:%s,输入参数:%v,", err, q, a)
 	}
@@ -52,8 +53,20 @@ func (u *DbSystem) QueryWithField(input map[string]interface{}) (data db.QueryRo
 		"name":  input["name"],
 		"enable": input["status"],
 	}
-
-	data, q, a, err := Db.Query(sql.QuerySubSystemListWithField, params)
+	SQL :=sql.QuerySubSystemListAll
+	if params["name"] == "" && params["enable"] == "" {
+		SQL = sql.QuerySubSystemListAll
+	}
+	if params["name"] == "" && params["enable"] != "" {
+		SQL = sql.QuerySubSystemListByEnable
+	}
+	if params["name"] != "" && params["enable"] == "" {
+		SQL = sql.QuerySubSystemListByName
+	}
+	if params["name"] != "" && params["enable"] != "" {
+		SQL = sql.QuerySubSystemListWithField
+	}
+	data, q, a, err := Db.Query(SQL, params)
 	if err != nil {
 		return nil, fmt.Errorf("获取系统管理列表发生错误(err:%v),sql:%s,输入参数:%v,", err, q, a)
 	}
@@ -75,14 +88,14 @@ func (u *DbSystem) DeleteById(id int) (err error) {
 
 func(u *DbSystem) Add(input map[string]interface{}) (err error){
 	Db := u.c.GetRegularDB()
-
 	params := map[string]interface{}{
 		"name": input["name"],
 		"addr": input["addr"],
 		"time_out": input["time_out"],
 		"logo": input["logo"],
+		"style": input["style"],
+		"theme": input["theme"],
 	}
-
 	_,_,_,err = Db.Execute(sql.AddSubSystem,params)
 	if err != nil {
 		return err
@@ -112,6 +125,8 @@ func (u *DbSystem) UpdateEdit(input map[string]interface{}) (err error){
 		"login_timeout": input["login_timeout"],
 		"logo": input["logo"],
 		"name": input["name"],
+		"layout": input["layout"],
+		"theme": input["theme"],
 	}
 	_,_,_,err = Db.Execute(sql.UpdateEdit,params)
 	if err != nil {

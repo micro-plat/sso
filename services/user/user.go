@@ -23,7 +23,7 @@ type QueryUserInput struct {
 	PageIndex int    `form:"pi" json:"pi"`
 	PageSize  int    `form:"ps" json:"ps"`
 	UserName  string `form:"username" json:"username"`
-	Role      int64  `form:"roleid" json:"roleid"`
+	RoleID    string `form:"role_id" json:"role_id"`
 }
 
 func (u *UserHandler) Handle(ctx *context.Context) (r interface{}) {
