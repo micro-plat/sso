@@ -93,14 +93,32 @@ func (r *Role) AuthMenu(input map[string]interface{}) (results []map[string]inte
 					children2 := make([]map[string]interface{}, 0, 8)
 					for _, row3 := range data {
 						if row3.GetInt("parent") == row2.GetInt("id") && row3.GetInt("level_id") == 3 {
+							if row3.GetInt("checked") == 1 {
+								row3["checked"] = true
+							} else {
+								row3["checked"] = false
+							}
+							row3["expanded"] = true
 							children2 = append(children2, row3)
 						}
 					}
 					children1 = append(children1, row2)
 					row2["children"] = children2
+					row2["expanded"] = true
+					if row2.GetInt("checked") == 1 {
+						row2["checked"] = true
+					} else {
+						row2["checked"] = false
+					}
 				}
 			}
 			row1["children"] = children1
+			row1["expanded"] = true
+			if row1.GetInt("checked") == 1 {
+				row1["checked"] = true
+			} else {
+				row1["checked"] = false
+			}
 			result = append(result, row1)
 		}
 	}

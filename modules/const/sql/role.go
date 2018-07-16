@@ -74,16 +74,15 @@ const QuerySysMenucList = `select t.id,
 t.name title, 
 t.parent, 
 t.sys_id, 
-t.level_id, 
-'true' as expanded, 
+t.level_id,  
 (case
 	when t.id in (select menu_id
 					from sso_role_menu rm
 				   where rm.role_id = @role_id
 					 and rm.sys_id = @sys_id) then
-	 'true'
+	 1
 	else
-	 'false'
+	 0
   end) checked,
 t.icon, 
 t.path, 

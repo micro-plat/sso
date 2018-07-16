@@ -20,7 +20,8 @@ func NewAuthMenuHandler(container component.IContainer) (u *AuthMenuHandler) {
 }
 
 type AuthMenuInput struct {
-	SysID int64 `form:"sys_id" json:"sys_id"`
+	SysID  int64 `form:"sys_id" json:"sys_id"`
+	RoleID int64 `form:"role_id" json:"role_id"`
 }
 
 func (u *AuthMenuHandler) Handle(ctx *context.Context) (r interface{}) {
