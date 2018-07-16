@@ -34,7 +34,7 @@ func NewDbUser(c component.IContainer) *DbUser {
 func (u *DbUser) Query(input map[string]interface{}) (data db.QueryRows, count interface{}, err error) {
 	db := u.c.GetRegularDB()
 	params := map[string]interface{}{
-		"role_id":   input["roleid"],
+		"role_id":   input["role_id"],
 		"user_name": input["username"],
 		"pi":        input["pi"],
 		"ps":        input["ps"],
