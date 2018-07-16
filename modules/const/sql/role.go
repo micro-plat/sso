@@ -76,6 +76,15 @@ t.parent,
 t.sys_id, 
 t.level_id, 
 'true' as expanded, 
+(case
+	when t.id in (select menu_id
+					from sso_role_menu rm
+				   where rm.role_id = @role_id
+					 and rm.sys_id = @sys_id) then
+	 'true'
+	else
+	 'false'
+  end) checked,
 t.icon, 
 t.path, 
 t.enable, 
