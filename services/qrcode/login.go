@@ -87,7 +87,8 @@ func (u *LoginHandler) PostHandle(ctx *context.Context) (r interface{}) {
 	ctx.Log.Info("3. 通知登录端code")
 	ctx.Response.SetJWT(member)
 	context.WSExchange.Notify(ctx.Request.GetString("uid"), 200, "/qrcode/login/success", map[string]interface{}{
-		"code": loginCode,
+		"code":  loginCode,
+		"sysid": sysid,
 	})
 	return "success"
 }

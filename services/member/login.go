@@ -65,6 +65,7 @@ func (u *LoginHandler) Handle(ctx *context.Context) (r interface{}) {
 		return
 	}
 	return map[string]interface{}{
-		"url": curl,
+		"url":   curl,
+		"sysid": ctx.Request.GetInt("sysid"),
 	}
 }

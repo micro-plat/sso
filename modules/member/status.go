@@ -2,6 +2,7 @@ package member
 
 import (
 	"encoding/json"
+
 	"github.com/micro-plat/hydra/context"
 	"github.com/micro-plat/lib4go/utility"
 )
@@ -71,5 +72,8 @@ func Save(ctx *context.Context, m *LoginState) error {
 //Get 获取member信息
 func Get(ctx *context.Context) *LoginState {
 	v, _ := ctx.Meta.Get("login-state")
+	if v == nil {
+		return nil
+	}
 	return v.(*LoginState)
 }
