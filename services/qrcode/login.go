@@ -38,7 +38,7 @@ func (u *LoginHandler) GetHandle(ctx *context.Context) (r interface{}) {
 	rt := fmt.Sprintf("%s?uid=%s&sysid=%s", url, uuid, sysid)
 	rurl := oauth2.AuthCodeURL(conf.AppID, rt, "snsapi_base", "")
 	ctx.Log.Info("2.实际登录地址:", rt)
-	wectx := conf.GetWeChatContext(u.c)
+	wectx := app.GetWeChatContext(u.c)
 	surl, err := qrcode.ShortURL(wectx, rurl)
 	if err != nil {
 		return fmt.Errorf("生成短链接失败:%v", err)
@@ -66,13 +66,13 @@ func (u *LoginHandler) PostHandle(ctx *context.Context) (r interface{}) {
 	}
 	userInfo := make(db.QueryRow)
 	if err = json.Unmarshal([]byte(content), &userInfo); err != nil {
-		return err
+		return fmt.Errorf("返回串无法解析:(%v)%s", err, content)
 	}
 	ctx.Log.Info("2. 根据openid登录")
 	openid := userInfo.GetString("openid")
 	member, err := u.m.LoginByOpenID(openid, sysid)
 	if err != nil {
-		return fmt.Errorf("登录失败:(%v)%s(%s)", err, openid, content)
+		return fmt.Errorf("登录失败:(%v)%s", err, openid)
 	}
 	redirectURL := ctx.Request.GetString("redirect_uri")
 	if redirectURL == "" {

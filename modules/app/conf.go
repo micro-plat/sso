@@ -36,7 +36,8 @@ func GetConf(c component.IContainer) *Conf {
 }
 
 //GetWeChatContext 获取微信操作context
-func (c *Conf) GetWeChatContext(ct component.IContainer) *mp.Context {
+func GetWeChatContext(ct component.IContainer) *mp.Context {
+	c := GetConf(ct)
 	if mp, ok := ct.Get("__wechat_context_").(*mp.Context); ok {
 		return mp
 	}

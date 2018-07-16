@@ -12,17 +12,19 @@ import (
 
 //LoginHandler 用户登录对象
 type LoginHandler struct {
-	c    component.IContainer
-	m    member.IMember
-	code member.ICodeMember
+	c      component.IContainer
+	m      member.IMember
+	code   member.ICodeMember
+	wxcode member.IWxcode
 }
 
 //NewLoginHandler 创建登录对象
 func NewLoginHandler(container component.IContainer) (u *LoginHandler) {
 	return &LoginHandler{
-		c:    container,
-		m:    member.NewMember(container),
-		code: member.NewCodeMember(container),
+		c:      container,
+		m:      member.NewMember(container),
+		code:   member.NewCodeMember(container),
+		wxcode: member.NewWxcode(container),
 	}
 }
 
@@ -32,6 +34,11 @@ func (u *LoginHandler) Handle(ctx *context.Context) (r interface{}) {
 	//检查输入参数
 	if err := ctx.Request.Check("username", "password", "sysid"); err != nil {
 		return context.NewError(context.ERR_NOT_ACCEPTABLE, err)
+	}
+
+	if err := u.wxcode.Check(ctx.Request.GetString("username"),
+		ctx.Request.GetString("wxcode")); err != nil {
+		return err
 	}
 
 	//处理用户登录
