@@ -68,3 +68,19 @@ const DelRoleAuth = `delete from sso_role_menu t
 where t.sys_id = @sys_id
 and t.role_id = @role_id
 `
+
+//QuerySysMenucList 系统菜单获取
+const QuerySysMenucList = `select t.id, 
+t.name title, 
+t.parent, 
+t.sys_id, 
+t.level_id, 
+'true' as expanded, 
+t.icon, 
+t.path, 
+t.enable, 
+to_char(t.create_time, 'yyyy/mm/dd hh:mi') create_time, 
+t.sortrank 
+from sso_system_menu t 
+where t.sys_id = @sys_id 
+`

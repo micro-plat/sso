@@ -17,6 +17,7 @@ type IDbRole interface {
 	Edit(input map[string]interface{}) (err error)
 	Add(input map[string]interface{}) (err error)
 	Auth(input map[string]interface{}) (err error)
+	AuthMenu(input map[string]interface{}) (data db.QueryRows, err error)
 }
 
 type DbRole struct {
@@ -159,4 +160,14 @@ func (r *DbRole) Auth(input map[string]interface{}) (err error) {
 
 	dbTrans.Commit()
 	return nil
+}
+
+//AuthMenu 添加角色
+func (r *DbRole) AuthMenu(input map[string]interface{}) (data db.QueryRows, err error) {
+	db := r.c.GetRegularDB()
+	data, q, a, err := db.Query(sql.QuerySysMenucList, input)
+	if err != nil {
+		return nil, fmt.Errorf("获取菜单列表发生错误(err:%v),sql:%s,输入参数:%v", err, q, a)
+	}
+	return data, nil
 }

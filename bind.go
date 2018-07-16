@@ -9,8 +9,8 @@ import (
 	"github.com/micro-plat/sso/services/base"
 	"github.com/micro-plat/sso/services/member"
 	"github.com/micro-plat/sso/services/menu"
-	"github.com/micro-plat/sso/services/role"	
 	"github.com/micro-plat/sso/services/qrcode"
+	"github.com/micro-plat/sso/services/role"
 	"github.com/micro-plat/sso/services/subsystem"
 	"github.com/micro-plat/sso/services/subsystem/sysfunc"
 	"github.com/micro-plat/sso/services/system"
@@ -174,6 +174,7 @@ func bind(r *hydra.MicroApp) {
 	r.Micro("/sso/role/delete", role.NewRoleDelHandler)
 	r.Micro("/sso/role/edit", role.NewRoleEditHandler)
 	r.Micro("/sso/role/auth", role.NewRoleAuthHandler)
+	r.Micro("/sso/role/authmenu", role.NewAuthMenuHandler)
 
 	r.Micro("/sso/subsys/manage", subsystem.NewSystemHandler)       //系统管理
 	r.Micro("/sso/subsys/query", subsystem.NewSystemQueryHandler)   //系统管理查询

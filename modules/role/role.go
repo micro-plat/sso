@@ -11,6 +11,7 @@ type IRole interface {
 	Delete(input map[string]interface{}) (err error)
 	RoleEdit(input map[string]interface{}) (err error)
 	Auth(input map[string]interface{}) (err error)
+	AuthMenu(input map[string]interface{}) (results []map[string]interface{}, err error)
 }
 
 type Role struct {
@@ -75,4 +76,33 @@ func (r *Role) Auth(input map[string]interface{}) (err error) {
 		return err
 	}
 	return nil
+}
+
+//AuthMenu 编辑用户信息
+func (r *Role) AuthMenu(input map[string]interface{}) (results []map[string]interface{}, err error) {
+	data, err := r.db.AuthMenu(input)
+	if err != nil {
+		return nil, err
+	}
+	result := make([]map[string]interface{}, 0, 4)
+	for _, row1 := range data {
+		if row1.GetInt("parent") == 0 && row1.GetInt("level_id") == 1 {
+			children1 := make([]map[string]interface{}, 0, 4)
+			for _, row2 := range data {
+				if row2.GetInt("parent") == row1.GetInt("id") && row2.GetInt("level_id") == 2 {
+					children2 := make([]map[string]interface{}, 0, 8)
+					for _, row3 := range data {
+						if row3.GetInt("parent") == row2.GetInt("id") && row3.GetInt("level_id") == 3 {
+							children2 = append(children2, row3)
+						}
+					}
+					children1 = append(children1, row2)
+					row2["children"] = children2
+				}
+			}
+			row1["children"] = children1
+			result = append(result, row1)
+		}
+	}
+	return result, nil
 }
