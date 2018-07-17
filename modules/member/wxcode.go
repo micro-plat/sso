@@ -58,6 +58,7 @@ func (l *Wxcode) Check(un string, code string) error {
 	if err != nil {
 		return err
 	}
+	defer cache.Delete(key)
 	if ccode != code {
 		return context.NewError(901, fmt.Errorf("微信验证码错误"))
 	}
