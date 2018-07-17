@@ -11,7 +11,7 @@ import (
 
 type IDBMember interface {
 	QueryByID(uid int64) (db.QueryRow, error)
-	Query(u string, p string, sysid int) (s *MemberState, err error)
+	Query(u string, p string, ident string) (s *MemberState, err error)
 	GetUserInfo(u string) (db.QueryRow, error)
 	QueryByOpenID(string) (db.QueryRow, error)
 }
@@ -73,7 +73,7 @@ func (l *DBMember) GetUserInfo(u string) (db.QueryRow, error) {
 }
 
 //Query 用户登录时从数据库获取信息
-func (l *DBMember) Query(u string, p string, sysid int) (s *MemberState, err error) {
+func (l *DBMember) Query(u string, p string, ident string) (s *MemberState, err error) {
 	//根据用户名密码，查询用户信息
 	db := l.c.GetRegularDB()
 	data, _, _, err := db.Query(sql.QueryUserByLogin, map[string]interface{}{
@@ -92,7 +92,7 @@ func (l *DBMember) Query(u string, p string, sysid int) (s *MemberState, err err
 	//查询用户所在系统的登录地址及角色编号
 	roles, _, _, err := db.Query(sql.QueryUserRole, map[string]interface{}{
 		"user_id": s.UserID,
-		"sys_id":  sysid,
+		"ident":   ident,
 	})
 	if roles.IsEmpty() {
 		return nil, context.NewError(context.ERR_UNSUPPORTED_MEDIA_TYPE, "不允许登录系统")
@@ -103,6 +103,7 @@ func (l *DBMember) Query(u string, p string, sysid int) (s *MemberState, err err
 	s.RoleID = roles.Get(0).GetInt("role_id")
 	s.RoleName = roles.Get(0).GetString("role_name")
 	s.IndexURL = roles.Get(0).GetString("index_url")
-	s.SystemID = sysid
+	s.SystemID = roles.Get(0).GetInt("sys_id")
+	s.SysIdent = ident
 	return s, err
 }

@@ -34,8 +34,8 @@ func (u *LoginHandler) GetHandle(ctx *context.Context) (r interface{}) {
 	conf := app.GetConf(u.c)
 	url := conf.QRLoginCheckURL
 	uuid := ctx.Request.GetUUID()
-	sysid := ctx.Request.GetString("sysid", "0")
-	rt := fmt.Sprintf("%s?uid=%s&sysid=%s", url, uuid, sysid)
+	ident := ctx.Request.GetString("ident", "sso")
+	rt := fmt.Sprintf("%s?uid=%s&ident=%s", url, uuid, ident)
 	rurl := oauth2.AuthCodeURL(conf.AppID, rt, "snsapi_base", "")
 	ctx.Log.Info("2.实际登录地址:", rt)
 	wectx := app.GetWeChatContext(u.c)
@@ -50,11 +50,11 @@ func (u *LoginHandler) GetHandle(ctx *context.Context) (r interface{}) {
 
 //PostHandle 使用微信code查询用户openid,并登录，推送到ws端code
 func (u *LoginHandler) PostHandle(ctx *context.Context) (r interface{}) {
-	if err := ctx.Request.Check("uid", "code", "sysid"); err != nil {
+	if err := ctx.Request.Check("uid", "code", "ident"); err != nil {
 		return context.NewError(context.ERR_NOT_ACCEPTABLE, err)
 	}
 	ctx.Log.Info("1. 根据code查询用户openid")
-	sysid := ctx.Request.GetInt("sysid", 0)
+	ident := ctx.Request.GetString("ident", "sso")
 	code := ctx.Request.GetString("code")
 	conf := app.GetConf(u.c)
 	endpoint := oauth2.NewEndpoint(conf.AppID, conf.Secret)
@@ -70,7 +70,7 @@ func (u *LoginHandler) PostHandle(ctx *context.Context) (r interface{}) {
 	}
 	ctx.Log.Info("2. 根据openid登录")
 	openid := userInfo.GetString("openid")
-	member, err := u.m.LoginByOpenID(openid, sysid)
+	member, err := u.m.LoginByOpenID(openid, ident)
 	if err != nil {
 		return fmt.Errorf("登录失败:(%v)%s", err, openid)
 	}
@@ -88,7 +88,7 @@ func (u *LoginHandler) PostHandle(ctx *context.Context) (r interface{}) {
 	ctx.Response.SetJWT(member)
 	context.WSExchange.Notify(ctx.Request.GetString("uid"), 200, "/qrcode/login/success", map[string]interface{}{
 		"code":  loginCode,
-		"sysid": sysid,
+		"ident": ident,
 	})
 	return "success"
 }

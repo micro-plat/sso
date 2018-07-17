@@ -16,6 +16,7 @@ type MemberState struct {
 	UserName       string `json:"user_name" m2s:"user_name"`
 	RoleName       string `json:"role_name" m2s:"role_name"`
 	SystemID       int    `json:"sys_id" `
+	SysIdent       string `json:"ident" `
 	RoleID         int    `json:"role_id"`
 	Status         int    `json:"status" m2s:"status"`
 	IndexURL       string `json:"index_url"`

@@ -1,9 +1,10 @@
 create table sso_system_info(
   id number(20) not null,
   name varchar2(32) not null,
+  ident varchar2(16) not null,
 	index_url varchar2(64) not null,
   logo varchar2(64) not null,
-  login_timeout number(20) default 86400 not null,
+  login_timeout number(20) default 86400 not null,  
   theme varchar2(128) default 'bg-primary|bg-primary|bg-dark' not null,
   layout varchar2(128) default 'app-header-fixed app-aside-fixed' not null,  
   enable number(1) default 1 not null
@@ -12,6 +13,7 @@ create table sso_system_info(
 comment on table sso_system_info is '系统信息表';
 comment on column sso_system_info.id is '编号';
 comment on column sso_system_info.name is '系统名称';
+comment on column sso_system_info.ident is '唯一标识';
 comment on column sso_system_info.index_url is '首页地址';
 comment on column sso_system_info.logo is 'logo地址';
 comment on column sso_system_info.login_timeout is '登录超时时长';
@@ -25,6 +27,9 @@ add constraint pk_system_info primary key(id);
 
 alter table sso_system_info
 add constraint unq_system_info unique(name);
+
+alter table sso_system_info
+add constraint unq_system_info_ident unique(ident);
 
 
 create sequence seq_system_info_id

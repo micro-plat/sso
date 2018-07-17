@@ -6,7 +6,7 @@ import (
 )
 
 type ISystem interface {
-	Query(sysid int) (s db.QueryRow, err error)
+	Query(ident string) (s db.QueryRow, err error)
 }
 
 type System struct {
@@ -24,11 +24,11 @@ func NewSystem(c component.IContainer) *System {
 }
 
 //Query 从数据库中获取系统信息
-func (m *System) Query(sysid int) (s db.QueryRow, err error) {
+func (m *System) Query(ident string) (s db.QueryRow, err error) {
 	//从缓存中获取用户信息，不存在时从数据库中获取
-	s, err = m.cache.Query(sysid)
+	s, err = m.cache.Query(ident)
 	if s == nil || err != nil {
-		if s, err = m.db.Query(sysid); err != nil {
+		if s, err = m.db.Query(ident); err != nil {
 			return nil, err
 		}
 		//保存用户数据到缓存

@@ -32,7 +32,7 @@ func NewLoginHandler(container component.IContainer) (u *LoginHandler) {
 func (u *LoginHandler) Handle(ctx *context.Context) (r interface{}) {
 
 	//检查输入参数
-	if err := ctx.Request.Check("username", "password", "sysid"); err != nil {
+	if err := ctx.Request.Check("username", "password", "ident"); err != nil {
 		return context.NewError(context.ERR_NOT_ACCEPTABLE, err)
 	}
 
@@ -44,7 +44,7 @@ func (u *LoginHandler) Handle(ctx *context.Context) (r interface{}) {
 	//处理用户登录
 	member, err := u.m.Login(ctx.Request.GetString("username"),
 		md5.Encrypt(ctx.Request.GetString("password")),
-		ctx.Request.GetInt("sysid"))
+		ctx.Request.GetString("ident"))
 	if err != nil {
 		return err
 	}
@@ -66,6 +66,6 @@ func (u *LoginHandler) Handle(ctx *context.Context) (r interface{}) {
 	}
 	return map[string]interface{}{
 		"url":   curl,
-		"sysid": ctx.Request.GetInt("sysid"),
+		"ident": ctx.Request.GetString("ident"),
 	}
 }
