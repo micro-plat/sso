@@ -6,6 +6,7 @@ import (
 	"github.com/micro-plat/hydra/hydra"
 	"github.com/micro-plat/sso/modules/app"
 	mem "github.com/micro-plat/sso/modules/member"
+	xmenu "github.com/micro-plat/sso/modules/menu"
 	"github.com/micro-plat/sso/services/base"
 	"github.com/micro-plat/sso/services/member"
 	"github.com/micro-plat/sso/services/menu"
@@ -43,7 +44,7 @@ func bindConf(app *hydra.MicroApp) {
 	app.Conf.API.SetSubConf("auth", `
 		{
 			"jwt": {
-				"exclude": ["/sso/login","/sso/wxcode/get","/sso/sys/get","/qrcode/login","/qrcode/login/put","/sso/login/code"],
+				"exclude": ["/sso/login","/sso/login/code","/sso/wxcode/get","/sso/sys/get","/qrcode/login","/qrcode/login/put"],
 				"expireAt": 36000,
 				"mode": "HS512",
 				"name": "__jwt__",
@@ -102,9 +103,13 @@ func bind(r *hydra.MicroApp) {
 
 	//每个请求执行前执行
 	r.Handling(func(ctx *context.Context) (rt interface{}) {
+
+		//检查服务器类型
 		if ctx.GetContainer().GetServerType() != "api" {
 			return nil
 		}
+
+		//是否配置jwt
 		jwt, err := ctx.Request.GetJWTConfig() //获取jwt配置
 		if err != nil {
 			return err
@@ -114,12 +119,25 @@ func bind(r *hydra.MicroApp) {
 				return nil
 			}
 		}
-		//检查jwt配置，并使用member中提供的函数缓存login信息到context中
+
+		//缓存用户信息
 		var m mem.LoginState
-		if err := ctx.Request.GetJWT(&m); err != nil {
+		if err = ctx.Request.GetJWT(&m); err != nil {
 			return context.NewError(context.ERR_FORBIDDEN, err)
 		}
-		return mem.Save(ctx, &m)
+		if err = mem.Save(ctx, &m); err != nil {
+			return err
+		}
+
+		//检查用户权限
+		tags := r.GetTags(ctx.Service)
+		menu := xmenu.Get(ctx.GetContainer())
+		for _, tag := range tags {
+			if err = menu.Verify(m.UserID, m.SystemID, tag); err == nil {
+				return nil
+			}
+		}
+		return context.NewError(context.ERR_NOT_ACCEPTABLE, "没有权限")
 	})
 
 	//初始化
@@ -142,7 +160,8 @@ func bind(r *hydra.MicroApp) {
 		if _, err := c.GetCache(); err != nil {
 			return err
 		}
-		r.Micro("/sso/wxcode/get", member.NewWxcodeHandler(conf.AppID, conf.Secret, conf.WechatTSAddr)) //获取已发送的微信验证码
+		r.Micro("/sso/wxcode/get", member.NewWxcodeHandler(conf.AppID, conf.Secret, conf.WechatTSAddr)) //发送微信验证码
+		xmenu.Set(c)                                                                                    //保存全局菜单变量
 		return nil
 	})
 	r.Micro("/sso/login", member.NewLoginHandler)     //用户名密码登录

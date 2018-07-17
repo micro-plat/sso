@@ -8,6 +8,16 @@ import (
 	"github.com/micro-plat/sso/modules/const/sql"
 )
 
+//Get 获取全局imenu
+func Get(c component.IContainer) IMenu {
+	return c.Get("__imenu__").(IMenu)
+}
+
+//Set 保存全局imenu
+func Set(c component.IContainer) {
+	c.Set("__imenu__", NewMenu(c))
+}
+
 type IMenu interface {
 	Query(uid int64, sysid int) ([]map[string]interface{}, error)
 	Verify(uid int64, sysid int, menuURL string) error
