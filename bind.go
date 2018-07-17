@@ -1,6 +1,8 @@
 package main
 
 import (
+	"fmt"
+
 	"github.com/micro-plat/hydra/component"
 	"github.com/micro-plat/hydra/context"
 	"github.com/micro-plat/hydra/hydra"
@@ -131,13 +133,16 @@ func bind(r *hydra.MicroApp) {
 
 		//检查用户权限
 		tags := r.GetTags(ctx.Service)
+		if len(tags) == 0 {
+			return nil
+		}
 		menu := xmenu.Get(ctx.GetContainer())
 		for _, tag := range tags {
 			if err = menu.Verify(m.UserID, m.SystemID, tag); err == nil {
 				return nil
 			}
 		}
-		return context.NewError(context.ERR_NOT_ACCEPTABLE, "没有权限")
+		return context.NewError(context.ERR_NOT_ACCEPTABLE, fmt.Sprintf("没有权限:%v", tags))
 	})
 
 	//初始化
@@ -181,19 +186,19 @@ func bind(r *hydra.MicroApp) {
 
 	r.Micro("/sso/menu/verify", menu.NewVerifyHandler) //检查用户菜单权限
 
-	r.Micro("/sso/user/index", user.NewUserHandler)
-	r.Micro("/sso/user/change", user.NewUserChangeHandler)
-	r.Micro("/sso/user/delete", user.NewUserDelHandler)
-	r.Micro("/sso/user/info", user.NewUserInfoHandler)
-	r.Micro("/sso/user/edit", user.NewUserEditHandler)
+	r.Micro("/sso/user/index", user.NewUserHandler, "/user/index")
+	r.Micro("/sso/user/change", user.NewUserChangeHandler, "/user/index")
+	r.Micro("/sso/user/delete", user.NewUserDelHandler, "/user/index")
+	r.Micro("/sso/user/info", user.NewUserInfoHandler, "/user/index")
+	r.Micro("/sso/user/edit", user.NewUserEditHandler, "/user/index")
 	r.Micro("/sso/base/userrole", base.NewBaseUserHandler)
 
-	r.Micro("/sso/role/index", role.NewRoleHandler)
-	r.Micro("/sso/role/change", role.NewRoleChangeHandler)
-	r.Micro("/sso/role/delete", role.NewRoleDelHandler)
-	r.Micro("/sso/role/edit", role.NewRoleEditHandler)
-	r.Micro("/sso/role/auth", role.NewRoleAuthHandler)
-	r.Micro("/sso/role/authmenu", role.NewAuthMenuHandler)
+	r.Micro("/sso/role/index", role.NewRoleHandler, "/user/role")
+	r.Micro("/sso/role/change", role.NewRoleChangeHandler, "/user/role")
+	r.Micro("/sso/role/delete", role.NewRoleDelHandler, "/user/role")
+	r.Micro("/sso/role/edit", role.NewRoleEditHandler, "/user/role")
+	r.Micro("/sso/role/auth", role.NewRoleAuthHandler, "/user/role")
+	r.Micro("/sso/role/authmenu", role.NewAuthMenuHandler, "/user/role")
 
 	r.Micro("/sso/subsys/manage", subsystem.NewSystemHandler)       //系统管理
 	r.Micro("/sso/subsys/query", subsystem.NewSystemQueryHandler)   //系统管理查询
