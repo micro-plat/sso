@@ -12,7 +12,7 @@ import (
 
 type IDbRole interface {
 	Query(input map[string]interface{}) (data db.QueryRows, count interface{}, err error)
-	ChangeStatus(input map[string]interface{}) (err error)
+	ChangeStatus(roleID int, status int) (err error)
 	Delete(input map[string]interface{}) (err error)
 	Edit(input map[string]interface{}) (err error)
 	Add(input map[string]interface{}) (err error)
@@ -32,12 +32,12 @@ func NewDbRole(c component.IContainer) *DbRole {
 
 //Query 获取角色信息列表
 func (r *DbRole) Query(input map[string]interface{}) (data db.QueryRows, count interface{}, err error) {
-	input["role_sql"] = " and t.name like '%" + input["role_name"].(string) + "%' "
 	db := r.c.GetRegularDB()
 	count, q, a, err := db.Scalar(sql.QueryRoleInfoListCount, input)
 	if err != nil {
 		return nil, nil, fmt.Errorf("获取角色信息列表条数发生错误(err:%v),sql:%s,输入参数:%v", err, q, a)
 	}
+	input["role_sql"] = " and t.name like '%" + input["role_name"].(string) + "%' "
 	data, q, a, err = db.Query(sql.QueryRoleInfoList, input)
 	if err != nil {
 		return nil, nil, fmt.Errorf("获取角色信息列表发生错误(err:%v),sql:%s,输入参数:%v", err, q, a)
@@ -46,62 +46,41 @@ func (r *DbRole) Query(input map[string]interface{}) (data db.QueryRows, count i
 }
 
 //ChangeStatus 修改角色状态
-func (r *DbRole) ChangeStatus(input map[string]interface{}) (err error) {
-	if input["ex_status"].(float64) == util.RoleDisabled {
-		input["status"] = util.RoleNormal
-	} else if input["ex_status"].(float64) == util.UserNormal {
-		input["status"] = util.RoleDisabled
-	}
-
+func (r *DbRole) ChangeStatus(roleID int, status int) (err error) {
 	db := r.c.GetRegularDB()
-	dbTrans, err := db.Begin()
-	if err != nil {
-		return fmt.Errorf("开启DB事务出错(err:%v)", err)
+	input := map[string]interface{}{
+		"role_id": roleID,
 	}
-
-	_, q, a, err := dbTrans.Execute(sql.UpdateRoleStatus, input)
+	switch status {
+	case util.RoleDisabled:
+		input["status"] = util.RoleDisabled
+	case util.RoleNormal, util.UserUnLock:
+		input["status"] = util.RoleNormal
+	}
+	_, q, a, err := db.Execute(sql.UpdateRoleStatus, input)
 	if err != nil {
-		dbTrans.Rollback()
 		return fmt.Errorf("修改角色状态发生错误(err:%v),sql:%s,输入参数:%v", err, q, a)
 	}
-
-	dbTrans.Commit()
 	return nil
 }
 
 //Delete 删除角色
 func (r *DbRole) Delete(input map[string]interface{}) (err error) {
 	db := r.c.GetRegularDB()
-	dbTrans, err := db.Begin()
+	_, q, a, err := db.Execute(sql.DeleteRole, input)
 	if err != nil {
-		return fmt.Errorf("开启DB事务出错(err:%v)", err)
-	}
-
-	_, q, a, err := dbTrans.Execute(sql.DeleteRole, input)
-	if err != nil {
-		dbTrans.Rollback()
 		return fmt.Errorf("删除角色发生错误(err:%v),sql:%s,输入参数:%v", err, q, a)
 	}
-
-	dbTrans.Commit()
 	return nil
 }
 
 //Edit 编辑角色信息
 func (r *DbRole) Edit(input map[string]interface{}) (err error) {
 	db := r.c.GetRegularDB()
-	dbTrans, err := db.Begin()
+	_, q, a, err := db.Execute(sql.EditRoleInfo, input)
 	if err != nil {
-		return fmt.Errorf("开启DB事务出错(err:%v)", err)
-	}
-
-	_, q, a, err := dbTrans.Execute(sql.EditRoleInfo, input)
-	if err != nil {
-		dbTrans.Rollback()
 		return fmt.Errorf("编辑角色信息发生错误(err:%v),sql:%s,输入参数:%v", err, q, a)
 	}
-
-	dbTrans.Commit()
 	return nil
 }
 

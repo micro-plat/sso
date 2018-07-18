@@ -21,7 +21,7 @@ func NewUserChangeHandler(container component.IContainer) (u *UserChangeHandler)
 
 type QueryUserChangeInput struct {
 	UserID   int64 `form:"user_id" json:"user_id"`
-	ExStatus int64  `form:"ex_status" json:"ex_status"`
+	ExStatus int64 `form:"ex_status" json:"ex_status"`
 }
 
 func (u *UserChangeHandler) Handle(ctx *context.Context) (r interface{}) {
