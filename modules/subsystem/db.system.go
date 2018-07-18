@@ -12,7 +12,7 @@ type IDbSystem interface {
 	QueryWithField(input map[string]interface{}) (data db.QueryRows,err error)
 	DeleteById(id int) (err error)
 	Add(input map[string]interface{}) (err error)
-	UpdateEnable(input map[string]interface{}) (err error)
+	UpdateEnable(isysId int, status int) (err error)
 	UpdateEdit(input map[string]interface{}) (err error)
 }
 
@@ -96,22 +96,22 @@ func(u *DbSystem) Add(input map[string]interface{}) (err error){
 		"style": input["style"],
 		"theme": input["theme"],
 	}
-	_,_,_,err = Db.Execute(sql.AddSubSystem,params)
+	_,q,a,err := Db.Execute(sql.AddSubSystem,params)
 	if err != nil {
-		return err
+		return  fmt.Errorf("添加系统管理数据发生错误(err:%v),sql:%s,输入参数:%v,", err, q, a)
 	}
 	return nil
 }
 
-func (u *DbSystem) UpdateEnable(input map[string]interface{}) (err error){
+func (u *DbSystem) UpdateEnable(sysId int, status int) (err error){
 	Db := u.c.GetRegularDB()
 	params := map[string]interface{}{
-		"id": input["id"],
-		"enable": input["status"],
+		"id": sysId,
+		"enable": status,
 	}
-	_,_,_,err = Db.Execute(sql.UpdateEnable,params)
+	_,q,a,err := Db.Execute(sql.UpdateEnable,params)
 	if err != nil {
-		return err
+		return  fmt.Errorf("更新系统管理状态发生错误(err:%v),sql:%s,输入参数:%v,", err, q, a)
 	}
 	return nil
 }
@@ -128,9 +128,9 @@ func (u *DbSystem) UpdateEdit(input map[string]interface{}) (err error){
 		"layout": input["layout"],
 		"theme": input["theme"],
 	}
-	_,_,_,err = Db.Execute(sql.UpdateEdit,params)
+	_,q,a,err := Db.Execute(sql.UpdateEdit,params)
 	if err != nil {
-		return err
+		return  fmt.Errorf("更新系统管理数据发生错误(err:%v),sql:%s,输入参数:%v,", err, q, a)
 	}
 	return nil
 }

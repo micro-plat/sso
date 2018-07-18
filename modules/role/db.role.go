@@ -61,12 +61,12 @@ func (r *DbRole) Query(input QueryRoleInput) (data db.QueryRows, count interface
 		return nil, nil, fmt.Errorf("Struct2Map Error(err:%v)", err)
 	}
 
+	params["role_sql"] = " and t.name like '%" + input.RoleName + "%' "
 	count, q, a, err := db.Scalar(sql.QueryRoleInfoListCount, params)
 	if err != nil {
 		return nil, nil, fmt.Errorf("获取角色信息列表条数发生错误(err:%v),sql:%s,输入参数:%v", err, q, a)
 	}
 
-	params["role_sql"] = " and t.name like '%" + input.RoleName + "%' "
 	data, q, a, err = db.Query(sql.QueryRoleInfoList, params)
 	if err != nil {
 		return nil, nil, fmt.Errorf("获取角色信息列表发生错误(err:%v),sql:%s,输入参数:%v", err, q, a)

@@ -10,7 +10,7 @@ type ISystem interface {
 	QueryWithField(input map[string]interface{}) (data db.QueryRows, err error)
 	DeleteByID(id int) (err error)
 	Add(input map[string]interface{}) (err error)
-	UpdateEnable(input map[string]interface{}) (err error)
+	UpdateEnable(sysId int,status int) (err error)
 	UpdateEdit(input map[string]interface{}) (err error)
 }
 
@@ -59,8 +59,8 @@ func (u *System) Add(input map[string]interface{}) (err error) {
 	return nil
 }
 
-func(u *System) UpdateEnable(input map[string]interface{}) (err error){
-	err = u.db.UpdateEnable(input)
+func(u *System) UpdateEnable(sysId int, status int) (err error){
+	err = u.db.UpdateEnable(sysId, status)
 	if err != nil {
 		return err
 	}
