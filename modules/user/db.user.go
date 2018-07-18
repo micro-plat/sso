@@ -53,11 +53,13 @@ func (u *DbUser) Query(input map[string]interface{}) (data db.QueryRows, count i
 		return nil, nil, fmt.Errorf("获取用户信息列表发生错误(err:%v),sql:%s,输入参数:%v", err, q, a)
 	}
 	roles := make(map[string][]map[string]string)
+	rolestr := make(map[string]string)
 
 	for _, sysRole := range sysRoles {
 		uid := sysRole.GetString("user_id")
 		if _, ok := roles[uid]; !ok {
 			roles[uid] = make([]map[string]string, 0, 2)
+			rolestr[uid] = ""
 		}
 		roles[uid] = append(roles[uid], map[string]string{
 			"sys_name":  sysRole.GetString("sys_name"),
@@ -65,10 +67,12 @@ func (u *DbUser) Query(input map[string]interface{}) (data db.QueryRows, count i
 			"sys_id":    sysRole.GetString("sys_id"),
 			"role_id":   sysRole.GetString("role_id"),
 		})
+		rolestr[uid] = rolestr[uid] + sysRole.GetString("sys_name") + "/" + sysRole.GetString("role_name") + ";"
 	}
 	for _, user := range data {
 		uid := user.GetString("user_id")
 		user["roles"] = roles[uid]
+		user["rolestr"] = rolestr[uid]
 	}
 	return data, count, nil
 }
@@ -109,6 +113,12 @@ func (u *DbUser) Delete(input map[string]interface{}) (err error) {
 	if err != nil {
 		dbTrans.Rollback()
 		return fmt.Errorf("删除用户发生错误(err:%v),sql:%s,输入参数:%v", err, q, a)
+	}
+
+	_, q, a, err = dbTrans.Execute(sql.DelUserRole, input)
+	if err != nil {
+		dbTrans.Rollback()
+		return fmt.Errorf("删除用户角色发生错误(err:%v),sql:%s,输入参数:%v", err, q, a)
 	}
 
 	dbTrans.Commit()

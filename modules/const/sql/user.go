@@ -42,6 +42,7 @@ where a.user_id in
 							   where 1 = 1
 								 and r.role_id = nvl(@role_id, r.role_id)
 								 #user_name
+							   group by t.user_id
 							   order by t.user_id) R
 					   where rownum <= @pi * @ps) L
 			   where L.LINENUM > @ps * (@pi - 1)) TAB1)
@@ -115,9 +116,9 @@ const GetNewUserID = `select seq_user_info_id.nextval from dual`
 
 //AddUserInfo 添加用户信息
 const AddUserInfo = `insert into sso_user_info t
-(user_id, user_name, status, password, mobile)
+(user_id, user_name, status, password, mobile, email)
 values
-(@user_id, @user_name, @status, @password, @mobile)
+(@user_id, @user_name, @status, @password, @mobile, @email)
 `
 
 //AddUserRole 添加用户角色
