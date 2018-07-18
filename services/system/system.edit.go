@@ -1,4 +1,4 @@
-package subsystem
+package system
 
 import (
 	"github.com/micro-plat/hydra/component"
@@ -54,7 +54,5 @@ func (u *SystemEditHandler) Handle(ctx *context.Context) (r interface{}) {
 		return context.NewError(context.ERR_NOT_IMPLEMENTED, err)
 	}
 	ctx.Log.Info("3.返回数据。")
-	return map[string]interface{}{
-		"msg": "success",
-	}
+	return "success"
 }

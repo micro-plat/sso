@@ -1,9 +1,9 @@
-package sysfunc
+package function
 
 import (
 	"github.com/micro-plat/hydra/component"
 	"github.com/micro-plat/hydra/context"
-	sub "github.com/micro-plat/sso/modules/subsystem/sysfunc"
+	sub "github.com/micro-plat/sso/modules/function"
 )
 
 type SystemFuncQueryHandler struct {

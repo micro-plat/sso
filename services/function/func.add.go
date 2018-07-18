@@ -1,55 +1,57 @@
-package sysfunc
+package function
 
 import (
 	"github.com/micro-plat/hydra/component"
 	"github.com/micro-plat/hydra/context"
-	sub "github.com/micro-plat/sso/modules/subsystem/sysfunc"
+	sub "github.com/micro-plat/sso/modules/function"
 
 )
 
-type SystemFuncEditHandler struct {
+type SystemFuncAddHandler struct {
 	container component.IContainer
 	subLib    sub.ISystemFunc
 }
 
-type SystemFuncEditInput struct {
-	Id string `form:"id" valid:"required"`
+type SystemFuncAddInput struct {
+	Parentid int `form:"parentid"`
+	ParentLevel int `form:"parentlevel"`
+	Sysid int `form:"sysid" `
 	Name string `form:"name" valid:"required"`
 	Icon string `form:"icon" valid:"required"`
 	Path string `form:"path" valid:"required"`
 }
 
-func NewSystemFuncEditHandler(container component.IContainer) (u *SystemFuncEditHandler) {
-	return &SystemFuncEditHandler{
+func NewSystemFuncAddHandler(container component.IContainer) (u *SystemFuncAddHandler) {
+	return &SystemFuncAddHandler{
 		container: container,
 		subLib:    sub.NewSystemFunc(container),
 	}
 }
 
-func (u *SystemFuncEditHandler) Handle(ctx *context.Context) (r interface{}) {
-	ctx.Log.Info("------编辑系统功能------")
+func (u *SystemFuncAddHandler) Handle(ctx *context.Context) (r interface{}) {
+	ctx.Log.Info("------添加系统功能------")
 	ctx.Log.Info("1. 参数检查")
-	var inputData SystemFuncEditInput
+	var inputData SystemFuncAddInput
 	if err := ctx.Request.Bind(&inputData); err != nil {
 		return context.NewError(context.ERR_NOT_ACCEPTABLE, err)
 	}
 	input := map[string]interface{}{
-		"id": inputData.Id,
+		"sys_id": inputData.Sysid,
 		"name": inputData.Name,
 		"icon": inputData.Icon,
 		"path": inputData.Path,
-
+		"parentid": inputData.Parentid,
+		"level_id": inputData.ParentLevel +1,
 	}
 	ctx.Log.Info("2.更新数据库数据--------")
-	ctx.Log.Info(input)
-	err := u.subLib.Edit(input)
+	ctx.Log.Info("请求参数：",input)
+	err := u.subLib.Add(input)
 	if err != nil {
 		return context.NewError(context.ERR_NOT_IMPLEMENTED, err)
 	}
-	ctx.Log.Info("3.返回数据。")
-	return map[string]interface{}{
-		"msg": "success",
-	}
+	ctx.Log.Info("3.返回数据")
+	return "success"
 }
+
 
 

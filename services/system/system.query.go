@@ -1,4 +1,4 @@
-package subsystem
+package system
 
 import (
 "github.com/micro-plat/hydra/component"
@@ -26,7 +26,7 @@ func NewSystemQueryHandler(container component.IContainer) (u *SystemQueryHandle
 
 
 func (u *SystemQueryHandler) Handle(ctx *context.Context) (r interface{}) {
-	ctx.Log.Info("------查询系统管理数据------")
+	ctx.Log.Info("------根据字段查询系统管理数据------")
 	ctx.Log.Info("1. 参数检查")
 	name := ctx.Request.GetString("name")
 	status := ctx.Request.GetString("status")
