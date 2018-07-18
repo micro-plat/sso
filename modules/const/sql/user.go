@@ -75,7 +75,6 @@ order by t.user_id) R`
 const UpdateUserStatus = `update sso_user_info t
 set t.status = @status
 where t.user_id = @user_id
-and t.status = @ex_status
 `
 
 //DeleteUser 删除用户

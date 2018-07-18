@@ -39,6 +39,9 @@ where t.role_id = @role_id
 //DeleteRole 删除角色
 const DeleteRole = `delete from sso_role_info t where t.role_id = @role_id`
 
+//DeleteRoleMenu 删除角色
+const DeleteRoleMenu = `delete from sso_role_menu t where t.role_id = @role_id`
+
 //EditRoleInfo 编辑角色信息
 const EditRoleInfo = `update sso_role_info t
 set t.status = @status, t.name = @role_name
