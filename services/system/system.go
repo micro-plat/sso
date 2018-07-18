@@ -19,8 +19,8 @@ func NewSystemHandler(container component.IContainer) (u *SystemHandler) {
 }
 
 func (u *SystemHandler) Handle(ctx *context.Context) (r interface{}) {
-	sysid := ctx.Request.GetInt("sysid", 0)
-	data, err := u.sys.Query(sysid)
+	ident := ctx.Request.GetString("ident", "sso")
+	data, err := u.sys.Query(ident)
 	if err != nil {
 		return err
 	}

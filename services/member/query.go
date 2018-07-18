@@ -21,8 +21,8 @@ func NewQueryHandler(container component.IContainer) (u *QueryHandler) {
 
 func (u *QueryHandler) Handle(ctx *context.Context) (r interface{}) {
 	userName := member.Get(ctx).UserName
-	sysid := member.Get(ctx).SystemID
-	data, err := u.m.Query(userName, sysid)
+	ident := member.Get(ctx).SysIdent
+	data, err := u.m.Query(userName, ident)
 	if err != nil {
 		return err
 	}

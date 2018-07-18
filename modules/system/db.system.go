@@ -7,7 +7,7 @@ import (
 )
 
 type IDbSystem interface {
-	Query(sysid int) (s db.QueryRow, err error)
+	Query(ident string) (s db.QueryRow, err error)
 }
 
 type DbSystem struct {
@@ -21,10 +21,10 @@ func NewDbSystem(c component.IContainer) *DbSystem {
 }
 
 //Query 从数据库中获取系统信息
-func (l *DbSystem) Query(sysid int) (s db.QueryRow, err error) {
+func (l *DbSystem) Query(ident string) (s db.QueryRow, err error) {
 	db := l.c.GetRegularDB()
 	data, _, _, err := db.Query(sql.QuerySystemInfo, map[string]interface{}{
-		"sys_id": sysid,
+		"ident": ident,
 	})
 	return data.Get(0), err
 }

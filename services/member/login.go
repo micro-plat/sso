@@ -1,9 +1,6 @@
 package member
 
 import (
-	"fmt"
-	"strings"
-
 	"github.com/micro-plat/hydra/component"
 	"github.com/micro-plat/hydra/context"
 	"github.com/micro-plat/lib4go/security/md5"
@@ -32,7 +29,7 @@ func NewLoginHandler(container component.IContainer) (u *LoginHandler) {
 func (u *LoginHandler) Handle(ctx *context.Context) (r interface{}) {
 
 	//检查输入参数
-	if err := ctx.Request.Check("username", "password", "sysid"); err != nil {
+	if err := ctx.Request.Check("username", "password", "ident", "wxcode"); err != nil {
 		return context.NewError(context.ERR_NOT_ACCEPTABLE, err)
 	}
 
@@ -44,7 +41,7 @@ func (u *LoginHandler) Handle(ctx *context.Context) (r interface{}) {
 	//处理用户登录
 	member, err := u.m.Login(ctx.Request.GetString("username"),
 		md5.Encrypt(ctx.Request.GetString("password")),
-		ctx.Request.GetInt("sysid"))
+		ctx.Request.GetString("ident"))
 	if err != nil {
 		return err
 	}
@@ -59,13 +56,8 @@ func (u *LoginHandler) Handle(ctx *context.Context) (r interface{}) {
 	}
 	//设置jwt数据
 	ctx.Response.SetJWT(member)
-	curl := fmt.Sprintf("%s?code=%s", url, code)
-	if strings.Contains(url, "?") {
-		curl = fmt.Sprintf("%s&code=%s", url, code)
-		return
-	}
 	return map[string]interface{}{
-		"url":   curl,
-		"sysid": ctx.Request.GetInt("sysid"),
+		"code":  code,
+		"ident": ctx.Request.GetString("ident"),
 	}
 }

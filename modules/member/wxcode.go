@@ -16,7 +16,7 @@ import (
 type IWxcode interface {
 	Check(un string, code string) error
 	GetWXCode() string
-	Send(un string, sysid int, appid string, secret string, serverAddr string, code string) error
+	Send(un string, sysIdent string, appid string, secret string, serverAddr string, code string) error
 }
 
 type Wxcode struct {
@@ -58,6 +58,7 @@ func (l *Wxcode) Check(un string, code string) error {
 	if err != nil {
 		return err
 	}
+	defer cache.Delete(key)
 	if ccode != code {
 		return context.NewError(901, fmt.Errorf("微信验证码错误"))
 	}
@@ -65,13 +66,13 @@ func (l *Wxcode) Check(un string, code string) error {
 }
 
 //Send 发送微信验证码
-func (l *Wxcode) Send(un string, sysid int, appid string, secret string, serverAddr string, code string) error {
+func (l *Wxcode) Send(un string, sysIdent string, appid string, secret string, serverAddr string, code string) error {
 	row, err := l.db.GetUserInfo(un)
 	if err != nil || row.GetString("wx_openid") == "" {
 		return context.NewError(406, err)
 	}
 
-	sys, err := l.sys.Query(sysid)
+	sys, err := l.sys.Query(sysIdent)
 	if err != nil {
 		return context.NewError(406, err)
 	}

@@ -19,9 +19,9 @@ const (
 
 //IMember 用户登录
 type IMember interface {
-	Login(u string, p string, sys int) (*LoginState, error)
+	Login(u string, p string, ident string) (*LoginState, error)
 	Query(uid int64) (db.QueryRow, error)
-	LoginByOpenID(string, int) (*LoginState, error)
+	LoginByOpenID(string, string) (*LoginState, error)
 }
 
 //Member 用户登录管理
@@ -54,23 +54,23 @@ func (m *Member) SendCheckMail(from string, password string, host string, port s
 }
 
 //LoginByOpenID 使用open_id进行登录
-func (m *Member) LoginByOpenID(openid string, sys int) (s *LoginState, err error) {
+func (m *Member) LoginByOpenID(openid string, ident string) (s *LoginState, err error) {
 	row, err := m.db.QueryByOpenID(openid)
 	if err != nil {
 		return nil, err
 	}
 	u := row.GetString("user_name")
 	p := row.GetString("password")
-	return m.Login(u, p, sys)
+	return m.Login(u, p, ident)
 }
 
 //Login 登录系统
-func (m *Member) Login(u string, p string, sys int) (s *LoginState, err error) {
+func (m *Member) Login(u string, p string, ident string) (s *LoginState, err error) {
 	//从缓存中获取用户信息，不存在时从数据库中获取
 	// ls, err := m.cache.Query(u, p, sys)
 	// if ls == nil || err != nil {
 	var ls *MemberState
-	if ls, err = m.db.Query(u, p, sys); err != nil {
+	if ls, err = m.db.Query(u, p, ident); err != nil {
 		return nil, err
 	}
 	// }

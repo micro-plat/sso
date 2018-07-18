@@ -29,13 +29,13 @@ func NewWxcodeHandler(appid string, secret string, serverAddr string) func(c com
 //Handle 发送微信验证码
 func (u *WxcodeHandler) Handle(ctx *context.Context) (r interface{}) {
 	//检查输入参数
-	if err := ctx.Request.Check("username", "sysid"); err != nil {
+	if err := ctx.Request.Check("username", "ident"); err != nil {
 		return context.NewError(context.ERR_NOT_ACCEPTABLE, err)
 	}
 	code := u.wx.GetWXCode()
 	if err := u.wx.Send(
 		ctx.Request.GetString("username"),
-		ctx.Request.GetInt("sysid"),
+		ctx.Request.GetString("ident"),
 		u.appid,
 		u.secret,
 		u.serverAddr,

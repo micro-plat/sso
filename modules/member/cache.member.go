@@ -10,7 +10,7 @@ import (
 )
 
 type ICacheMember interface {
-	Query(u string, sys int) (ls *MemberState, err error)
+	Query(u string, ident string) (ls *MemberState, err error)
 	Save(s *MemberState) error
 	SetLoginSuccess(u string) error
 	SetLoginFail(u string) (int, error)
@@ -24,8 +24,8 @@ type CacheMember struct {
 }
 
 const (
-	cacheFormat     = "sso:login:state-info:{@userName}-{@sysid}"
-	cacheCodeFormat = "sso:login:state-code:{@userName}-{@sysid}"
+	cacheFormat     = "sso:login:state-info:{@userName}-{@ident}"
+	cacheCodeFormat = "sso:login:state-code:{@userName}-{@ident}"
 	lockFormat      = "sso:login:state-locker:{@userName}"
 )
 
@@ -76,15 +76,15 @@ func (l *CacheMember) Save(s *MemberState) error {
 		return err
 	}
 	cache := l.c.GetRegularCache()
-	key := transform.Translate(cacheFormat, "userName", s.UserName, "sysid", s.SystemID)
+	key := transform.Translate(cacheFormat, "userName", s.UserName, "ident", s.SysIdent)
 	return cache.Set(key, string(buff), l.cacheTime)
 }
 
 //Query 用户登录
-func (l *CacheMember) Query(u string, sys int) (ls *MemberState, err error) {
+func (l *CacheMember) Query(u string, ident string) (ls *MemberState, err error) {
 	//从缓存中查询用户数据
 	cache := l.c.GetRegularCache()
-	key := transform.Translate(cacheFormat, "userName", u, "sysid", sys)
+	key := transform.Translate(cacheFormat, "userName", u, "ident", ident)
 	v, err := cache.Get(key)
 	if err != nil {
 		return nil, err

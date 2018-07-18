@@ -27,19 +27,19 @@ func NewLoginHandler(container component.IContainer) (u *LoginHandler) {
 	}
 }
 
-func (u *LoginHandler) getLoginURL(sysid int) string {
+func (u *LoginHandler) getLoginURL(ident string) string {
 	conf := app.GetConf(u.c)
-	url := fmt.Sprintf("%s?sysid=%d", conf.WXLoginURL, sysid)
+	url := fmt.Sprintf("%s?ident=%d", conf.WXLoginURL, ident)
 	return oauth2.AuthCodeURL(conf.AppID, url, "snsapi_base", "")
 }
 
 //Handle 使用微信code查询用户openid,并登录，推送到ws端code
 func (u *LoginHandler) Handle(ctx *context.Context) (r interface{}) {
-	if err := ctx.Request.Check("code", "sysid"); err != nil {
+	if err := ctx.Request.Check("code", "ident"); err != nil {
 		return context.NewError(context.ERR_NOT_ACCEPTABLE, err)
 	}
 	ctx.Log.Info("1. 根据code查询用户openid")
-	sysid := ctx.Request.GetInt("sysid", 0)
+	ident := ctx.Request.GetString("ident", "sso")
 	code := ctx.Request.GetString("code")
 	conf := app.GetConf(u.c)
 	endpoint := oauth2.NewEndpoint(conf.AppID, conf.Secret)
@@ -55,7 +55,7 @@ func (u *LoginHandler) Handle(ctx *context.Context) (r interface{}) {
 	}
 	ctx.Log.Info("2. 根据openid登录")
 	openid := userInfo.GetString("openid")
-	member, err := u.m.LoginByOpenID(openid, sysid)
+	member, err := u.m.LoginByOpenID(openid, ident)
 	if err != nil {
 		return fmt.Errorf("登录失败:(%v)%s(%s)", err, openid, content)
 	}

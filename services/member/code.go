@@ -24,11 +24,10 @@ func NewCodeHandler(container component.IContainer) (u *CodeHandler) {
 
 //Handle 根据登录get获取用户信息，jwt信息获取用户信息
 func (u *CodeHandler) Handle(ctx *context.Context) (r interface{}) {
-	code := ctx.Request.GetString("code")
-	if code == "" {
-		context.NewError(context.ERR_NOT_ACCEPTABLE, fmt.Errorf("code不能为空"))
+	if err := ctx.Request.Check("code"); err != nil {
+		return context.NewError(context.ERR_NOT_ACCEPTABLE, fmt.Errorf("code不能为空"))
 	}
-
+	code := ctx.Request.GetString("code")
 	state, err := u.m.Query(code)
 	if err != nil {
 		return err
