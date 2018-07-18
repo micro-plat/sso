@@ -1,8 +1,8 @@
-
 package system
 
 import (
 	"fmt"
+
 	"github.com/micro-plat/hydra/component"
 	"github.com/micro-plat/hydra/context"
 	sub "github.com/micro-plat/sso/modules/subsystem"

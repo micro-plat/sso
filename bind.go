@@ -131,9 +131,6 @@ func bind(r *hydra.MicroApp) {
 
 		//检查用户权限
 		tags := r.GetTags(ctx.Service)
-		if len(tags) == 0 {
-			return nil
-		}
 		menu := xmenu.Get(ctx.GetContainer())
 		for _, tag := range tags {
 			if tag == "*" {

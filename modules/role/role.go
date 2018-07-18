@@ -7,7 +7,7 @@ import (
 
 type IRole interface {
 	Query(input map[string]interface{}) (data db.QueryRows, count interface{}, err error)
-	ChangeStatus(input map[string]interface{}) (err error)
+	ChangeStatus(roleID int, status int) (err error)
 	Delete(input map[string]interface{}) (err error)
 	RoleEdit(input map[string]interface{}) (err error)
 	Auth(input map[string]interface{}) (err error)
@@ -36,21 +36,13 @@ func (r *Role) Query(input map[string]interface{}) (data db.QueryRows, count int
 }
 
 //ChangeStatus 修改角色状态
-func (r *Role) ChangeStatus(input map[string]interface{}) (err error) {
-	err = r.db.ChangeStatus(input)
-	if err != nil {
-		return err
-	}
-	return nil
+func (r *Role) ChangeStatus(roleID int, status int) (err error) {
+	return r.db.ChangeStatus(roleID, status)
 }
 
 //Delete 删除角色
 func (r *Role) Delete(input map[string]interface{}) (err error) {
-	err = r.db.Delete(input)
-	if err != nil {
-		return err
-	}
-	return nil
+	return r.db.Delete(input)
 }
 
 //RoleEdit 编辑用户信息

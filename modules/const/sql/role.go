@@ -34,7 +34,6 @@ order by t.role_id) R`
 const UpdateRoleStatus = `update sso_role_info t
 set t.status = @status
 where t.role_id = @role_id
-and t.status = @ex_status
 `
 
 //DeleteRole 删除角色
