@@ -26,6 +26,8 @@ type QueryUserEditInput struct {
 	Mobile   int64  `form:"mobile" json:"mobile"`
 	Status   int64  `form:"status" json:"status"`
 	IsAdd    int64  `form:"is_add" json:"is_add"`
+	Auth     string `form:"auth" json:"auth"`
+	Email    string `form:"email" json:"email"`
 }
 
 func (u *UserEditHandler) Handle(ctx *context.Context) (r interface{}) {

@@ -2,6 +2,7 @@ package user
 
 import (
 	"fmt"
+	"strings"
 
 	"github.com/micro-plat/hydra/component"
 	"github.com/micro-plat/lib4go/db"
@@ -35,7 +36,7 @@ func (u *DbUser) Query(input map[string]interface{}) (data db.QueryRows, count i
 	db := u.c.GetRegularDB()
 	params := map[string]interface{}{
 		"role_id":   input["role_id"],
-		"user_name": input["username"],
+		"user_name": " and t.user_name like '%" + input["username"].(string) + "%'",
 		"pi":        input["pi"],
 		"ps":        input["ps"],
 	}
@@ -46,6 +47,28 @@ func (u *DbUser) Query(input map[string]interface{}) (data db.QueryRows, count i
 	data, q, a, err = db.Query(sql.QueryUserInfoList, params)
 	if err != nil {
 		return nil, nil, fmt.Errorf("获取用户信息列表发生错误(err:%v),sql:%s,输入参数:%v", err, q, a)
+	}
+	sysRoles, q, a, err := db.Query(sql.QueryUserRoleList, params)
+	if err != nil {
+		return nil, nil, fmt.Errorf("获取用户信息列表发生错误(err:%v),sql:%s,输入参数:%v", err, q, a)
+	}
+	roles := make(map[string][]map[string]string)
+
+	for _, sysRole := range sysRoles {
+		uid := sysRole.GetString("user_id")
+		if _, ok := roles[uid]; !ok {
+			roles[uid] = make([]map[string]string, 0, 2)
+		}
+		roles[uid] = append(roles[uid], map[string]string{
+			"sys_name":  sysRole.GetString("sys_name"),
+			"role_name": sysRole.GetString("role_name"),
+			"sys_id":    sysRole.GetString("sys_id"),
+			"role_id":   sysRole.GetString("role_id"),
+		})
+	}
+	for _, user := range data {
+		uid := user.GetString("user_id")
+		user["roles"] = roles[uid]
 	}
 	return data, count, nil
 }
@@ -117,10 +140,22 @@ func (u *DbUser) Edit(input map[string]interface{}) (err error) {
 		return fmt.Errorf("编辑用户信息发生错误(err:%v),sql:%s,输入参数:%v", err, q, a)
 	}
 
-	_, q, a, err = dbTrans.Execute(sql.EditUserRole, input)
+	_, q, a, err = dbTrans.Execute(sql.DelUserRole, input)
 	if err != nil {
 		dbTrans.Rollback()
-		return fmt.Errorf("编辑用户角色发生错误(err:%v),sql:%s,输入参数:%v", err, q, a)
+		return fmt.Errorf("删除用户原角色信息发生错误(err:%v),sql:%s,输入参数:%v", err, q, a)
+	}
+
+	as := strings.Split(input["auth"].(string), "|")
+	for i := 0; i < len(as)-1; i++ {
+		as1 := strings.Split(as[i], ",")
+		input["sys_id"] = as1[0]
+		input["role_id"] = as1[1]
+		_, q, a, err = dbTrans.Execute(sql.AddUserRole, input)
+		if err != nil {
+			dbTrans.Rollback()
+			return fmt.Errorf("添加用户角色发生错误(err:%v),sql:%s,输入参数:%v", err, q, a)
+		}
 	}
 
 	dbTrans.Commit()
@@ -150,10 +185,16 @@ func (u *DbUser) Add(input map[string]interface{}) (err error) {
 		return fmt.Errorf("添加用户发生错误(err:%v),sql:%s,输入参数:%v", err, q, a)
 	}
 
-	_, q, a, err = dbTrans.Execute(sql.AddUserRole, input)
-	if err != nil {
-		dbTrans.Rollback()
-		return fmt.Errorf("添加用户角色发生错误(err:%v),sql:%s,输入参数:%v", err, q, a)
+	as := strings.Split(input["auth"].(string), "|")
+	for i := 0; i < len(as)-1; i++ {
+		as1 := strings.Split(as[i], ",")
+		input["sys_id"] = as1[0]
+		input["role_id"] = as1[1]
+		_, q, a, err = dbTrans.Execute(sql.AddUserRole, input)
+		if err != nil {
+			dbTrans.Rollback()
+			return fmt.Errorf("添加用户角色发生错误(err:%v),sql:%s,输入参数:%v", err, q, a)
+		}
 	}
 
 	dbTrans.Commit()
