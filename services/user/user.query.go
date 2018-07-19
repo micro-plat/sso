@@ -34,7 +34,7 @@ func (u *UserHandler) Handle(ctx *context.Context) (r interface{}) {
 
 	ctx.Log.Info("2.返回数据。")
 	return map[string]interface{}{
-		"count": count.(string),
+		"count": count,
 		"list":  rows,
 	}
 }

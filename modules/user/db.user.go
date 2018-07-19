@@ -31,7 +31,7 @@ type UserEditInput struct {
 	UserID   int64  `form:"user_id" json:"user_id"`
 	RoleID   int64  `form:"role_id" json:"role_id" `
 	Mobile   int64  `form:"mobile" json:"mobile" valid:"length(11|11),required"`
-	Status   int    `form:"status" json:"status" valid:"in(0,2),required"`
+	Status   int    `form:"status" json:"status" valid:"required"`
 	IsAdd    int    `form:"is_add" json:"is_add" valid:"required"`
 	Auth     string `form:"auth" json:"auth" valid:"required"`
 	Email    string `form:"email" json:"email" valid:"email,required"`
@@ -39,8 +39,8 @@ type UserEditInput struct {
 
 //QueryUserInput 查询用户列表输入参数
 type QueryUserInput struct {
-	PageIndex int    `form:"pi" json:"pi"`
-	PageSize  int    `form:"ps" json:"ps"`
+	PageIndex int    `form:"pi" json:"pi" valid:"required"`
+	PageSize  int    `form:"ps" json:"ps" valid:"required"`
 	UserName  string `form:"username" json:"username"`
 	RoleID    string `form:"role_id" json:"role_id"`
 }
