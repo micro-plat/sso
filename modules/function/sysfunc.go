@@ -42,12 +42,12 @@ func (u *SystemFunc) Get(sysid int) (data []map[string]interface{}, err error) {
 	}
 	return data, err
 }
-
+//ChangeStatus 修改功能状态
 func(u *SystemFunc) ChangeStatus(id int,status int) (err error){
 	err = u.db.ChangeStatus(id,status)
 	return
 }
-//删除系统
+//Delete 删除系统功能
 func (u *SystemFunc) Delete(id int) (err error){
 	if err = u.db.Delete(id); err != nil {
 		return
@@ -55,14 +55,14 @@ func (u *SystemFunc) Delete(id int) (err error){
 	return u.cache.Fresh()
 	
 }
-
+//Edit 编辑功能
 func (u *SystemFunc) Edit(input *SystemFuncEditInput) (err error){
 	if err = u.db.Edit(input); err != nil {
 		return
 	}
 	return u.cache.Fresh()
 }
-
+//Add 添加功能
 func (u *SystemFunc) Add(input *SystemFuncAddInput) (err error){
 	if err = u.db.Add(input); err != nil {
 		return 

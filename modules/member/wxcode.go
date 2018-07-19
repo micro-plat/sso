@@ -72,7 +72,7 @@ func (l *Wxcode) Send(un string, sysIdent string, appid string, secret string, s
 		return context.NewError(406, err)
 	}
 
-	sys, err := l.sys.Query(sysIdent)
+	sys, err := l.sys.Get(sysIdent)
 	if err != nil {
 		return context.NewError(406, err)
 	}
