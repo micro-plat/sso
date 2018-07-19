@@ -12,13 +12,37 @@ import (
 )
 
 type IDbUser interface {
-	Query(input map[string]interface{}) (data db.QueryRows, count interface{}, err error)
-	CHangeStatus(input map[string]interface{}) (err error)
-	UserInfo(input map[string]interface{}) (data interface{}, err error)
-	Delete(input map[string]interface{}) (err error)
-	Edit(input map[string]interface{}) (err error)
-	Add(input map[string]interface{}) (err error)
-	CheckPswd(input map[string]interface{}) (code int, err error)
+	Query(input *QueryUserInput) (data db.QueryRows, count interface{}, err error)
+	ChangeStatus(userID int, status int) (err error)
+	Get(userID int) (data db.QueryRow, err error)
+	Delete(userID int) (err error)
+	Edit(input *UserEditInput) (err error)
+	Add(input *UserEditInput) (err error)
+	CheckPWD(oldPwd string, userID int64) (err error)
+}
+
+//UserEditInput 编辑用户 输入参数
+type UserEditInput struct {
+	UserName string `form:"user_name" json:"user_name" valid:"ascii,required"`
+	UserID   int64  `form:"user_id" json:"user_id"`
+	RoleID   int64  `form:"role_id" json:"role_id" `
+	Mobile   int64  `form:"mobile" json:"mobile" valid:"length(11|11),required"`
+	Status   int    `form:"status" json:"status" valid:"required"`
+	IsAdd    int    `form:"is_add" json:"is_add" valid:"required"`
+	Auth     string `form:"auth" json:"auth" valid:"required"`
+	Email    string `form:"email" json:"email" valid:"email,required"`
+}
+
+//QueryUserInput 查询用户列表输入参数
+type QueryUserInput struct {
+	PageIndex int    `form:"pi" json:"pi" valid:"required"`
+	PageSize  int    `form:"ps" json:"ps" valid:"required"`
+	UserName  string `form:"username" json:"username"`
+	RoleID    string `form:"role_id" json:"role_id"`
+}
+
+func (i *QueryUserInput) ToString() string {
+	return fmt.Sprintf("%s-%d-%d-%d", i.UserName, i.RoleID, i.PageSize, i.PageIndex)
 }
 
 type DbUser struct {

@@ -66,8 +66,8 @@ func (u *System) Delete(id int) (err error){
 		return
 	}
 	//更新缓存
-	err = u.cache.FreshSysInfo()
-	return 
+	return u.cache.FreshSysInfo()
+	 
 }
 //Add 添加系统
 func (u *System) Add(input *AddSystemInput) (err error) {
@@ -75,8 +75,8 @@ func (u *System) Add(input *AddSystemInput) (err error) {
 		return
 	}
 	//更新缓存
-	err = u.cache.FreshSysInfo()
-	return 
+	return u.cache.FreshSysInfo()
+	 
 }
 //ChangeStatus 修改系统状态
 func(u *System) ChangeStatus(sysId int, status int) (err error){
@@ -84,8 +84,8 @@ func(u *System) ChangeStatus(sysId int, status int) (err error){
 		return
 	}
 	//更新缓存
-	err = u.cache.FreshSysInfo()
-	return 
+	return u.cache.FreshSysInfo()
+	 
 }
 //Edit 编辑系统
 func (u *System) Edit(input *SystemEditInput) (err error){
@@ -93,6 +93,6 @@ func (u *System) Edit(input *SystemEditInput) (err error){
 		return
 	}
 	//更新缓存
-	err = u.cache.FreshSysInfo()
-	return 
+	return u.cache.FreshSysInfo()
+	 
 }
