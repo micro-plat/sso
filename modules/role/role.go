@@ -6,12 +6,12 @@ import (
 )
 
 type IRole interface {
-	Query(input map[string]interface{}) (data db.QueryRows, count interface{}, err error)
-	ChangeStatus(roleID int, status int) (err error)
-	Delete(input map[string]interface{}) (err error)
-	RoleEdit(input map[string]interface{}) (err error)
-	Auth(input map[string]interface{}) (err error)
-	AuthMenu(input map[string]interface{}) (results []map[string]interface{}, err error)
+	Query(input *QueryRoleInput) (data db.QueryRows, count interface{}, err error)
+	ChangeStatus(roleID string, status int) (err error)
+	Delete(roleID int) (err error)
+	Save(input *RoleEditInput) (err error)
+	Auth(input *RoleAuthInput) (err error)
+	QueryAuthMenu(sysID int64, roleID int64) (results []map[string]interface{}, err error)
 }
 
 type Role struct {
@@ -45,40 +45,40 @@ func (r *Role) Query(input *QueryRoleInput) (data db.QueryRows, count interface{
 
 //ChangeStatus 修改角色状态
 func (r *Role) ChangeStatus(roleID string, status int) (err error) {
-	if err := r.db.ChangeStatus(roleID, status); err != nil {
+	if err := r.cache.Delete(); err != nil {
 		return err
 	}
-	return r.cache.Delete()
+	return r.db.ChangeStatus(roleID, status)
 }
 
 //Delete 删除角色
 func (r *Role) Delete(roleID int) (err error) {
-	if err := r.db.Delete(roleID); err != nil {
+	if err := r.cache.Delete(); err != nil {
 		return err
 	}
-	return r.cache.Delete()
+	return r.db.Delete(roleID)
 }
 
 //Save 编辑角色信息
 func (r *Role) Save(input *RoleEditInput) (err error) {
+	if err := r.cache.Delete(); err != nil {
+		return err
+	}
 	if input.IsAdd == 1 {
 		return r.db.Add(input)
 	}
-	if err := r.db.Edit(input); err != nil {
-		return err
-	}
-	return r.cache.Delete()
+	return r.db.Edit(input)
 }
 
 //Auth 用户授权
 func (r *Role) Auth(input *RoleAuthInput) (err error) {
-	if err := r.db.Auth(input); err != nil {
+	if err := r.cache.DeleteAuthMenu(); err != nil {
 		return err
 	}
 	if err := r.cache.Delete(); err != nil {
 		return err
 	}
-	return r.cache.DeleteAuthMenu()
+	return r.db.Auth(input)
 }
 
 //QueryAuthMenu 查询用户菜单
@@ -92,43 +92,5 @@ func (r *Role) QueryAuthMenu(sysID int64, roleID int64) (results []map[string]in
 			return nil, err
 		}
 	}
-	result := make([]map[string]interface{}, 0, 4)
-	for _, row1 := range data {
-		if row1.GetInt("parent") == 0 && row1.GetInt("level_id") == 1 {
-			children1 := make([]map[string]interface{}, 0, 4)
-			for _, row2 := range data {
-				if row2.GetInt("parent") == row1.GetInt("id") && row2.GetInt("level_id") == 2 {
-					children2 := make([]map[string]interface{}, 0, 8)
-					for _, row3 := range data {
-						if row3.GetInt("parent") == row2.GetInt("id") && row3.GetInt("level_id") == 3 {
-							if row3.GetInt("checked") == 1 {
-								row3["checked"] = true
-							} else {
-								row3["checked"] = false
-							}
-							row3["expanded"] = true
-							children2 = append(children2, row3)
-						}
-					}
-					children1 = append(children1, row2)
-					row2["children"] = children2
-					row2["expanded"] = true
-					if row2.GetInt("checked") == 1 {
-						row2["checked"] = true
-					} else {
-						row2["checked"] = false
-					}
-				}
-			}
-			row1["children"] = children1
-			row1["expanded"] = true
-			if row1.GetInt("checked") == 1 {
-				row1["checked"] = true
-			} else {
-				row1["checked"] = false
-			}
-			result = append(result, row1)
-		}
-	}
-	return result, nil
+	return data, nil
 }

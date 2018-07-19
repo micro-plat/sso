@@ -3,10 +3,10 @@ package user
 import (
 	"encoding/json"
 	"fmt"
-	"strconv"
 
 	"github.com/micro-plat/hydra/component"
 	"github.com/micro-plat/lib4go/db"
+	"github.com/micro-plat/lib4go/transform"
 )
 
 type ICacheUser interface {
@@ -25,9 +25,12 @@ type CacheUser struct {
 }
 
 const (
-	cacheUserListFormat      = "sso:user:list:"
-	cacheUserListCountFormat = "sso:user:list-count:"
-	cacheUserFormat          = "sso:user:info:"
+	cacheUserListFormat      = "sso:user:list:{@userName}-{@roleID}-{@pageSize}-{@pageIndex}"
+	cacheUserListAll         = "sso:user:list:*"
+	cacheUserListCountFormat = "sso:user:list-count:{@userName}-{@roleID}-{@pageSize}-{@pageIndex}"
+	cacheUserListCountAll    = "sso:user:list-count:*"
+	cacheUserFormat          = "sso:user:info:{@userID}"
+	cacheUserAll             = "sso:user:info:*"
 )
 
 //NewCacheUser 创建对象
@@ -46,8 +49,8 @@ func (l *CacheUser) Save(s *QueryUserInput, data db.QueryRows, count interface{}
 	}
 	buff1 := count.(string)
 	cache := l.c.GetRegularCache()
-	key := cacheUserListFormat + s.ToString()
-	key1 := cacheUserListCountFormat + s.ToString()
+	key := transform.Translate(cacheUserListFormat, "userName", s.UserName, "roleID", s.RoleID, "pageSize", s.PageSize, "pageIndex", s.PageIndex)
+	key1 := transform.Translate(cacheUserListCountFormat, "userName", s.UserName, "roleID", s.RoleID, "pageSize", s.PageSize, "pageIndex", s.PageIndex)
 	if err := cache.Set(key, string(buff), l.cacheTime); err != nil {
 		return err
 	}
@@ -58,8 +61,8 @@ func (l *CacheUser) Save(s *QueryUserInput, data db.QueryRows, count interface{}
 func (l *CacheUser) Query(s *QueryUserInput) (data db.QueryRows, count interface{}, err error) {
 	//从缓存中查询用户列表数据
 	cache := l.c.GetRegularCache()
-	key := cacheUserListFormat + s.ToString()
-	key1 := cacheUserListCountFormat + s.ToString()
+	key := transform.Translate(cacheUserListFormat, "userName", s.UserName, "roleID", s.RoleID, "pageSize", s.PageSize, "pageIndex", s.PageIndex)
+	key1 := transform.Translate(cacheUserListCountFormat, "userName", s.UserName, "roleID", s.RoleID, "pageSize", s.PageSize, "pageIndex", s.PageIndex)
 	v, err := cache.Get(key)
 	if err != nil {
 		return nil, nil, err
@@ -90,8 +93,10 @@ func (l *CacheUser) Query(s *QueryUserInput) (data db.QueryRows, count interface
 //Delete 缓存用户列表信息删除
 func (l *CacheUser) Delete() error {
 	cache := l.c.GetRegularCache()
-	key := cacheUserListFormat + "*"
-	return cache.Delete(key)
+	if err := cache.Delete(cacheUserListAll); err != nil {
+		return err
+	}
+	return cache.Delete(cacheUserListCountAll)
 }
 
 //SaveUser 缓存用户信息
@@ -101,7 +106,7 @@ func (l *CacheUser) SaveUser(userID int, data db.QueryRow) error {
 		return err
 	}
 	cache := l.c.GetRegularCache()
-	key := cacheUserFormat + strconv.Itoa(userID)
+	key := transform.Translate(cacheUserFormat, "userID", userID)
 	return cache.Set(key, string(buff), l.cacheTime)
 }
 
@@ -109,7 +114,7 @@ func (l *CacheUser) SaveUser(userID int, data db.QueryRow) error {
 func (l *CacheUser) QueryUser(userID int) (data db.QueryRow, err error) {
 	//从缓存中查询用户数据
 	cache := l.c.GetRegularCache()
-	key := cacheUserFormat + strconv.Itoa(userID)
+	key := transform.Translate(cacheUserFormat, "userID", userID)
 	v, err := cache.Get(key)
 	if err != nil {
 		return nil, err
@@ -127,6 +132,5 @@ func (l *CacheUser) QueryUser(userID int) (data db.QueryRow, err error) {
 //DeleteUser 缓存用户信息删除
 func (l *CacheUser) DeleteUser() error {
 	cache := l.c.GetRegularCache()
-	key := cacheUserFormat + "*"
-	return cache.Delete(key)
+	return cache.Delete(cacheUserAll)
 }

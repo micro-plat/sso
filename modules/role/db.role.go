@@ -6,9 +6,9 @@ import (
 
 	"github.com/micro-plat/hydra/component"
 	"github.com/micro-plat/lib4go/db"
+	"github.com/micro-plat/lib4go/types"
+	"github.com/micro-plat/sso/modules/const/enum"
 	"github.com/micro-plat/sso/modules/const/sql"
-	
-
 )
 
 type IDbRole interface {
@@ -43,10 +43,6 @@ type QueryRoleInput struct {
 	RoleName  string `form:"role_name" json:"role_name"`
 }
 
-func (i *QueryRoleInput) ToString() string {
-	return fmt.Sprintf("%s-%d-%d", i.RoleName, i.PageSize, i.PageIndex)
-}
-
 type DbRole struct {
 	c component.IContainer
 }
@@ -58,14 +54,20 @@ func NewDbRole(c component.IContainer) *DbRole {
 }
 
 //Query 获取角色信息列表
-func (r *DbRole) Query(input map[string]interface{}) (data db.QueryRows, count interface{}, err error) {
+func (r *DbRole) Query(input *QueryRoleInput) (data db.QueryRows, count interface{}, err error) {
 	db := r.c.GetRegularDB()
-	count, q, a, err := db.Scalar(sql.QueryRoleInfoListCount, input)
+	params, err := types.Struct2Map(input)
+	if err != nil {
+		return nil, nil, fmt.Errorf("Struct2Map Error(err:%v)", err)
+	}
+
+	params["role_sql"] = " and t.name like '%" + input.RoleName + "%' "
+	count, q, a, err := db.Scalar(sql.QueryRoleInfoListCount, params)
 	if err != nil {
 		return nil, nil, fmt.Errorf("获取角色信息列表条数发生错误(err:%v),sql:%s,输入参数:%v", err, q, a)
 	}
-	input["role_sql"] = " and t.name like '%" + input["role_name"].(string) + "%' "
-	data, q, a, err = db.Query(sql.QueryRoleInfoList, input)
+
+	data, q, a, err = db.Query(sql.QueryRoleInfoList, params)
 	if err != nil {
 		return nil, nil, fmt.Errorf("获取角色信息列表发生错误(err:%v),sql:%s,输入参数:%v", err, q, a)
 	}
@@ -73,16 +75,16 @@ func (r *DbRole) Query(input map[string]interface{}) (data db.QueryRows, count i
 }
 
 //ChangeStatus 修改角色状态
-func (r *DbRole) ChangeStatus(roleID int, status int) (err error) {
+func (r *DbRole) ChangeStatus(roleID string, status int) (err error) {
 	db := r.c.GetRegularDB()
 	input := map[string]interface{}{
 		"role_id": roleID,
 	}
 	switch status {
-	case util.RoleDisabled:
-		input["status"] = util.RoleDisabled
-	case util.RoleNormal, util.UserUnLock:
-		input["status"] = util.RoleNormal
+	case enum.Disabled:
+		input["status"] = enum.Disabled
+	case enum.Normal:
+		input["status"] = enum.Normal
 	}
 	_, q, a, err := db.Execute(sql.UpdateRoleStatus, input)
 	if err != nil {
@@ -92,19 +94,32 @@ func (r *DbRole) ChangeStatus(roleID int, status int) (err error) {
 }
 
 //Delete 删除角色
-func (r *DbRole) Delete(input map[string]interface{}) (err error) {
+func (r *DbRole) Delete(roleID int) (err error) {
 	db := r.c.GetRegularDB()
-	_, q, a, err := db.Execute(sql.DeleteRole, input)
+	_, q, a, err := db.Execute(sql.DeleteRole, map[string]interface{}{
+		"role_id": roleID,
+	})
 	if err != nil {
 		return fmt.Errorf("删除角色发生错误(err:%v),sql:%s,输入参数:%v", err, q, a)
+	}
+
+	_, q, a, err = db.Execute(sql.DeleteRoleMenu, map[string]interface{}{
+		"role_id": roleID,
+	})
+	if err != nil {
+		return fmt.Errorf("删除角色菜单发生错误(err:%v),sql:%s,输入参数:%v", err, q, a)
 	}
 	return nil
 }
 
 //Edit 编辑角色信息
-func (r *DbRole) Edit(input map[string]interface{}) (err error) {
+func (r *DbRole) Edit(input *RoleEditInput) (err error) {
 	db := r.c.GetRegularDB()
-	_, q, a, err := db.Execute(sql.EditRoleInfo, input)
+	params, err := types.Struct2Map(input)
+	if err != nil {
+		return fmt.Errorf("Struct2Map Error(err:%v)", err)
+	}
+	_, q, a, err := db.Execute(sql.EditRoleInfo, params)
 	if err != nil {
 		return fmt.Errorf("编辑角色信息发生错误(err:%v),sql:%s,输入参数:%v", err, q, a)
 	}
@@ -112,25 +127,22 @@ func (r *DbRole) Edit(input map[string]interface{}) (err error) {
 }
 
 //Add 添加角色
-func (r *DbRole) Add(input map[string]interface{}) (err error) {
+func (r *DbRole) Add(input *RoleEditInput) (err error) {
 	db := r.c.GetRegularDB()
-	dbTrans, err := db.Begin()
+	params, err := types.Struct2Map(input)
 	if err != nil {
-		return fmt.Errorf("开启DB事务出错(err:%v)", err)
+		return fmt.Errorf("Struct2Map Error(err:%v)", err)
 	}
 
-	_, q, a, err := dbTrans.Execute(sql.AddRoleInfo, input)
+	_, q, a, err := db.Execute(sql.AddRoleInfo, params)
 	if err != nil {
-		dbTrans.Rollback()
 		return fmt.Errorf("添加角色发生错误(err:%v),sql:%s,输入参数:%v", err, q, a)
 	}
-
-	dbTrans.Commit()
 	return nil
 }
 
 //Auth 添加角色权限
-func (r *DbRole) Auth(input map[string]interface{}) (err error) {
+func (r *DbRole) Auth(input *RoleAuthInput) (err error) {
 	db := r.c.GetRegularDB()
 	dbTrans, err := db.Begin()
 	if err != nil {
@@ -139,22 +151,23 @@ func (r *DbRole) Auth(input map[string]interface{}) (err error) {
 
 	//删除原权限
 	_, q, a, err := dbTrans.Execute(sql.DelRoleAuth, map[string]interface{}{
-		"role_id": input["role_id"],
-		"sys_id":  input["sys_id"],
+		"role_id": input.RoleID,
+		"sys_id":  input.SysID,
 	})
 	if err != nil {
 		dbTrans.Rollback()
 		return fmt.Errorf("删除角色原权限发生错误(err:%v),sql:%s,输入参数:%v", err, q, a)
 	}
 
-	if input["selectauth"].(string) == "" {
+	if input.SelectAuth == "" {
 		return nil
 	}
-	s := strings.Split(input["selectauth"].(string), ",")
+	//添加新权限
+	s := strings.Split(input.SelectAuth, ",")
 	for i := 0; i < len(s); i++ {
 		_, q, a, err := dbTrans.Execute(sql.AddRoleAuth, map[string]interface{}{
-			"role_id":  input["role_id"],
-			"sys_id":   input["sys_id"],
+			"role_id":  input.RoleID,
+			"sys_id":   input.SysID,
 			"menu_id":  s[i],
 			"sortrank": i + 1,
 		})
@@ -168,12 +181,54 @@ func (r *DbRole) Auth(input map[string]interface{}) (err error) {
 	return nil
 }
 
-//AuthMenu 添加角色
-func (r *DbRole) AuthMenu(input map[string]interface{}) (data db.QueryRows, err error) {
+//QueryAuthMenu 查询角色菜单
+func (r *DbRole) QueryAuthMenu(sysID int64, roleID int64) (results []map[string]interface{}, err error) {
 	db := r.c.GetRegularDB()
-	data, q, a, err := db.Query(sql.QuerySysMenucList, input)
+	data, q, a, err := db.Query(sql.QuerySysMenucList, map[string]interface{}{
+		"role_id": roleID,
+		"sys_id":  sysID,
+	})
 	if err != nil {
 		return nil, fmt.Errorf("获取菜单列表发生错误(err:%v),sql:%s,输入参数:%v", err, q, a)
 	}
-	return data, nil
+
+	result := make([]map[string]interface{}, 0, 4)
+	for _, row1 := range data {
+		if row1.GetInt("parent") == 0 && row1.GetInt("level_id") == 1 {
+			children1 := make([]map[string]interface{}, 0, 4)
+			for _, row2 := range data {
+				if row2.GetInt("parent") == row1.GetInt("id") && row2.GetInt("level_id") == 2 {
+					children2 := make([]map[string]interface{}, 0, 8)
+					for _, row3 := range data {
+						if row3.GetInt("parent") == row2.GetInt("id") && row3.GetInt("level_id") == 3 {
+							if row3.GetInt("checked") == 1 {
+								row3["checked"] = true
+							} else {
+								row3["checked"] = false
+							}
+							row3["expanded"] = true
+							children2 = append(children2, row3)
+						}
+					}
+					children1 = append(children1, row2)
+					row2["children"] = children2
+					row2["expanded"] = true
+					if row2.GetInt("checked") == 1 {
+						row2["checked"] = true
+					} else {
+						row2["checked"] = false
+					}
+				}
+			}
+			row1["children"] = children1
+			row1["expanded"] = true
+			if row1.GetInt("checked") == 1 {
+				row1["checked"] = true
+			} else {
+				row1["checked"] = false
+			}
+			result = append(result, row1)
+		}
+	}
+	return result, nil
 }

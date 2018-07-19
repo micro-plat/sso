@@ -6,31 +6,32 @@ import (
 	"github.com/micro-plat/sso/modules/role"
 )
 
-type RoleDelHandler struct {
+type AuthMenuHandler struct {
 	container component.IContainer
 	roleLib   role.IRole
 }
 
-func NewRoleDelHandler(container component.IContainer) (u *RoleDelHandler) {
-	return &RoleDelHandler{
+func NewAuthMenuHandler(container component.IContainer) (u *AuthMenuHandler) {
+	return &AuthMenuHandler{
 		container: container,
 		roleLib:   role.NewRole(container),
 	}
 }
 
-func (u *RoleDelHandler) Handle(ctx *context.Context) (r interface{}) {
+func (u *AuthMenuHandler) Handle(ctx *context.Context) (r interface{}) {
 
-	ctx.Log.Info("--------删除角色--------")
+	ctx.Log.Info("--------角色授权菜单--------")
 	ctx.Log.Info("1.参数校验")
-	if err := ctx.Request.Check("role_id"); err != nil {
+	if err := ctx.Request.Check("sys_id", "role_id"); err != nil {
 		return context.NewError(context.ERR_NOT_ACCEPTABLE, err)
 	}
 
 	ctx.Log.Info("2.执行操作")
-	if err := u.roleLib.Delete(ctx.Request.GetInt("role_id")); err != nil {
+	res, err := u.roleLib.QueryAuthMenu(ctx.Request.GetInt64("sys_id"), ctx.Request.GetInt64("role_id"))
+	if err != nil {
 		return context.NewError(context.ERR_NOT_IMPLEMENTED, err)
 	}
 
 	ctx.Log.Info("3.返回结果。")
-	return "success"
+	return res
 }
