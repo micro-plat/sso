@@ -12,13 +12,13 @@ import (
 )
 
 type IDbRole interface {
-	Query(input QueryRoleInput) (data db.QueryRows, count interface{}, err error)
+	Query(input *QueryRoleInput) (data db.QueryRows, count interface{}, err error)
 	ChangeStatus(roleID string, status int) (err error)
 	Delete(roleID int) (err error)
-	Edit(input RoleEditInput) (err error)
-	Add(input RoleEditInput) (err error)
-	Auth(input RoleAuthInput) (err error)
-	AuthMenu(sysID int64, roleID int64) (results []map[string]interface{}, err error)
+	Edit(input *RoleEditInput) (err error)
+	Add(input *RoleEditInput) (err error)
+	Auth(input *RoleAuthInput) (err error)
+	QueryAuthMenu(sysID int64, roleID int64) (results []map[string]interface{}, err error)
 }
 
 //RoleEditInput 编辑角色参数
@@ -54,7 +54,7 @@ func NewDbRole(c component.IContainer) *DbRole {
 }
 
 //Query 获取角色信息列表
-func (r *DbRole) Query(input QueryRoleInput) (data db.QueryRows, count interface{}, err error) {
+func (r *DbRole) Query(input *QueryRoleInput) (data db.QueryRows, count interface{}, err error) {
 	db := r.c.GetRegularDB()
 	params, err := types.Struct2Map(input)
 	if err != nil {
@@ -113,7 +113,7 @@ func (r *DbRole) Delete(roleID int) (err error) {
 }
 
 //Edit 编辑角色信息
-func (r *DbRole) Edit(input RoleEditInput) (err error) {
+func (r *DbRole) Edit(input *RoleEditInput) (err error) {
 	db := r.c.GetRegularDB()
 	params, err := types.Struct2Map(input)
 	if err != nil {
@@ -127,7 +127,7 @@ func (r *DbRole) Edit(input RoleEditInput) (err error) {
 }
 
 //Add 添加角色
-func (r *DbRole) Add(input RoleEditInput) (err error) {
+func (r *DbRole) Add(input *RoleEditInput) (err error) {
 	db := r.c.GetRegularDB()
 	params, err := types.Struct2Map(input)
 	if err != nil {
@@ -142,7 +142,7 @@ func (r *DbRole) Add(input RoleEditInput) (err error) {
 }
 
 //Auth 添加角色权限
-func (r *DbRole) Auth(input RoleAuthInput) (err error) {
+func (r *DbRole) Auth(input *RoleAuthInput) (err error) {
 	db := r.c.GetRegularDB()
 	dbTrans, err := db.Begin()
 	if err != nil {
@@ -181,8 +181,8 @@ func (r *DbRole) Auth(input RoleAuthInput) (err error) {
 	return nil
 }
 
-//AuthMenu 查询角色菜单
-func (r *DbRole) AuthMenu(sysID int64, roleID int64) (results []map[string]interface{}, err error) {
+//QueryAuthMenu 查询角色菜单
+func (r *DbRole) QueryAuthMenu(sysID int64, roleID int64) (results []map[string]interface{}, err error) {
 	db := r.c.GetRegularDB()
 	data, q, a, err := db.Query(sql.QuerySysMenucList, map[string]interface{}{
 		"role_id": roleID,

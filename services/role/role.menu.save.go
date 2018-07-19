@@ -28,7 +28,7 @@ func (u *RoleAuthHandler) Handle(ctx *context.Context) (r interface{}) {
 	}
 
 	ctx.Log.Info("2.执行操作")
-	if err := u.roleLib.Auth(inputData); err != nil {
+	if err := u.roleLib.Auth(&inputData); err != nil {
 		return context.NewError(context.ERR_NOT_IMPLEMENTED, err)
 	}
 

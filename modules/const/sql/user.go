@@ -94,8 +94,8 @@ const QueryUserInfo = `select t.user_id,
   from sso_user_info t
   left join sso_user_role r on r.user_id = t.user_id
   left join sso_role_info ri on ri.role_id = r.role_id
- where 1 = 1 
-       &user_id
+ where &user_id
+			 and rownum<=1
 `
 
 //EditUserInfo 编辑用户信息
@@ -128,8 +128,8 @@ values
 `
 
 //QueryUserPswd 查询用户密码
-const QueryUserPswd = `select t.password
+const QueryUserPswd = `select count(1)
   from sso_user_info t
- where 1 = 1 
-       &user_id
+ where t.user_id=@user_id
+ &password
 `

@@ -6,12 +6,11 @@ import (
 )
 
 type IUser interface {
-	Query(input QueryUserInput) (data db.QueryRows, count interface{}, err error)
+	Query(input *QueryUserInput) (data db.QueryRows, count interface{}, err error)
 	ChangeStatus(userID int, status int) (err error)
 	Delete(userID int) (err error)
-	UserInfo(userID int) (data interface{}, err error)
-	UserEdit(input UserEditInput) (err error)
-	CheckPswd(oldPwd string, newPwd string, userID int64) (code int, err error)
+	Get(userID int) (data db.QueryRow, err error)
+	Save(input *UserEditInput) (err error)
 }
 
 type User struct {
@@ -27,7 +26,7 @@ func NewUser(c component.IContainer) *User {
 }
 
 //Query 获取用户信息列表
-func (u *User) Query(input QueryUserInput) (data db.QueryRows, count interface{}, err error) {
+func (u *User) Query(input *QueryUserInput) (data db.QueryRows, count interface{}, err error) {
 	data, count, err = u.db.Query(input)
 	if err != nil {
 		return nil, nil, err
@@ -35,7 +34,7 @@ func (u *User) Query(input QueryUserInput) (data db.QueryRows, count interface{}
 	return data, count, nil
 }
 
-//CHangeStatus 修改用户状态
+//ChangeStatus 修改用户状态
 func (u *User) ChangeStatus(userID int, status int) (err error) {
 	return u.db.ChangeStatus(userID, status)
 }
@@ -45,29 +44,15 @@ func (u *User) Delete(userID int) (err error) {
 	return u.db.Delete(userID)
 }
 
-//UserInfo 查询用户信息
-func (u *User) UserInfo(userID int) (data interface{}, err error) {
-	data, err = u.db.UserInfo(userID)
-	if err != nil {
-		return nil, err
-	}
-	return data, nil
+//Get 查询用户信息
+func (u *User) Get(userID int) (data db.QueryRow, err error) {
+	return u.db.Get(userID)
 }
 
-//UserEdit 编辑用户信息
-func (u *User) UserEdit(input UserEditInput) (err error) {
+//Save 保存用户信息
+func (u *User) Save(input *UserEditInput) (err error) {
 	if input.IsAdd == 1 {
 		return u.db.Add(input)
-	} else {
-		return u.db.Edit(input)
 	}
-}
-
-//CheckPswd 检查用户原密码是否匹配
-func (u *User) CheckPswd(oldPwd string, newPwd string, userID int64) (code int, err error) {
-	code, err = u.db.CheckPswd(oldPwd, newPwd, userID)
-	if err != nil {
-		return code, err
-	}
-	return 200, nil
+	return u.db.Edit(input)
 }

@@ -27,7 +27,7 @@ func (u *UserInfoHandler) Handle(ctx *context.Context) (r interface{}) {
 	}
 
 	ctx.Log.Info("2.执行操作")
-	data, err := u.userLib.UserInfo(ctx.Request.GetInt("user_id"))
+	data, err := u.userLib.Get(ctx.Request.GetInt("user_id"))
 	if err != nil {
 		return context.NewError(context.ERR_NOT_IMPLEMENTED, err)
 	}

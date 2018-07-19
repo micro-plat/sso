@@ -89,11 +89,6 @@ func bindConf(app *hydra.MicroApp) {
 	}
 		
 		`)
-	app.Conf.Plat.SetVarConf("cache", "abc", `
-			{
-				"name":"杨磊"
-		}			
-			`)
 
 }
 
@@ -185,13 +180,13 @@ func bind(r *hydra.MicroApp) {
 	r.Micro("/sso/user/change", user.NewUserChangeHandler, "/user/index")
 	r.Micro("/sso/user/delete", user.NewUserDelHandler, "/user/index")
 	r.Micro("/sso/user/info", user.NewUserInfoHandler, "/user/index")
-	r.Micro("/sso/user/edit", user.NewUserEditHandler, "/user/index")
+	r.Micro("/sso/user/save", user.NewUserSaveHandler, "/user/index")
 	r.Micro("/sso/base/userrole", base.NewBaseUserHandler, "*")
 
 	r.Micro("/sso/role/query", role.NewRoleHandler, "/user/role")
 	r.Micro("/sso/role/change", role.NewRoleChangeHandler, "/user/role")
 	r.Micro("/sso/role/delete", role.NewRoleDelHandler, "/user/role")
-	r.Micro("/sso/role/edit", role.NewRoleEditHandler, "/user/role")
+	r.Micro("/sso/role/save", role.NewRoleSaveHandler, "/user/role")
 	r.Micro("/sso/role/auth", role.NewRoleAuthHandler, "/user/role")
 	r.Micro("/sso/role/authmenu", role.NewAuthMenuHandler, "/user/role")
 

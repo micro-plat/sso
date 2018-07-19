@@ -5,6 +5,7 @@ import (
 	"strings"
 
 	"github.com/micro-plat/hydra/component"
+	"github.com/micro-plat/hydra/context"
 	"github.com/micro-plat/lib4go/db"
 	"github.com/micro-plat/lib4go/security/md5"
 	"github.com/micro-plat/lib4go/types"
@@ -12,14 +13,16 @@ import (
 	"github.com/micro-plat/sso/modules/const/sql"
 )
 
+var _ IDbUser = &DbUser{}
+
 type IDbUser interface {
-	Query(input QueryUserInput) (data db.QueryRows, count interface{}, err error)
+	Query(input *QueryUserInput) (data db.QueryRows, count interface{}, err error)
 	ChangeStatus(userID int, status int) (err error)
-	UserInfo(userID int) (data interface{}, err error)
+	Get(userID int) (data db.QueryRow, err error)
 	Delete(userID int) (err error)
-	Edit(input UserEditInput) (err error)
-	Add(input UserEditInput) (err error)
-	CheckPswd(oldPwd string, newPwd string, userID int64) (code int, err error)
+	Edit(input *UserEditInput) (err error)
+	Add(input *UserEditInput) (err error)
+	CheckPWD(oldPwd string, userID int64) (err error)
 }
 
 //UserEditInput 编辑用户 输入参数
@@ -42,6 +45,10 @@ type QueryUserInput struct {
 	RoleID    string `form:"role_id" json:"role_id"`
 }
 
+func (i *QueryUserInput) ToString() string {
+	return fmt.Sprintf("%s-%d-%d-%d", i.UserName, i.RoleID, i.PageSize, i.PageIndex)
+}
+
 type DbUser struct {
 	c component.IContainer
 }
@@ -53,7 +60,7 @@ func NewDbUser(c component.IContainer) *DbUser {
 }
 
 //Query 获取用户信息列表
-func (u *DbUser) Query(input QueryUserInput) (data db.QueryRows, count interface{}, err error) {
+func (u *DbUser) Query(input *QueryUserInput) (data db.QueryRows, count interface{}, err error) {
 	db := u.c.GetRegularDB()
 	params := map[string]interface{}{
 		"role_id":   input.RoleID,
@@ -145,21 +152,21 @@ func (u *DbUser) Delete(userID int) (err error) {
 	return nil
 }
 
-//UserInfo 查询用户信息
-func (u *DbUser) UserInfo(userID int) (data interface{}, err error) {
+//Get 查询用户信息
+func (u *DbUser) Get(userID int) (data db.QueryRow, err error) {
 	db := u.c.GetRegularDB()
-	data, q, a, err := db.Scalar(sql.QueryUserInfo, map[string]interface{}{
+	result, q, a, err := db.Query(sql.QueryUserInfo, map[string]interface{}{
 		"user_id": userID,
 	})
 	if err != nil {
 		return nil, fmt.Errorf("查询用户信息发生错误(err:%v),sql:%s,输入参数:%v", err, q, a)
 	}
 
-	return data, nil
+	return result.Get(0), nil
 }
 
 //Edit 编辑用户信息
-func (u *DbUser) Edit(input UserEditInput) (err error) {
+func (u *DbUser) Edit(input *UserEditInput) (err error) {
 	db := u.c.GetRegularDB()
 	dbTrans, err := db.Begin()
 	if err != nil {
@@ -199,7 +206,7 @@ func (u *DbUser) Edit(input UserEditInput) (err error) {
 }
 
 //Add 添加用户
-func (u *DbUser) Add(input UserEditInput) (err error) {
+func (u *DbUser) Add(input *UserEditInput) (err error) {
 	db := u.c.GetRegularDB()
 	dbTrans, err := db.Begin()
 	if err != nil {
@@ -207,6 +214,7 @@ func (u *DbUser) Add(input UserEditInput) (err error) {
 	}
 	params, err := types.Struct2Map(input)
 	if err != nil {
+		dbTrans.Rollback()
 		return fmt.Errorf("Struct2Map Error(err:%v)", err)
 	}
 
@@ -240,20 +248,18 @@ func (u *DbUser) Add(input UserEditInput) (err error) {
 	return nil
 }
 
-//CheckPswd 检查用户原密码是否匹配
-func (u *DbUser) CheckPswd(oldPwd string, newPwd string, userID int64) (code int, err error) {
+//CheckPWD 检查用户原密码是否匹配
+func (u *DbUser) CheckPWD(oldPWD string, userID int64) (err error) {
 	db := u.c.GetRegularDB()
 	row, q, a, err := db.Scalar(sql.QueryUserPswd, map[string]interface{}{
-		"oldpwd":  oldPwd,
-		"newpwd":  newPwd,
-		"user_id": userID,
+		"password": md5.Encrypt(oldPWD),
+		"user_id":  userID,
 	})
 	if err != nil {
-		return 406, fmt.Errorf("查询用户信息发生错误(err:%v),sql:%s,输入参数:%v", err, q, a)
+		return context.NewError(406, fmt.Errorf("查询用户信息发生错误(err:%v),sql:%s,输入参数:%v", err, q, a))
 	}
-	data := md5.EncryptBytes([]byte(row.(string)))
-	if oldPwd != data {
-		return 403, fmt.Errorf("输入的原密码不正确")
+	if fmt.Sprint(row) != "1" {
+		return context.NewError(403, fmt.Errorf("输入的原密码不正确"))
 	}
-	return 400, nil
+	return nil
 }

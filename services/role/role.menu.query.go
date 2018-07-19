@@ -27,7 +27,7 @@ func (u *AuthMenuHandler) Handle(ctx *context.Context) (r interface{}) {
 	}
 
 	ctx.Log.Info("2.执行操作")
-	res, err := u.roleLib.AuthMenu(ctx.Request.GetInt64("sys_id"), ctx.Request.GetInt64("role_id"))
+	res, err := u.roleLib.QueryAuthMenu(ctx.Request.GetInt64("sys_id"), ctx.Request.GetInt64("role_id"))
 	if err != nil {
 		return context.NewError(context.ERR_NOT_IMPLEMENTED, err)
 	}

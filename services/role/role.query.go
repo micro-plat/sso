@@ -27,7 +27,7 @@ func (u *RoleHandler) Handle(ctx *context.Context) (r interface{}) {
 		return context.NewError(context.ERR_NOT_ACCEPTABLE, err)
 	}
 
-	rows, count, err := u.roleLib.Query(inputData)
+	rows, count, err := u.roleLib.Query(&inputData)
 	if err != nil {
 		return context.NewError(context.ERR_NOT_IMPLEMENTED, err)
 	}
