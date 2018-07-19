@@ -22,13 +22,13 @@ func (u *SystemFuncEnableHandler) Handle(ctx *context.Context) (r interface{}) {
 	ctx.Log.Info("------修改系统功能状态------")
 	ctx.Log.Info("1. 参数检查")
 	if err := ctx.Request.Check("id","status");err != nil {
-		return context.NewError(context.ERR_NOT_IMPLEMENTED, err)
+		return context.NewError(context.ERR_NOT_ACCEPTABLE, err)
 	}
 	ctx.Log.Info("2.更新数据库数据--------")
-	err := u.subLib.Enable(ctx.Request.GetInt("id"),ctx.Request.GetInt("status"))
+	err := u.subLib.ChangeStatus(ctx.Request.GetInt("id"),ctx.Request.GetInt("status"))
 	if err != nil {
-		return context.NewError(context.ERR_NOT_IMPLEMENTED, err)
+		return  err
 	}
-	ctx.Log.Info("3.返回数据。")
+	ctx.Log.Info("3.返回数据")
 	return "success"
 }

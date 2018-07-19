@@ -6,62 +6,66 @@ import (
 )
 
 type ISystemFunc interface {
-	Query(sysid int) (result []map[string]interface{}, err error)
-	Enable(id int,status int) (err error)
+	Get(sysid int) (result []map[string]interface{}, err error)
+	ChangeStatus(id int,status int) (err error)
 	Delete(id int) (err error)
-	Edit(input map[string]interface{}) (err error)
-	Add(input map[string]interface{}) (err error)
+	Edit(input *SystemFuncEditInput) (err error)
+	Add(input *SystemFuncAddInput) (err error)
 }
 
 type SystemFunc struct {
 	c  component.IContainer
+	cache ICacheSystemFunc
 	db IDbSystemFunc
 }
 
 func NewSystemFunc(c component.IContainer) *SystemFunc {
 	return &SystemFunc{
 		c:  c,
+		cache: NewCacheSystemFunc(c),
 		db: NewDbSystemFunc(c),
 	}
 }
 
 //Query 获取用系统管理列表
-func (u *SystemFunc) Query(sysid int) (data []map[string]interface{}, err error) {
-	data, err = u.db.Query(sysid)
-	if err != nil {
-		return nil,  err
+func (u *SystemFunc) Get(sysid int) (data []map[string]interface{}, err error) {
+	//从缓存中获取功能信息，不存在时从数据库中获取
+	data, err = u.cache.Query(sysid)
+	if data == nil || err != nil {
+		if data, err = u.db.Get(sysid); err != nil {
+			return nil, err
+		}
+		//保存用户数据到缓存
+		if err = u.cache.Save(sysid,data); err != nil {
+			return nil, err
+		}
 	}
-	return
+	return data, err
 }
 
-func(u *SystemFunc) Enable(id int,status int) (err error){
-	err = u.db.Enable(id,status)
-	if err != nil {
-		return err
-	}
-	return nil
+func(u *SystemFunc) ChangeStatus(id int,status int) (err error){
+	err = u.db.ChangeStatus(id,status)
+	return
 }
 //删除系统
 func (u *SystemFunc) Delete(id int) (err error){
-	err = u.db.Delete(id)
-	if err != nil {
-		return err
+	if err = u.db.Delete(id); err != nil {
+		return
 	}
-	return nil
+	return u.cache.Fresh()
+	
 }
 
-func (u *SystemFunc) Edit(input map[string]interface{}) (err error){
-	err = u.db.Edit(input)
-	if err != nil {
-		return err
+func (u *SystemFunc) Edit(input *SystemFuncEditInput) (err error){
+	if err = u.db.Edit(input); err != nil {
+		return
 	}
-	return nil
+	return u.cache.Fresh()
 }
 
-func (u *SystemFunc) Add(input map[string]interface{}) (err error){
-	err = u.db.Add(input)
-	if err != nil {
-		return err
+func (u *SystemFunc) Add(input *SystemFuncAddInput) (err error){
+	if err = u.db.Add(input); err != nil {
+		return 
 	}
-	return nil
+	return u.cache.Fresh()
 }

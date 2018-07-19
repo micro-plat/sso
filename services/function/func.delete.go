@@ -23,14 +23,14 @@ func (u *SystemFuncDeleteHandler) Handle(ctx *context.Context) (r interface{}) {
 	ctx.Log.Info("------删除系统功能------")
 	ctx.Log.Info("1. 参数检查")
 	if err := ctx.Request.Check("id"); err !=nil {
-		return context.NewError(context.ERR_NOT_IMPLEMENTED, err)
+		return context.NewError(context.ERR_NOT_ACCEPTABLE, err)
 	}
 
 	id := ctx.Request.GetInt("id")
 	ctx.Log.Info("2.更新数据库数据--------")
 	err := u.subLib.Delete(id)
 	if err != nil {
-		return context.NewError(context.ERR_NOT_IMPLEMENTED, err)
+		return  err
 	}
 
 	ctx.Log.Info("3.返回数据。")

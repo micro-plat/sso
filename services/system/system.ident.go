@@ -20,7 +20,7 @@ func NewSystemIdentHandler(container component.IContainer) (u *SystemIdentHandle
 
 func (u *SystemIdentHandler) Handle(ctx *context.Context) (r interface{}) {
 	ident := ctx.Request.GetString("ident", "sso")
-	data, err := u.sys.Query(ident)
+	data, err := u.sys.Get(ident)
 	if err != nil {
 		return err
 	}

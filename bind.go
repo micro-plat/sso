@@ -10,7 +10,6 @@ import (
 	mem "github.com/micro-plat/sso/modules/member"
 	xmenu "github.com/micro-plat/sso/modules/menu"
 	"github.com/micro-plat/sso/services/base"
-	"github.com/micro-plat/sso/services/function"
 	"github.com/micro-plat/sso/services/member"
 	"github.com/micro-plat/sso/services/menu"
 	"github.com/micro-plat/sso/services/qrcode"
@@ -18,6 +17,7 @@ import (
 	"github.com/micro-plat/sso/services/system"
 	"github.com/micro-plat/sso/services/user"
 	"github.com/micro-plat/sso/services/wx"
+	"github.com/micro-plat/sso/services/function"
 )
 
 //bindConf 绑定启动配置， 启动时检查注册中心配置是否存在，不存在则引导用户输入配置参数并自动创建到注册中心
@@ -89,6 +89,11 @@ func bindConf(app *hydra.MicroApp) {
 	}
 		
 		`)
+	app.Conf.Plat.SetVarConf("cache", "abc", `
+			{
+				"name":"杨磊"
+		}			
+			`)
 
 }
 
@@ -168,9 +173,9 @@ func bind(r *hydra.MicroApp) {
 	r.Micro("/qrcode/login", qrcode.NewLoginHandler)  //二维码登录(调用二维码登录接口地址，推送到PC端登录消息)
 	r.Micro("/wx/login", wx.NewLoginHandler)          //微信端登录
 
-	r.Micro("/sso/sys/get", system.NewSystemIdentHandler, "*") //根据系统编号获取系统信息
-	r.Micro("/sso/menu/get", menu.NewMenuHandler, "*")         //获取用户所在系统的菜单信息
-	r.Micro("/sso/popular", menu.NewPopularHandler, "*")       //获取用户所在系统的常用菜单
+	r.Micro("/sso/sys/get", system.NewSystemIdentHandler) //根据系统编号获取系统信息
+	r.Micro("/sso/menu/get", menu.NewMenuHandler)    //获取用户所在系统的菜单信息
+	r.Micro("/sso/popular", menu.NewPopularHandler)  //获取用户所在系统的常用菜单
 
 	//r.Micro("/sso/login/check", member.NewCheckHandler)  //用户登录状态检查，检查用户jwt是否有效
 	r.Micro("/sso/member/query", member.NewQueryHandler, "*") //查询登录用户信息
@@ -180,19 +185,19 @@ func bind(r *hydra.MicroApp) {
 	r.Micro("/sso/user/change", user.NewUserChangeHandler, "/user/index")
 	r.Micro("/sso/user/delete", user.NewUserDelHandler, "/user/index")
 	r.Micro("/sso/user/info", user.NewUserInfoHandler, "/user/index")
-	r.Micro("/sso/user/save", user.NewUserSaveHandler, "/user/index")
-	r.Micro("/sso/base/userrole", base.NewBaseUserHandler, "*")
+	r.Micro("/sso/user/edit", user.NewUserEditHandler, "/user/index")
+	r.Micro("/sso/base/userrole", base.NewBaseUserHandler)
 
 	r.Micro("/sso/role/query", role.NewRoleHandler, "/user/role")
 	r.Micro("/sso/role/change", role.NewRoleChangeHandler, "/user/role")
 	r.Micro("/sso/role/delete", role.NewRoleDelHandler, "/user/role")
-	r.Micro("/sso/role/save", role.NewRoleSaveHandler, "/user/role")
+	r.Micro("/sso/role/edit", role.NewRoleEditHandler, "/user/role")
 	r.Micro("/sso/role/auth", role.NewRoleAuthHandler, "/user/role")
 	r.Micro("/sso/role/authmenu", role.NewAuthMenuHandler, "/user/role")
 
-	r.Micro("/sso/sys/manage", system.NewSystemHandler, "/sys/index")     //系统管理
-	r.Micro("/sso/sys/query", system.NewSystemQueryHandler, "/sys/index") //系统管理查询
-	r.Micro("/sso/sys/edit", system.NewSystemEditHandler, "/sys/index")   //系统编辑
+	r.Micro("/sso/sys/manage", system.NewSystemHandler, "/sys/index")       //系统管理
+	r.Micro("/sso/sys/query", system.NewSystemQueryHandler, "/sys/index")   //系统管理查询
+	r.Micro("/sso/sys/edit", system.NewSystemEditHandler, "/sys/index")     //系统编辑
 
 	r.Micro("/sso/sys/func/query", function.NewSystemFuncQueryHandler, "/sys/index")   //获取功能列表
 	r.Micro("/sso/sys/func/enable", function.NewSystemFuncEnableHandler, "/sys/index") //功能禁用/启用

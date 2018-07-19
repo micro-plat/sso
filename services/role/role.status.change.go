@@ -26,7 +26,7 @@ func (u *RoleChangeHandler) Handle(ctx *context.Context) (r interface{}) {
 	}
 
 	ctx.Log.Info("2.执行操作")
-	if err := u.roleLib.ChangeStatus(ctx.Request.GetString("role_id"), ctx.Request.GetInt("status")); err != nil {
+	if err := u.roleLib.ChangeStatus(ctx.Request.GetInt("role_id"), ctx.Request.GetInt("status")); err != nil {
 		return context.NewError(context.ERR_NOT_IMPLEMENTED, err)
 	}
 

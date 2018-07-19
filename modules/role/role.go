@@ -6,12 +6,12 @@ import (
 )
 
 type IRole interface {
-	Query(input *QueryRoleInput) (data db.QueryRows, count interface{}, err error)
-	ChangeStatus(roleID string, status int) (err error)
-	Delete(roleID int) (err error)
-	Save(input *RoleEditInput) (err error)
-	Auth(input *RoleAuthInput) (err error)
-	QueryAuthMenu(sysID int64, roleID int64) (results []map[string]interface{}, err error)
+	Query(input map[string]interface{}) (data db.QueryRows, count interface{}, err error)
+	ChangeStatus(roleID int, status int) (err error)
+	Delete(input map[string]interface{}) (err error)
+	RoleEdit(input map[string]interface{}) (err error)
+	Auth(input map[string]interface{}) (err error)
+	AuthMenu(input map[string]interface{}) (results []map[string]interface{}, err error)
 }
 
 type Role struct {
@@ -27,39 +27,92 @@ func NewRole(c component.IContainer) *Role {
 }
 
 //Query 获取角色信息列表
-func (r *Role) Query(input *QueryRoleInput) (data db.QueryRows, count interface{}, err error) {
-	return r.db.Query(input)
+func (r *Role) Query(input map[string]interface{}) (data db.QueryRows, count interface{}, err error) {
+	data, count, err = r.db.Query(input)
+	if err != nil {
+		return nil, nil, err
+	}
+	return data, count, nil
 }
 
 //ChangeStatus 修改角色状态
-func (r *Role) ChangeStatus(roleID string, status int) (err error) {
+func (r *Role) ChangeStatus(roleID int, status int) (err error) {
 	return r.db.ChangeStatus(roleID, status)
 }
 
 //Delete 删除角色
-func (r *Role) Delete(roleID int) (err error) {
-	return r.db.Delete(roleID)
+func (r *Role) Delete(input map[string]interface{}) (err error) {
+	return r.db.Delete(input)
 }
 
-//Save 编辑用户信息
-func (r *Role) Save(input *RoleEditInput) (err error) {
-	if input.IsAdd == 1 {
-		return r.db.Add(input)
+//RoleEdit 编辑用户信息
+func (r *Role) RoleEdit(input map[string]interface{}) (err error) {
+	if input["is_add"].(float64) == 1 {
+		err = r.db.Add(input)
+		if err != nil {
+			return err
+		}
+	} else {
+		err = r.db.Edit(input)
+		if err != nil {
+			return err
+		}
 	}
-	return r.db.Edit(input)
-
+	return nil
 }
 
-//Auth 用户授权
-func (r *Role) Auth(input *RoleAuthInput) (err error) {
-	return r.db.Auth(input)
+//Auth 编辑用户信息
+func (r *Role) Auth(input map[string]interface{}) (err error) {
+	err = r.db.Auth(input)
+	if err != nil {
+		return err
+	}
+	return nil
 }
 
-//QueryAuthMenu 查询用户菜单
-func (r *Role) QueryAuthMenu(sysID int64, roleID int64) (results []map[string]interface{}, err error) {
-	data, err := r.db.QueryAuthMenu(sysID, roleID)
+//AuthMenu 编辑用户信息
+func (r *Role) AuthMenu(input map[string]interface{}) (results []map[string]interface{}, err error) {
+	data, err := r.db.AuthMenu(input)
 	if err != nil {
 		return nil, err
 	}
-	return data, nil
+	result := make([]map[string]interface{}, 0, 4)
+	for _, row1 := range data {
+		if row1.GetInt("parent") == 0 && row1.GetInt("level_id") == 1 {
+			children1 := make([]map[string]interface{}, 0, 4)
+			for _, row2 := range data {
+				if row2.GetInt("parent") == row1.GetInt("id") && row2.GetInt("level_id") == 2 {
+					children2 := make([]map[string]interface{}, 0, 8)
+					for _, row3 := range data {
+						if row3.GetInt("parent") == row2.GetInt("id") && row3.GetInt("level_id") == 3 {
+							if row3.GetInt("checked") == 1 {
+								row3["checked"] = true
+							} else {
+								row3["checked"] = false
+							}
+							row3["expanded"] = true
+							children2 = append(children2, row3)
+						}
+					}
+					children1 = append(children1, row2)
+					row2["children"] = children2
+					row2["expanded"] = true
+					if row2.GetInt("checked") == 1 {
+						row2["checked"] = true
+					} else {
+						row2["checked"] = false
+					}
+				}
+			}
+			row1["children"] = children1
+			row1["expanded"] = true
+			if row1.GetInt("checked") == 1 {
+				row1["checked"] = true
+			} else {
+				row1["checked"] = false
+			}
+			result = append(result, row1)
+		}
+	}
+	return result, nil
 }

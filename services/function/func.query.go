@@ -22,12 +22,11 @@ func (u *SystemFuncQueryHandler) Handle(ctx *context.Context) (r interface{}) {
 	ctx.Log.Info("------查询系统功能数据------")
 	ctx.Log.Info("1. 参数检查")
 	sysid := ctx.Request.GetInt("id")
-
 	ctx.Log.Info("2.丛数据库获取数据--------")
-	data,err := u.subLib.Query(sysid)
+	data,err := u.subLib.Get(sysid)
 	if err != nil {
-		return context.NewError(context.ERR_NOT_IMPLEMENTED, err)
+		return  err
 	}
-	ctx.Log.Info("3.返回数据。")
+	ctx.Log.Info("3.返回数据")
 	return data
 }
