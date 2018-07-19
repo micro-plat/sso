@@ -10,13 +10,13 @@ import (
 
 type SystemHandler struct {
 	container component.IContainer
-	subLib sub.ISystemSub
+	subLib sub.ISystem
 }
 
 func NewSystemHandler(container component.IContainer) (u *SystemHandler) {
 	return &SystemHandler{
 		container: container,
-		subLib:   sub.NewSystemSub(container),
+		subLib:   sub.NewSystem(container),
 	}
 }
 
@@ -58,7 +58,7 @@ func (u *SystemHandler) PostHandle(ctx *context.Context) (r interface{}){
 
 //DeleteHandle 删除系统管理ByID
 func (u *SystemHandler) DeleteHandle(ctx *context.Context)(r interface{}){
-	ctx.Log.Info("------删除系统管理数-----")
+	ctx.Log.Info("------删除系统管理数据-----")
 	ctx.Log.Info("1.参数检查")
 	if err := ctx.Request.Check("id"); err != nil {
 		return context.NewError(context.ERR_NOT_ACCEPTABLE, err)

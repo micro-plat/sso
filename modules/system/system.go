@@ -57,7 +57,7 @@ func (u *System) Query(page int,name string,status string) (data db.QueryRows, c
 			return nil, err,nil
 		}
 	}
-	return data, err, nil
+	return data, len(data), nil
 }
 
 //Delete 删除系统

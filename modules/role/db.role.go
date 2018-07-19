@@ -7,7 +7,8 @@ import (
 	"github.com/micro-plat/hydra/component"
 	"github.com/micro-plat/lib4go/db"
 	"github.com/micro-plat/sso/modules/const/sql"
-	"github.com/micro-plat/sso/modules/const/util"
+	
+
 )
 
 type IDbRole interface {

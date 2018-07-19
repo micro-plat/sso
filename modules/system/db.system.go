@@ -34,7 +34,7 @@ type AddSystemInput struct {
 	Logo string `form:"logo" json:"logo" valid:"required"`
 	Style string `form:"style" json:"style" valid:"required"`
 	Theme string `form:"theme" json:"theme"`
-	Ident string `form:"ident" json:"ident" vaild:"ident"`
+	Ident string `form:"ident" json:"ident" vaild:"required"`
 }
 
 type DbSystem struct {

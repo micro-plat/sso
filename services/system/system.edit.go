@@ -8,13 +8,13 @@ import (
 
 type SystemEditHandler struct {
 	container component.IContainer
-	subLib sub.ISystemSub
+	subLib sub.ISystem
 }
 
 func NewSystemEditHandler(container component.IContainer) (u *SystemEditHandler) {
 	return &SystemEditHandler{
 		container: container,
-		subLib:   sub.NewSystemSub(container),
+		subLib:   sub.NewSystem(container),
 	}
 }
 
