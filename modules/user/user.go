@@ -6,12 +6,11 @@ import (
 )
 
 type IUser interface {
-	Query(input map[string]interface{}) (data db.QueryRows, count interface{}, err error)
-	CHangeStatus(input map[string]interface{}) (err error)
-	Delete(input map[string]interface{}) (err error)
-	UserInfo(input map[string]interface{}) (data interface{}, err error)
-	UserEdit(input map[string]interface{}) (err error)
-	CheckPswd(input map[string]interface{}) (code int, err error)
+	Query(input *QueryUserInput) (data db.QueryRows, count interface{}, err error)
+	ChangeStatus(userID int, status int) (err error)
+	Delete(userID int) (err error)
+	Get(userID int) (data db.QueryRow, err error)
+	Save(input *UserEditInput) (err error)
 }
 
 type User struct {
@@ -73,11 +72,10 @@ func (u *User) Get(userID int) (data db.QueryRow, err error) {
 	return data, nil
 }
 
-//CheckPswd 检查用户原密码是否匹配
-func (u *User) CheckPswd(input map[string]interface{}) (code int, err error) {
-	code, err = u.db.CheckPswd(input)
-	if err != nil {
-		return code, err
+//Save 保存用户信息
+func (u *User) Save(input *UserEditInput) (err error) {
+	if input.IsAdd == 1 {
+		return u.db.Add(input)
 	}
 	if err := u.db.Edit(input); err != nil {
 		return err

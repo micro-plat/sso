@@ -1,6 +1,7 @@
 package enum
 
 const UserDefaultPassword = `abc123$`
+
 const (
 	Normal   = 0
 	Locked   = 1
