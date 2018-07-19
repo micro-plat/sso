@@ -167,15 +167,15 @@ func bind(r *hydra.MicroApp) {
 		xmenu.Set(c)                                                                                    //保存全局菜单变量
 		return nil
 	})
-	r.Micro("/sso/login", member.NewLoginHandler)     //用户名密码登录
-	r.Micro("/sso/login/code", member.NewCodeHandler) //根据用户登录code设置jwt信息
-	r.WS("/qrcode/login", qrcode.NewLoginHandler)     //二维码登录（获取二维码登录地址,接收用户扫码后的消息推送）
-	r.Micro("/qrcode/login", qrcode.NewLoginHandler)  //二维码登录(调用二维码登录接口地址，推送到PC端登录消息)
-	r.Micro("/wx/login", wx.NewLoginHandler)          //微信端登录
+	r.Micro("/sso/login", member.NewLoginHandler, "*")     //用户名密码登录
+	r.Micro("/sso/login/code", member.NewCodeHandler, "*") //根据用户登录code设置jwt信息
+	r.WS("/qrcode/login", qrcode.NewLoginHandler, "*")     //二维码登录（获取二维码登录地址,接收用户扫码后的消息推送）
+	r.Micro("/qrcode/login", qrcode.NewLoginHandler, "*")  //二维码登录(调用二维码登录接口地址，推送到PC端登录消息)
+	r.Micro("/wx/login", wx.NewLoginHandler, "*")          //微信端登录
 
-	r.Micro("/sso/sys/get", system.NewSystemIdentHandler) //根据系统编号获取系统信息
-	r.Micro("/sso/menu/get", menu.NewMenuHandler)         //获取用户所在系统的菜单信息
-	r.Micro("/sso/popular", menu.NewPopularHandler)       //获取用户所在系统的常用菜单
+	r.Micro("/sso/sys/get", system.NewSystemIdentHandler, "*") //根据系统编号获取系统信息
+	r.Micro("/sso/menu/get", menu.NewMenuHandler, "*")         //获取用户所在系统的菜单信息
+	r.Micro("/sso/popular", menu.NewPopularHandler, "*")       //获取用户所在系统的常用菜单
 
 	//r.Micro("/sso/login/check", member.NewCheckHandler)  //用户登录状态检查，检查用户jwt是否有效
 	r.Micro("/sso/member/query", member.NewQueryHandler, "*") //查询登录用户信息
@@ -186,7 +186,7 @@ func bind(r *hydra.MicroApp) {
 	r.Micro("/sso/user/delete", user.NewUserDelHandler, "/user/index")
 	r.Micro("/sso/user/info", user.NewUserInfoHandler, "/user/index")
 	r.Micro("/sso/user/save", user.NewUserSaveHandler, "/user/index")
-	r.Micro("/sso/base/userrole", base.NewBaseUserHandler)
+	r.Micro("/sso/base/userrole", base.NewBaseUserHandler, "*")
 
 	r.Micro("/sso/role/query", role.NewRoleHandler, "/user/role")
 	r.Micro("/sso/role/change", role.NewRoleChangeHandler, "/user/role")
@@ -195,8 +195,8 @@ func bind(r *hydra.MicroApp) {
 	r.Micro("/sso/role/auth", role.NewRoleAuthHandler, "/user/role")
 	r.Micro("/sso/role/authmenu", role.NewAuthMenuHandler, "/user/role")
 
-	r.Micro("/sso/sys/manage", system.NewSystemHandler, "/sys/index")       //系统管理
-	r.Micro("/sso/sys/edit", system.NewSystemEditHandler, "/sys/index")     //系统编辑
+	r.Micro("/sso/sys/manage", system.NewSystemHandler, "/sys/index", "/user/index", "/user/role", "/role/auth") //系统管理
+	r.Micro("/sso/sys/edit", system.NewSystemEditHandler, "/sys/index")                                          //系统编辑
 
 	r.Micro("/sso/sys/func/query", function.NewSystemFuncQueryHandler, "/sys/index")   //获取功能列表
 	r.Micro("/sso/sys/func/enable", function.NewSystemFuncEnableHandler, "/sys/index") //功能禁用/启用
