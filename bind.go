@@ -195,9 +195,8 @@ func bind(r *hydra.MicroApp) {
 	r.Micro("/sso/role/auth", role.NewRoleAuthHandler, "/user/role")
 	r.Micro("/sso/role/authmenu", role.NewAuthMenuHandler, "/user/role")
 
-	r.Micro("/sso/sys/manage", system.NewSystemHandler, "/sys/index")     //系统管理
-	r.Micro("/sso/sys/query", system.NewSystemQueryHandler, "/sys/index") //系统管理查询
-	r.Micro("/sso/sys/edit", system.NewSystemEditHandler, "/sys/index")   //系统编辑
+	r.Micro("/sso/sys/manage", system.NewSystemHandler, "/sys/index")       //系统管理
+	r.Micro("/sso/sys/edit", system.NewSystemEditHandler, "/sys/index")     //系统编辑
 
 	r.Micro("/sso/sys/func/query", function.NewSystemFuncQueryHandler, "/sys/index")   //获取功能列表
 	r.Micro("/sso/sys/func/enable", function.NewSystemFuncEnableHandler, "/sys/index") //功能禁用/启用
