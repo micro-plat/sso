@@ -45,10 +45,6 @@ type QueryUserInput struct {
 	RoleID    string `form:"role_id" json:"role_id"`
 }
 
-func (i *QueryUserInput) ToString() string {
-	return fmt.Sprintf("%s-%d-%d-%d", i.UserName, i.RoleID, i.PageSize, i.PageIndex)
-}
-
 type DbUser struct {
 	c component.IContainer
 }

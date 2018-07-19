@@ -43,10 +43,6 @@ type QueryRoleInput struct {
 	RoleName  string `form:"role_name" json:"role_name"`
 }
 
-func (i *QueryRoleInput) ToString() string {
-	return fmt.Sprintf("%s-%d-%d", i.RoleName, i.PageSize, i.PageIndex)
-}
-
 type DbRole struct {
 	c component.IContainer
 }

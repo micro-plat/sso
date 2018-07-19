@@ -44,18 +44,18 @@ func (u *User) Query(input *QueryUserInput) (data db.QueryRows, count interface{
 
 //ChangeStatus 修改用户状态
 func (u *User) ChangeStatus(userID int, status int) (err error) {
-	if err := u.db.ChangeStatus(userID, status); err != nil {
+	if err := u.cache.Delete(); err != nil {
 		return err
 	}
-	return u.cache.Delete()
+	return u.db.ChangeStatus(userID, status)
 }
 
 //Delete 删除用户
 func (u *User) Delete(userID int) (err error) {
-	if err := u.db.Delete(userID); err != nil {
+	if err := u.cache.Delete(); err != nil {
 		return err
 	}
-	return u.cache.Delete()
+	return u.db.Delete(userID)
 }
 
 //Get 查询用户信息
@@ -74,11 +74,11 @@ func (u *User) Get(userID int) (data db.QueryRow, err error) {
 
 //Save 保存用户信息
 func (u *User) Save(input *UserEditInput) (err error) {
+	if err := u.cache.Delete(); err != nil {
+		return err
+	}
 	if input.IsAdd == 1 {
 		return u.db.Add(input)
 	}
-	if err := u.db.Edit(input); err != nil {
-		return err
-	}
-	return u.cache.Delete()
+	return u.db.Edit(input)
 }

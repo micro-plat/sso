@@ -45,40 +45,40 @@ func (r *Role) Query(input *QueryRoleInput) (data db.QueryRows, count interface{
 
 //ChangeStatus 修改角色状态
 func (r *Role) ChangeStatus(roleID string, status int) (err error) {
-	if err := r.db.ChangeStatus(roleID, status); err != nil {
+	if err := r.cache.Delete(); err != nil {
 		return err
 	}
-	return r.cache.Delete()
+	return r.db.ChangeStatus(roleID, status)
 }
 
 //Delete 删除角色
 func (r *Role) Delete(roleID int) (err error) {
-	if err := r.db.Delete(roleID); err != nil {
+	if err := r.cache.Delete(); err != nil {
 		return err
 	}
-	return r.cache.Delete()
+	return r.db.Delete(roleID)
 }
 
 //Save 编辑角色信息
 func (r *Role) Save(input *RoleEditInput) (err error) {
+	if err := r.cache.Delete(); err != nil {
+		return err
+	}
 	if input.IsAdd == 1 {
 		return r.db.Add(input)
 	}
-	if err := r.db.Edit(input); err != nil {
-		return err
-	}
-	return r.cache.Delete()
+	return r.db.Edit(input)
 }
 
 //Auth 用户授权
 func (r *Role) Auth(input *RoleAuthInput) (err error) {
-	if err := r.db.Auth(input); err != nil {
+	if err := r.cache.DeleteAuthMenu(); err != nil {
 		return err
 	}
 	if err := r.cache.Delete(); err != nil {
 		return err
 	}
-	return r.cache.DeleteAuthMenu()
+	return r.db.Auth(input)
 }
 
 //QueryAuthMenu 查询用户菜单
