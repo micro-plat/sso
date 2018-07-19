@@ -27,14 +27,14 @@ type IDbUser interface {
 
 //UserEditInput 编辑用户 输入参数
 type UserEditInput struct {
-	UserName string `form:"user_name" json:"user_name"`
+	UserName string `form:"user_name" json:"user_name" valid:"ascii,required"`
 	UserID   int64  `form:"user_id" json:"user_id"`
-	RoleID   int64  `form:"role_id" json:"role_id"`
-	Mobile   int64  `form:"mobile" json:"mobile"`
-	Status   int    `form:"status" json:"status"`
-	IsAdd    int    `form:"is_add" json:"is_add"`
-	Auth     string `form:"auth" json:"auth"`
-	Email    string `form:"email" json:"email"`
+	RoleID   int64  `form:"role_id" json:"role_id" `
+	Mobile   int64  `form:"mobile" json:"mobile" valid:"length(11|11),required"`
+	Status   int    `form:"status" json:"status" valid:"in(0,2),required"`
+	IsAdd    int    `form:"is_add" json:"is_add" valid:"required"`
+	Auth     string `form:"auth" json:"auth" valid:"required"`
+	Email    string `form:"email" json:"email" valid:"email,required"`
 }
 
 //QueryUserInput 查询用户列表输入参数
