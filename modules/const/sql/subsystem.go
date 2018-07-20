@@ -1,6 +1,6 @@
 package sql
 
-const QuerySubSystemTotalCount = `select count(*) from sso_system_info where t 1=1  ?t.name  &t.enable`
+const QuerySubSystemTotalCount = `select count(1) from sso_system_info where 1=1?name &enable`
 
 const QuerySubSystemList = `select t.* from sso_system_info t where t.id >= @id`
 
@@ -8,9 +8,9 @@ const QuerySubSystemPageList = `
 select 
 t2.* 
 from 
-(select t1.*,rownum as rn from sso_system_info t1 where 1=1 ?t.name  &t.enable and rownum < @pageIndex * @pageSize) t2 
+(select t.*,rownum as rn from sso_system_info t where 1=1?t.name  &t.enable and rownum < @pi * @ps) t2 
 where 
-t2.rn > (@pageIndex - 1) * @pageSize`
+t2.rn > (@pi - 1) * @ps`
 
 const DeleteSubSystemById = `delete from sso_system_info where id = @id`
 

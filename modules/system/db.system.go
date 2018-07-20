@@ -66,17 +66,18 @@ func (u *DbSystem) Query(name string, status string, pi int, ps int) (data db.Qu
 		"enable": status,
 	})
 	if err != nil {
-		return nil, 0, fmt.Errorf("获取系统管理列表条数发生错误(err:%v),sql:%s,输入参数:%v,", err, q, a)
+		return nil, 0, fmt.Errorf("获取系统管理列表条数发生错误(err:%v),sql:(%s),输入参数:%v,", err, q, a)
 	}
 	data, q, a, err = db.Query(sql.QuerySubSystemPageList, map[string]interface{}{
-		"name":      name,
-		"enable":    status,
-		"pageIndex": pi,
-		"pageSize":  ps,
+		"name":   name,
+		"enable": status,
+		"pi":     pi,
+		"ps":     ps,
 	})
 	if err != nil {
 		return nil, 0, fmt.Errorf("获取系统管理列表发生错误(err:%v),sql:%s,输入参数:%v,", err, q, a)
 	}
+	fmt.Println("data:", data, pi, ps, q, a)
 	return data, types.ToInt(c), nil
 }
 
