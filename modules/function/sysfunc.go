@@ -30,17 +30,17 @@ func NewSystemFunc(c component.IContainer) *SystemFunc {
 //Query 获取用系统管理列表
 func (u *SystemFunc) Get(sysid int) (data []map[string]interface{}, err error) {
 	//从缓存中获取功能信息，不存在时从数据库中获取
-	// data, err = u.cache.Query(sysid)
-	// if data == nil || err != nil {
+	data, err = u.cache.Query(sysid)
+	if data == nil || err != nil {
 		 data, err = u.db.Get(sysid); 
 		if err != nil {
 			return nil, err
 		}
 		//保存用户数据到缓存
-		// if err = u.cache.Save(sysid,data); err != nil {
-		// 	return nil, err
-		// }
-	// }
+		if err = u.cache.Save(sysid,data); err != nil {
+			return nil, err
+		}
+	}
 	return data, err
 }
 //ChangeStatus 修改功能状态

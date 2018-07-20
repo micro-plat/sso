@@ -9,8 +9,8 @@ import (
 )
 
 const (
-	cacheFormat = "sso:system:func:{@sysid}"
-	cacheFormatDel = "sso:system:func:*"
+	cacheFormat = "{sso}:system:func:{@sysid}"
+	cacheFormatDel = "{sso}:system:func:*"
 )
 
 

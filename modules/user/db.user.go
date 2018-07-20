@@ -16,7 +16,7 @@ import (
 var _ IDbUser = &DbUser{}
 
 type IDbUser interface {
-	Query(input *QueryUserInput) (data db.QueryRows, count interface{}, err error)
+	Query(input *QueryUserInput) (data db.QueryRows, total int, err error)
 	ChangeStatus(userID int, status int) (err error)
 	Get(userID int) (data db.QueryRow, err error)
 	Delete(userID int) (err error)
@@ -31,7 +31,7 @@ type UserEditInput struct {
 	UserID   int64  `form:"user_id" json:"user_id"`
 	RoleID   int64  `form:"role_id" json:"role_id" `
 	Mobile   int64  `form:"mobile" json:"mobile" valid:"length(11|11),required"`
-	Status   int    `form:"status" json:"status" valid:"required"`
+	Status   int    `form:"status" json:"status"`
 	IsAdd    int    `form:"is_add" json:"is_add" valid:"required"`
 	Auth     string `form:"auth" json:"auth" valid:"required"`
 	Email    string `form:"email" json:"email" valid:"email,required"`
@@ -56,7 +56,7 @@ func NewDbUser(c component.IContainer) *DbUser {
 }
 
 //Query 获取用户信息列表
-func (u *DbUser) Query(input *QueryUserInput) (data db.QueryRows, count interface{}, err error) {
+func (u *DbUser) Query(input *QueryUserInput) (data db.QueryRows, total int, err error) {
 	db := u.c.GetRegularDB()
 	params := map[string]interface{}{
 		"role_id":   input.RoleID,
@@ -66,15 +66,15 @@ func (u *DbUser) Query(input *QueryUserInput) (data db.QueryRows, count interfac
 	}
 	count, q, a, err := db.Scalar(sql.QueryUserInfoListCount, params)
 	if err != nil {
-		return nil, nil, fmt.Errorf("获取用户信息列表条数发生错误(err:%v),sql:%s,输入参数:%v", err, q, a)
+		return nil, 0, fmt.Errorf("获取用户信息列表条数发生错误(err:%v),sql:%s,输入参数:%v", err, q, a)
 	}
 	data, q, a, err = db.Query(sql.QueryUserInfoList, params)
 	if err != nil {
-		return nil, nil, fmt.Errorf("获取用户信息列表发生错误(err:%v),sql:%s,输入参数:%v", err, q, a)
+		return nil, 0, fmt.Errorf("获取用户信息列表发生错误(err:%v),sql:%s,输入参数:%v", err, q, a)
 	}
 	sysRoles, q, a, err := db.Query(sql.QueryUserRoleList, params)
 	if err != nil {
-		return nil, nil, fmt.Errorf("获取用户信息列表发生错误(err:%v),sql:%s,输入参数:%v", err, q, a)
+		return nil, 0, fmt.Errorf("获取用户信息列表发生错误(err:%v),sql:%s,输入参数:%v", err, q, a)
 	}
 
 	roles := make(map[string][]map[string]string)
@@ -98,7 +98,7 @@ func (u *DbUser) Query(input *QueryUserInput) (data db.QueryRows, count interfac
 		user["roles"] = roles[uid]
 		user["rolestr"] = rolestr[uid]
 	}
-	return data, count, nil
+	return data, types.ToInt(count, 0), nil
 }
 
 //ChangeStatus 修改用户状态

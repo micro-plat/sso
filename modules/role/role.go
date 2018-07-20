@@ -6,7 +6,7 @@ import (
 )
 
 type IRole interface {
-	Query(input *QueryRoleInput) (data db.QueryRows, count interface{}, err error)
+	Query(input *QueryRoleInput) (data db.QueryRows, count int, err error)
 	ChangeStatus(roleID string, status int) (err error)
 	Delete(roleID int) (err error)
 	Save(input *RoleEditInput) (err error)
@@ -29,15 +29,15 @@ func NewRole(c component.IContainer) *Role {
 }
 
 //Query 获取角色信息列表
-func (r *Role) Query(input *QueryRoleInput) (data db.QueryRows, count interface{}, err error) {
+func (r *Role) Query(input *QueryRoleInput) (data db.QueryRows, count int, err error) {
 	//从缓存中获取角色信息，不存在时从数据库中获取
 	data, count, err = r.cache.Query(input)
-	if data == nil || count == nil || err != nil {
+	if data == nil || count == 0 || err != nil {
 		if data, count, err = r.db.Query(input); err != nil {
-			return nil, nil, err
+			return nil, 0, err
 		}
 		if err = r.cache.Save(input, data, count); err != nil {
-			return nil, nil, err
+			return nil, 0, err
 		}
 	}
 	return data, count, nil

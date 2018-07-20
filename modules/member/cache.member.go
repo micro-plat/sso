@@ -24,9 +24,9 @@ type CacheMember struct {
 }
 
 const (
-	cacheFormat     = "sso:login:state-info:{@userName}-{@ident}"
-	cacheCodeFormat = "sso:login:state-code:{@userName}-{@ident}"
-	lockFormat      = "sso:login:state-locker:{@userName}"
+	cacheFormat     = "{sso}:login:state-info:{@userName}-{@ident}"
+	cacheCodeFormat = "{sso}:login:state-code:{@userName}-{@ident}"
+	lockFormat      = "{sso}:login:state-locker:{@userName}"
 )
 
 //NewCacheMember 创建登录对象

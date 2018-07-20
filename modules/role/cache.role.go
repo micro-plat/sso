@@ -7,11 +7,12 @@ import (
 	"github.com/micro-plat/hydra/component"
 	"github.com/micro-plat/lib4go/db"
 	"github.com/micro-plat/lib4go/transform"
+	"github.com/micro-plat/lib4go/types"
 )
 
 type ICacheRole interface {
-	Query(s *QueryRoleInput) (data db.QueryRows, count interface{}, err error)
-	Save(s *QueryRoleInput, data db.QueryRows, count interface{}) error
+	Query(s *QueryRoleInput) (data db.QueryRows, count int, err error)
+	Save(s *QueryRoleInput, data db.QueryRows, count int) error
 	Delete() error
 	SaveAuthMenu(sysID int64, roleID int64, data []map[string]interface{}) error
 	QueryAuthMenu(sysID int64, roleID int64) (data []map[string]interface{}, err error)
@@ -25,12 +26,12 @@ type CacheRole struct {
 }
 
 const (
-	cacheRoleListFormat      = "sso:role:list:{@roleName}-{@pageSize}-{@pageIndex}"
-	cacheRoleListAll         = "sso:role:list:*"
-	cacheRoleListCountFormat = "sso:role:list-count:{@roleName}-{@pageSize}-{@pageIndex}"
-	cacheRoleListCountAll    = "sso:role:list-count:*"
-	cacheRoleFormat          = "sso:role:menu:{@roleID}-{@sysID}"
-	cacheRoleAll             = "sso:role:menu:*"
+	cacheRoleListFormat      = "{sso}:role:list:{@roleName}-{@pageSize}-{@pageIndex}"
+	cacheRoleListAll         = "{sso}:role:list:*"
+	cacheRoleListCountFormat = "{sso}:role:list-count:{@roleName}"
+	cacheRoleListCountAll    = "{sso}:role:list-count:*"
+	cacheRoleFormat          = "{sso}:role:menu:{@roleID}-{@sysID}"
+	cacheRoleAll             = "{sso}:role:menu:*"
 )
 
 //NewCacheRole 创建角色缓存对象
@@ -42,52 +43,43 @@ func NewCacheRole(c component.IContainer) *CacheRole {
 }
 
 //Save 缓存角色列表信息
-func (l *CacheRole) Save(s *QueryRoleInput, data db.QueryRows, count interface{}) error {
+func (l *CacheRole) Save(s *QueryRoleInput, data db.QueryRows, count int) error {
 	buff, err := json.Marshal(data)
 	if err != nil {
 		return err
 	}
-	buff1 := count.(string)
 	cache := l.c.GetRegularCache()
-	key := transform.Translate(cacheRoleListFormat, "roleName", s.RoleName, "pageSize", s.PageSize, "pageIndex", s.PageIndex)
-	key1 := transform.Translate(cacheRoleListCountFormat, "roleName", s.RoleName, "pageSize", s.PageSize, "pageIndex", s.PageIndex)
-	if err := cache.Set(key, string(buff), l.cacheTime); err != nil {
+	keyData := transform.Translate(cacheRoleListFormat, "roleName", s.RoleName, "pageSize", s.PageSize, "pageIndex", s.PageIndex)
+	keyCount := transform.Translate(cacheRoleListCountFormat, "roleName", s.RoleName)
+	if err := cache.Set(keyData, string(buff), l.cacheTime); err != nil {
 		return err
 	}
-	return cache.Set(key1, string(buff1), l.cacheTime)
+	return cache.Set(keyCount, fmt.Sprint(count), l.cacheTime)
 }
 
 //Query 获取角色列表数据
-func (l *CacheRole) Query(s *QueryRoleInput) (data db.QueryRows, count interface{}, err error) {
+func (l *CacheRole) Query(s *QueryRoleInput) (data db.QueryRows, count int, err error) {
 	//从缓存中查询角色列表数据
 	cache := l.c.GetRegularCache()
-	key := transform.Translate(cacheRoleListFormat, "roleName", s.RoleName, "pageSize", s.PageSize, "pageIndex", s.PageIndex)
-	key1 := transform.Translate(cacheRoleListCountFormat, "roleName", s.RoleName, "pageSize", s.PageSize, "pageIndex", s.PageIndex)
-	v, err := cache.Get(key)
+	keyData := transform.Translate(cacheRoleListFormat, "roleName", s.RoleName, "pageSize", s.PageSize, "pageIndex", s.PageIndex)
+	keyCount := transform.Translate(cacheRoleListCountFormat, "roleName", s.RoleName)
+	v, err := cache.Get(keyData)
 	if err != nil {
-		return nil, nil, err
+		return nil, 0, err
 	}
 	if v == "" {
-		return nil, nil, fmt.Errorf("无角色列表数据")
+		return nil, 0, fmt.Errorf("无角色列表数据")
 	}
 	nmap := make(db.QueryRows, 0, 8)
 	if err = json.Unmarshal([]byte(v), &nmap); err != nil {
-		return nil, nil, err
+		return nil, 0, err
 	}
 
-	c, err := cache.Get(key1)
+	c, err := cache.Get(keyCount)
 	if err != nil {
-		return nil, nil, err
+		return nil, 0, err
 	}
-	if c == "" {
-		return nil, nil, fmt.Errorf("无角色列表数据")
-	}
-	ni := new(interface{})
-	if err = json.Unmarshal([]byte(c), &ni); err != nil {
-		return nil, nil, err
-	}
-
-	return nmap, ni, err
+	return nmap, types.ToInt(c, 0), err
 }
 
 //Delete 缓存角色列表信息删除

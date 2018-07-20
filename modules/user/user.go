@@ -6,7 +6,7 @@ import (
 )
 
 type IUser interface {
-	Query(input *QueryUserInput) (data db.QueryRows, count interface{}, err error)
+	Query(input *QueryUserInput) (data db.QueryRows, count int, err error)
 	ChangeStatus(userID int, status int) (err error)
 	Delete(userID int) (err error)
 	Get(userID int) (data db.QueryRow, err error)
@@ -28,15 +28,15 @@ func NewUser(c component.IContainer) *User {
 }
 
 //Query 获取用户信息列表
-func (u *User) Query(input *QueryUserInput) (data db.QueryRows, count interface{}, err error) {
+func (u *User) Query(input *QueryUserInput) (data db.QueryRows, count int, err error) {
 	//从缓存中获取用户信息，不存在时从数据库中获取
 	data, count, err = u.cache.Query(input)
-	if data == nil || count == nil || err != nil {
+	if data == nil || count == 0 || err != nil {
 		if data, count, err = u.db.Query(input); err != nil {
-			return nil, nil, err
+			return nil, 0, err
 		}
 		if err = u.cache.Save(input, data, count); err != nil {
-			return nil, nil, err
+			return nil, 0, err
 		}
 	}
 	return data, count, nil
