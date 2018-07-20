@@ -47,17 +47,18 @@ func (m *System) Get(ident string) (s db.QueryRow, err error) {
 //Query 获取用系统管理列表
 func (u *System) Query(page int,name string,status string) (data db.QueryRows, count interface{}, err error) {
 	//从缓存获取数据
-	data, err = u.cache.QuerySysInfo(page,name,status)
-	if data == nil || err != nil {
-		if	data, count, err = u.db.Query(page,name,status); err != nil {
+	// data, err = u.cache.QuerySysInfo(page,name,status)
+	// if data == nil || err != nil {
+		data, count, err = u.db.Query(page,name,status)
+		if  err != nil {
 			return nil, nil, err
 		}
 		//保存系统数据到缓存
-		if err = u.cache.SaveSysInfo(page,name,status,data); err != nil {
-			return nil, err,nil
-		}
-	}
-	return data, len(data), nil
+	// 	if err = u.cache.SaveSysInfo(page,name,status,data); err != nil {
+	// 		return nil, err,nil
+	// 	}
+	// }
+	return data, count, nil
 }
 
 //Delete 删除系统

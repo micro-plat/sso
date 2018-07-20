@@ -1,6 +1,6 @@
 package sql
 
-const QuerySubSystemTotalCount = `select count(*) from sso_system_info where t 1=1  ?t.name  &t.enable`
+const QuerySubSystemTotalCount = `select count(*) from sso_system_info where t 1=1  &t.enable`
 
 const QuerySubSystemList = `select t.* from sso_system_info t where t.id >= @id`
 
