@@ -25,7 +25,7 @@ type IDbRole interface {
 type RoleEditInput struct {
 	RoleName string `form:"role_name" json:"role_name" valid:"required"`
 	RoleID   int64  `form:"role_id" json:"role_id"`
-	Status   int    `form:"status" json:"status" valid:"required"`
+	Status   int    `form:"status" json:"status"`
 	IsAdd    int    `form:"is_add" json:"is_add" valid:"required"`
 }
 

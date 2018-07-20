@@ -31,7 +31,7 @@ type UserEditInput struct {
 	UserID   int64  `form:"user_id" json:"user_id"`
 	RoleID   int64  `form:"role_id" json:"role_id" `
 	Mobile   int64  `form:"mobile" json:"mobile" valid:"length(11|11),required"`
-	Status   int    `form:"status" json:"status" valid:"required"`
+	Status   int    `form:"status" json:"status"`
 	IsAdd    int    `form:"is_add" json:"is_add" valid:"required"`
 	Auth     string `form:"auth" json:"auth" valid:"required"`
 	Email    string `form:"email" json:"email" valid:"email,required"`
