@@ -25,8 +25,9 @@ type SystemEditInput struct {
 	Login_timeout string `form:"login_timeout" json:"login_timeout" valid:"required"`
 	Logo          string `form:"logo" json:"logo" valid:"required"`
 	Name          string `form:"name" json:"name" valid:"required"`
-	Theme         string `form:"theme"`
-	Layout        string `form:"layout"`
+	Theme         string `form:"theme" json:"theme"`
+	Layout        string `form:"layout" json:"layout"`
+	Ident         string `form:"ident" json:"ident"`
 }
 
 type AddSystemInput struct {
@@ -134,6 +135,7 @@ func (u *DbSystem) Edit(input *SystemEditInput) (err error) {
 		"name":          input.Name,
 		"layout":        input.Layout,
 		"theme":         input.Theme,
+		"ident":   		 input.Ident,
 	}
 	_, q, a, err := db.Execute(sql.UpdateEdit, params)
 	if err != nil {

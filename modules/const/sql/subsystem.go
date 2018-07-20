@@ -23,6 +23,6 @@ where t.id=@id
 `
 
 const UpdateEdit = `update sso_system_info t
-set  t.enable = @enable,t.index_url=@index_url,t.login_timeout=@login_timeout,t.logo=@logo,t.name=@name,t.theme=@theme,t.layout=@layout
+set  t.enable = @enable,t.index_url=@index_url,t.login_timeout=@login_timeout,t.logo=@logo,t.name=@name,t.theme=@theme,t.layout=@layout,t.ident=@ident
 where t.id=@id
 `
