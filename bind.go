@@ -187,6 +187,7 @@ func bind(r *hydra.MicroApp) {
 	r.Micro("/sso/user/info", user.NewUserInfoHandler, "/user/index")
 	r.Micro("/sso/user/save", user.NewUserSaveHandler, "/user/index")
 	r.Micro("/sso/base/userrole", base.NewBaseUserHandler, "*")
+	r.Micro("/sso/base/sys", base.NewBaseSysHandler, "*")
 
 	r.Micro("/sso/role/query", role.NewRoleHandler, "/user/role")
 	r.Micro("/sso/role/change", role.NewRoleChangeHandler, "/user/role")
@@ -195,8 +196,8 @@ func bind(r *hydra.MicroApp) {
 	r.Micro("/sso/role/auth", role.NewRoleAuthHandler, "/user/role")
 	r.Micro("/sso/role/authmenu", role.NewAuthMenuHandler, "/user/role")
 
-	r.Micro("/sso/sys/manage", system.NewSystemHandler, "/sys/index", "/user/index", "/user/role", "/role/auth") //系统管理
-	r.Micro("/sso/sys/edit", system.NewSystemEditHandler, "/sys/index")                                          //系统编辑
+	r.Micro("/sso/sys/manage", system.NewSystemHandler, "/sys/index")   //系统管理
+	r.Micro("/sso/sys/edit", system.NewSystemEditHandler, "/sys/index") //系统编辑
 
 	r.Micro("/sso/sys/func/query", function.NewSystemFuncQueryHandler, "/sys/index")   //获取功能列表
 	r.Micro("/sso/sys/func/enable", function.NewSystemFuncEnableHandler, "/sys/index") //功能禁用/启用
