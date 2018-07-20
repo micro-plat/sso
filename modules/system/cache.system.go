@@ -10,19 +10,17 @@ import (
 )
 
 const (
-	cacheFormat = "sso:system:info:{@ident}"
-	cacheFormatSys = "sso:system:info:{@page}-{name}-{status}"
-	cacheFormatSysDel = "sso:system:info:*"
+	cacheFormat       = "{sso:system:info}:{@ident}"
+	cacheFormatSys    = "{sso:system:info}:{@page}-{name}-{status}"
+	cacheFormatSysDel = "{sso:system:info}:*"
 )
-
 
 type ICacheSystem interface {
 	Save(s db.QueryRow) (err error)
-	SaveSysInfo(page int,name string,status string,s db.QueryRows) (err error)
+	SaveSysInfo(page int, name string, status string, s db.QueryRows) (err error)
 	Query(ident string) (ls db.QueryRow, err error)
-	QuerySysInfo(page int,name string,status string)(ls db.QueryRows,err error)
-	FreshSysInfo()(err error)
-
+	QuerySysInfo(page int, name string, status string) (ls db.QueryRows, err error)
+	FreshSysInfo() (err error)
 }
 
 type CacheSystem struct {
@@ -68,21 +66,23 @@ func (l *CacheSystem) Query(ident string) (ls db.QueryRow, err error) {
 	cache.Delete(key)
 	return nmap, err
 }
+
 //SaveSysInfo  写入系统数据缓存
-func (l *CacheSystem) SaveSysInfo(page int,name string,status string,s db.QueryRows) (err error){
+func (l *CacheSystem) SaveSysInfo(page int, name string, status string, s db.QueryRows) (err error) {
 	buff, err := json.Marshal(s)
 	if err != nil {
 		return err
 	}
 	cache := l.c.GetRegularCache()
-	key := transform.Translate(cacheFormatSys, "page",page,"name",name,"status",status)
+	key := transform.Translate(cacheFormatSys, "page", page, "name", name, "status", status)
 	return cache.Set(key, string(buff), l.cacheTime)
 }
+
 //QuerySysInfo  获取缓存系统数据
-func (l *CacheSystem) QuerySysInfo(page int,name string,status string)(ls db.QueryRows,err error) {
+func (l *CacheSystem) QuerySysInfo(page int, name string, status string) (ls db.QueryRows, err error) {
 	//从缓存中获取系统数据
 	cache := l.c.GetRegularCache()
-	key := transform.Translate(cacheFormatSys, "page", page,"name",name,"status",status)
+	key := transform.Translate(cacheFormatSys, "page", page, "name", name, "status", status)
 	v, err := cache.Get(key)
 	if err != nil {
 		return nil, err
@@ -96,8 +96,9 @@ func (l *CacheSystem) QuerySysInfo(page int,name string,status string)(ls db.Que
 	}
 	return nmap, err
 }
+
 //DeleteSysInfo 刷新缓存
-func (l *CacheSystem) FreshSysInfo()(err error){
+func (l *CacheSystem) FreshSysInfo() (err error) {
 	cache := l.c.GetRegularCache()
 	return cache.Delete(cacheFormatSysDel)
 }

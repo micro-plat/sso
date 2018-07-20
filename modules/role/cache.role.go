@@ -25,12 +25,12 @@ type CacheRole struct {
 }
 
 const (
-	cacheRoleListFormat      = "sso:role:list:{@roleName}-{@pageSize}-{@pageIndex}"
-	cacheRoleListAll         = "sso:role:list:*"
-	cacheRoleListCountFormat = "sso:role:list-count:{@roleName}-{@pageSize}-{@pageIndex}"
-	cacheRoleListCountAll    = "sso:role:list-count:*"
-	cacheRoleFormat          = "sso:role:menu:{@roleID}-{@sysID}"
-	cacheRoleAll             = "sso:role:menu:*"
+	cacheRoleListFormat      = "{sso}:role:list:{@roleName}-{@pageSize}-{@pageIndex}"
+	cacheRoleListAll         = "{sso}:role:list:*"
+	cacheRoleListCountFormat = "{sso}:role:list-count:{@roleName}-{@pageSize}-{@pageIndex}"
+	cacheRoleListCountAll    = "{sso}:role:list-count:*"
+	cacheRoleFormat          = "{sso}:role:menu:{@roleID}-{@sysID}"
+	cacheRoleAll             = "{sso}:role:menu:*"
 )
 
 //NewCacheRole 创建角色缓存对象
