@@ -8,9 +8,9 @@ const QuerySubSystemPageList = `
 select 
 t2.* 
 from 
-(select t1.*,rownum as rn from sso_system_info t1 where 1=1 ?t.name  &t.enable and rownum < @page * @pageSize) t2 
+(select t1.*,rownum as rn from sso_system_info t1 where 1=1 ?t.name  &t.enable and rownum < @pageIndex * @pageSize) t2 
 where 
-t2.rn > (@page - 1) * @pageSize`
+t2.rn > (@pageIndex - 1) * @pageSize`
 
 const DeleteSubSystemById = `delete from sso_system_info where id = @id`
 

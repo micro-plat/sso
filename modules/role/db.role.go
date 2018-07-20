@@ -12,7 +12,7 @@ import (
 )
 
 type IDbRole interface {
-	Query(input *QueryRoleInput) (data db.QueryRows, count interface{}, err error)
+	Query(input *QueryRoleInput) (data db.QueryRows, count int, err error)
 	ChangeStatus(roleID string, status int) (err error)
 	Delete(roleID int) (err error)
 	Edit(input *RoleEditInput) (err error)
@@ -54,24 +54,24 @@ func NewDbRole(c component.IContainer) *DbRole {
 }
 
 //Query 获取角色信息列表
-func (r *DbRole) Query(input *QueryRoleInput) (data db.QueryRows, count interface{}, err error) {
+func (r *DbRole) Query(input *QueryRoleInput) (data db.QueryRows, count int, err error) {
 	db := r.c.GetRegularDB()
 	params, err := types.Struct2Map(input)
 	if err != nil {
-		return nil, nil, fmt.Errorf("Struct2Map Error(err:%v)", err)
+		return nil, 0, fmt.Errorf("Struct2Map Error(err:%v)", err)
 	}
 
 	params["role_sql"] = " and t.name like '%" + input.RoleName + "%' "
-	count, q, a, err := db.Scalar(sql.QueryRoleInfoListCount, params)
+	c, q, a, err := db.Scalar(sql.QueryRoleInfoListCount, params)
 	if err != nil {
-		return nil, nil, fmt.Errorf("获取角色信息列表条数发生错误(err:%v),sql:%s,输入参数:%v", err, q, a)
+		return nil, 0, fmt.Errorf("获取角色信息列表条数发生错误(err:%v),sql:%s,输入参数:%v", err, q, a)
 	}
 
 	data, q, a, err = db.Query(sql.QueryRoleInfoList, params)
 	if err != nil {
-		return nil, nil, fmt.Errorf("获取角色信息列表发生错误(err:%v),sql:%s,输入参数:%v", err, q, a)
+		return nil, 0, fmt.Errorf("获取角色信息列表发生错误(err:%v),sql:%s,输入参数:%v", err, q, a)
 	}
-	return data, count, nil
+	return data, types.ToInt(c), nil
 }
 
 //ChangeStatus 修改角色状态
@@ -160,6 +160,7 @@ func (r *DbRole) Auth(input *RoleAuthInput) (err error) {
 	}
 
 	if input.SelectAuth == "" {
+		dbTrans.Commit()
 		return nil
 	}
 	//添加新权限
