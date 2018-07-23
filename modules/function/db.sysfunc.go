@@ -98,14 +98,14 @@ func (u *DbSystemFunc) Delete(id int) (err error){
 }
 
 func (u *DbSystemFunc) Edit(input *SystemFuncEditInput) (err error){
-	Db := u.c.GetRegularDB()
+	db := u.c.GetRegularDB()
 	params := map[string]interface{}{
 		"id": input.Id,
 		"name": input.Name,
 		"icon": input.Icon,
 		"path": input.Path,
 	}
-	_,q,a,err := Db.Execute(sql.EditSysFunc,params)
+	_,q,a,err := db.Execute(sql.EditSysFunc,params)
 	if err != nil {
 		return fmt.Errorf("编辑系统功能发生错误(err:%v),sql:%s,参数：%v", err, q,a)
 	}

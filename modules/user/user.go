@@ -11,6 +11,8 @@ type IUser interface {
 	Delete(userID int) (err error)
 	Get(userID int) (data db.QueryRow, err error)
 	Save(input *UserEditInput) (err error)
+	Edit(username string,tel string,email string)(err error)
+	ChangePwd(user_id int,expassword string,newpassword string)(err error)
 }
 
 type User struct {
@@ -81,4 +83,18 @@ func (u *User) Save(input *UserEditInput) (err error) {
 		return u.db.Add(input)
 	}
 	return u.db.Edit(input)
+}
+
+func (u *User) Edit(username string,tel string,email string)(err error){
+	if err := u.cache.Delete(); err != nil {
+		return err
+	}
+	return u.db.EditInfo(username,tel,email)
+}
+
+func (u *User) ChangePwd(user_id int,expassword string,newpassword string)(err error) {
+	if err := u.cache.Delete(); err != nil {
+		return err
+	}
+	return u.db.ChangePwd(user_id,expassword,newpassword)
 }

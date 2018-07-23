@@ -81,22 +81,7 @@ where t.user_id = @user_id
 const DeleteUser = `delete from sso_user_info t where t.user_id = @user_id`
 
 //QueryUserInfo 查询用户信息列表
-const QueryUserInfo = `select t.user_id,
-       t.user_name,
-       t.status,
-       decode(t.status, 0, '正常', 1, '锁定', 2, '禁用') status_label,
-       t.mobile,
-       to_char(t.create_time, 'yyyy/mm/dd hh24:mi') create_time,
-       ri.name role_name,
-       r.sys_id,
-       r.role_id,
-       r.enable
-  from sso_user_info t
-  left join sso_user_role r on r.user_id = t.user_id
-  left join sso_role_info ri on ri.role_id = r.role_id
- where &user_id
-			 and rownum<=1
-`
+const QueryUserInfo = `select t.user_id,t.user_name,t.mobile,t.email from sso_user_info t where t.user_id=@user_id`
 
 //EditUserInfo 编辑用户信息
 const EditUserInfo = `update sso_user_info t
@@ -133,3 +118,12 @@ const QueryUserPswd = `select count(1)
  where t.user_id=@user_id
  &password
 `
+const EditInfo = `update sso_user_info t
+set  t.mobile = @tel, t.email = @email
+where t.user_name = @username`
+
+const QueryOldPwd = `select t.password from sso_user_info t where t.user_id=@user_id`
+
+const SetNewPwd = `update sso_user_info t
+set t.password = @password
+where t.user_id = @user_id`

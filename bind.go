@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-
 	"github.com/micro-plat/hydra/component"
 	"github.com/micro-plat/hydra/context"
 	"github.com/micro-plat/hydra/hydra"
@@ -18,6 +17,7 @@ import (
 	"github.com/micro-plat/sso/services/system"
 	"github.com/micro-plat/sso/services/user"
 	"github.com/micro-plat/sso/services/wx"
+	"github.com/micro-plat/sso/services/image"
 )
 
 //bindConf 绑定启动配置， 启动时检查注册中心配置是否存在，不存在则引导用户输入配置参数并自动创建到注册中心
@@ -186,7 +186,9 @@ func bind(r *hydra.MicroApp) {
 	r.Micro("/sso/user/change", user.NewUserChangeHandler, "/user/index")
 	r.Micro("/sso/user/delete", user.NewUserDelHandler, "/user/index")
 	r.Micro("/sso/user/info", user.NewUserInfoHandler, "/user/index")
+	r.Micro("/sso/user/edit",user.NewUserEditHandler,"/user/index")
 	r.Micro("/sso/user/save", user.NewUserSaveHandler, "/user/index")
+	r.Micro("/sso/user/changepwd", user.NewUserPasswordHandler, "*")
 	r.Micro("/sso/base/userrole", base.NewBaseUserHandler, "*")
 	r.Micro("/sso/base/sys", base.NewBaseSysHandler, "*")
 
@@ -205,5 +207,7 @@ func bind(r *hydra.MicroApp) {
 	r.Micro("/sso/sys/func/delete", function.NewSystemFuncDeleteHandler, "/sys/index") //功能删除
 	r.Micro("/sso/sys/func/edit", function.NewSystemFuncEditHandler, "/sys/index")     //功能编辑
 	r.Micro("/sso/sys/func/add", function.NewSystemFuncAddHandler, "/sys/index")       //功能添加
+
+	r.Micro("/sso/img/upload",image.NewImageHandler("./static/img","http://192.168.7.188"),"/sys/index")  //图片上传
 
 }
