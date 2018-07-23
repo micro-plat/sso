@@ -243,6 +243,8 @@ func (u *DbUser) Add(input *UserEditInput) (err error) {
 	}
 
 	dbTrans.Commit()
+	//发送确认邮件
+	
 	return nil
 }
 

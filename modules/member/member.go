@@ -22,6 +22,7 @@ type IMember interface {
 	Login(u string, p string, ident string) (*LoginState, error)
 	Query(uid int64) (db.QueryRow, error)
 	LoginByOpenID(string, string) (*LoginState, error)
+	SendCheckMail(from string, password string, host string, port string, to string, link string) (error)
 }
 
 //Member 用户登录管理
@@ -46,10 +47,10 @@ func (m *Member) Query(uid int64) (db.QueryRow, error) {
 //SendCheckMail 发送确认邮件
 func (m *Member) SendCheckMail(from string, password string, host string, port string, to string, link string) error {
 	e := email.NewEmail()
-	e.From = fmt.Sprintf("系统管理员<%s>", from)
+	e.From = from
 	e.To = []string{to}
 	e.Subject = "用户账户确认"
-	e.HTML = []byte(fmt.Sprintf("<h1>%s!</h1>", link))
+	e.HTML = []byte(fmt.Sprintf("<h1>欢迎!</h1><br/><h1>感谢您在本系统注册，请复制以下链接到微信打开以完成帐号绑定!</h1><br/><h1 style='color:bule'>%s</h1>", link))
 	return e.Send(host+":"+port, smtp.PlainAuth("", from, password, host))
 }
 
