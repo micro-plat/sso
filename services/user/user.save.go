@@ -39,6 +39,7 @@ func (u *UserSaveHandler) Handle(ctx *context.Context) (r interface{}) {
 	}
 	//新添加用户要进行邮箱检验
 	if inputData.IsAdd == 1 {
+		ctx.Log.Info("发送验证邮件")
 
 	}
 	resUri, err := url.Parse("http://sso.100bm.cn/sso/user/bind")
@@ -49,6 +50,6 @@ func (u *UserSaveHandler) Handle(ctx *context.Context) (r interface{}) {
 	if err := u.member.SendCheckMail(enum.From,enum.Password,enum.Host,enum.Port,inputData.Email,link); err != nil {
 		return err
 	}
-	ctx.Log.Info("3.返回结果。")
+	ctx.Log.Info("3.返回结果")
 	return "success"
 }

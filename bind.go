@@ -209,5 +209,5 @@ func bind(r *hydra.MicroApp) {
 	r.Micro("/sso/sys/func/add", function.NewSystemFuncAddHandler, "/sys/index")       //功能添加
 
 	r.Micro("/sso/img/upload",image.NewImageHandler("./static/img","http://192.168.7.188"),"/sys/index")  //图片上传
-
+	
 }
