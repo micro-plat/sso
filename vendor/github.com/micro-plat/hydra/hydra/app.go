@@ -6,6 +6,7 @@ import (
 	"reflect"
 
 	"github.com/micro-plat/hydra/conf/creator"
+	"github.com/micro-plat/hydra/hydra/daemon"
 
 	"github.com/asaskevich/govalidator"
 	"github.com/micro-plat/hydra/component"
@@ -20,12 +21,14 @@ import (
 type MicroApp struct {
 	app    *cli.App
 	logger *logger.Logger
-	Conf   *creator.Binder
-	hydra  *Hydra
+	//Conf 绑定安装程序
+	Conf  *creator.Binder
+	hydra *Hydra
 	*option
 	remoteQueryService *rqs.RemoteQueryService
-	registry           registry.IRegistry
+	//	registry           registry.IRegistry
 	component.IComponentRegistry
+	service daemon.Daemon
 }
 
 //NewApp 创建微服务应用
@@ -36,13 +39,21 @@ func NewApp(opts ...Option) (m *MicroApp) {
 		opt(m.option)
 	}
 	m.logger = logger.GetSession("hydra", logger.CreateSession())
+	m.logger.DoPrint = nil
+	m.logger.DoPrintf = nil
 	return m
 }
 
 //Start 启动服务器
 func (m *MicroApp) Start() {
+	var err error
 	defer logger.Close()
 	m.app = m.getCliApp()
+	m.service, err = daemon.New(m.app.Name, m.app.Name)
+	if err != nil {
+		m.logger.Error(err)
+		return
+	}
 	if err := m.app.Run(os.Args); err != nil {
 		return
 	}
@@ -52,22 +63,28 @@ func (m *MicroApp) Start() {
 func (m *MicroApp) Use(r func(r component.IServiceRegistry)) {
 	r(m.IComponentRegistry)
 }
+
 func (m *MicroApp) action(c *cli.Context) (err error) {
-	if m.remoteLogger {
-		m.RemoteLogger = m.remoteLogger
-	}
 	if err := m.checkInput(); err != nil {
 		cli.ErrWriter.Write([]byte("  " + err.Error() + "\n\n"))
 		cli.ShowCommandHelp(c, c.Command.Name)
 		return nil
 	}
-	if m.registry, err = registry.NewRegistryWithAddress(m.RegistryAddr, m.logger); err != nil {
-		m.logger.Error(err)
-		return err
+	//初始化远程日志
+	if m.remoteLogger {
+		m.RemoteLogger = m.remoteLogger
 	}
 
+	//启动服务查询
 	if m.RemoteQueryService {
-		m.remoteQueryService, err = rqs.NewHRemoteQueryService(m.PlatName, m.SystemName, m.ServerTypes, m.ClusterName, m.registry, VERSION)
+		//创建注册中心
+		rgst, err := registry.NewRegistryWithAddress(m.RegistryAddr, m.logger)
+		if err != nil {
+			m.logger.Error(err)
+			return err
+		}
+
+		m.remoteQueryService, err = rqs.NewHRemoteQueryService(m.PlatName, m.SystemName, m.ServerTypes, m.ClusterName, rgst, VERSION)
 		if err != nil {
 			m.logger.Error(err)
 			return err
@@ -81,8 +98,9 @@ func (m *MicroApp) action(c *cli.Context) (err error) {
 	}
 
 	m.hydra = NewHydra(m.PlatName, m.SystemName, m.ServerTypes, m.ClusterName, m.Trace,
-		m.RegistryAddr, m.Conf, m.IsDebug, m.RemoteLogger, m.IComponentRegistry)
-	if err := m.hydra.Start(); err != nil {
+		m.RegistryAddr, m.IsDebug, m.RemoteLogger, m.logger, m.IComponentRegistry)
+
+	if _, err := m.hydra.Start(); err != nil {
 		m.logger.Error(err)
 		return err
 	}
