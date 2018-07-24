@@ -45,7 +45,7 @@ func bindConf(app *hydra.MicroApp) {
 	app.Conf.API.SetSubConf("auth", `
 		{
 			"jwt": {
-				"exclude": ["/sso/login","/sso/login/code","/sso/wxcode/get","/sso/sys/get","/qrcode/login","/qrcode/login/put"],
+				"exclude": ["/sso/login","/sso/login/code","/sso/wxcode/get","/sso/sys/get","/qrcode/login","/qrcode/login/put","/sso/user/bind"],
 				"expireAt": 36000,
 				"mode": "HS512",
 				"name": "__jwt__",
@@ -189,6 +189,7 @@ func bind(r *hydra.MicroApp) {
 	r.Micro("/sso/user/edit",user.NewUserEditHandler,"/user/index")
 	r.Micro("/sso/user/save", user.NewUserSaveHandler, "/user/index")
 	r.Micro("/sso/user/changepwd", user.NewUserPasswordHandler, "*")
+	r.Micro("/sso/user/bind",user.NewUserBindHandler,"*")   //绑定用户
 	r.Micro("/sso/base/userrole", base.NewBaseUserHandler, "*")
 	r.Micro("/sso/base/sys", base.NewBaseSysHandler, "*")
 
@@ -209,5 +210,5 @@ func bind(r *hydra.MicroApp) {
 	r.Micro("/sso/sys/func/add", function.NewSystemFuncAddHandler, "/sys/index")       //功能添加
 
 	r.Micro("/sso/img/upload",image.NewImageHandler("./static/img","http://192.168.7.188"),"/sys/index")  //图片上传
-	
+
 }

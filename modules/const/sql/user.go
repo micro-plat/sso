@@ -127,3 +127,9 @@ const QueryOldPwd = `select t.password from sso_user_info t where t.user_id=@use
 const SetNewPwd = `update sso_user_info t
 set t.password = @password
 where t.user_id = @user_id`
+
+const QueryUserBind = `select t.email,t.wx_openid from sso_user_info t where t.email=@email`
+
+const ExecUserBind = `update sso_user_info t
+set t.wx_openid = @wx_openid
+where t.email = @email`
