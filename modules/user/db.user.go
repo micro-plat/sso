@@ -23,6 +23,8 @@ type IDbUser interface {
 	Edit(input *UserEditInput) (err error)
 	Add(input *UserEditInput) (err error)
 	CheckPWD(oldPwd string, userID int64) (err error)
+	EditInfo(username string,tel string,email string) (err error)
+	ChangePwd(user_id int,expassword string,newpassword string)(err error)
 }
 
 //UserEditInput 编辑用户 输入参数
@@ -241,6 +243,8 @@ func (u *DbUser) Add(input *UserEditInput) (err error) {
 	}
 
 	dbTrans.Commit()
+	//发送确认邮件
+	
 	return nil
 }
 
@@ -258,4 +262,45 @@ func (u *DbUser) CheckPWD(oldPWD string, userID int64) (err error) {
 		return context.NewError(403, fmt.Errorf("输入的原密码不正确"))
 	}
 	return nil
+}
+
+func (u *DbUser) EditInfo(username string,tel string,email string) (err error){
+	db := u.c.GetRegularDB()
+	params := map[string]interface{}{
+		"username": username,
+		"tel": tel,
+		"email": email,
+	}
+	_,q,a,err := db.Execute(sql.EditInfo,params)
+	if err != nil {
+		return fmt.Errorf("编辑个人资料发生错误(err:%v),sql:%s,参数：%v", err, q,a)
+	}
+	return   nil
+
+}
+
+func (u *DbUser) ChangePwd(user_id int,expassword string,newpassword string)(err error) {
+	db := u.c.GetRegularDB()
+	
+	//获取旧密码
+	data,q,a,err := db.Query(sql.QueryOldPwd,map[string]interface{}{
+		"user_id": user_id,
+	})
+	if err != nil {
+		return fmt.Errorf("获取原密码错误(err:%v),sql:%s,参数：%v", err, q,a)
+	}
+	if md5.Encrypt(expassword) != strings.ToLower(data.Get(0).GetString("password")) {
+		return fmt.Errorf("原密码错误")
+	}
+	dbTrans, err := db.Begin()
+	_,q,a,err = db.Execute(sql.SetNewPwd,map[string]interface{}{
+		"user_id": user_id,
+		"password": strings.ToUpper(md5.Encrypt(newpassword)),
+	})
+	if err != nil {
+		dbTrans.Rollback()
+		return fmt.Errorf("设置密码错误(err:%v),sql:%s,参数：%v", err, q,a)
+	}
+	dbTrans.Commit()
+	return   nil
 }

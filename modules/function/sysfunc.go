@@ -32,7 +32,8 @@ func (u *SystemFunc) Get(sysid int) (data []map[string]interface{}, err error) {
 	//从缓存中获取功能信息，不存在时从数据库中获取
 	data, err = u.cache.Query(sysid)
 	if data == nil || err != nil {
-		if data, err = u.db.Get(sysid); err != nil {
+		 data, err = u.db.Get(sysid); 
+		if err != nil {
 			return nil, err
 		}
 		//保存用户数据到缓存
@@ -44,8 +45,10 @@ func (u *SystemFunc) Get(sysid int) (data []map[string]interface{}, err error) {
 }
 //ChangeStatus 修改功能状态
 func(u *SystemFunc) ChangeStatus(id int,status int) (err error){
-	err = u.db.ChangeStatus(id,status)
-	return
+	if err = u.db.ChangeStatus(id,status); err != nil {
+		return 
+	}
+	return u.cache.Fresh()
 }
 //Delete 删除系统功能
 func (u *SystemFunc) Delete(id int) (err error){
