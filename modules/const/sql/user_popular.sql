@@ -1,3 +1,6 @@
+
+drop table sso_user_popular;
+
 create table sso_user_popular(
   id number(20) not null,
   user_id number(20) not null,
@@ -23,6 +26,7 @@ add constraint pk_user_popular primary key(id);
 alter table sso_user_popular
 add constraint unq_user_popular unique(user_id,menu_id);
 
+drop sequence seq_user_popular_id;
 
 create sequence seq_user_popular_id
 minvalue 100

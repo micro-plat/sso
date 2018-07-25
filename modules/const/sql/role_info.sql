@@ -1,3 +1,6 @@
+
+drop table sso_role_info;
+
 create table sso_role_info(
 	role_id number(20) not null,
   name varchar2(64) not null,
@@ -18,9 +21,14 @@ add constraint pk_role_info primary key(role_id);
 alter table sso_role_info
 add constraint unq_role_info unique(name);
 
+drop sequence seq_role_info_id;
 
 create sequence seq_role_info_id
 minvalue 10000
 maxvalue 99999
 start with 10000
 cache 20;
+
+
+insert into sso_role_info (ROLE_ID, NAME, STATUS, CREATE_TIME)
+values (1, '管理员', 0, to_date('20180724', 'yyyymmdd'));

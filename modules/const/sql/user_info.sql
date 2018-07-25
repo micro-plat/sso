@@ -1,3 +1,5 @@
+drop table sso_user_info;
+
 create table sso_user_info(
 	user_id number(20) not null,
   user_name varchar2(64) not null,
@@ -5,7 +7,7 @@ create table sso_user_info(
 	email  varchar2(32) not null,
 	status number(1) default 1 not null,
   mobile number(11) not null,
-  wx_openid  varchar2(64) not null,
+  wx_openid  varchar2(64),
   create_time date default sysdate not null
   );
 
@@ -26,9 +28,13 @@ add constraint pk_user_info primary key(user_id);
 alter table sso_user_info
 add constraint unq_user_info unique(user_name);
 
+drop sequence seq_user_info_id;
 
 create sequence seq_user_info_id
 minvalue 10000
 maxvalue 99999
 start with 10000
 cache 20;
+
+insert into sso_user_info (USER_ID, USER_NAME, PASSWORD, STATUS, MOBILE,  CREATE_TIME, EMAIL)
+values (1, 'admin', 'E10ADC3949BA59ABBE56E057F20F883E', 0, 0,to_date('20180724', 'yyyymmdd'), '#email');

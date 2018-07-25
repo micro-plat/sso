@@ -1,12 +1,20 @@
 package creator
 
 import (
+	"bytes"
 	"fmt"
+	"io/ioutil"
 	"path/filepath"
+	"strings"
 
 	"github.com/micro-plat/hydra/component"
 )
 
+type Input struct {
+	Name    string
+	Desc    string
+	Filters []func(string) (string, error)
+}
 type IBinder interface {
 	GetMainConfNames(platName string, systemName string, tp string, clusterName string) []string
 	GetSubConfNames(serverType string) []string
@@ -23,6 +31,9 @@ type IBinder interface {
 	GetSubConfScanNum(serverType string, subName string) int
 	GetVarConfScanNum(nodeName string) int
 	GetInstallers(serverType string) []func(c component.IContainer) error
+	GetSQL(dir string) ([]string, error)
+	GetInput() map[string]*Input
+	SetParam(k, v string)
 	Print()
 }
 type Binder struct {
@@ -34,18 +45,20 @@ type Binder struct {
 	CRON    *MainBinder
 	Plat    IPlatBinder
 	binders map[string]*MainBinder
+	params  map[string]string
+	input   map[string]*Input
 	show    bool
 }
 
 func NewBinder() *Binder {
-	s := &Binder{}
-	s.API = NewMainBinder()
-	s.RPC = NewMainBinder()
-	s.WS = NewMainBinder()
-	s.WEB = NewMainBinder()
-	s.MQC = NewMainBinder()
-	s.CRON = NewMainBinder()
-	s.Plat = NewPlatBinder()
+	s := &Binder{params: make(map[string]string), input: make(map[string]*Input)}
+	s.API = NewMainBinder(s.params)
+	s.RPC = NewMainBinder(s.params)
+	s.WS = NewMainBinder(s.params)
+	s.WEB = NewMainBinder(s.params)
+	s.MQC = NewMainBinder(s.params)
+	s.CRON = NewMainBinder(s.params)
+	s.Plat = NewPlatBinder(s.params)
 	s.binders = map[string]*MainBinder{
 		"api":  s.API,
 		"rpc":  s.RPC,
@@ -58,6 +71,19 @@ func NewBinder() *Binder {
 }
 func (s *Binder) Print() {
 	fmt.Println(s.binders)
+}
+func (s *Binder) SetParam(k, v string) {
+	s.params[k] = v
+}
+func (s *Binder) GetInput() map[string]*Input {
+	return s.input
+}
+func (s *Binder) SetInput(key, desc string, filters ...func(v string) (string, error)) {
+	s.input[key] = &Input{
+		Name:    key,
+		Desc:    desc,
+		Filters: filters,
+	}
 }
 func (s *Binder) GetInstallers(serverType string) []func(c component.IContainer) error {
 	return s.binders[serverType].GetInstallers()
@@ -133,4 +159,32 @@ func (s *Binder) GetSubConf(serverType string, subName string) string {
 //GetVarConf 获取平台配置信息
 func (s *Binder) GetVarConf(nodeName string) string {
 	return s.Plat.GetNodeConf(nodeName)
+}
+
+//GetSQL 获取指定目录下所有.sql文件中的SQL语句，并用分号拆分
+func (s *Binder) GetSQL(dir string) ([]string, error) {
+	files, err := filepath.Glob(filepath.Join(dir, "*.sql"))
+	if err != nil {
+		return nil, err
+	}
+	buff := bytes.NewBufferString("")
+	for _, f := range files {
+		buf, err := ioutil.ReadFile(f)
+		if err != nil {
+			return nil, err
+		}
+		_, err = buff.Write(buf)
+		if err != nil {
+			return nil, err
+		}
+		buff.WriteString(";")
+	}
+	tables := make([]string, 0, 8)
+	tbs := strings.Split(buff.String(), ";")
+	for _, t := range tbs {
+		if tb := strings.TrimSpace(t); len(tb) > 0 {
+			tables = append(tables, Translate(tb, s.params))
+		}
+	}
+	return tables, nil
 }

@@ -1,3 +1,5 @@
+drop table sso_system_info;
+
 create table sso_system_info(
   id number(20) not null,
   name varchar2(32) not null,
@@ -31,9 +33,14 @@ add constraint unq_system_info unique(name);
 alter table sso_system_info
 add constraint unq_system_info_ident unique(ident);
 
+drop sequence seq_system_info_id;
 
 create sequence seq_system_info_id
 minvalue 100
 maxvalue 999
 start with 100
 cache 20;
+
+
+insert into sso_system_info (ID, NAME, INDEX_URL, ENABLE, LOGIN_TIMEOUT, LOGO, THEME, LAYOUT, IDENT)
+values (1, '用户权限系统', '/user/index', 1, 30000, 'lt.png', 'bg-danger|bg-white|bg-dark', 'app-header-fixed', 'sso');

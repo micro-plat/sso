@@ -1,3 +1,5 @@
+drop table sso_user_role;
+
 create table sso_user_role(
   id number(20) not null,
   user_id number(20) not null,
@@ -20,9 +22,15 @@ add constraint pk_user_role primary key(id);
 alter table sso_user_role
 add constraint unq_user_role unique(user_id,sys_id,role_id);
 
+drop sequence seq_user_role_id;
 
 create sequence seq_user_role_id
 minvalue 100
 maxvalue 999
 start with 100
 cache 20;
+
+
+
+insert into sso_user_role (ID, USER_ID, SYS_ID, ROLE_ID, ENABLE)
+values (1, 1,1, 1, 1);
