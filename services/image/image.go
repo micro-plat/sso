@@ -75,7 +75,7 @@ func (ch *ImageHandler) PostHandle(ctx *context.Context) (r interface{}) {
 		return context.NewError(500, err)
 	}
 	return map[string]interface{}{
-		"url": filepath.Join(localPath),
+		"url": name,
 	}
 }
 
