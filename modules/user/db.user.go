@@ -25,6 +25,7 @@ type IDbUser interface {
 	CheckPWD(oldPwd string, userID int64) (err error)
 	EditInfo(username string,tel string,email string) (err error)
 	ChangePwd(user_id int,expassword string,newpassword string)(err error)
+	Bind(email string,openID string) (err error)
 }
 
 //UserEditInput 编辑用户 输入参数
@@ -293,6 +294,9 @@ func (u *DbUser) ChangePwd(user_id int,expassword string,newpassword string)(err
 		return fmt.Errorf("原密码错误")
 	}
 	dbTrans, err := db.Begin()
+	if err != nil {
+		return fmt.Errorf("开启DB事务出错(err:%v)", err)
+	}
 	_,q,a,err = db.Execute(sql.SetNewPwd,map[string]interface{}{
 		"user_id": user_id,
 		"password": strings.ToUpper(md5.Encrypt(newpassword)),
@@ -300,6 +304,36 @@ func (u *DbUser) ChangePwd(user_id int,expassword string,newpassword string)(err
 	if err != nil {
 		dbTrans.Rollback()
 		return fmt.Errorf("设置密码错误(err:%v),sql:%s,参数：%v", err, q,a)
+	}
+	dbTrans.Commit()
+	return   nil
+}
+
+func (u *DbUser) Bind(email string,openID string) (err error) {
+	db := u.c.GetRegularDB()
+	//判断邮箱是否已经绑定
+	data, q, a, err := db.Query(sql.QueryUserBind, map[string]interface{}{
+		"email": email,
+	})
+	if err != nil || data.IsEmpty() {
+		return  fmt.Errorf("查询绑定信息发生错误(err:%v),sql:%s,输入参数:%v", err, q, a)
+	}
+	if data.Get(0).GetString("wx_openid") != "" {
+		return fmt.Errorf("邮箱已经绑定过了，邮箱：%s", email)
+	}
+	//绑定邮箱
+	dbTrans, err := db.Begin()
+	if err != nil {
+		return fmt.Errorf("开启DB事务出错(err:%v)", err)
+	}
+	_, q, a, err = db.Execute(sql.ExecUserBind, map[string]interface{}{
+		"email": email,
+		"wx_openid": openID,
+	})
+
+	if err != nil {
+		dbTrans.Rollback()
+		return fmt.Errorf("绑定邮箱出现错误(err:%v),sql:%s,参数：%v", err, q,a)
 	}
 	dbTrans.Commit()
 	return   nil

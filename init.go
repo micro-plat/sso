@@ -63,6 +63,7 @@ func (r *SSO) init() {
 	r.Micro("/sso/user/edit", user.NewUserEditHandler, "/user/index")
 	r.Micro("/sso/user/save", user.NewUserSaveHandler, "/user/index")
 	r.Micro("/sso/user/changepwd", user.NewUserPasswordHandler, "*")
+	r.Micro("/sso/user/bind", user.NewUserBindHandler, "*") //绑定用户
 	r.Micro("/sso/base/userrole", base.NewBaseUserHandler, "*")
 	r.Micro("/sso/base/sys", base.NewBaseSysHandler, "*")
 

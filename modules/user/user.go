@@ -13,6 +13,7 @@ type IUser interface {
 	Save(input *UserEditInput) (err error)
 	Edit(username string,tel string,email string)(err error)
 	ChangePwd(user_id int,expassword string,newpassword string)(err error)
+	Bind(email string,openID string) (err error)
 }
 
 type User struct {
@@ -97,4 +98,8 @@ func (u *User) ChangePwd(user_id int,expassword string,newpassword string)(err e
 		return err
 	}
 	return u.db.ChangePwd(user_id,expassword,newpassword)
+}
+
+func (u *User) Bind(email string,openID string) (err error) {
+	return u.db.Bind(email,openID)
 }
