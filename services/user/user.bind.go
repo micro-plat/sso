@@ -55,6 +55,6 @@ func (u *UserBindHandler) Handle(ctx *context.Context) (r interface{}) {
 		return err
 	}
 	
-	ctx.Log.Info("3.返回结果。")
+	ctx.Log.Info("3.返回结果")
 	return "success"
 }

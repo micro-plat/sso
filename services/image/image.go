@@ -40,7 +40,7 @@ func isImage(f string) bool {
 	return false
 }
 
-//Handle 处理文件上传
+//Handle 处理图片上传
 func (ch *ImageHandler) PostHandle(ctx *context.Context) (r interface{}) {
 	ctx.Log.Info("--上传图片--")
 	ctx.Log.Info("1.检查参数")
@@ -74,6 +74,7 @@ func (ch *ImageHandler) PostHandle(ctx *context.Context) (r interface{}) {
 	if err != nil {
 		return context.NewError(500, err)
 	}
+	ctx.Log.Info("3.返回数据")
 	return map[string]interface{}{
 		"url": name,
 	}

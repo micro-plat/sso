@@ -20,7 +20,6 @@ func NewUserInfoHandler(container component.IContainer) (u *UserInfoHandler) {
 }
 
 func (u *UserInfoHandler) Handle(ctx *context.Context) (r interface{}) {
-
 	ctx.Log.Info("--------查询用户信息--------")
 	ctx.Log.Info("1.参数校验")
 	var uid int64
@@ -35,7 +34,7 @@ func (u *UserInfoHandler) Handle(ctx *context.Context) (r interface{}) {
 		return context.NewError(context.ERR_NOT_IMPLEMENTED, err)
 	}
 
-	ctx.Log.Info("3.返回结果。")
+	ctx.Log.Info("3.返回结果")
 	return map[string]interface{}{
 		"userinfo": data,
 	}
