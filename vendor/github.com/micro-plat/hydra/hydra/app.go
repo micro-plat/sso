@@ -7,6 +7,7 @@ import (
 
 	"github.com/micro-plat/hydra/conf/creator"
 	"github.com/micro-plat/hydra/hydra/daemon"
+	"github.com/zkfy/log"
 
 	"github.com/asaskevich/govalidator"
 	"github.com/micro-plat/hydra/component"
@@ -19,8 +20,9 @@ import (
 
 //MicroApp  微服务应用
 type MicroApp struct {
-	app    *cli.App
-	logger *logger.Logger
+	app     *cli.App
+	logger  *logger.Logger
+	xlogger logger.ILogging
 	//Conf 绑定安装程序
 	Conf  *creator.Binder
 	hydra *Hydra
@@ -34,13 +36,14 @@ type MicroApp struct {
 //NewApp 创建微服务应用
 func NewApp(opts ...Option) (m *MicroApp) {
 	m = &MicroApp{option: &option{}, IComponentRegistry: component.NewServiceRegistry()}
-	m.Conf = creator.NewBinder()
+	logging := log.New(os.Stdout, "", log.Llongcolor)
+	logging.SetOutputLevel(log.Ldebug)
+	m.xlogger = logging
+	m.Conf = creator.NewBinder(logging)
 	for _, opt := range opts {
 		opt(m.option)
 	}
 	m.logger = logger.GetSession("hydra", logger.CreateSession())
-	m.logger.DoPrint = nil
-	m.logger.DoPrintf = nil
 	return m
 }
 
@@ -49,6 +52,12 @@ func (m *MicroApp) Start() {
 	var err error
 	defer logger.Close()
 	m.app = m.getCliApp()
+	if m.IsDebug {
+		m.PlatName += "_debug"
+	}
+	//	m.app.ErrWriter = (logger.LogWriter)(m.xlogger.Error)
+	//m.app.Writer = (logger.LogWriter)(m.xlogger.Info)
+
 	m.service, err = daemon.New(m.app.Name, m.app.Name)
 	if err != nil {
 		m.logger.Error(err)
@@ -66,7 +75,7 @@ func (m *MicroApp) Use(r func(r component.IServiceRegistry)) {
 
 func (m *MicroApp) action(c *cli.Context) (err error) {
 	if err := m.checkInput(); err != nil {
-		cli.ErrWriter.Write([]byte("  " + err.Error() + "\n\n"))
+		m.xlogger.Error(err)
 		cli.ShowCommandHelp(c, c.Command.Name)
 		return nil
 	}

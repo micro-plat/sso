@@ -8,12 +8,23 @@ import (
 	"strings"
 
 	"github.com/micro-plat/hydra/component"
+	"github.com/micro-plat/lib4go/logger"
+)
+
+const (
+	//ModeAuto 存在是不再修改
+	modeAuto = iota
+	//ModeCover 如果存在则覆盖
+	modeCover
+	//ModeNew 每次都重建
+	modeNew
 )
 
 type Input struct {
-	Name    string
-	Desc    string
-	Filters []func(string) (string, error)
+	FiledName string
+	ShowName  string
+	Desc      string
+	Filters   []func(string) (string, error)
 }
 type IBinder interface {
 	GetMainConfNames(platName string, systemName string, tp string, clusterName string) []string
@@ -22,11 +33,9 @@ type IBinder interface {
 	ScanMainConf(mainPath string, serverType string) error
 	ScanSubConf(mainPath string, serverType string, subName string) error
 	ScanVarConf(platName string, nodeName string) error
-
 	GetMainConf(serverType string) string
 	GetSubConf(serverType string, subName string) string
 	GetVarConf(nodeName string) string
-
 	GetMainConfScanNum(serverType string) int
 	GetSubConfScanNum(serverType string, subName string) int
 	GetVarConfScanNum(nodeName string) int
@@ -34,6 +43,7 @@ type IBinder interface {
 	GetSQL(dir string) ([]string, error)
 	GetInput() map[string]*Input
 	SetParam(k, v string)
+	Confirm(msg string) bool
 	Print()
 }
 type Binder struct {
@@ -44,21 +54,23 @@ type Binder struct {
 	MQC     *MainBinder
 	CRON    *MainBinder
 	Plat    IPlatBinder
+	Log     logger.ILogging
 	binders map[string]*MainBinder
 	params  map[string]string
 	input   map[string]*Input
 	show    bool
+	step    int
 }
 
-func NewBinder() *Binder {
-	s := &Binder{params: make(map[string]string), input: make(map[string]*Input)}
-	s.API = NewMainBinder(s.params)
-	s.RPC = NewMainBinder(s.params)
-	s.WS = NewMainBinder(s.params)
-	s.WEB = NewMainBinder(s.params)
-	s.MQC = NewMainBinder(s.params)
-	s.CRON = NewMainBinder(s.params)
-	s.Plat = NewPlatBinder(s.params)
+func NewBinder(log logger.ILogging) *Binder {
+	s := &Binder{params: make(map[string]string), input: make(map[string]*Input), Log: log}
+	s.API = NewMainBinder(s.params, s.input)
+	s.RPC = NewMainBinder(s.params, s.input)
+	s.WS = NewMainBinder(s.params, s.input)
+	s.WEB = NewMainBinder(s.params, s.input)
+	s.MQC = NewMainBinder(s.params, s.input)
+	s.CRON = NewMainBinder(s.params, s.input)
+	s.Plat = NewPlatBinder(s.params, s.input)
 	s.binders = map[string]*MainBinder{
 		"api":  s.API,
 		"rpc":  s.RPC,
@@ -69,22 +81,24 @@ func NewBinder() *Binder {
 	}
 	return s
 }
-func (s *Binder) Print() {
-	fmt.Println(s.binders)
-}
 func (s *Binder) SetParam(k, v string) {
 	s.params[k] = v
 }
 func (s *Binder) GetInput() map[string]*Input {
 	return s.input
 }
-func (s *Binder) SetInput(key, desc string, filters ...func(v string) (string, error)) {
-	s.input[key] = &Input{
-		Name:    key,
-		Desc:    desc,
-		Filters: filters,
+func (s *Binder) SetInput(fieldName, showName, desc string, filters ...func(v string) (string, error)) {
+	s.input[fieldName] = &Input{
+		FiledName: fieldName,
+		ShowName:  showName,
+		Desc:      desc,
+		Filters:   filters,
+	}
+	if !strings.HasPrefix(fieldName, "#") {
+		s.input["#"+fieldName] = s.input[fieldName]
 	}
 }
+
 func (s *Binder) GetInstallers(serverType string) []func(c component.IContainer) error {
 	return s.binders[serverType].GetInstallers()
 }
@@ -92,10 +106,7 @@ func (s *Binder) GetInstallers(serverType string) []func(c component.IContainer)
 //GetMainConfNames 获取已配置的主配置名称
 func (s *Binder) GetMainConfNames(platName string, systemName string, tp string, clusterName string) []string {
 	names := make([]string, 0, 1)
-	//	binder := s.binders[tp]
-	//	if v := binder.NeedScanCount(""); v > 0 {
 	names = append(names, filepath.Join("/", platName, systemName, tp, clusterName, "conf"))
-	//	}
 	return names
 }
 
@@ -187,4 +198,18 @@ func (s *Binder) GetSQL(dir string) ([]string, error) {
 		}
 	}
 	return tables, nil
+}
+
+//Print 输出配置信息
+func (s *Binder) Print() {
+	fmt.Println(s.binders)
+}
+
+//Confirm 用户确认
+func (s *Binder) Confirm(msg string) bool {
+	var value string
+	fmt.Print("\t\033[;33m-> " + msg + " 是(y|yes),否(n|no):\033[0m")
+	fmt.Scan(&value)
+	nvalue := strings.ToUpper(value)
+	return nvalue == "Y" || nvalue == "YES"
 }

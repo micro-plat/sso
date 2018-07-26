@@ -13,12 +13,14 @@ import (
 
 //bindConf 绑定启动配置， 启动时检查注册中心配置是否存在，不存在则引导用户输入配置参数并自动创建到注册中心
 func (s *SSO) install() {
-	s.Conf.SetInput("email", "管理员邮箱地址", func(v string) (string, error) {
+	s.IsDebug = false
+	s.Conf.SetInput("email", "邮箱地址", "接收账户确认邮件时使用", func(v string) (string, error) {
 		if !strings.Contains(v, "@") {
 			return "", fmt.Errorf("请输入正确的邮箱地址")
 		}
 		return strings.Replace(v, "@", "\\@", -1), nil
 	})
+	s.Conf.SetInput("#wx_host_name", "服务器域名", "以http开头")
 
 	s.Conf.API.SetMainConf(`{"address":":9091"}`)
 	s.Conf.API.SetSubConf("app", `
@@ -84,6 +86,9 @@ func (s *SSO) install() {
 
 	//自定义安装程序
 	s.Conf.API.Installer(func(c component.IContainer) error {
+		if !s.Conf.Confirm("创建数据库表结构,添加基础数据?") {
+			return nil
+		}
 		path, err := getSQLPath()
 		if err != nil {
 			return err
@@ -100,7 +105,7 @@ func (s *SSO) install() {
 			if sql != "" {
 				if _, q, _, err := db.Execute(sql, map[string]interface{}{}); err != nil {
 					if !strings.Contains(err.Error(), "ORA-00942") {
-						fmt.Printf("执行SQL失败： %v %s\n", err, q)
+						s.Conf.Log.Errorf("执行SQL失败： %v %s\n", err, q)
 					}
 				}
 			}

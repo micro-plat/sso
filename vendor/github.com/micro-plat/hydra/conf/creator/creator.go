@@ -3,6 +3,7 @@ package creator
 import (
 	"fmt"
 	"path/filepath"
+	"strings"
 
 	"github.com/micro-plat/hydra/conf"
 	"github.com/micro-plat/hydra/engines"
@@ -14,7 +15,7 @@ import (
 type Creator struct {
 	registry     registry.IRegistry
 	registryAddr string
-	logger       *logger.Logger
+	logger       logger.ILogging
 	showTitle    bool
 	binder       IBinder
 	platName     string
@@ -25,7 +26,7 @@ type Creator struct {
 }
 
 //NewCreator 配置文件创建器
-func NewCreator(platName string, systemName string, serverTypes []string, clusterName string, binder IBinder, registryAddr string, rgst registry.IRegistry, logger *logger.Logger) (w *Creator) {
+func NewCreator(platName string, systemName string, serverTypes []string, clusterName string, binder IBinder, registryAddr string, rgst registry.IRegistry, logger logger.ILogging) (w *Creator) {
 	w = &Creator{
 		platName:     platName,
 		systemName:   systemName,
@@ -38,53 +39,60 @@ func NewCreator(platName string, systemName string, serverTypes []string, cluste
 	}
 	return
 }
-
-//Start 扫描并绑定所有参数
-func (c *Creator) Start() (err error) {
+func (c *Creator) installParams() error {
+	//检查必须输入参数
 	input := c.binder.GetInput()
 	if len(input) > 0 {
-		if !c.checkContinue() {
+		if !c.binder.Confirm("设置基础参数值(这些参数用于创建配置数据)?") {
 			return nil
 		}
 	}
-	for k, v := range input {
-		fmt.Printf("请输入%s:", v.Desc)
-		var value string
-		fmt.Scan(&value)
-		nvalue := value
-		for _, f := range v.Filters {
-			nvalue, err = f(nvalue)
-			if err != nil {
-				return err
-			}
+	for k := range input {
+		if strings.HasPrefix(k, "#") {
+			continue
 		}
-		c.binder.SetParam(k, nvalue)
-	}
-
-	for _, tp := range c.serverTypes {
-		mainPath := filepath.Join("/", c.platName, c.systemName, tp, c.clusterName, "conf")
-		//检查主配置
-		ok, err := c.registry.Exists(c.getRealMainPath(mainPath))
+		nvalue, err := getInputValue(k, input, "")
 		if err != nil {
 			return err
 		}
-		if ok {
+		c.binder.SetParam(k, nvalue)
+	}
+	return nil
+}
+func (c *Creator) installRegistry() error {
+	//检查配置模式
+	mode, cn := c.checkRegistry()
+	//创建主配置
+	if !cn {
+		return nil
+	}
+	for _, tp := range c.serverTypes {
+		mainPath := filepath.Join("/", c.platName, c.systemName, tp, c.clusterName, "conf")
+		rpath := c.getRealMainPath(mainPath)
+		ok, err := c.registry.Exists(rpath)
+		if err != nil {
+			return err
+		}
+		if ok && mode == modeAuto {
 			continue
 		}
-		if c.binder.GetMainConfScanNum(tp) > 0 {
-			if !c.checkContinue() {
-				return nil
-			}
+		if mode == modeNew {
+			c.registry.Delete(rpath)
 		}
 		if err := c.binder.ScanMainConf(mainPath, tp); err != nil {
 			return err
 		}
-
 		content := c.binder.GetMainConf(tp)
+		if ok && mode == modeCover {
+			if err := c.createMainConf(mainPath, content); err != nil {
+				return err
+			}
+			c.logger.Info("\t\t修改配置:", mainPath)
+		}
 		if err := c.createMainConf(mainPath, content); err != nil {
 			return err
 		}
-		c.logger.Print("创建配置:", mainPath)
+		c.logger.Info("\t\t创建配置:", mainPath)
 	}
 	//检查子配置
 	for _, tp := range c.serverTypes {
@@ -95,14 +103,11 @@ func (c *Creator) Start() (err error) {
 			if err != nil {
 				return err
 			}
-			if ok {
+			if ok && mode == modeAuto {
 				continue
 			}
-			if c.binder.GetSubConfScanNum(tp, subName) > 0 {
-				if !c.checkContinue() {
-					return nil
-				}
-			}
+			//删除配置重建
+			c.registry.Delete(filepath.Join(mainPath, subName))
 			if err := c.binder.ScanSubConf(mainPath, tp, subName); err != nil {
 				return err
 			}
@@ -112,7 +117,7 @@ func (c *Creator) Start() (err error) {
 			if err := c.createConf(path, content); err != nil {
 				return err
 			}
-			c.logger.Print("创建配置:", path)
+			c.logger.Info("\t\t创建配置:", path)
 		}
 	}
 
@@ -123,14 +128,11 @@ func (c *Creator) Start() (err error) {
 		if err != nil {
 			return err
 		}
-		if ok {
+		if ok && mode == modeAuto {
 			continue
 		}
-		if c.binder.GetVarConfScanNum(varName) > 0 {
-			if !c.checkContinue() {
-				return nil
-			}
-		}
+		//删除配置重建
+		c.registry.Delete(filepath.Join("/", c.platName, "var", varName))
 		if err := c.binder.ScanVarConf(c.platName, varName); err != nil {
 			return err
 		}
@@ -139,13 +141,24 @@ func (c *Creator) Start() (err error) {
 		if err := c.createConf(path, content); err != nil {
 			return err
 		}
-		c.logger.Print("创建配置:", path)
+		c.logger.Info("\t\t创建配置:", path)
 	}
+	return nil
+}
+
+//Start 扫描并绑定所有参数
+func (c *Creator) Start() (err error) {
+	if err = c.installParams(); err != nil {
+		return err
+	}
+	if err = c.installRegistry(); err != nil {
+		return err
+	}
+	//执行用户自定义安装
 	if err = c.customerInstall(); err != nil {
 		return fmt.Errorf("安装程序执行失败:%v", err)
 	}
 	return nil
-
 }
 
 func (c *Creator) customerInstall() error {
@@ -173,7 +186,6 @@ func (c *Creator) customerInstall() error {
 				return err
 			}
 		}
-
 	}
 	return nil
 }
@@ -199,17 +211,32 @@ func (c *Creator) createMainConf(path string, data string) error {
 	rpath := c.getRealMainPath(path)
 	return c.registry.CreatePersistentNode(rpath, data)
 }
-func (c *Creator) checkContinue() bool {
-	if !c.showTitle {
-		c.showTitle = true
-	} else {
-		return true
+func (c *Creator) updateMainConf(path string, data string) error {
+	if data == "" {
+		data = "{}"
 	}
-	var index string
-	fmt.Print("当前服务有一些参数未配置，立即配置(y|N):")
-	fmt.Scan(&index)
-	if index != "y" && index != "Y" && index != "yes" && index != "YES" {
-		return false
+	rpath := c.getRealMainPath(path)
+	_, v, err := c.registry.GetValue(rpath)
+	if err != nil {
+		return err
 	}
-	return true
+	return c.registry.Update(rpath, data, v)
+}
+
+func (c *Creator) checkRegistry() (mode int, cn bool) {
+	msg := "创建注册中心配置数据?,如存在则不修改(1),如果存在则覆盖(2),删除所有配置并重建(3),退出(n|no):"
+
+	var value string
+	fmt.Print("\t\033[;33m-> " + msg + "\033[0m")
+	fmt.Scan(&value)
+	nvalue := strings.ToUpper(value)
+	switch nvalue {
+	case "1":
+		return modeAuto, true
+	case "2":
+		return modeCover, true
+	case "3":
+		return modeNew, true
+	}
+	return 0, false
 }
