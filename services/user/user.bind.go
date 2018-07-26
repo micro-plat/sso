@@ -51,11 +51,10 @@ func (u *UserBindHandler) Handle(ctx *context.Context) (r interface{}) {
 	}
 	ctx.Log.Info("3. 根据openid进行用户绑定")
 	openID := userInfo.GetString("openid")
-	fmt.Printf("openID:%s",openID)
 	if err := u.userLib.Bind(email, openID); err != nil {
 		return err
 	}
 	
-	ctx.Log.Info("3.返回结果。")
+	ctx.Log.Info("3.返回结果")
 	return "success"
 }

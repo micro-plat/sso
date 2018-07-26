@@ -26,7 +26,7 @@ type UserPasswordInput struct {
 
 func (u *UserPasswordHandler) Handle(ctx *context.Context) (r interface{}) {
 
-	ctx.Log.Info("--------编辑用户密码--------")
+	ctx.Log.Info("--------修改用户密码--------")
 	ctx.Log.Info("1.参数校验")
 	uid := member.Get(ctx).UserID
 	if err := ctx.Request.Check("expassword", "newpassword"); err != nil {
@@ -37,6 +37,6 @@ func (u *UserPasswordHandler) Handle(ctx *context.Context) (r interface{}) {
 	if err != nil {
 		return err
 	}
-	ctx.Log.Info("3.返回结果。")
+	ctx.Log.Info("3.返回结果")
 	return "success"
 }

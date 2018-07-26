@@ -83,6 +83,6 @@ func (r *SSO) init() {
 	r.Micro("/sso/sys/func/edit", function.NewSystemFuncEditHandler, "/sys/index")     //功能编辑
 	r.Micro("/sso/sys/func/add", function.NewSystemFuncAddHandler, "/sys/index")       //功能添加
 
-	r.Micro("/sso/img/upload", image.NewImageHandler("./static/img", "http://192.168.7.188"), "/sys/index") //图片上传
+	r.Micro("/sso/img/upload", image.NewImageHandler("./static/static/img", "http://sso.100bm.cn"), "/sys/index") //图片上传
 
 }
