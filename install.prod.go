@@ -44,7 +44,7 @@ func (s *SSO) install() {
 	s.Conf.API.SetSubConf("auth", `
 		{
 			"jwt": {
-				"exclude": ["/sso/login","/sso/login/code","/sso/wxcode/get","/sso/sys/get","/qrcode/login","/qrcode/login/put"],
+				"exclude": ["/sso/login","/sso/login/code","/sso/wxcode/get","/sso/sys/get","/qrcode/login","/qrcode/login/put","/sso/user/bind"],
 				"expireAt": 36000,
 				"mode": "HS512",
 				"name": "sso",

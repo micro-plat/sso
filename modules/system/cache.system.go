@@ -12,9 +12,9 @@ import (
 
 const (
 	cacheFormat       = "{sso}:system:info:{@ident}"
-	cacheFormatSys    = "{sso}:system:info:{name}-{status}-{@pi}-{@ps}"
+	cacheFormatSys    = "{sso}:system:info:{@name}-{@status}-{@pi}-{@ps}"
 	cacheFormatSysDel = "{sso}:system:info:*"
-	cacheFormatSysCount = "{sso}:system:info:{name}-{status}"
+	cacheFormatSysCount = "{sso}:system:info:{@name}-{@status}"
 )
 
 type ICacheSystem interface {
