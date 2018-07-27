@@ -19,11 +19,6 @@ func NewUserPasswordHandler(container component.IContainer) (u *UserPasswordHand
 	}
 }
 
-type UserPasswordInput struct {
-	ExPassword  string `form:"expassword" json:"expassword"`
-	NewPassword string `form:"newpassword" json:"newpassword"`
-}
-
 func (u *UserPasswordHandler) Handle(ctx *context.Context) (r interface{}) {
 
 	ctx.Log.Info("--------修改用户密码--------")

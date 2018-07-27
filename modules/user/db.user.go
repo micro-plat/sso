@@ -290,16 +290,16 @@ func (u *DbUser) ChangePwd(user_id int,expassword string,newpassword string)(err
 	if err != nil {
 		return fmt.Errorf("获取原密码错误(err:%v),sql:%s,参数：%v", err, q,a)
 	}
-	if md5.Encrypt(expassword) != strings.ToLower(data.Get(0).GetString("password")) {
+	if strings.ToLower(md5.Encrypt(expassword)) != strings.ToLower(data.Get(0).GetString("password")) {
 		return fmt.Errorf("原密码错误")
 	}
 	dbTrans, err := db.Begin()
 	if err != nil {
 		return fmt.Errorf("开启DB事务出错(err:%v)", err)
 	}
-	_,q,a,err = db.Execute(sql.SetNewPwd,map[string]interface{}{
+	_,q,a,err = dbTrans.Execute(sql.SetNewPwd,map[string]interface{}{
 		"user_id": user_id,
-		"password": strings.ToUpper(md5.Encrypt(newpassword)),
+		"password": md5.Encrypt(newpassword),
 	})
 	if err != nil {
 		dbTrans.Rollback()
@@ -326,7 +326,7 @@ func (u *DbUser) Bind(email string,openID string) (err error) {
 	if err != nil {
 		return fmt.Errorf("开启DB事务出错(err:%v)", err)
 	}
-	_, q, a, err = db.Execute(sql.ExecUserBind, map[string]interface{}{
+	_, q, a, err = dbTrans.Execute(sql.ExecUserBind, map[string]interface{}{
 		"email": email,
 		"wx_openid": openID,
 	})

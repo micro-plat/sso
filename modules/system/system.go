@@ -68,7 +68,6 @@ func (u *System) Delete(id int) (err error) {
 	}
 	//更新缓存
 	return u.cache.FreshSysInfo()
-
 }
 
 //Add 添加系统
