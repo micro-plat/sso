@@ -14,6 +14,8 @@ type IUser interface {
 	Edit(username string,tel string,email string)(err error)
 	ChangePwd(user_id int,expassword string,newpassword string)(err error)
 	Bind(email string,openID string) (err error)
+	SetEmail(Guid string,email string) (err error)
+	GetEmail(Guid string) (email string,err error)
 }
 
 type User struct {
@@ -28,6 +30,14 @@ func NewUser(c component.IContainer) *User {
 		db:    NewDbUser(c),
 		cache: NewCacheUser(c),
 	}
+}
+
+func(u *User) SetEmail(Guid string,email string) (err error) {
+	return u.cache.SetEmail(Guid,email)
+}
+
+func(u *User) GetEmail(Guid string) (email string,err error) {
+	return u.cache.GetEmail(Guid)
 }
 
 //Query 获取用户信息列表

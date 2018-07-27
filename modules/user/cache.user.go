@@ -17,6 +17,8 @@ type ICacheUser interface {
 	SaveUser(userID int, data db.QueryRow) error
 	QueryUser(userID int) (data db.QueryRow, err error)
 	DeleteUser() error
+	SetEmail(Guid string,email string) (err error)
+	GetEmail(Guid string) (email string,err error)
 }
 
 //CacheUser 控制用户登录
@@ -32,6 +34,7 @@ const (
 	cacheUserListCountAll    = "{sso}:user:list-count:*"
 	cacheUserFormat          = "{sso}:user:info:{@userID}"
 	cacheUserAll             = "{sso}:user:info:*"
+	cacheEmail				 = "{sso}:email:{@guid}"
 )
 
 //NewCacheUser 创建对象
@@ -125,4 +128,17 @@ func (l *CacheUser) QueryUser(userID int) (data db.QueryRow, err error) {
 func (l *CacheUser) DeleteUser() error {
 	cache := l.c.GetRegularCache()
 	return cache.Delete(cacheUserAll)
+}
+
+func (l *CacheUser) SetEmail(Guid string,email string) (err error){
+	cache := l.c.GetRegularCache()
+	key := transform.Translate(cacheEmail, "guid", Guid)
+	return cache.Set(key,email, l.cacheTime)
+}
+
+func (l *CacheUser) GetEmail(Guid string) (email string,err error) {
+	cache := l.c.GetRegularCache()
+	key := transform.Translate(cacheEmail, "guid", Guid)
+	email, err = cache.Get(key)
+	return
 }

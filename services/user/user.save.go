@@ -1,6 +1,7 @@
 package user
 
 import (
+	"github.com/micro-plat/sso/modules/app"
 	"net/url"
 	"fmt"
 	"github.com/micro-plat/sso/modules/member"
@@ -8,6 +9,7 @@ import (
 	"github.com/micro-plat/hydra/context"
 	"github.com/micro-plat/sso/modules/user"
 	"github.com/micro-plat/sso/modules/const/enum"
+	"github.com/micro-plat/lib4go/utility"
 )
 
 type UserSaveHandler struct {
@@ -37,12 +39,16 @@ func (u *UserSaveHandler) Handle(ctx *context.Context) (r interface{}) {
 	if err := u.userLib.Save(&inputData); err != nil {
 		return context.NewError(context.ERR_NOT_IMPLEMENTED, err)
 	}
+	
 	//新添加用户要进行邮箱检验
 	if inputData.IsAdd == 1 {
-		resUri := url.QueryEscape(fmt.Sprintf("http://sso.100bm.cn/user/bind?email=%s",inputData.Email))
+		resUri := url.QueryEscape(fmt.Sprintf(app.GetBindUrl(u.container),inputData.Email))
 		ctx.Log.Infof("发送验证邮件到:%s",inputData.Email)
 		link := fmt.Sprintf(enum.WxApiCode,resUri)
 		if err := u.member.SendCheckMail(enum.From,enum.Password,enum.Host,enum.Port,inputData.Email,link); err != nil {
+			return err
+		}
+		if err := u.userLib.SetEmail(utility.GetGUID(),inputData.Email); err != nil {
 			return err
 		}
 	}
