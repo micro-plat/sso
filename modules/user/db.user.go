@@ -287,8 +287,8 @@ func (u *DbUser) ChangePwd(user_id int,expassword string,newpassword string)(err
 	data,q,a,err := db.Query(sql.QueryOldPwd,map[string]interface{}{
 		"user_id": user_id,
 	})
-	if err != nil {
-		return fmt.Errorf("获取原密码错误(err:%v),sql:%s,参数：%v", err, q,a)
+	if err != nil || data.Get(0).GetInt("changepwd_times") >= 3 {
+		return fmt.Errorf("获取数据错误或密码修改超过限制(err:%v),sql:%s,参数：%v", err, q,a)
 	}
 	if strings.ToLower(md5.Encrypt(expassword)) != strings.ToLower(data.Get(0).GetString("password")) {
 		return fmt.Errorf("原密码错误")

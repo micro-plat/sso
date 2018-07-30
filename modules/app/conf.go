@@ -27,10 +27,10 @@ func (c Conf) Valid() error {
 	return nil
 }
 
-//
+//获取邮箱绑定回调地址
 func GetBindUrl(ct component.IContainer) string {
 	c := GetConf(ct)
-	return strings.Join([]string{c.HostName,"/user/bind?email=%s"},"")
+	return strings.Join([]string{c.HostName,"/user/bind?guid=%s"},"")
 }
 
 

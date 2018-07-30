@@ -36,7 +36,7 @@ func (u *SystemFunc) Get(sysid int) (data []map[string]interface{}, err error) {
 		if err != nil {
 			return nil, err
 		}
-		//保存用户数据到缓存
+		//保存数据到缓存
 		if err = u.cache.Save(sysid,data); err != nil {
 			return nil, err
 		}

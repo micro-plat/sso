@@ -65,7 +65,7 @@ func (u *SystemHandler) DeleteHandle(ctx *context.Context) (r interface{}) {
 		return context.NewError(context.ERR_NOT_ACCEPTABLE, err)
 	}
 	ctx.Log.Info("2.从数据库删除数据")
-	if ctx.Request.GetInt("id") == 1 {
+	if ctx.Request.GetInt("id") == 0 {
 		return context.NewError(context.ERR_NOT_ACCEPTABLE, fmt.Errorf("不能删除当前系统，系统编号：%v", ctx.Request.GetInt("id")))
 	}
 	err := u.subLib.Delete(ctx.Request.GetInt("id"))

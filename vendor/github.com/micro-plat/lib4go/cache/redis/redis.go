@@ -97,18 +97,23 @@ func (c *redisClient) Delete(key string) error {
 		}
 		return nil
 	}
-	keys, err := c.client.Keys(key).Result()
-	if err != nil {
-		return fmt.Errorf("%v(%s)", err, key)
-	}
-	if len(keys) == 0 {
-		return nil
-	}
-	_, err = c.client.Del(keys...).Result()
-	if err != nil {
-		return fmt.Errorf("%v(%v)%s", err, keys, key)
-	}
-	return nil
+	rs, err := c.client.Eval(`return redis.call('DEL',unpack(redis.call('KEYS',KEYS[1])))`, []string{key}).Result()
+	fmt.Println("rs:", rs)
+	return err
+	// keys, err := c.client.Keys(key).Result()
+	// fmt.Println("delete:",keys)
+	// fmt.Println("delete err:",err)
+	// if err != nil {
+	// 	return fmt.Errorf("%v(%s)", err, key)
+	// }
+	// if len(keys) == 0 {
+	// 	return nil
+	// }
+	// _, err = c.client.Del(keys...).Result()
+	// if err != nil {
+	// 	return fmt.Errorf("%v(%v)%s", err, keys, key)
+	// }
+	// return nil
 }
 
 // Delete 删除memcache中的数据

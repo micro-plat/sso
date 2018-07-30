@@ -67,5 +67,6 @@ func (l *CacheSystemFunc) Query(sysID int) (data []map[string]interface{}, err e
 //Fresh 刷新缓存
 func (l *CacheSystemFunc) Fresh()(err error){
 	cache := l.c.GetRegularCache()
-	return cache.Delete(cacheFormatDel)
+	err = cache.Delete(cacheFormatDel)
+	return
 }

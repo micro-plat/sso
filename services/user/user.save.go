@@ -42,13 +42,14 @@ func (u *UserSaveHandler) Handle(ctx *context.Context) (r interface{}) {
 	
 	//新添加用户要进行邮箱检验
 	if inputData.IsAdd == 1 {
-		resUri := url.QueryEscape(fmt.Sprintf(app.GetBindUrl(u.container),inputData.Email))
-		ctx.Log.Infof("发送验证邮件到:%s",inputData.Email)
+		guid := utility.GetGUID()
+		resUri := url.QueryEscape(fmt.Sprintf(app.GetBindUrl(u.container),guid))
+		ctx.Log.Infof("发送验证邮件到:%s,guid：%v",inputData.Email,guid)
 		link := fmt.Sprintf(enum.WxApiCode,resUri)
 		if err := u.member.SendCheckMail(enum.From,enum.Password,enum.Host,enum.Port,inputData.Email,link); err != nil {
 			return err
 		}
-		if err := u.userLib.SetEmail(utility.GetGUID(),inputData.Email); err != nil {
+		if err := u.userLib.SetEmail(guid,inputData.Email); err != nil {
 			return err
 		}
 	}

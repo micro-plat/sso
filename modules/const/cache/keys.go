@@ -2,19 +2,20 @@ package cache
 
 
 const (
-	cacheFormat       = "{sso}:system:info:{@ident}"
-	cacheFormatSys    = "{sso}:system:info:{@name}-{@status}-{@pi}-{@ps}"
-	cacheFormatSysDel = "{sso}:system:info:*"
-	cacheFormatSysCount = "{sso}:system:info:{@name}-{@status}"
+	CacheFormat       = "{sso}:system:info:{@ident}"
+	CacheFormatSys    = "{sso}:system:info:{@name}-{@status}-{@pi}-{@ps}"
+	CacheFormatSysDel = "{sso}:system:info:*"
+	CacheFormatSysCount = "{sso}:system:info:{@name}-{@status}"
 ) 
 
 
 const (
-	cacheUserListFormat      = "{sso}:user:list:{@userName}-{@roleID}-{@pageSize}-{@pageIndex}"
-	cacheUserListAll         = "{sso}:user:list:*"
-	cacheUserListCountFormat = "{sso}:user:list-count:{@userName}-{@roleID}"
-	cacheUserListCountAll    = "{sso}:user:list-count:*"
-	cacheUserFormat          = "{sso}:user:info:{@userID}"
-	cacheUserAll             = "{sso}:user:info:*"
-	cacheEmail				 = "{sso}:email:{@guid}"
+	CacheUserListFormat      = "{sso}:user:list:{@userName}-{@roleID}-{@pageSize}-{@pageIndex}"
+	CacheUserListAll         = "{sso}:user:list:*"
+	CacheUserListCountFormat = "{sso}:user:list-count:{@userName}-{@roleID}"
+	CacheUserListCountAll    = "{sso}:user:list-count:*"
+	CacheUserFormat          = "{sso}:user:info:{@userID}"
+	CacheUserAll             = "{sso}:user:info:*"
+	CacheEmail				 = "{sso}:email:{@guid}"
+	CacheEamilOutTime		 = 60 * 5
 )
