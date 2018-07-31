@@ -26,7 +26,7 @@ type CacheSystemFunc struct {
 	cacheTime int
 }
 
-//NewCacheSystem 创建登录对象
+//NewCacheSystem 
 func NewCacheSystemFunc(c component.IContainer) *CacheSystemFunc {
 	return &CacheSystemFunc{
 		c:         c,
@@ -67,6 +67,6 @@ func (l *CacheSystemFunc) Query(sysID int) (data []map[string]interface{}, err e
 //Fresh 刷新缓存
 func (l *CacheSystemFunc) Fresh()(err error){
 	cache := l.c.GetRegularCache()
-	err = cache.Delete(cacheFormatDel)
-	return
+	return cache.Delete(cacheFormatDel)
+	
 }
