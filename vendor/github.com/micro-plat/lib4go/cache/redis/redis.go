@@ -97,7 +97,12 @@ func (c *redisClient) Delete(key string) error {
 		}
 		return nil
 	}
-	rs, err := c.client.Eval(`return redis.call('DEL',unpack(redis.call('KEYS',KEYS[1])))`, []string{key}).Result()
+	rs, err := c.client.Eval(`
+	local keys=redis.call('KEYS',KEYS[1])
+	if (#keys==0) then
+		return 0
+	end
+	return redis.call('DEL',unpack(keys))`, []string{key}).Result()
 	fmt.Println("rs:", rs)
 	return err
 	// keys, err := c.client.Keys(key).Result()
