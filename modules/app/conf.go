@@ -11,8 +11,6 @@ import (
 
 //Conf 应用程序配置
 type Conf struct {
-	QRLoginCheckURL string `json:"qrlogin-check-url" valid:"required"`
-	WXLoginURL      string `json:"wx-login-url"`
 	AppID           string `json:"appid" valid:"ascii,required"`
 	Secret          string `json:"secret" valid:"ascii,required"`
 	WechatTSAddr    string `json:"wechat-url" valid:"required"`
@@ -27,12 +25,19 @@ func (c Conf) Valid() error {
 	return nil
 }
 
-//
-func GetBindUrl(ct component.IContainer) string {
-	c := GetConf(ct)
+//获取绑定url
+func (c *Conf) GetBindUrl() string {
 	return strings.Join([]string{c.HostName,"/user/bind?email=%s"},"")
 }
 
+//获取二维码登录url
+func (c *Conf) GetQRLoginCheckURL() string {
+	return strings.Join([]string{c.HostName,"/member/wxlogin"},"")
+}
+//获取微信登录url
+func (c *Conf) GetWXLoginURL() string {
+	return strings.Join([]string{c.HostName,"/member/wxlogin"},"")
+}
 
 //SaveConf 保存当前应用程序配置
 func SaveConf(c component.IContainer, m *Conf) {
