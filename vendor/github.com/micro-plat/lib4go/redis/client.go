@@ -94,9 +94,9 @@ func NewClientByJSON(j string) (r *Client, err error) {
 //NewClientByConf 根据配置对象构建客户端
 func NewClientByConf(conf *ClientConf) (client *Client, err error) {
 	conf.DialTimeout = types.DecodeInt(conf.DialTimeout, 0, 3, conf.DialTimeout)
-	conf.RTimeout =30// types.DecodeInt(conf.RTimeout, 0, 30, conf.RTimeout)
+	conf.RTimeout = types.DecodeInt(conf.RTimeout, 0, 3, conf.RTimeout)
 	conf.WTimeout = types.DecodeInt(conf.WTimeout, 0, 3, conf.WTimeout)
-	conf.PoolSize = types.DecodeInt(conf.PoolSize, 0, 10, conf.PoolSize)
+	conf.PoolSize = types.DecodeInt(conf.PoolSize, 0, 3, conf.PoolSize)
 	client = &Client{}
 	opts := &redis.UniversalOptions{
 		MasterName:   conf.MasterName,

@@ -29,8 +29,7 @@ func (s *SSO) install() {
 				"wx-login-url":"#wx_host_name/member/wxlogin",
 				"appid":"#appid",
 				"secret":"#app_secret",
-				"wechat-url":"http://#wx_token_server_host/#appid/wechat/token/get",
-				"hostname":"#hostname"
+				"wechat-url":"http://#wx_token_server_host/#appid/wechat/token/get"
 			}			
 			`)
 	s.Conf.API.SetSubConf("header", `

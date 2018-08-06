@@ -8,7 +8,6 @@ import (
 	"github.com/micro-plat/lib4go/db"
 	"github.com/micro-plat/lib4go/transform"
 	"github.com/micro-plat/lib4go/types"
-	cacheConst "github.com/micro-plat/sso/modules/const/cache"
 )
 
 type ICacheUser interface {
@@ -28,6 +27,16 @@ type CacheUser struct {
 	cacheTime int
 }
 
+const (
+	cacheUserListFormat      = "{sso}:user:list:{@userName}-{@roleID}-{@pageSize}-{@pageIndex}"
+	cacheUserListAll         = "{sso}:user:list:*"
+	cacheUserListCountFormat = "{sso}:user:list-count:{@userName}-{@roleID}"
+	cacheUserListCountAll    = "{sso}:user:list-count:*"
+	cacheUserFormat          = "{sso}:user:info:{@userID}"
+	cacheUserAll             = "{sso}:user:info:*"
+	cacheEmail				 = "{sso}:email:{@guid}"
+)
+
 //NewCacheUser 创建对象
 func NewCacheUser(c component.IContainer) *CacheUser {
 	return &CacheUser{
@@ -42,10 +51,9 @@ func (l *CacheUser) Save(s *QueryUserInput, data db.QueryRows, count int) error 
 	if err != nil {
 		return err
 	}
-	
 	cache := l.c.GetRegularCache()
-	keyData := transform.Translate(cacheConst.CacheUserListFormat, "userName", s.UserName, "roleID", s.RoleID, "pageSize", s.PageSize, "pageIndex", s.PageIndex)
-	keyCount := transform.Translate(cacheConst.CacheUserListCountFormat, "userName", s.UserName, "roleID", s.RoleID)
+	keyData := transform.Translate(cacheUserListFormat, "userName", s.UserName, "roleID", s.RoleID, "pageSize", s.PageSize, "pageIndex", s.PageIndex)
+	keyCount := transform.Translate(cacheUserListCountFormat, "userName", s.UserName, "roleID", s.RoleID)
 	if err := cache.Set(keyData, string(buff), l.cacheTime); err != nil {
 		return err
 	}
@@ -56,8 +64,8 @@ func (l *CacheUser) Save(s *QueryUserInput, data db.QueryRows, count int) error 
 func (l *CacheUser) Query(s *QueryUserInput) (data db.QueryRows, total int, err error) {
 	//从缓存中查询用户列表数据
 	cache := l.c.GetRegularCache()
-	keyData := transform.Translate(cacheConst.CacheUserListFormat, "userName", s.UserName, "roleID", s.RoleID, "pageSize", s.PageSize, "pageIndex", s.PageIndex)
-	keyCount := transform.Translate(cacheConst.CacheUserListCountFormat, "userName", s.UserName, "roleID", s.RoleID)
+	keyData := transform.Translate(cacheUserListFormat, "userName", s.UserName, "roleID", s.RoleID, "pageSize", s.PageSize, "pageIndex", s.PageIndex)
+	keyCount := transform.Translate(cacheUserListCountFormat, "userName", s.UserName, "roleID", s.RoleID)
 	v, err := cache.Get(keyData)
 	if err != nil {
 		return nil, 0, err
@@ -80,10 +88,10 @@ func (l *CacheUser) Query(s *QueryUserInput) (data db.QueryRows, total int, err 
 //Delete 缓存用户列表信息删除
 func (l *CacheUser) Delete() error {
 	cache := l.c.GetRegularCache()
-	if err := cache.Delete(cacheConst.CacheUserListAll); err != nil {
+	if err := cache.Delete(cacheUserListAll); err != nil {
 		return err
 	}
-	return cache.Delete(cacheConst.CacheUserListCountAll)
+	return cache.Delete(cacheUserListCountAll)
 }
 
 //SaveUser 缓存用户信息
@@ -93,7 +101,7 @@ func (l *CacheUser) SaveUser(userID int, data db.QueryRow) error {
 		return err
 	}
 	cache := l.c.GetRegularCache()
-	key := transform.Translate(cacheConst.CacheUserFormat, "userID", userID)
+	key := transform.Translate(cacheUserFormat, "userID", userID)
 	return cache.Set(key, string(buff), l.cacheTime)
 }
 
@@ -101,7 +109,7 @@ func (l *CacheUser) SaveUser(userID int, data db.QueryRow) error {
 func (l *CacheUser) QueryUser(userID int) (data db.QueryRow, err error) {
 	//从缓存中查询用户数据
 	cache := l.c.GetRegularCache()
-	key := transform.Translate(cacheConst.CacheUserFormat, "userID", userID)
+	key := transform.Translate(cacheUserFormat, "userID", userID)
 	v, err := cache.Get(key)
 	if err != nil {
 		return nil, err
@@ -119,18 +127,18 @@ func (l *CacheUser) QueryUser(userID int) (data db.QueryRow, err error) {
 //DeleteUser 缓存用户信息删除
 func (l *CacheUser) DeleteUser() error {
 	cache := l.c.GetRegularCache()
-	return cache.Delete(cacheConst.CacheUserAll)
+	return cache.Delete(cacheUserAll)
 }
 
 func (l *CacheUser) SetEmail(Guid string,email string) (err error){
 	cache := l.c.GetRegularCache()
-	key := transform.Translate(cacheConst.CacheEmail, "guid", Guid)
-	return cache.Set(key,email, cacheConst.CacheEamilOutTime)
+	key := transform.Translate(cacheEmail, "guid", Guid)
+	return cache.Set(key,email, l.cacheTime)
 }
 
 func (l *CacheUser) GetEmail(Guid string) (email string,err error) {
 	cache := l.c.GetRegularCache()
-	key := transform.Translate(cacheConst.CacheEmail, "guid", Guid)
+	key := transform.Translate(cacheEmail, "guid", Guid)
 	email, err = cache.Get(key)
 	return
 }
