@@ -86,12 +86,12 @@ func (l *DBMember) Query(u string, p string, ident string) (s *MemberState, err 
 		return nil, context.NewError(context.ERR_FORBIDDEN, "用户名或密码错误")
 	}
 	s = &MemberState{}
-	if err = data.Get(0).ToStruct(s); err != nil {
-		return nil, err
-	}
+	// if err = data.Get(0).ToStruct(s); err != nil {
+	// 	return nil, err
+	// }
 	//查询用户所在系统的登录地址及角色编号
 	roles, _, _, err := db.Query(sql.QueryUserRole, map[string]interface{}{
-		"user_id": s.UserID,
+		"user_id": data.Get(0).GetInt64("user_id", -1),
 		"ident":   ident,
 	})
 	if roles.IsEmpty() {

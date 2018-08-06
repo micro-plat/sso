@@ -11,6 +11,7 @@ import (
 	"github.com/micro-plat/sso/modules/app"
 	"github.com/micro-plat/sso/modules/member"
 	"github.com/micro-plat/wechat/mp/oauth2"
+	"github.com/micro-plat/lib4go/security/jwt"
 )
 
 type LoginHandler struct {
@@ -70,7 +71,18 @@ func (u *LoginHandler) Handle(ctx *context.Context) (r interface{}) {
 	//设置jwt数据
 	ctx.Log.Info("3. 返回登录端code")
 	ctx.Response.SetJWT(member)
+
+	jwtAuth, err := ctx.Request.GetJWTConfig() //获取jwt配置
+		if err != nil {
+			return err
+		}	
+	jwtToken, err := jwt.Encrypt(jwtAuth.Secret, jwtAuth.Mode, member, jwtAuth.ExpireAt)
+	if err != nil {
+		return err
+	}
+
 	return map[string]interface{}{
 		"code": loginCode,
+		"jwt": jwtToken,
 	}
 }
