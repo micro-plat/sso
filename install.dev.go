@@ -26,6 +26,7 @@ func (s *SSO) install() {
 		{
 			"jwt": {
 				"exclude": ["/sso/login","/sso/login/code","/sso/wxcode/get","/sso/sys/get","/qrcode/login","/qrcode/login/put","/sso/user/bind","/wx/login"],
+				"source":"header",
 				"expireAt": 36000,
 				"mode": "HS512",
 				"name": "__jwt__",
