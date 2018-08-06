@@ -10,6 +10,9 @@ create table sso_notify_user(
 	content  varchar2(32) not null,
 	status number(1) default 1 not null,
   create_time date default sysdate not null,
+  send_count number(10) default 0 not null,
+  scan_batch_id number(20)
+  flow_timeout date
   finish_time date
   );
 
@@ -22,6 +25,10 @@ comment on column sso_notify_user.title is '标题';
 comment on column sso_notify_user.keywords is '关键字';
 comment on column sso_notify_user.content is '内容';
 comment on column sso_notify_user.status is '状态[1:等待 2:正在 0:成功 9:失败]';
+comment on column sso_notify_user.send_count is '发送次数';
+comment on column sso_notify_user.scan_batch_id is '扫描批次';
+comment on column sso_notify_user.flow_timeout is '流程超时时间';
+
 comment on column sso_notify_user.create_time is '创建时间';
 comment on column sso_notify_user.finish_time is '完成时间';
 
