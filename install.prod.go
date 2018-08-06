@@ -35,8 +35,9 @@ func (s *SSO) install() {
 				{
 					"Access-Control-Allow-Origin": "*", 
 					"Access-Control-Allow-Methods": "GET,POST,PUT,DELETE,PATCH,OPTIONS", 
-					"Access-Control-Allow-Headers": "sso", 
-					"Access-Control-Allow-Credentials": "true"
+					"Access-Control-Allow-Headers": "__jwt__", 
+					"Access-Control-Allow-Credentials": "true",
+					"Access-Control-Expose-Headers":"__jwt__"
 				}
 			`)
 
@@ -45,8 +46,9 @@ func (s *SSO) install() {
 			"jwt": {
 				"exclude": ["/sso/login","/sso/login/code","/sso/wxcode/get","/sso/sys/get","/qrcode/login","/qrcode/login/put","/sso/user/bind"],
 				"expireAt": 36000,
+				"source":"header",
 				"mode": "HS512",
-				"name": "sso",
+				"name": "__jwt__",
 				"secret": "ef1a8839cb511780903ff6d5d79cf8f8"
 			}
 		}
