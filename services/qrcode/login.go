@@ -32,7 +32,7 @@ func NewLoginHandler(container component.IContainer) (u *LoginHandler) {
 func (u *LoginHandler) GetHandle(ctx *context.Context) (r interface{}) {
 	ctx.Log.Info("1.获取二维码登录地址")
 	conf := app.GetConf(u.c)
-	url := conf.QRLoginCheckURL
+	url := conf.GetQRLoginCheckURL()
 	uuid := ctx.Request.GetUUID()
 	ident := ctx.Request.GetString("ident", "sso")
 	rt := fmt.Sprintf("%s?uid=%s&ident=%s", url, uuid, ident)

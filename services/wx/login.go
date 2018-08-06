@@ -30,7 +30,7 @@ func NewLoginHandler(container component.IContainer) (u *LoginHandler) {
 
 func (u *LoginHandler) getLoginURL(ident string) string {
 	conf := app.GetConf(u.c)
-	url := fmt.Sprintf("%s?ident=%s", conf.WXLoginURL, ident)
+	url := fmt.Sprintf("%s?ident=%s", conf.GetWXLoginURL(), ident)
 	return oauth2.AuthCodeURL(conf.AppID, url, "snsapi_base", "")
 }
 

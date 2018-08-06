@@ -25,11 +25,10 @@ func (s *SSO) install() {
 	s.Conf.API.SetMainConf(`{"address":":9091"}`)
 	s.Conf.API.SetSubConf("app", `
 			{
-				"qrlogin-check-url":"#wx_host_name/member/wxlogin",
-				"wx-login-url":"#wx_host_name/member/wxlogin",
 				"appid":"#appid",
 				"secret":"#app_secret",
-				"wechat-url":"http://#wx_token_server_host/#appid/wechat/token/get"
+				"wechat-url":"http://#wx_token_server_host/#appid/wechat/token/get",
+				"hostname":"#wx_host_name"
 			}			
 			`)
 	s.Conf.API.SetSubConf("header", `
