@@ -6,6 +6,7 @@ import (
 	"github.com/micro-plat/hydra/component"
 	"github.com/micro-plat/hydra/context"
 	"github.com/micro-plat/sso/modules/member"
+	//"github.com/micro-plat/lib4go/security/jwt"
 )
 
 //CodeHandler 获取用户信息
@@ -33,5 +34,17 @@ func (u *CodeHandler) Handle(ctx *context.Context) (r interface{}) {
 		return err
 	}
 	ctx.Response.SetJWT(state)
+	// jwtConf, err := ctx.Request.GetJWTConfig() //获取jwt配置
+	// if err != nil {
+	// 	return err
+	// }
+	// jwtToken, err := jwt.Encrypt(jwtConf.Secret, jwtConf.Mode, state, jwtConf.ExpireAt)
+	// if err != nil {
+	// 	return err
+	// }
+	// return map[string] interface{}{
+	// 	"state":state,
+	// 	"jwt":jwtToken,
+	// }
 	return state
 }

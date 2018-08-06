@@ -60,7 +60,14 @@ func (u *DbSystemFunc) Get(sysid int) (results []map[string]interface{}, err err
 					children2 := make([]map[string]interface{}, 0, 8)
 					for _, row3 := range data {
 						if row3.GetInt("parent") == row2.GetInt("id") && row3.GetInt("level_id") == 3 {
+							children3 := make([]map[string]interface{}, 0, 8)
+							for _, row4 := range data {
+								if row4.GetInt("parent") == row3.GetInt("id") && row4.GetInt("level_id") ==4 {
+									children3 = append(children3, row4)
+								}
+							}
 							children2 = append(children2, row3)
+							row3["children"] = children3
 						}
 					}
 					children1 = append(children1, row2)

@@ -1,6 +1,7 @@
 package main
 
 import (
+	"github.com/micro-plat/hydra/component"
 	"fmt"
 
 	"github.com/micro-plat/hydra/context"
@@ -40,7 +41,7 @@ func (r *SSO) handing() {
 
 		//检查用户权限
 		tags := r.GetTags(ctx.Service)
-		menu := xmenu.Get(ctx.GetContainer())
+		menu := xmenu.Get(ctx.GetContainer().(component.IContainer))
 		for _, tag := range tags {
 			if tag == "*" {
 				return nil

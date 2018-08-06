@@ -26,7 +26,7 @@ type CodeMember struct {
 func NewCodeMember(c component.IContainer) *CodeMember {
 	return &CodeMember{
 		c:           c,
-		cacheTime:   300,
+		cacheTime:   30000,
 		cacheFormat: "sso:login:code:{@code}",
 	}
 }
@@ -58,6 +58,6 @@ func (l *CodeMember) Query(code string) (ls *LoginState, err error) {
 	if err = json.Unmarshal([]byte(v), &ls); err != nil {
 		return nil, err
 	}
-	cache.Delete(key)
+	//cache.Delete(key)
 	return ls, err
 }
