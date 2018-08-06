@@ -3,13 +3,13 @@ package mqtt
 import (
 	"crypto/tls"
 	"crypto/x509"
+	"errors"
 	"fmt"
 	"io/ioutil"
+	xnet "net"
 	"strings"
 	"sync"
 	"time"
-
-	"errors"
 
 	"github.com/micro-plat/lib4go/concurrent/cmap"
 	"github.com/micro-plat/lib4go/logger"
@@ -46,14 +46,14 @@ type Consumer struct {
 //NewConsumer 创建新的Consumer
 func NewConsumer(address string, opts ...mq.Option) (consumer *Consumer, err error) {
 	consumer = &Consumer{address: address}
-	consumer.OptionConf = &mq.OptionConf{Logger: logger.GetSession("mqtt.consumer", logger.CreateSession())}
+	consumer.OptionConf = &mq.OptionConf{QueueCount: 250, Logger: logger.GetSession("mqtt.consumer", logger.CreateSession())}
 	consumer.closeCh = make(chan struct{})
 	consumer.connCh = make(chan int, 1)
 	consumer.queues = cmap.New(2)
-	consumer.subChan = make(chan string, 3)
 	for _, opt := range opts {
 		opt(consumer.OptionConf)
 	}
+	consumer.subChan = make(chan string, consumer.OptionConf.QueueCount)
 	consumer.conf, err = NewConf(consumer.Raw)
 	if err != nil {
 		return nil, err
@@ -118,19 +118,31 @@ func (consumer *Consumer) connect() (*client.Client, bool, error) {
 			}
 		},
 	})
-	if err := cc.Connect(&client.ConnectOptions{
-		Network:   "tcp",
-		Address:   consumer.conf.Address,
-		UserName:  []byte(consumer.conf.UserName),
-		Password:  []byte(consumer.conf.Password),
-		ClientID:  []byte(fmt.Sprintf("%s-%s", net.GetLocalIPAddress(), utility.GetGUID()[0:6])),
-		TLSConfig: cert,
-		KeepAlive: 3,
-	}); err != nil {
-		return nil, false, fmt.Errorf("连接失败:%v(%s-%s/%s)", err, consumer.conf.Address, consumer.conf.UserName, consumer.conf.Password)
+	host, port, err := xnet.SplitHostPort(consumer.conf.Address)
+	if err != nil {
+		return nil, false, err
 	}
-
-	return cc, true, nil
+	addrs, err := xnet.LookupHost(host)
+	if err != nil {
+		return nil, false, err
+	}
+	if err != nil {
+		return nil, false, err
+	}
+	for _, addr := range addrs {
+		if err := cc.Connect(&client.ConnectOptions{
+			Network:   "tcp",
+			Address:   addr + ":" + port,
+			UserName:  []byte(consumer.conf.UserName),
+			Password:  []byte(consumer.conf.Password),
+			ClientID:  []byte(fmt.Sprintf("%s-%s", net.GetLocalIPAddress(), utility.GetGUID()[0:6])),
+			TLSConfig: cert,
+			KeepAlive: 3,
+		}); err == nil {
+			return cc, true, nil
+		}
+	}
+	return nil, false, fmt.Errorf("连接失败:%v[%v](%s-%s/%s)", err, consumer.conf.Address, addrs, consumer.conf.UserName, consumer.conf.Password)
 }
 
 func (consumer *Consumer) getCert(conf *Conf) (*tls.Config, error) {
@@ -238,7 +250,6 @@ func (consumer *Consumer) UnConsume(queue string) {
 
 //Close 关闭当前连接
 func (consumer *Consumer) Close() {
-	fmt.Println("close")
 	consumer.once.Do(func() {
 		close(consumer.closeCh)
 	})
