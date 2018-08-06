@@ -29,17 +29,12 @@ func (u *UserBindHandler) Handle(ctx *context.Context) (r interface{}) {
 
 	ctx.Log.Info("--------绑定用户邮箱--------")
 	ctx.Log.Info("1.参数校验")
-	if err := ctx.Request.Check("guid","code");err != nil {
+	if err := ctx.Request.Check("email","code");err != nil {
 		return err
 	}
-	guid := ctx.Request.GetString("guid")
+	email := ctx.Request.GetString("email")
 	code := ctx.Request.GetString("code")
 
-	//判断邮箱是否过期
-	email, err := u.userLib.GetEmail(guid)
-	if err != nil || email == "" {
-		return fmt.Errorf("链接已经过期，请联系管理员.错误：%v,邮箱：%v", err, email)
-	}
 	ctx.Log.Info("2. 根据code查询用户openid")
 	
 	conf := app.GetConf(u.container)

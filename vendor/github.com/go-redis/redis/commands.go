@@ -1,7 +1,6 @@
 package redis
 
 import (
-	"fmt"
 	"errors"
 	"io"
 	"time"
@@ -400,7 +399,6 @@ func (c *cmdable) ExpireAt(key string, tm time.Time) *BoolCmd {
 func (c *cmdable) Keys(pattern string) *StringSliceCmd {
 	cmd := NewStringSliceCmd("keys", pattern)
 	c.process(cmd)
-	fmt.Println(cmd)
 	return cmd
 }
 
