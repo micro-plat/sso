@@ -94,3 +94,7 @@ t.sortrank
 from sso_system_menu t 
 where t.sys_id = @sys_id 
 `
+//获取页面授权tag
+const GetPageAuth = `select t1.id,t1.path,t2.enable from sso_system_menu t1 LEFT JOIN sso_role_menu t2 ON t1.id = t2.menu_id
+where t1.parent = (select id from sso_system_menu where path=@path) and t2.sys_id=@sys_id and t2.role_id=@role_id
+`

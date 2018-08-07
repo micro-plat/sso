@@ -6,6 +6,7 @@ import (
 )
 
 type IRole interface {
+	Get(sysID int,roleID int,path string) (data db.QueryRows,err error)
 	Query(input *QueryRoleInput) (data db.QueryRows, count int, err error)
 	ChangeStatus(roleID string, status int) (err error)
 	Delete(roleID int) (err error)
@@ -26,6 +27,21 @@ func NewRole(c component.IContainer) *Role {
 		db:    NewDbRole(c),
 		cache: NewCacheRole(c),
 	}
+}
+//获取页面权限
+func(r *Role) Get(sysID int,roleID int,path string) (data db.QueryRows,err error) {
+	//从缓存中获取角色信息，不存在时从数据库中获取
+	data,err = r.cache.Get(sysID,roleID,path)
+	if data == nil || err != nil {
+		//丛数据库获取数据
+		if data,err = r.db.Get(sysID,roleID,path);err != nil {
+			return nil , err
+		}
+		if err = r.cache.SetPageAuth(sysID,roleID,path,data); err != nil {
+			return nil, err
+		}
+	}
+	return data , nil
 }
 
 //Query 获取角色信息列表

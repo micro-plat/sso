@@ -12,6 +12,7 @@ import (
 )
 
 type IDbRole interface {
+	Get(sysID int,roleID int,path string) (data db.QueryRows,err error)
 	Query(input *QueryRoleInput) (data db.QueryRows, count int, err error)
 	ChangeStatus(roleID string, status int) (err error)
 	Delete(roleID int) (err error)
@@ -31,8 +32,8 @@ type RoleEditInput struct {
 
 //RoleAuthInput 角色授权输入参数
 type RoleAuthInput struct {
-	RoleID     int64  `form:"role_id" json:"role_id" valid:"required"`
-	SysID      int64  `form:"sys_id" json:"sys_id" valid:"required"`
+	RoleID     string  `form:"role_id" json:"role_id" valid:"required"`
+	SysID      string  `form:"sys_id" json:"sys_id" valid:"required"`
 	SelectAuth string `form:"selectauth" json:"selectauth" valid:"ascii, required"`
 }
 
@@ -52,7 +53,19 @@ func NewDbRole(c component.IContainer) *DbRole {
 		c: c,
 	}
 }
-
+//获取页面授权信息
+func(r *DbRole) Get(sysID int,roleID int,path string) (data db.QueryRows,err error) {
+	db := r.c.GetRegularDB()
+	data, q, a, err := db.Query(sql.GetPageAuth, map[string]interface{}{
+		"sys_id": sysID ,
+		"role_id": roleID,
+		"path": path,
+	})
+	if err != nil {
+		return nil, fmt.Errorf("获取系统管理列表发生错误(err:%v),sql:%s,输入参数:%v,", err, q, a)
+	}
+	return data,err
+}
 //Query 获取角色信息列表
 func (r *DbRole) Query(input *QueryRoleInput) (data db.QueryRows, count int, err error) {
 	db := r.c.GetRegularDB()
@@ -202,6 +215,18 @@ func (r *DbRole) QueryAuthMenu(sysID int64, roleID int64) (results []map[string]
 					children2 := make([]map[string]interface{}, 0, 8)
 					for _, row3 := range data {
 						if row3.GetInt("parent") == row2.GetInt("id") && row3.GetInt("level_id") == 3 {
+							children3 := make([]map[string]interface{},0,8)
+							for _ ,row4 := range data {
+								if row4.GetInt("parent") == row3.GetInt("id") && row4.GetInt("level_id") == 4{
+									if row4.GetInt("checked") == 1 {
+										row4["checked"] = true
+									}else{
+										row4["checked"] = false
+									}
+									row4["expanded"] = true
+									children3 = append(children3,row4)
+								}
+							}
 							if row3.GetInt("checked") == 1 {
 								row3["checked"] = true
 							} else {
@@ -209,6 +234,7 @@ func (r *DbRole) QueryAuthMenu(sysID int64, roleID int64) (results []map[string]
 							}
 							row3["expanded"] = true
 							children2 = append(children2, row3)
+							row3["children"] = children3
 						}
 					}
 					children1 = append(children1, row2)

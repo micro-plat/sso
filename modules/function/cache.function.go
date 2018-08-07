@@ -11,6 +11,7 @@ import (
 const (
 	cacheFormat = "{sso}:system:func:{@sysid}"
 	cacheFormatDel = "{sso}:system:func:*"
+	cacheMenuAll   = "{sso}:role:menu:*"
 )
 
 
@@ -67,5 +68,6 @@ func (l *CacheSystemFunc) Query(sysID int) (data []map[string]interface{}, err e
 //Fresh 刷新缓存
 func (l *CacheSystemFunc) Fresh()(err error){
 	cache := l.c.GetRegularCache()
+	_ = cache.Delete(cacheMenuAll)
 	return cache.Delete(cacheFormatDel)
 }
