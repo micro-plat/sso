@@ -14,6 +14,7 @@ import (
 	"github.com/micro-plat/sso/services/system"
 	"github.com/micro-plat/sso/services/user"
 	"github.com/micro-plat/sso/services/wx"
+	"github.com/micro-plat/sso/services/notify"
 )
 
 //init 检查应用程序配置文件，并根据配置初始化服务
@@ -85,4 +86,6 @@ func (r *SSO) init() {
 
 	r.Micro("/sso/img/upload", image.NewImageHandler("./static/static/img", "http://sso.100bm.cn"), "/sys/index") //图片上传
 
+	r.Micro("/sso/notify/info",notify.NewNotifyHandler,"*")
+	r.Micro("/sso/notify/settings",notify.NewNotifySetHandler,"*")
 }

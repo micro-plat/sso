@@ -95,7 +95,7 @@ func (u *DbSystem) Delete(id int) (err error) {
 }
 
 func (u *DbSystem) Add(input *AddSystemInput) (err error) {
-	Db := u.c.GetRegularDB()
+	db := u.c.GetRegularDB()
 	params := map[string]interface{}{
 		"name":     input.Name,
 		"addr":     input.Addr,
@@ -105,7 +105,7 @@ func (u *DbSystem) Add(input *AddSystemInput) (err error) {
 		"theme":    input.Theme,
 		"ident":    input.Ident,
 	}
-	_, q, a, err := Db.Execute(sql.AddSubSystem, params)
+	_, q, a, err := db.Execute(sql.AddSubSystem, params)
 	if err != nil {
 		return fmt.Errorf("添加系统管理数据发生错误(err:%v),sql:%s,输入参数:%v,", err, q, a)
 	}
