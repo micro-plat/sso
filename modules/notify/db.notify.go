@@ -6,6 +6,7 @@ import (
 	"github.com/micro-plat/lib4go/db"
 	"github.com/micro-plat/sso/modules/const/sql"
 	"github.com/micro-plat/lib4go/types"
+	"github.com/micro-plat/lib4go/utility"
 )
 
 type UserNotifyInput struct {
@@ -19,7 +20,6 @@ type UserNotifyInput struct {
 type SettingsInput struct {
 	Keywords string `form:"keywords" json:"keywords" valid:"required"`
 	Level string `form:"level_id" json:"level_id" valid:"required"`
-	Status string `form:"status" json:"status" valid:"required"`
 	UserID string `form:"user_id" json:"user_id" valid:"required"`
 	SysID string `form:"sys_id" json:"sys_id" valid:"required"`
 }
@@ -31,6 +31,20 @@ type EditSettingsInput struct {
 	Status string `form:"status" json:"status" valid:"required"`
 }
 
+type InsertNotifyInput struct {
+	SysID string `form:"sys_id" json:"sys_id" valid:"required"`
+	LevelID string `form:"level_id" json:"level_id" valid:"required"`
+	Title string `form:"title" json:"title" valid:"required"`
+	Keywords string `form:"keywords" json:"keywords" valid:"required"`
+	Content string `form:"content" json:"content" valid:"required"`
+}
+
+type TpMsg struct {
+	Openid 	string
+	Name 	string
+	Content string
+	Time 	string
+}
 
 type IDbNotify interface {
 	Query(input *UserNotifyInput) (data db.QueryRows, count int, err error)
@@ -39,6 +53,8 @@ type IDbNotify interface {
 	DeleteSettingsByID(id string) (err error)
 	DeleteNotifyByID(id string) (err error)
 	Edit(input *EditSettingsInput) (err error)
+	InsertNotify(input *InsertNotifyInput) (err error)
+	SendMsg() error
 }
 
 type DbNotify struct {
@@ -54,19 +70,19 @@ func NewDbNotify(c component.IContainer) *DbNotify {
 func(d *DbNotify) Query(input *UserNotifyInput) (data db.QueryRows, count int,err error) {
 	db := d.c.GetRegularDB()
 	c, q, a, err := db.Scalar(sql.QueryUserNotifyCount, map[string]interface{}{
-		"title":   input.Title,
-		"user_id": input.UserID,
-		"sys_id": input.SysID,
+		"title":   	input.Title,
+		"user_id": 	input.UserID,
+		"sys_id": 	input.SysID,
 	})
 	if err != nil {
 		return nil, 0,fmt.Errorf("获取消息列表条数发生错误(err:%v),sql:(%s),输入参数:%v,", err, q, a)
 	}
 	data, q, a, err = db.Query(sql.QueryUserNotifyPageList, map[string]interface{}{
-		"title": input.Title,
-		"user_id": input.UserID,
-		"sys_id": input.SysID,
-		"pi": input.Pi,
-		"ps": input.Ps,
+		"title": 	input.Title,
+		"user_id": 	input.UserID,
+		"sys_id": 	input.SysID,
+		"pi": 		input.Pi,
+		"ps": 		input.Ps,
 	})
 	if err != nil {
 		return nil, 0,fmt.Errorf("获取消息列表发生错误(err:%v),sql:%s,输入参数:%v,", err, q, a)
@@ -102,10 +118,9 @@ func (d *DbNotify) Add(input *SettingsInput) (err error) {
 		"sys_id":     	input.SysID,
 		"keywords": 	input.Keywords,
 		"level_id":     input.Level,
-		"status":    	input.Status,
 	})
 	if err != nil {
-		return fmt.Errorf("添加系统管理数据发生错误(err:%v),sql:%s,输入参数:%v,", err, q, a)
+		return fmt.Errorf("添加添加消息配置数据发生错误(err:%v),sql:%s,输入参数:%v,", err, q, a)
 	}
 	return nil
 }
@@ -141,7 +156,82 @@ func (d *DbNotify) DeleteNotifyByID(id string) (err error) {
 		"id": id,
 	})
 	if err != nil {
-		return fmt.Errorf("删除消息设置数据发生错误(err:%v),sql:%s,输入参数:%v,", err, q, a)
+		return fmt.Errorf("删除消数据发生错误(err:%v),sql:%s,输入参数:%v,", err, q, a)
+	}
+	return nil
+}
+
+func (d *DbNotify) InsertNotify(input *InsertNotifyInput) (err error) {
+	db := d.c.GetRegularDB()
+	dbTrans, err := db.Begin()
+	if err != nil {
+		return fmt.Errorf("开启DB事务出错(err:%v)", err)
+	}
+	_, q, a, err := dbTrans.Execute(sql.InsertNotify, map[string]interface{}{
+		"sys_id": 	input.SysID,
+		"level_id": input.LevelID,
+		"title": 	input.Title,
+		"keywords": input.Keywords,
+		"content": 	input.Content,
+	})
+	if err != nil {
+		dbTrans.Rollback()
+		return fmt.Errorf("添加系统消息数据发生错误(err:%v),sql:%s,输入参数:%v,", err, q, a)
+	}
+	_, q, a, err = dbTrans.Execute(sql.InsertNotifyUser, map[string]interface{}{
+		"sys_id": 	input.SysID,
+		"level_id": input.LevelID,
+		"title": 	input.Title,
+		"keywords": input.Keywords,
+		"content": 	input.Content,
+	})
+	if err != nil {
+		dbTrans.Rollback()
+		return fmt.Errorf("添加用户消息数据发生错误(err:%v),sql:%s,输入参数:%v,", err, q, a)
+	}
+	dbTrans.Commit()
+	return nil
+}
+
+func(d *DbNotify) SendMsg() (err error){
+	db := d.c.GetRegularDB()
+	dbTrans, err := db.Begin()
+	if err != nil {
+		return fmt.Errorf("开启DB事务出错(err:%v)", err)
+	}
+	//扫描消息并修改状态
+	guid := utility.GetGUID()
+	_, q, a, err := dbTrans.Execute(sql.UpdateNotifyUser, map[string]interface{}{
+		"guid": guid,
+	})
+	if err != nil {
+		dbTrans.Rollback()
+		return fmt.Errorf("修改消息数据发生错误(err:%v),sql:%s,输入参数:%v,", err, q, a)
+	}
+	dbTrans.Commit()
+	//查询消息，并发送给用户
+	data, q, a, err := db.Query(sql.QueryToUserNotify, map[string]interface{}{
+		"guid":guid,
+	})
+	if err != nil {
+		_ = data
+		return fmt.Errorf("获取消息列表发生错误(err:%v),sql:%s,输入参数:%v,", err, q, a)
+	}
+	//循环发送消息
+	wxMsg := NewWxmsg(d.c)
+	for _,v := range data {
+		err = wxMsg.Send(&TpMsg{
+			Openid: 	v.GetString("wx_openid"),
+			Name: 		v.GetString("name"),
+			Content: 	v.GetString("content"),
+			Time: 		v.GetString("create_time"),
+		})
+		//发送成功，修改状态
+		if err == nil {
+			_, _, _, _ = dbTrans.Execute(sql.SendNotifyUserSucc, map[string]interface{}{
+				"id": v.GetString("id"),
+			})
+		}
 	}
 	return nil
 }

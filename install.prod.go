@@ -53,7 +53,7 @@ func (s *SSO) install() {
 			}
 		}
 		`)
-
+	s.Conf.CRON.SetSubConf("task", `{"tasks":[{"cron":"@every 30s","service":"/sso/notify/send"}]}`)
 	s.Conf.WS.SetSubConf("app", `
 			{
 				"qrlogin-check-url":"http://#wx_host_name/member/wxlogin",
@@ -84,7 +84,8 @@ func (s *SSO) install() {
 			"pool_size":10
 	}
 		`)
-
+	}
+	
 	//自定义安装程序
 	s.Conf.API.Installer(func(c component.IContainer) error {
 		if !s.Conf.Confirm("创建数据库表结构,添加基础数据?") {

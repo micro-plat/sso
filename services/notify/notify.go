@@ -37,7 +37,7 @@ func (u *NotifyHandler) GetHandle(ctx *context.Context) (r interface{}) {
 		"count": count,
 	}
 }
-//删除消息
+//DeleteHandle 删除消息
 func (u *NotifyHandler) DeleteHandle(ctx *context.Context) (r interface{}){
 	ctx.Log.Info("--------删除报警消息数据--------")
 	ctx.Log.Info("1.参数校验")
@@ -50,6 +50,20 @@ func (u *NotifyHandler) DeleteHandle(ctx *context.Context) (r interface{}){
 		return err
 	}
 	ctx.Log.Info("2.返回数据")
+	return "success"
+}
+//接入系统上传消息     /sso/notify/info  [post]
+func (u *NotifyHandler) PostHandle(ctx *context.Context) (r interface{}){
+	ctx.Log.Info("--------上报系统消息---------")
+	ctx.Log.Info("1.参数校验")
+	var input notify.InsertNotifyInput
+	if err := ctx.Request.Bind(&input); err != nil {
+		return context.NewError(context.ERR_NOT_ACCEPTABLE,err)
+	}
+	ctx.Log.Info("2.执行操作")
+	if err := u.Lib.InsertNotify(&input); err != nil {
+		return err
+	}
 	return "success"
 }
 

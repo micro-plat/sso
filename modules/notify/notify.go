@@ -12,6 +12,8 @@ type INotify interface {
 	DeleteSettingsByID(id string) (err error)
 	DeleteNotifyByID(id string) (err error)
 	Edit(input *EditSettingsInput) (err error)
+	InsertNotify(input *InsertNotifyInput) (err error)
+	SendMsg() error
 }
 
 type Notify struct {
@@ -87,4 +89,16 @@ func (n *Notify) Edit(input *EditSettingsInput) (err error) {
 		return err
 	}
 	return n.cache.FreshNotifySet();
+}
+
+func (n *Notify) InsertNotify(input *InsertNotifyInput) (err error) {
+	err = n.db.InsertNotify(input)
+	if err != nil {
+		return err
+	}
+	return n.cache.FreshNotify()
+}
+
+func (n *Notify) SendMsg() error {
+	return n.db.SendMsg()
 }

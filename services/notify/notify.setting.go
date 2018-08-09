@@ -18,7 +18,7 @@ func NewNotifySetHandler(container component.IContainer) (u *NotifySetHandler) {
 		Lib:    notify.NewNotify(container),
 	}
 }
-
+//GetHandle 查询报警消息设置信息
 func (u *NotifySetHandler) GetHandle(ctx *context.Context) (r interface{}){
 	ctx.Log.Info("--------查询报警消息设置信息------")
 	ctx.Log.Info("1.参数校验")
@@ -42,7 +42,7 @@ func (u *NotifySetHandler) GetHandle(ctx *context.Context) (r interface{}){
 		"count": count,
 	}
 }
-//添加报警消息设置信息
+//PutHandle 添加报警消息设置信息
 func (u *NotifySetHandler) PutHandle(ctx *context.Context) (r interface{}){
 	ctx.Log.Info("--------添加报警消息设置信息------")
 	ctx.Log.Info("1.参数校验")
@@ -59,7 +59,7 @@ func (u *NotifySetHandler) PutHandle(ctx *context.Context) (r interface{}){
 	return "success"
 }
 
-//删除消息配置
+//DeleteHandle 删除消息配置
 func (u *NotifySetHandler) DeleteHandle(ctx *context.Context) (r interface{}) {
 	ctx.Log.Info("--------删除报警消息设置信息------")
 	ctx.Log.Info("1.参数校验")
@@ -75,7 +75,7 @@ func (u *NotifySetHandler) DeleteHandle(ctx *context.Context) (r interface{}) {
 	return "success"
 }
 
-//编辑报警消息设置信息
+//PostHandle 编辑报警消息设置信息
 func (u *NotifySetHandler) PostHandle(ctx *context.Context) (r interface{}){
 	ctx.Log.Info("--------编辑报警消息设置信息------")
 	ctx.Log.Info("1.参数校验")

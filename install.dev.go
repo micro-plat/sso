@@ -37,13 +37,12 @@ func (s *SSO) install() {
 		`)
 
 	s.Conf.WS.SetSubConf("app", `
-			{
-				"qrlogin-check-url":"http://sso.100bm.cn/member/wxlogin",
-				"wx-login-url":"http://sso.100bm.cn/member/wxlogin",
-				"appid":"wx9e02ddcc88e13fd4",
-				"secret":"45d25cb71f3bee254c2bc6fc0dc0caf1",
-				"wechat-url":"http://59.151.30.153:9999/wx9e02ddcc88e13fd4/wechat/token/get"
-			}			
+	{
+		"appid":"wx9e02ddcc88e13fd4",
+		"secret":"45d25cb71f3bee254c2bc6fc0dc0caf1",
+		"wechat-url":"http://59.151.30.153:9999/wx9e02ddcc88e13fd4/wechat/token/get",
+		"hostname": "http://sso.100bm.cn"
+	}			
 			`)
 	s.Conf.Plat.SetVarConf("db", "db", `{			
 			"provider":"ora",
@@ -72,4 +71,5 @@ func (s *SSO) install() {
 	}
 		
 		`)
-}
+	s.Conf.CRON.SetSubConf("task",`{"tasks":[{"cron":"@every 30s","service":"/sso/notify/send"}]}`)
+	}
