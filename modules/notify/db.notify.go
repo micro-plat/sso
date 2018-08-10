@@ -10,33 +10,33 @@ import (
 )
 
 type UserNotifyInput struct {
-	Title string `form:"title" json:"title"`
-	UserID string `form:"user_id" json:"user_id" valid:"required"`
-	SysID string `form:"sys_id" json:"sys_id" valid:"required"`
-	Pi string `form:"pi" json:"pi" valid:"required"`
-	Ps string `form:"ps" json:"ps" valid:"required"`
+	Title 	string `form:"title" json:"title"`
+	UserID 	string `form:"user_id" json:"user_id" valid:"required"`
+	SysID 	string `form:"sys_id" json:"sys_id" valid:"required"`
+	Pi 		string `form:"pi" json:"pi" valid:"required"`
+	Ps 		string `form:"ps" json:"ps" valid:"required"`
 }
 
 type SettingsInput struct {
 	Keywords string `form:"keywords" json:"keywords" valid:"required"`
-	Level string `form:"level_id" json:"level_id" valid:"required"`
-	UserID string `form:"user_id" json:"user_id" valid:"required"`
-	SysID string `form:"sys_id" json:"sys_id" valid:"required"`
+	Level 	 string `form:"level_id" json:"level_id" valid:"required"`
+	UserID 	 string `form:"user_id" json:"user_id" valid:"required"`
+	SysID 	 string `form:"sys_id" json:"sys_id" valid:"required"`
 }
 
 type EditSettingsInput struct {
-	ID string `form:"id" json:"id" valid:"required"`
+	ID 		 string `form:"id" json:"id" valid:"required"`
 	Keywords string `form:"keywords" json:"keywords" valid:"required"`
-	Level string `form:"level_id" json:"level_id" valid:"required"`
-	Status string `form:"status" json:"status" valid:"required"`
+	Level 	 string `form:"level_id" json:"level_id" valid:"required"`
+	Status 	 string `form:"status" json:"status" valid:"required"`
 }
 
 type InsertNotifyInput struct {
-	SysID string `form:"sys_id" json:"sys_id" valid:"required"`
-	LevelID string `form:"level_id" json:"level_id" valid:"required"`
-	Title string `form:"title" json:"title" valid:"required"`
+	SysID 	 string `form:"sys_id" json:"sys_id" valid:"required"`
+	LevelID  string `form:"level_id" json:"level_id" valid:"required"`
+	Title 	 string `form:"title" json:"title" valid:"required"`
 	Keywords string `form:"keywords" json:"keywords" valid:"required"`
-	Content string `form:"content" json:"content" valid:"required"`
+	Content  string `form:"content" json:"content" valid:"required"`
 }
 
 type TpMsg struct {
@@ -54,7 +54,7 @@ type IDbNotify interface {
 	DeleteNotifyByID(id string) (err error)
 	Edit(input *EditSettingsInput) (err error)
 	InsertNotify(input *InsertNotifyInput) (err error)
-	SendMsg() error
+	SendMsg() (err error)
 }
 
 type DbNotify struct {
@@ -67,7 +67,7 @@ func NewDbNotify(c component.IContainer) *DbNotify {
 	}
 }
 
-func(d *DbNotify) Query(input *UserNotifyInput) (data db.QueryRows, count int,err error) {
+func(d *DbNotify) Query(input *UserNotifyInput) (data db.QueryRows, count int, err error) {
 	db := d.c.GetRegularDB()
 	c, q, a, err := db.Scalar(sql.QueryUserNotifyCount, map[string]interface{}{
 		"title":   	input.Title,
@@ -75,7 +75,7 @@ func(d *DbNotify) Query(input *UserNotifyInput) (data db.QueryRows, count int,er
 		"sys_id": 	input.SysID,
 	})
 	if err != nil {
-		return nil, 0,fmt.Errorf("获取消息列表条数发生错误(err:%v),sql:(%s),输入参数:%v,", err, q, a)
+		return nil, 0, fmt.Errorf("获取消息列表条数发生错误(err:%v),sql:(%s),输入参数:%v,", err, q, a)
 	}
 	data, q, a, err = db.Query(sql.QueryUserNotifyPageList, map[string]interface{}{
 		"title": 	input.Title,
@@ -85,30 +85,30 @@ func(d *DbNotify) Query(input *UserNotifyInput) (data db.QueryRows, count int,er
 		"ps": 		input.Ps,
 	})
 	if err != nil {
-		return nil, 0,fmt.Errorf("获取消息列表发生错误(err:%v),sql:%s,输入参数:%v,", err, q, a)
+		return nil, 0, fmt.Errorf("获取消息列表发生错误(err:%v),sql:%s,输入参数:%v,", err, q, a)
 	}
-	return data, types.ToInt(c),nil
+	return data, types.ToInt(c), nil
 }
 
-func (d *DbNotify) Get(userID, sysID string, pi, ps int) (data db.QueryRows,count int,err error){
+func (d *DbNotify) Get(userID, sysID string, pi, ps int) (data db.QueryRows, count int, err error){
 	db := d.c.GetRegularDB()
 	c, q, a, err := db.Scalar(sql.QueryUserNotifySetCount, map[string]interface{}{
-		"user_id": userID,
-		"sys_id": sysID,
+		"user_id": 	userID,
+		"sys_id": 	sysID,
 	})
 	if err != nil {
-		return nil, 0,fmt.Errorf("获取消息设置列表条数发生错误(err:%v),sql:(%s),输入参数:%v,", err, q, a)
+		return nil, 0, fmt.Errorf("获取消息设置列表条数发生错误(err:%v),sql:(%s),输入参数:%v,", err, q, a)
 	}
 	data, q, a, err = db.Query(sql.QueryUserNotifySetPageList, map[string]interface{}{
-		"user_id": userID,
-		"sys_id": sysID,
-		"pi": pi,
-		"ps": ps,
+		"user_id": 	userID,
+		"sys_id": 	sysID,
+		"pi": 		pi,
+		"ps": 		ps,
 	})
 	if err != nil {
-		return nil, 0,fmt.Errorf("获取消息设置列表发生错误(err:%v),sql:%s,输入参数:%v,", err, q, a)
+		return nil, 0, fmt.Errorf("获取消息设置列表发生错误(err:%v),sql:%s,输入参数:%v,", err, q, a)
 	}
-	return data, types.ToInt(c),nil
+	return data, types.ToInt(c), nil
 }
 
 func (d *DbNotify) Add(input *SettingsInput) (err error) {
@@ -192,7 +192,7 @@ func (d *DbNotify) InsertNotify(input *InsertNotifyInput) (err error) {
 	dbTrans.Commit()
 	return nil
 }
-
+//执行发送消息
 func(d *DbNotify) SendMsg() (err error){
 	db := d.c.GetRegularDB()
 	dbTrans, err := db.Begin()
@@ -211,26 +211,31 @@ func(d *DbNotify) SendMsg() (err error){
 	dbTrans.Commit()
 	//查询消息，并发送给用户
 	data, q, a, err := db.Query(sql.QueryToUserNotify, map[string]interface{}{
-		"guid":guid,
+		"guid": guid,
 	})
+	if len(data) <= 0 {
+		return fmt.Errorf("-------没有可发送的消息------")
+	}
 	if err != nil {
-		_ = data
 		return fmt.Errorf("获取消息列表发生错误(err:%v),sql:%s,输入参数:%v,", err, q, a)
 	}
 	//循环发送消息
+	fmt.Println("发送消息")
 	wxMsg := NewWxmsg(d.c)
 	for _,v := range data {
+		//使用微信发送模板消息，发送失败则进入下轮继续发送
 		err = wxMsg.Send(&TpMsg{
 			Openid: 	v.GetString("wx_openid"),
 			Name: 		v.GetString("name"),
 			Content: 	v.GetString("content"),
-			Time: 		v.GetString("create_time"),
+			Time: 		v.GetString("create_times"),
 		})
 		//发送成功，修改状态
 		if err == nil {
-			_, _, _, _ = dbTrans.Execute(sql.SendNotifyUserSucc, map[string]interface{}{
+			_, _, _, err = db.Execute(sql.SendNotifyUserSucc, map[string]interface{}{
 				"id": v.GetString("id"),
 			})
+			fmt.Println(err)
 		}
 	}
 	return nil

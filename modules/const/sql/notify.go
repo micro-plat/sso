@@ -56,7 +56,7 @@ set t.status = 2,t.scan_batch_id = @guid,t.send_count=t.send_count +1,t.flow_tim
 where t.send_count <= 3 and t.flow_timeout < SYSDATE and t.status in (1,2)
 `
 
-const QueryToUserNotify = `select t.id,t.title,t.content,t.create_time,u.wx_openid,s.name
+const QueryToUserNotify = `select t.id,t.title,t.content,to_char(t.create_time, 'yyyy-MM-dd hh24:mi:ss') create_times,u.wx_openid,s.name
 from sso_notify_user t
 left join sso_user_info u ON u.user_id = t.user_id
 left join sso_system_info s ON s.id = t.sys_id 

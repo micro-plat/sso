@@ -33,24 +33,24 @@ func (l *Wxmsg) Send(msg *TpMsg) error {
 	ctx := app.GetWeChatContext(l.c)
 	if _, err := template.Send(ctx, &template.TemplateMessage2{
 		ToUser:    msg.Openid,
-		TemplateId: "_DL41WrU7r6uNYyjD45c5B11ECkOAhwdDG8qqQxbvGs",
+		TemplateId: "_UC3m5HLVglHeGLkrzP0mU6d_zoaThPC7pn0WVoMEP0",
 		Data: map[string]interface{}{
 			"first": map[string]string{
 				"value": fmt.Sprintf("[%s]监控告警通知", msg.Name),
 			},
-			"keyword1": map[string]string{
+			"content": map[string]string{
 				"value": msg.Content,
-				"color": "#43CD80",
+				"color": "#FF0000",
 			},
-			"keyword2": map[string]string{
+			"occurtime": map[string]string{
 				"value": msg.Time,
 			},
 			"remark": map[string]string{
-				"value": "若非本人操作请注意账户安全",
+				"value": "请尽快处理",
 			},
 		},
 	}); err != nil {
-		return fmt.Errorf("发送通知失败:%v(openid: %s)", err, msg.Openid)
+		return fmt.Errorf("发送模板消息失败:%v(openid: %s)", err, msg.Openid)
 	}
 	return nil
 }

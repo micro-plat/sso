@@ -30,7 +30,7 @@ func NewRole(c component.IContainer) *Role {
 }
 //获取页面权限
 func(r *Role) Get(sysID int,roleID int,path string) (data db.QueryRows,err error) {
-	//从缓存中获取角色信息，不存在时从数据库中获取
+	//从缓存中获取页面权限信息，不存在时从数据库中获取
 	data,err = r.cache.Get(sysID,roleID,path)
 	if data == nil || err != nil {
 		//丛数据库获取数据

@@ -57,9 +57,9 @@ func NewDbRole(c component.IContainer) *DbRole {
 func(r *DbRole) Get(sysID int,roleID int,path string) (data db.QueryRows,err error) {
 	db := r.c.GetRegularDB()
 	data, q, a, err := db.Query(sql.GetPageAuth, map[string]interface{}{
-		"sys_id": sysID ,
-		"role_id": roleID,
-		"path": path,
+		"sys_id": 	sysID ,
+		"role_id": 	roleID,
+		"path": 	path,
 	})
 	if err != nil {
 		return nil, fmt.Errorf("获取系统管理列表发生错误(err:%v),sql:%s,输入参数:%v,", err, q, a)

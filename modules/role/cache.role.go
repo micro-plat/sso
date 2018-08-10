@@ -11,7 +11,7 @@ import (
 )
 
 type ICacheRole interface {
-	Get(sysID int,roleID int,path string) (data db.QueryRows,err error)
+	Get(sysID, roleID int, path string) (data db.QueryRows, err error)
 	SetPageAuth(sysID int,roleID int,path string,data db.QueryRows) (error)
 	Query(s *QueryRoleInput) (data db.QueryRows, count int, err error)
 	Save(s *QueryRoleInput, data db.QueryRows, count int) error
@@ -45,31 +45,31 @@ func NewCacheRole(c component.IContainer) *CacheRole {
 		cacheTime: 3600 * 24,
 	}
 }
-func (l *CacheRole) Get(sysID int,roleID int,path string) (data db.QueryRows,err error){
+func (l *CacheRole) Get(sysID, roleID int, path string) (data db.QueryRows, err error){
 	cache := l.c.GetRegularCache()
-	key := transform.Translate(cachePageAuth,"sysID",sysID,"roleID",roleID,"path",path)
+	key := transform.Translate(cachePageAuth,"sysID", sysID, "roleID", roleID, "path", path)
 	v, err := cache.Get(key)
 	if err != nil {
 		return nil, err
 	}
 	if v == "" {
-		return nil,fmt.Errorf("无数据")
+		return nil, fmt.Errorf("无数据")
 	}
 	nmap := make(db.QueryRows,0,0)
-	if err = json.Unmarshal([]byte(v),&nmap); err != nil {
+	if err = json.Unmarshal([]byte(v), &nmap); err != nil {
 		return nil, err
 	}
-	return nmap,err
+	return nmap, err
 }
 
-func (l *CacheRole) SetPageAuth(sysID int,roleID int,path string,data db.QueryRows) (error) {
+func (l *CacheRole) SetPageAuth(sysID int, roleID int, path string, data db.QueryRows) (error) {
 	buff, err := json.Marshal(data)
 	if err != nil {
 		return err
 	}
 	cache := l.c.GetRegularCache()
-	key := transform.Translate(cachePageAuth,"sysID",sysID,"roleID",roleID,"path",path)
-	return cache.Set(key,string(buff),l.cacheTime)
+	key := transform.Translate(cachePageAuth, "sysID", sysID, "roleID", roleID, "path", path)
+	return cache.Set(key,string(buff), l.cacheTime)
 }
 
 //Save 缓存角色列表信息

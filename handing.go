@@ -12,12 +12,7 @@ import (
 //bind 检查应用程序配置文件，并根据配置初始化服务
 func (r *SSO) handing() {
 	//每个请求执行前执行
-	r.Handling(func(ctx *context.Context) (rt interface{}) {
-
-		//检查服务器类型
-		if ctx.GetContainer().GetServerType() != "api" {
-			return nil
-		}
+	r.Handling(func(ctx *context.Context) (rt interface{}) {		
 
 		//是否配置jwt
 		jwt, err := ctx.Request.GetJWTConfig() //获取jwt配置

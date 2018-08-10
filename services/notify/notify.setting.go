@@ -2,10 +2,14 @@
 package notify
 
 import (
+	"fmt"
+
 	"github.com/micro-plat/hydra/component"
 	"github.com/micro-plat/hydra/context"
 	"github.com/micro-plat/sso/modules/notify"
 )
+
+var keywords = []string{"数据库", "网络", "参数"}
 
 type NotifySetHandler struct {
 	container component.IContainer
@@ -18,6 +22,16 @@ func NewNotifySetHandler(container component.IContainer) (u *NotifySetHandler) {
 		Lib:    notify.NewNotify(container),
 	}
 }
+
+func isKeywords(f string) bool {
+	for _, i := range keywords {
+		if f == i {
+			return true
+		}
+	}
+	return false
+}
+
 //GetHandle 查询报警消息设置信息
 func (u *NotifySetHandler) GetHandle(ctx *context.Context) (r interface{}){
 	ctx.Log.Info("--------查询报警消息设置信息------")
@@ -49,6 +63,9 @@ func (u *NotifySetHandler) PutHandle(ctx *context.Context) (r interface{}){
 	var input notify.SettingsInput
 	if err := ctx.Request.Bind(&input);err != nil{
 		return context.NewError(context.ERR_NOT_ACCEPTABLE, err)
+	}
+	if !isKeywords(input.Keywords) {
+		return context.NewError(context.ERR_NOT_ACCEPTABLE, fmt.Errorf("不是有效的关键字：%v", input.Keywords))
 	}
 	ctx.Log.Info("2.执行操作")
 	err := u.Lib.Add(&input)

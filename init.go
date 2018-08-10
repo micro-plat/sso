@@ -22,14 +22,14 @@ func (r *SSO) init() {
 	//初始化
 	r.Initializing(func(c component.IContainer) error {
 		var conf app.Conf
-		if err := c.GetAppConf(&conf); err != nil {
-			return err
-		}
-		app.SaveConf(c, &conf)
-		if err := conf.Valid(); err != nil {
-			return err
-		}
-
+			if err := c.GetAppConf(&conf); err != nil {
+				return err
+			}
+			app.SaveConf(c, &conf)
+			if err := conf.Valid(); err != nil {
+				return err
+			}
+			
 		//检查db配置是否正确
 		if _, err := c.GetDB(); err != nil {
 			return err
@@ -38,8 +38,9 @@ func (r *SSO) init() {
 		//检查缓存配置是否正确
 		if _, err := c.GetCache(); err != nil {
 			return err
-		}
+		}		
 		r.Micro("/sso/wxcode/get", member.NewWxcodeHandler(conf.AppID, conf.Secret, conf.WechatTSAddr)) //发送微信验证码
+
 		xmenu.Set(c)                                                                                    //保存全局菜单变量
 		return nil
 	})
