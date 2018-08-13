@@ -26,7 +26,7 @@ func (u *VerifyHandler) Handle(ctx *context.Context) (r interface{}) {
 	path := ctx.Request.GetString("path")
 	uid := member.Get(ctx).UserID
 	sysid := member.Get(ctx).SystemID
-	err := u.m.Verify(uid, sysid, path)
+	err := u.m.Verify(uid, sysid, path,ctx.Request.GetMethod())
 	if err != nil {
 		return err
 	}
