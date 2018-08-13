@@ -90,5 +90,4 @@ func (r *SSO) init() {
 	r.Micro("/sso/notify/info",notify.NewNotifyHandler,"*")
 	r.Micro("/sso/notify/settings",notify.NewNotifySetHandler,"*")
 	r.CRON("/sso/notify/send",notify.NewNotifySendHandler,"*")     //发送消息
-	r.Micro("/sso/notify/send",notify.NewNotifySendHandler,"*")     //发送消息
 }

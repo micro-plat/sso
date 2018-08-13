@@ -26,7 +26,7 @@ func (s *SSO) install() {
 	s.Conf.API.SetSubConf("auth", `
 		{
 			"jwt": {
-				"exclude": ["/sso/login","/sso/login/code","/sso/wxcode/get","/sso/sys/get","/qrcode/login","/qrcode/login/put","/sso/user/bind","/wx/login","/sso/notify/send"],
+				"exclude": ["/sso/login","/sso/login/code","/sso/wxcode/get","/sso/sys/get","/qrcode/login","/qrcode/login/put","/sso/user/bind","/wx/login","/sso/notify/send","/qrcode/login/get"],
 				"source":"header",
 				"expireAt": 36000,
 				"mode": "HS512",
@@ -78,10 +78,10 @@ func (s *SSO) install() {
 				"hostname": "http://sso.100bm.cn"
 			}			
 			`)
-		s.Conf.CRON.SetSubConf("auth", `
+		s.Conf.WS.SetSubConf("auth", `
 			{
 				"jwt": {
-					"exclude": ["/sso/login","/sso/login/code","/sso/wxcode/get","/sso/sys/get","/qrcode/login","/qrcode/login/put","/sso/user/bind","/wx/login","/sso/notify/send"],
+					"exclude": ["/sso/login","/sso/login/code","/sso/wxcode/get","/sso/sys/get","/qrcode/login","/qrcode/login/put","/sso/user/bind","/wx/login","/sso/notify/send","/qrcode/login/get"],
 					"source":"header",
 					"expireAt": 36000,
 					"mode": "HS512",

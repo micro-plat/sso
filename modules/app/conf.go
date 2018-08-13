@@ -32,11 +32,11 @@ func (c *Conf) GetBindUrl() string {
 
 //获取二维码登录url
 func (c *Conf) GetQRLoginCheckURL() string {
-	return strings.Join([]string{c.HostName,"/member/wxlogin"},"")
+	return strings.Join([]string{c.HostName,"/member/check"},"")
 }
 //获取微信登录url
 func (c *Conf) GetWXLoginURL() string {
-	return strings.Join([]string{c.HostName,"/member/wxlogin"},"")
+	return strings.Join([]string{c.HostName,"/member/login"},"")
 }
 
 //SaveConf 保存当前应用程序配置
