@@ -28,8 +28,8 @@ type ICacheNotify interface {
 	QueryNotify(title, userID, sysID, pi, ps string) (data db.QueryRows, count int, err error)
 	FreshNotify() (err error)
 
-	SaveNotifySet(userID, sysID string, pi, ps int, data db.QueryRows, count int) (err error)
-	QueryNotifySet(userID, sysID string, pi, ps int) (data db.QueryRows, count int, err error)
+	SaveNotifySet(userID, sysID, pi, ps int64, data db.QueryRows, count int) (err error)
+	QueryNotifySet(userID, sysID, pi, ps int64) (data db.QueryRows, count int, err error)
 	FreshNotifySet() (err error)
 }
 
@@ -86,7 +86,7 @@ func (l *CacheNotify) FreshNotify() (err error){
 	return l.c.GetRegularCache().Delete(cacheFormatNotifyDel)
 }
 
-func (l *CacheNotify)SaveNotifySet(userID, sysID string, pi, ps int, data db.QueryRows, count int) (err error){
+func (l *CacheNotify)SaveNotifySet(userID, sysID, pi, ps int64, data db.QueryRows, count int) (err error){
 	buff, err := json.Marshal(data)
 	if err != nil {
 		return err
@@ -100,7 +100,7 @@ func (l *CacheNotify)SaveNotifySet(userID, sysID string, pi, ps int, data db.Que
 	return cache.Set(keyCount, fmt.Sprint(count), l.cacheTime)
 }
 
-func (l *CacheNotify)QueryNotifySet(userID, sysID string, pi, ps int) (data db.QueryRows, count int, err error){
+func (l *CacheNotify)QueryNotifySet(userID, sysID, pi, ps int64) (data db.QueryRows, count int, err error){
 	cache := l.c.GetRegularCache()
 	keyData := transform.Translate(cacheFormatNotifySet, "userID", userID, "sysID", sysID, "pi", pi, "ps", ps)
 	keyCount := transform.Translate(cacheFormatNotifySetCount, "userID", userID, "sysID", sysID)

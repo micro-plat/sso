@@ -21,5 +21,10 @@ func NewNotifySendHandler(container component.IContainer) (u *NotifySendHandler)
 //发送消息
 func (n *NotifySendHandler) Handle(ctx *context.Context) (r interface{}){
 	ctx.Log.Info("-----执行定时任务发送消息------")
-	return n.Lib.SendMsg()
+	err:=n.Lib.SendMsg()
+	if e:=err.(context.IError);e.GetCode()==204{
+		ctx.Response.SetStatus(204)
+		return
+	}
+	return err
 }

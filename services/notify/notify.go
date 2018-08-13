@@ -5,6 +5,7 @@ import (
 	"github.com/micro-plat/hydra/component"
 	"github.com/micro-plat/hydra/context"
 	"github.com/micro-plat/sso/modules/notify"
+	"github.com/micro-plat/sso/modules/member"
 )
 
 type NotifyHandler struct {
@@ -45,7 +46,7 @@ func (u *NotifyHandler) DeleteHandle(ctx *context.Context) (r interface{}){
 		return context.NewError(context.ERR_NOT_ACCEPTABLE, err)
 	}
 	ctx.Log.Info("2.执行操作")
-	err := u.Lib.DeleteNotifyByID(ctx.Request.GetString("id"))
+	err := u.Lib.Delete(ctx.Request.GetInt64("id"),member.Get(ctx).UserID)
 	if err != nil {
 		return err
 	}
@@ -61,7 +62,7 @@ func (u *NotifyHandler) PostHandle(ctx *context.Context) (r interface{}){
 		return context.NewError(context.ERR_NOT_ACCEPTABLE,err)
 	}
 	ctx.Log.Info("2.执行操作")
-	if err := u.Lib.InsertNotify(&input); err != nil {
+	if err := u.Lib.Add(&input); err != nil {
 		return err
 	}
 	return "success"

@@ -2,6 +2,8 @@ package notify
 
 import (
 	"fmt"
+
+	"github.com/micro-plat/hydra/context"
 	"github.com/micro-plat/hydra/component"
 	"github.com/micro-plat/lib4go/db"
 	"github.com/micro-plat/sso/modules/const/sql"
@@ -48,13 +50,14 @@ type TpMsg struct {
 
 type IDbNotify interface {
 	Query(input *UserNotifyInput) (data db.QueryRows, count int, err error)
-	Get(userID, sysID string, pi, ps int) (data db.QueryRows, count int, err error)
-	Add(input *SettingsInput) (err error)
-	DeleteSettingsByID(id string) (err error)
-	DeleteNotifyByID(id string) (err error)
-	Edit(input *EditSettingsInput) (err error)
-	InsertNotify(input *InsertNotifyInput) (err error)
-	SendMsg() (err error)
+	Get(userID, sysID, pi, ps int64) (data db.QueryRows, count int, err error)
+	AddSettings(input *SettingsInput) (err error)
+	DeleteSettings(id , uid int64) (err error)
+	Delete(id , uid int64) (err error)
+	EditSettings(input *EditSettingsInput) (err error)
+	Add(input *InsertNotifyInput) (err error)
+	QueryToUserNotify() (data db.QueryRows, err error)
+	ChangeStatus(id string) (err error)
 }
 
 type DbNotify struct {
@@ -90,7 +93,7 @@ func(d *DbNotify) Query(input *UserNotifyInput) (data db.QueryRows, count int, e
 	return data, types.ToInt(c), nil
 }
 
-func (d *DbNotify) Get(userID, sysID string, pi, ps int) (data db.QueryRows, count int, err error){
+func (d *DbNotify) Get(userID, sysID, pi, ps int64) (data db.QueryRows, count int, err error){
 	db := d.c.GetRegularDB()
 	c, q, a, err := db.Scalar(sql.QueryUserNotifySetCount, map[string]interface{}{
 		"user_id": 	userID,
@@ -111,7 +114,7 @@ func (d *DbNotify) Get(userID, sysID string, pi, ps int) (data db.QueryRows, cou
 	return data, types.ToInt(c), nil
 }
 
-func (d *DbNotify) Add(input *SettingsInput) (err error) {
+func (d *DbNotify) AddSettings(input *SettingsInput) (err error) {
 	db := d.c.GetRegularDB()
 	_, q, a, err := db.Execute(sql.AddNotifySettings, map[string]interface{}{
 		"user_id":      input.UserID,
@@ -125,10 +128,11 @@ func (d *DbNotify) Add(input *SettingsInput) (err error) {
 	return nil
 }
 
-func (d *DbNotify) DeleteSettingsByID(id string) (err error) {
+func (d *DbNotify) DeleteSettings(id, uid int64) (err error) {
 	db := d.c.GetRegularDB()
 	_, q, a, err := db.Execute(sql.DelNotifySettings, map[string]interface{}{
 		"id": id,
+		"uid": uid,
 	})
 	if err != nil {
 		return fmt.Errorf("删除消息设置数据发生错误(err:%v),sql:%s,输入参数:%v,", err, q, a)
@@ -136,7 +140,7 @@ func (d *DbNotify) DeleteSettingsByID(id string) (err error) {
 	return nil
 }
 
-func (d *DbNotify) Edit(input *EditSettingsInput) (err error) {
+func (d *DbNotify) EditSettings(input *EditSettingsInput) (err error) {
 	db := d.c.GetRegularDB()
 	_, q, a, err := db.Execute(sql.EditNotifySettings, map[string]interface{}{
 		"id": 			input.ID,
@@ -150,10 +154,11 @@ func (d *DbNotify) Edit(input *EditSettingsInput) (err error) {
 	return nil
 }
 
-func (d *DbNotify) DeleteNotifyByID(id string) (err error) {
+func (d *DbNotify) Delete(id, uid int64) (err error) {
 	db := d.c.GetRegularDB()
 	_, q, a, err := db.Execute(sql.DelNotify, map[string]interface{}{
 		"id": id,
+		"uid": uid,
 	})
 	if err != nil {
 		return fmt.Errorf("删除消数据发生错误(err:%v),sql:%s,输入参数:%v,", err, q, a)
@@ -161,7 +166,7 @@ func (d *DbNotify) DeleteNotifyByID(id string) (err error) {
 	return nil
 }
 
-func (d *DbNotify) InsertNotify(input *InsertNotifyInput) (err error) {
+func (d *DbNotify) Add(input *InsertNotifyInput) (err error) {
 	db := d.c.GetRegularDB()
 	dbTrans, err := db.Begin()
 	if err != nil {
@@ -192,51 +197,35 @@ func (d *DbNotify) InsertNotify(input *InsertNotifyInput) (err error) {
 	dbTrans.Commit()
 	return nil
 }
-//执行发送消息
-func(d *DbNotify) SendMsg() (err error){
+
+//扫描消息
+func (d *DbNotify) QueryToUserNotify() (data db.QueryRows, err error) {
 	db := d.c.GetRegularDB()
-	dbTrans, err := db.Begin()
-	if err != nil {
-		return fmt.Errorf("开启DB事务出错(err:%v)", err)
-	}
 	//扫描消息并修改状态
 	guid := utility.GetGUID()
-	_, q, a, err := dbTrans.Execute(sql.UpdateNotifyUser, map[string]interface{}{
+	_, q, a, err := db.Execute(sql.UpdateNotifyUser, map[string]interface{}{
 		"guid": guid,
 	})
 	if err != nil {
-		dbTrans.Rollback()
-		return fmt.Errorf("修改消息数据发生错误(err:%v),sql:%s,输入参数:%v,", err, q, a)
+		return nil, fmt.Errorf("修改消息数据发生错误(err:%v),sql:%s,输入参数:%v,", err, q, a)
 	}
-	dbTrans.Commit()
 	//查询消息，并发送给用户
-	data, q, a, err := db.Query(sql.QueryToUserNotify, map[string]interface{}{
+	data, q, a, err = db.Query(sql.QueryToUserNotify, map[string]interface{}{
 		"guid": guid,
 	})
 	if len(data) <= 0 {
-		return fmt.Errorf("-------没有可发送的消息------")
+		return nil, context.NewError(context.ERR_NO_CONTENT,"没有可发送的消息")
 	}
 	if err != nil {
-		return fmt.Errorf("获取消息列表发生错误(err:%v),sql:%s,输入参数:%v,", err, q, a)
+		return nil, fmt.Errorf("获取消息列表发生错误(err:%v),sql:%s,输入参数:%v,", err, q, a)
 	}
-	//循环发送消息
-	fmt.Println("发送消息")
-	wxMsg := NewWxmsg(d.c)
-	for _,v := range data {
-		//使用微信发送模板消息，发送失败则进入下轮继续发送
-		err = wxMsg.Send(&TpMsg{
-			Openid: 	v.GetString("wx_openid"),
-			Name: 		v.GetString("name"),
-			Content: 	v.GetString("content"),
-			Time: 		v.GetString("create_times"),
-		})
-		//发送成功，修改状态
-		if err == nil {
-			_, _, _, err = db.Execute(sql.SendNotifyUserSucc, map[string]interface{}{
-				"id": v.GetString("id"),
-			})
-			fmt.Println(err)
-		}
-	}
-	return nil
+	return data, nil
+} 
+
+func (d *DbNotify) ChangeStatus(id string) (err error){
+	db := d.c.GetRegularDB()
+	_, _, _, err = db.Execute(sql.SendNotifyUserSucc, map[string]interface{}{
+		"id": id,
+	})
+	return err
 }

@@ -88,15 +88,11 @@ func (l *Menu) Verify(uid int64, sysid int, menuURL string,method string) error 
 	if len(funcs)==0{
 		return nil
 	}
-	data, q, a, err := db.Scalar(sql.QueryUserMenu, map[string]interface{}{
+	data, _, _, err = db.Scalar(sql.QueryUserMenu, map[string]interface{}{
 		"user_id": uid,
 		"sys_id":  sysid,
 		"path":   "'"+strings.Join(funcs,"','")+"'",
 	})
-	fmt.Println(data)
-	fmt.Printf("%v\n",funcs)
-	fmt.Println(q)
-	fmt.Println(a)
 	if err != nil || types.ToInt(data) !=len(funcs){
 		return context.NewError(context.ERR_FORBIDDEN, fmt.Errorf("未查找到菜单 %v",err))
 	}

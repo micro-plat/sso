@@ -7,6 +7,7 @@ import (
 	"github.com/micro-plat/hydra/component"
 	"github.com/micro-plat/hydra/context"
 	"github.com/micro-plat/sso/modules/notify"
+	"github.com/micro-plat/sso/modules/member"
 )
 
 var keywords = []string{"数据库", "网络", "参数"}
@@ -23,6 +24,7 @@ func NewNotifySetHandler(container component.IContainer) (u *NotifySetHandler) {
 	}
 }
 
+
 func isKeywords(f string) bool {
 	for _, i := range keywords {
 		if f == i {
@@ -31,6 +33,7 @@ func isKeywords(f string) bool {
 	}
 	return false
 }
+
 
 //GetHandle 查询报警消息设置信息
 func (u *NotifySetHandler) GetHandle(ctx *context.Context) (r interface{}){
@@ -41,10 +44,10 @@ func (u *NotifySetHandler) GetHandle(ctx *context.Context) (r interface{}){
 	}
 	ctx.Log.Info("2.执行操作")
 	data,count,err :=u.Lib.Get(
-		ctx.Request.GetString("user_id"),
-		ctx.Request.GetString("sys_id"),
-		ctx.Request.GetInt("pi"),
-		ctx.Request.GetInt("ps"),
+		ctx.Request.GetInt64("user_id"),
+		ctx.Request.GetInt64("sys_id"),
+		ctx.Request.GetInt64("pi"),
+		ctx.Request.GetInt64("ps"),
 	)
 	if err != nil {
 		return err
@@ -68,7 +71,7 @@ func (u *NotifySetHandler) PutHandle(ctx *context.Context) (r interface{}){
 		return context.NewError(context.ERR_NOT_ACCEPTABLE, fmt.Errorf("不是有效的关键字：%v", input.Keywords))
 	}
 	ctx.Log.Info("2.执行操作")
-	err := u.Lib.Add(&input)
+	err := u.Lib.AddSettings(&input)
 	if err != nil {
 		return err
 	}
@@ -84,7 +87,7 @@ func (u *NotifySetHandler) DeleteHandle(ctx *context.Context) (r interface{}) {
 		return context.NewError(context.ERR_NOT_ACCEPTABLE, err)
 	}
 	ctx.Log.Info("2.执行操作")
-	err := u.Lib.DeleteSettingsByID(ctx.Request.GetString("id"))
+	err := u.Lib.DeleteSettings(ctx.Request.GetInt64("id"),member.Get(ctx).UserID)
 	if err != nil {
 		return err
 	}
@@ -101,7 +104,7 @@ func (u *NotifySetHandler) PostHandle(ctx *context.Context) (r interface{}){
 		return context.NewError(context.ERR_NOT_ACCEPTABLE, err)
 	}
 	ctx.Log.Info("2.执行操作")
-	err := u.Lib.Edit(&input)
+	err := u.Lib.EditSettings(&input)
 	if err != nil {
 		return err
 	}

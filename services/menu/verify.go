@@ -24,9 +24,10 @@ func NewVerifyHandler(container component.IContainer) (u *VerifyHandler) {
 //Handle 查询用户在指定系统的页面是否有权限
 func (u *VerifyHandler) Handle(ctx *context.Context) (r interface{}) {
 	path := ctx.Request.GetString("path")
+	method:=ctx.Request.GetString("method","get")
 	uid := member.Get(ctx).UserID
 	sysid := member.Get(ctx).SystemID
-	err := u.m.Verify(uid, sysid, path,ctx.Request.GetMethod())
+	err := u.m.Verify(uid, sysid, path,method)
 	if err != nil {
 		return err
 	}
