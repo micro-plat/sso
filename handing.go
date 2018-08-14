@@ -33,7 +33,6 @@ func (r *SSO) handing() {
 		if err = mem.Save(ctx, &m); err != nil {
 			return err
 		}
-
 		//检查用户权限
 		tags := r.GetTags(ctx.Service)
 		menu := xmenu.Get(ctx.GetContainer().(component.IContainer))

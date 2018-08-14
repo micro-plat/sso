@@ -39,17 +39,18 @@ func (u *UserSaveHandler) Handle(ctx *context.Context) (r interface{}) {
 	if err := u.userLib.Save(&inputData); err != nil {
 		return context.NewError(context.ERR_NOT_IMPLEMENTED, err)
 	}
-	
+
 	//新添加用户要进行邮箱检验
 	if inputData.IsAdd == 1 {
+		guid := utility.GetGUID()
 		conf := app.GetConf(u.container)
-		resUri := url.QueryEscape(fmt.Sprintf(conf.GetBindUrl(),inputData.Email))
-		ctx.Log.Infof("发送验证邮件到:%s",inputData.Email)
+		resUri := url.QueryEscape(fmt.Sprintf(conf.GetBindUrl(),guid))
+		ctx.Log.Infof("发送验证邮件到:%s,guid：%v",inputData.Email,guid)
 		link := fmt.Sprintf(enum.WxApiCode,resUri)
 		if err := u.member.SendCheckMail(enum.From,enum.Password,enum.Host,enum.Port,inputData.Email,link); err != nil {
 			return err
 		}
-		if err := u.userLib.SetEmail(utility.GetGUID(),inputData.Email); err != nil {
+		if err := u.userLib.SetEmail(guid,inputData.Email); err != nil {
 			return err
 		}
 	}
