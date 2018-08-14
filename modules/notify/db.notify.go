@@ -209,7 +209,7 @@ func (d *DbNotify) QueryToUserNotify() (data db.QueryRows, err error) {
 	if err != nil {
 		return nil, fmt.Errorf("修改消息数据发生错误(err:%v),sql:%s,输入参数:%v,", err, q, a)
 	}
-	//查询消息，并发送给用户
+
 	data, q, a, err = db.Query(sql.QueryToUserNotify, map[string]interface{}{
 		"guid": guid,
 	})
@@ -221,7 +221,7 @@ func (d *DbNotify) QueryToUserNotify() (data db.QueryRows, err error) {
 	}
 	return data, nil
 } 
-
+//修改消息状态
 func (d *DbNotify) ChangeStatus(id string) (err error){
 	db := d.c.GetRegularDB()
 	_, _, _, err = db.Execute(sql.SendNotifyUserSucc, map[string]interface{}{
