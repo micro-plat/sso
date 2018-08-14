@@ -104,9 +104,6 @@ func (u *User) Edit(username string,tel string,email string)(err error){
 }
 
 func (u *User) ChangePwd(user_id int,expassword string,newpassword string)(err error) {
-	if err := u.cache.Delete(); err != nil {
-		return err
-	}
 	return u.db.ChangePwd(user_id,expassword,newpassword)
 }
 

@@ -122,10 +122,10 @@ const EditInfo = `update sso_user_info t
 set  t.mobile = @tel, t.email = @email
 where t.user_name = @username`
 
-const QueryOldPwd = `select t.password from sso_user_info t where t.user_id=@user_id`
+const QueryOldPwd = `select t.password,t.changepwd_times from sso_user_info t where t.user_id=@user_id`
 
 const SetNewPwd = `update sso_user_info t
-set t.password = @password
+set t.password = @password,t.changepwd_times = t.changepwd_times + 1
 where t.user_id = @user_id`
 
 const QueryUserBind = `select t.email,t.wx_openid from sso_user_info t where t.email=@email`

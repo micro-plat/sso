@@ -27,7 +27,7 @@ func (c Conf) Valid() error {
 
 //获取绑定url
 func (c *Conf) GetBindUrl() string {
-	return strings.Join([]string{c.HostName,"/user/bind?email=%s"},"")
+	return strings.Join([]string{c.HostName,"/user/bind?guid=%s"},"")
 }
 
 //获取二维码登录url
