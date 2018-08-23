@@ -9,12 +9,12 @@ import (
 	"github.com/micro-plat/sso/services/image"
 	"github.com/micro-plat/sso/services/member"
 	"github.com/micro-plat/sso/services/menu"
+	"github.com/micro-plat/sso/services/notify"
 	"github.com/micro-plat/sso/services/qrcode"
 	"github.com/micro-plat/sso/services/role"
 	"github.com/micro-plat/sso/services/system"
 	"github.com/micro-plat/sso/services/user"
 	"github.com/micro-plat/sso/services/wx"
-	"github.com/micro-plat/sso/services/notify"
 )
 
 //init 检查应用程序配置文件，并根据配置初始化服务
@@ -22,14 +22,14 @@ func (r *SSO) init() {
 	//初始化
 	r.Initializing(func(c component.IContainer) error {
 		var conf app.Conf
-			if err := c.GetAppConf(&conf); err != nil {
-				return err
-			}
-			app.SaveConf(c, &conf)
-			if err := conf.Valid(); err != nil {
-				return err
-			}
-			
+		if err := c.GetAppConf(&conf); err != nil {
+			return err
+		}
+		app.SaveConf(c, &conf)
+		if err := conf.Valid(); err != nil {
+			return err
+		}
+
 		//检查db配置是否正确
 		if _, err := c.GetDB(); err != nil {
 			return err
@@ -38,10 +38,10 @@ func (r *SSO) init() {
 		//检查缓存配置是否正确
 		if _, err := c.GetCache(); err != nil {
 			return err
-		}		
+		}
 		r.Micro("/sso/wxcode/get", member.NewWxcodeHandler(conf.AppID, conf.Secret, conf.WechatTSAddr)) //发送微信验证码
 
-		xmenu.Set(c)                                                                                    //保存全局菜单变量
+		xmenu.Set(c) //保存全局菜单变量
 		return nil
 	})
 	r.Micro("/sso/login", member.NewLoginHandler, "*")     //用户名密码登录
@@ -59,13 +59,14 @@ func (r *SSO) init() {
 	r.Micro("/sso/menu/verify", menu.NewVerifyHandler, "*")   //检查用户菜单权限
 
 	r.Micro("/sso/user/query", user.NewUserHandler, "/user/index")
+	r.Micro("/sso/user/getall", user.NewUserGetAllHandler, "*") // 根据系统获取系统下的所有用户
 	r.Micro("/sso/user/change", user.NewUserChangeHandler, "/user/index")
 	r.Micro("/sso/user/delete", user.NewUserDelHandler, "/user/index")
 	r.Micro("/sso/user/info", user.NewUserInfoHandler, "/user/index")
 	r.Micro("/sso/user/edit", user.NewUserEditHandler, "/user/index")
 	r.Micro("/sso/user/save", user.NewUserSaveHandler, "/user/index")
 	r.Micro("/sso/user/changepwd", user.NewUserPasswordHandler, "*")
-	r.Micro("/sso/user/bind", user.NewUserBindHandler, "*")  // 绑定用户
+	r.Micro("/sso/user/bind", user.NewUserBindHandler, "*") // 绑定用户
 	r.Micro("/sso/base/userrole", base.NewBaseUserHandler, "*")
 	r.Micro("/sso/base/sys", base.NewBaseSysHandler, "*")
 
@@ -76,8 +77,8 @@ func (r *SSO) init() {
 	r.Micro("/sso/role/auth", role.NewRoleAuthHandler, "/user/role")
 	r.Micro("/sso/role/authmenu", role.NewAuthMenuHandler, "/user/role")
 
-	r.Micro("/sso/sys/manage", system.NewSystemHandler, "/sys/index#[post:addsys]")   //系统管理
-	r.Micro("/sso/sys/edit", system.NewSystemEditHandler, "/sys/index") //系统编辑
+	r.Micro("/sso/sys/manage", system.NewSystemHandler, "/sys/index#[post:addsys]") //系统管理
+	r.Micro("/sso/sys/edit", system.NewSystemEditHandler, "/sys/index")             //系统编辑
 
 	r.Micro("/sso/sys/func/query", function.NewSystemFuncQueryHandler, "/sys/index")   //获取功能列表
 	r.Micro("/sso/sys/func/enable", function.NewSystemFuncEnableHandler, "/sys/index") //功能禁用/启用
@@ -87,7 +88,7 @@ func (r *SSO) init() {
 
 	r.Micro("/sso/img/upload", image.NewImageHandler("./static/static/img", "http://sso.100bm.cn"), "/sys/index") //图片上传
 
-	r.Micro("/sso/notify/info",notify.NewNotifyHandler,"*")
-	r.Micro("/sso/notify/settings",notify.NewNotifySetHandler,"*")
-	r.CRON("/sso/notify/send",notify.NewNotifySendHandler,"*")     // 发送消息
+	r.Micro("/sso/notify/info", notify.NewNotifyHandler, "*")
+	r.Micro("/sso/notify/settings", notify.NewNotifySetHandler, "*")
+	r.CRON("/sso/notify/send", notify.NewNotifySendHandler, "*") // 发送消息
 }

@@ -14,8 +14,8 @@ t2.rn > (@pi - 1) * @ps`
 
 const DeleteSubSystemById = `delete from sso_system_info where id = @id`
 
-const AddSubSystem = `insert into sso_system_info(id,name,index_url,login_timeout,logo,theme,layout,ident) 
-values(seq_system_info_id.nextval,@name,@addr,@time_out,@logo,@theme,@style,@ident)`
+const AddSubSystem = `insert into sso_system_info(id,name,index_url,login_timeout,logo,theme,layout,ident,wechat_status) 
+values(seq_system_info_id.nextval,@name,@addr,@time_out,@logo,@theme,@style,@ident,@wechat_status)`
 
 const UpdateEnable = `update sso_system_info t
 set  t.enable = @enable
@@ -23,6 +23,14 @@ where t.id=@id
 `
 
 const UpdateEdit = `update sso_system_info t
-set  t.enable = @enable,t.index_url=@index_url,t.login_timeout=@login_timeout,t.logo=@logo,t.name=@name,t.theme=@theme,t.layout=@layout,t.ident=@ident
+set  t.enable = @enable,
+t.index_url=@index_url,
+t.login_timeout=@login_timeout,
+t.logo=@logo,
+t.name=@name,
+t.theme=@theme,
+t.layout=@layout,
+t.ident=@ident,
+t.wechat_status=@wechat_status 
 where t.id=@id
 `

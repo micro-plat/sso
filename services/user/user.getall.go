@@ -1,38 +1,36 @@
-package role
+package user
 
 import (
 	"github.com/micro-plat/hydra/component"
 	"github.com/micro-plat/hydra/context"
 	"github.com/micro-plat/sso/modules/member"
-	"github.com/micro-plat/sso/modules/role"
+	"github.com/micro-plat/sso/modules/user"
 )
 
-type RoleHandler struct {
+type UserGetAllHandler struct {
 	container component.IContainer
-	roleLib   role.IRole
+	userLib   user.IUser
 }
 
-func NewRoleHandler(container component.IContainer) (u *RoleHandler) {
-	return &RoleHandler{
+func NewUserGetAllHandler(container component.IContainer) (u *UserGetAllHandler) {
+	return &UserGetAllHandler{
 		container: container,
-		roleLib:   role.NewRole(container),
+		userLib:   user.NewUser(container),
 	}
 }
 
-func (u *RoleHandler) Handle(ctx *context.Context) (r interface{}) {
+func (u *UserGetAllHandler) Handle(ctx *context.Context) (r interface{}) {
 
-	ctx.Log.Info("--------查询角色信息数据--------")
+	ctx.Log.Info("--------查询当前系统下用户列表--------")
 	ctx.Log.Info("1.参数校验")
 	l := member.Query(ctx, u.container)
 	if l == nil {
 		return context.NewError(context.ERR_FORBIDDEN, "code not be null")
 	}
-	var inputData role.QueryRoleInput
-	if err := ctx.Request.Bind(&inputData); err != nil {
+	if err := ctx.Request.Check("pi", "ps"); err != nil {
 		return context.NewError(context.ERR_NOT_ACCEPTABLE, err)
 	}
-
-	rows, count, err := u.roleLib.Query(&inputData)
+	rows, count, err := u.userLib.GetAll(l.SystemID, ctx.Request.GetInt("pi"), ctx.Request.GetInt("ps"))
 	if err != nil {
 		return context.NewError(context.ERR_NOT_IMPLEMENTED, err)
 	}

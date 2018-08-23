@@ -26,7 +26,7 @@ func (s *SSO) install() {
 	s.Conf.API.SetSubConf("auth", `
 		{
 			"jwt": {
-				"exclude": ["/sso/login","/sso/login/code","/sso/wxcode/get","/sso/sys/get","/qrcode/login","/qrcode/login/put","/sso/user/bind","/wx/login","/sso/notify/send","/qrcode/login/get"],
+				"exclude": ["/sso/login","/sso/login/code","/sso/wxcode/get","/sso/sys/get","/qrcode/login","/qrcode/login/put","/sso/user/bind","/wx/login","/sso/notify/send","/qrcode/login/get","/sso/img/upload"],
 				"source":"header",
 				"expireAt": 36000,
 				"mode": "HS512",
@@ -70,7 +70,7 @@ func (s *SSO) install() {
 			"pool_size":10
 	}		
 		`)
-		s.Conf.CRON.SetSubConf("app", `
+	s.Conf.CRON.SetSubConf("app", `
 			{
 				"appid":"wx9e02ddcc88e13fd4",
 				"secret":"45d25cb71f3bee254c2bc6fc0dc0caf1",
@@ -78,7 +78,7 @@ func (s *SSO) install() {
 				"hostname": "http://sso.100bm.cn"
 			}			
 			`)
-		s.Conf.WS.SetSubConf("auth", `
+	s.Conf.WS.SetSubConf("auth", `
 			{
 				"jwt": {
 					"exclude": ["/sso/login","/sso/login/code","/sso/wxcode/get","/sso/sys/get","/qrcode/login","/qrcode/login/put","/sso/user/bind","/wx/login","/sso/notify/send","/qrcode/login/get"],
@@ -89,6 +89,6 @@ func (s *SSO) install() {
 					"secret": "12345678"
 				}
 			}
-			`)	
-	s.Conf.CRON.SetSubConf("task",`{"tasks":[{"cron":"@every 30s","service":"/sso/notify/send"}]}`)
-	}
+			`)
+	s.Conf.CRON.SetSubConf("task", `{"tasks":[{"cron":"@every 30s","service":"/sso/notify/send"}]}`)
+}

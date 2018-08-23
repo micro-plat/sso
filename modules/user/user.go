@@ -10,12 +10,13 @@ type IUser interface {
 	ChangeStatus(userID int, status int) (err error)
 	Delete(userID int) (err error)
 	Get(userID int) (data db.QueryRow, err error)
+	GetAll(sysID, pi, ps int) (data db.QueryRows, count int, err error)
 	Save(input *UserEditInput) (err error)
-	Edit(username string,tel string,email string)(err error)
-	ChangePwd(user_id int,expassword string,newpassword string)(err error)
-	Bind(email string,openID string) (err error)
-	SetEmail(Guid string,email string) (err error)
-	GetEmail(Guid string) (email string,err error)
+	Edit(username string, tel string, email string) (err error)
+	ChangePwd(user_id int, expassword string, newpassword string) (err error)
+	Bind(email string, openID string) (err error)
+	SetEmail(Guid string, email string) (err error)
+	GetEmail(Guid string) (email string, err error)
 }
 
 type User struct {
@@ -32,11 +33,11 @@ func NewUser(c component.IContainer) *User {
 	}
 }
 
-func(u *User) SetEmail(Guid string,email string) (err error) {
-	return u.cache.SetEmail(Guid,email)
+func (u *User) SetEmail(Guid string, email string) (err error) {
+	return u.cache.SetEmail(Guid, email)
 }
 
-func(u *User) GetEmail(Guid string) (email string,err error) {
+func (u *User) GetEmail(Guid string) (email string, err error) {
 	return u.cache.GetEmail(Guid)
 }
 
@@ -85,6 +86,19 @@ func (u *User) Get(userID int) (data db.QueryRow, err error) {
 	return data, nil
 }
 
+func (u *User) GetAll(sysID, pi, ps int) (data db.QueryRows, count int, err error) {
+	data, count, err = u.cache.QueryUserBySys(sysID, pi, ps)
+	if data == nil || err != nil {
+		if data, count, err = u.db.GetAll(sysID, pi, ps); err != nil {
+			return nil, 0, err
+		}
+		if err = u.cache.SaveUserBySys(sysID, pi, ps, data, count); err != nil {
+			return nil, 0, err
+		}
+	}
+	return data, count, nil
+}
+
 //Save 保存用户信息
 func (u *User) Save(input *UserEditInput) (err error) {
 	if err := u.cache.Delete(); err != nil {
@@ -96,17 +110,17 @@ func (u *User) Save(input *UserEditInput) (err error) {
 	return u.db.Edit(input)
 }
 
-func (u *User) Edit(username string,tel string,email string)(err error){
+func (u *User) Edit(username string, tel string, email string) (err error) {
 	if err := u.cache.Delete(); err != nil {
 		return err
 	}
-	return u.db.EditInfo(username,tel,email)
+	return u.db.EditInfo(username, tel, email)
 }
 
-func (u *User) ChangePwd(user_id int,expassword string,newpassword string)(err error) {
-	return u.db.ChangePwd(user_id,expassword,newpassword)
+func (u *User) ChangePwd(user_id int, expassword string, newpassword string) (err error) {
+	return u.db.ChangePwd(user_id, expassword, newpassword)
 }
 
-func (u *User) Bind(email string,openID string) (err error) {
-	return u.db.Bind(email,openID)
+func (u *User) Bind(email string, openID string) (err error) {
+	return u.db.Bind(email, openID)
 }

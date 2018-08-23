@@ -14,6 +14,7 @@ type IDBMember interface {
 	Query(u string, p string, ident string) (s *MemberState, err error)
 	GetUserInfo(u string) (db.QueryRow, error)
 	QueryByOpenID(string) (db.QueryRow, error)
+	QueryAuth(sysID, userID int64) (data db.QueryRows, err error)
 }
 
 //DBMember 控制用户登录
@@ -26,6 +27,18 @@ func NewDBMember(c component.IContainer) *DBMember {
 	return &DBMember{
 		c: c,
 	}
+}
+func (l *DBMember) QueryAuth(sysID, userID int64) (data db.QueryRows, err error) {
+	db := l.c.GetRegularDB()
+	//查询当前系统下是否有此用户
+	data, _, _, err = db.Query(sql.QuerySysAuth, map[string]interface{}{
+		"sys_id":  sysID,
+		"user_id": userID,
+	})
+	if err != nil || data.IsEmpty() {
+		return nil, fmt.Errorf("没有权限：err:%v,data:%v", err, data)
+	}
+	return data, nil
 }
 
 //QueryByOpenID 根据openid 查询用户信息

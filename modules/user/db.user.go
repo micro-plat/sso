@@ -19,13 +19,14 @@ type IDbUser interface {
 	Query(input *QueryUserInput) (data db.QueryRows, total int, err error)
 	ChangeStatus(userID int, status int) (err error)
 	Get(userID int) (data db.QueryRow, err error)
+	GetAll(sysID, pi, ps int) (data db.QueryRows, count int, err error)
 	Delete(userID int) (err error)
 	Edit(input *UserEditInput) (err error)
 	Add(input *UserEditInput) (err error)
 	CheckPWD(oldPwd string, userID int64) (err error)
-	EditInfo(username string,tel string,email string) (err error)
-	ChangePwd(user_id int,expassword string,newpassword string)(err error)
-	Bind(email string,openID string) (err error)
+	EditInfo(username string, tel string, email string) (err error)
+	ChangePwd(user_id int, expassword string, newpassword string) (err error)
+	Bind(email string, openID string) (err error)
 }
 
 //UserEditInput 编辑用户 输入参数
@@ -164,6 +165,27 @@ func (u *DbUser) Get(userID int) (data db.QueryRow, err error) {
 	return result.Get(0), nil
 }
 
+func (u *DbUser) GetAll(sysID, pi, ps int) (data db.QueryRows, count int, err error) {
+	db := u.c.GetRegularDB()
+	c, q, a, err := db.Scalar(sql.QueryUserBySysCount, map[string]interface{}{
+		"sys_id": sysID,
+	})
+	if err != nil {
+		return nil, 0, fmt.Errorf("获取用户信息列表条数发生错误(err:%v),sql:%s,输入参数:%v", err, q, a)
+	}
+	data, q, a, err = db.Query(sql.QueryUserBySysList, map[string]interface{}{
+		"sys_id": sysID,
+		"pi":     pi,
+		"ps":     ps,
+	})
+	if err != nil {
+		return nil, 0, fmt.Errorf("获取用户列表发生错误(err:%v),sql:%s,输入参数:%v,", err, q, a)
+	}
+	fmt.Println("data:", data, pi, ps, q, a)
+	return data, types.ToInt(c), nil
+
+}
+
 //Edit 编辑用户信息
 func (u *DbUser) Edit(input *UserEditInput) (err error) {
 	db := u.c.GetRegularDB()
@@ -265,30 +287,30 @@ func (u *DbUser) CheckPWD(oldPWD string, userID int64) (err error) {
 	return nil
 }
 
-func (u *DbUser) EditInfo(username string,tel string,email string) (err error){
+func (u *DbUser) EditInfo(username string, tel string, email string) (err error) {
 	db := u.c.GetRegularDB()
 	params := map[string]interface{}{
 		"username": username,
-		"tel": tel,
-		"email": email,
+		"tel":      tel,
+		"email":    email,
 	}
-	_,q,a,err := db.Execute(sql.EditInfo,params)
+	_, q, a, err := db.Execute(sql.EditInfo, params)
 	if err != nil {
-		return fmt.Errorf("编辑个人资料发生错误(err:%v),sql:%s,参数：%v", err, q,a)
+		return fmt.Errorf("编辑个人资料发生错误(err:%v),sql:%s,参数：%v", err, q, a)
 	}
-	return   nil
+	return nil
 
 }
 
-func (u *DbUser) ChangePwd(user_id int,expassword string,newpassword string)(err error) {
+func (u *DbUser) ChangePwd(user_id int, expassword string, newpassword string) (err error) {
 	db := u.c.GetRegularDB()
 
 	//获取旧密码
-	data,q,a,err := db.Query(sql.QueryOldPwd,map[string]interface{}{
+	data, q, a, err := db.Query(sql.QueryOldPwd, map[string]interface{}{
 		"user_id": user_id,
 	})
 	if err != nil || data.Get(0).GetInt("changepwd_times") >= 3 {
-		return fmt.Errorf("获取数据错误或密码修改超过限制(err:%v),sql:%s,参数：%v", err, q,a)
+		return fmt.Errorf("获取数据错误或密码修改超过限制(err:%v),sql:%s,参数：%v", err, q, a)
 	}
 	if strings.ToLower(md5.Encrypt(expassword)) != strings.ToLower(data.Get(0).GetString("password")) {
 		return fmt.Errorf("原密码错误")
@@ -297,26 +319,26 @@ func (u *DbUser) ChangePwd(user_id int,expassword string,newpassword string)(err
 	if err != nil {
 		return fmt.Errorf("开启DB事务出错(err:%v)", err)
 	}
-	_,q,a,err = dbTrans.Execute(sql.SetNewPwd,map[string]interface{}{
-		"user_id": user_id,
+	_, q, a, err = dbTrans.Execute(sql.SetNewPwd, map[string]interface{}{
+		"user_id":  user_id,
 		"password": md5.Encrypt(newpassword),
 	})
 	if err != nil {
 		dbTrans.Rollback()
-		return fmt.Errorf("设置密码错误(err:%v),sql:%s,参数：%v", err, q,a)
+		return fmt.Errorf("设置密码错误(err:%v),sql:%s,参数：%v", err, q, a)
 	}
 	dbTrans.Commit()
-	return   nil
+	return nil
 }
 
-func (u *DbUser) Bind(email string,openID string) (err error) {
+func (u *DbUser) Bind(email string, openID string) (err error) {
 	db := u.c.GetRegularDB()
 	//判断邮箱是否已经绑定
 	data, q, a, err := db.Query(sql.QueryUserBind, map[string]interface{}{
 		"email": email,
 	})
 	if err != nil || data.IsEmpty() {
-		return  fmt.Errorf("查询绑定信息发生错误(err:%v),sql:%s,输入参数:%v", err, q, a)
+		return fmt.Errorf("查询绑定信息发生错误(err:%v),sql:%s,输入参数:%v", err, q, a)
 	}
 	if data.Get(0).GetString("wx_openid") != "" {
 		return fmt.Errorf("邮箱已经绑定过了，邮箱：%s", email)
@@ -327,14 +349,14 @@ func (u *DbUser) Bind(email string,openID string) (err error) {
 		return fmt.Errorf("开启DB事务出错(err:%v)", err)
 	}
 	_, q, a, err = dbTrans.Execute(sql.ExecUserBind, map[string]interface{}{
-		"email": email,
+		"email":     email,
 		"wx_openid": openID,
 	})
 
 	if err != nil {
 		dbTrans.Rollback()
-		return fmt.Errorf("绑定邮箱出现错误(err:%v),sql:%s,参数：%v", err, q,a)
+		return fmt.Errorf("绑定邮箱出现错误(err:%v),sql:%s,参数：%v", err, q, a)
 	}
 	dbTrans.Commit()
-	return   nil
+	return nil
 }

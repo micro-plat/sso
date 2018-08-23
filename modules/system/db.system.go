@@ -11,6 +11,7 @@ import (
 
 type IDbSystem interface {
 	Get(ident string) (s db.QueryRow, err error)
+	GetAll(userId int64) (s db.QueryRows, err error)
 	Query(name string, status string, pi int, ps int) (data db.QueryRows, count int, err error)
 	Delete(id int) (err error)
 	Add(input *AddSystemInput) (err error)
@@ -28,16 +29,18 @@ type SystemEditInput struct {
 	Theme         string `form:"theme" json:"theme"`
 	Layout        string `form:"layout" json:"layout"`
 	Ident         string `form:"ident" json:"ident"`
+	Wechat_status string `form:"wechat_status" json:"wechat_status" valid:"required"`
 }
 
 type AddSystemInput struct {
-	Name     string `form:"name" json:"name" valid:"required"`
-	Addr     string `form:"addr" json:"addr" valid:"required"`
-	Time_out string `form:"time_out" json:"time_out" valid:"required"`
-	Logo     string `form:"logo" json:"logo" valid:"required"`
-	Style    string `form:"style" json:"style" valid:"required"`
-	Theme    string `form:"theme" json:"theme"`
-	Ident    string `form:"ident" json:"ident" vaild:"required"`
+	Name          string `form:"name" json:"name" valid:"required"`
+	Addr          string `form:"addr" json:"addr" valid:"required"`
+	Time_out      string `form:"time_out" json:"time_out" valid:"required"`
+	Logo          string `form:"logo" json:"logo" valid:"required"`
+	Style         string `form:"style" json:"style" valid:"required"`
+	Theme         string `form:"theme" json:"theme"`
+	Ident         string `form:"ident" json:"ident" vaild:"required"`
+	Wechat_status string `form:"wechat_status" json:"wechat_status" valid:"required"`
 }
 
 type DbSystem struct {
@@ -57,6 +60,15 @@ func (l *DbSystem) Get(ident string) (s db.QueryRow, err error) {
 		"ident": ident,
 	})
 	return data.Get(0), err
+}
+
+func (l *DbSystem) GetAll(userId int64) (s db.QueryRows, err error) {
+	db := l.c.GetRegularDB()
+	data, _, _, err := db.Query(sql.QueryAllSystemInfo, map[string]interface{}{
+		"user_id": userId,
+	})
+	return data, err
+
 }
 
 //Query 获取用系统列表
@@ -97,13 +109,14 @@ func (u *DbSystem) Delete(id int) (err error) {
 func (u *DbSystem) Add(input *AddSystemInput) (err error) {
 	db := u.c.GetRegularDB()
 	params := map[string]interface{}{
-		"name":     input.Name,
-		"addr":     input.Addr,
-		"time_out": input.Time_out,
-		"logo":     input.Logo,
-		"style":    input.Style,
-		"theme":    input.Theme,
-		"ident":    input.Ident,
+		"name":          input.Name,
+		"addr":          input.Addr,
+		"time_out":      input.Time_out,
+		"logo":          input.Logo,
+		"style":         input.Style,
+		"theme":         input.Theme,
+		"ident":         input.Ident,
+		"wechat_status": input.Wechat_status,
 	}
 	_, q, a, err := db.Execute(sql.AddSubSystem, params)
 	if err != nil {
@@ -135,7 +148,8 @@ func (u *DbSystem) Edit(input *SystemEditInput) (err error) {
 		"name":          input.Name,
 		"layout":        input.Layout,
 		"theme":         input.Theme,
-		"ident":   		 input.Ident,
+		"ident":         input.Ident,
+		"wechat_status": input.Wechat_status,
 	}
 	_, q, a, err := db.Execute(sql.UpdateEdit, params)
 	if err != nil {

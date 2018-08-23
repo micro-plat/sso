@@ -18,8 +18,10 @@ type ICacheUser interface {
 	SaveUser(userID int, data db.QueryRow) error
 	QueryUser(userID int) (data db.QueryRow, err error)
 	DeleteUser() error
-	SetEmail(Guid string,email string) (err error)
-	GetEmail(Guid string) (email string,err error)
+	SetEmail(Guid string, email string) (err error)
+	GetEmail(Guid string) (email string, err error)
+	QueryUserBySys(sysID, pi, ps int) (data db.QueryRows, counr int, err error)
+	SaveUserBySys(sysID, pi, ps int, data db.QueryRows, count int) (err error)
 }
 
 //CacheUser 控制用户登录
@@ -34,6 +36,45 @@ func NewCacheUser(c component.IContainer) *CacheUser {
 		c:         c,
 		cacheTime: 3600 * 24,
 	}
+}
+
+func (l *CacheUser) QueryUserBySys(sysID, pi, ps int) (data db.QueryRows, counr int, err error) {
+	//从缓存中查询用户列表数据
+	cache := l.c.GetRegularCache()
+	keyData := transform.Translate(cacheConst.CacheUserSysFormat, "sysID", sysID, "pi", pi, "ps", ps)
+	keyCount := transform.Translate(cacheConst.CacheUserSysCountFormat, "sysID", sysID)
+	v, err := cache.Get(keyData)
+	if err != nil {
+		return nil, 0, err
+	}
+	if v == "" {
+		return nil, 0, fmt.Errorf("无用户列表数据")
+	}
+	nmap := make(db.QueryRows, 0)
+	if err = json.Unmarshal([]byte(v), &nmap); err != nil {
+		return nil, 0, err
+	}
+
+	c, err := cache.Get(keyCount)
+	if err != nil {
+		return nil, 0, err
+	}
+	return nmap, types.ToInt(c, 0), err
+}
+
+func (l *CacheUser) SaveUserBySys(sysID, pi, ps int, data db.QueryRows, count int) (err error) {
+	buff, err := json.Marshal(data)
+	if err != nil {
+		return err
+	}
+
+	cache := l.c.GetRegularCache()
+	keyData := transform.Translate(cacheConst.CacheUserSysFormat, "sysID", sysID, "pi", pi, "ps", ps)
+	keyCount := transform.Translate(cacheConst.CacheUserSysCountFormat, "sysID", sysID)
+	if err := cache.Set(keyData, string(buff), l.cacheTime); err != nil {
+		return err
+	}
+	return cache.Set(keyCount, fmt.Sprint(count), l.cacheTime)
 }
 
 //Save 缓存用户列表信息
@@ -122,13 +163,13 @@ func (l *CacheUser) DeleteUser() error {
 	return cache.Delete(cacheConst.CacheUserAll)
 }
 
-func (l *CacheUser) SetEmail(Guid string,email string) (err error){
+func (l *CacheUser) SetEmail(Guid string, email string) (err error) {
 	cache := l.c.GetRegularCache()
 	key := transform.Translate(cacheConst.CacheEmail, "guid", Guid)
-	return cache.Set(key,email, cacheConst.CacheEamilOutTime)
+	return cache.Set(key, email, cacheConst.CacheEamilOutTime)
 }
 
-func (l *CacheUser) GetEmail(Guid string) (email string,err error) {
+func (l *CacheUser) GetEmail(Guid string) (email string, err error) {
 	cache := l.c.GetRegularCache()
 	key := transform.Translate(cacheConst.CacheEmail, "guid", Guid)
 	email, err = cache.Get(key)

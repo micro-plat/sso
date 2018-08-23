@@ -7,6 +7,7 @@ import (
 
 type ISystem interface {
 	Get(ident string) (s db.QueryRow, err error)
+	GetAll(userId int64) (s db.QueryRows, err error)
 	Query(name string, status string, pi int, ps int) (data db.QueryRows, count int, err error)
 	Delete(id int) (err error)
 	Add(input *AddSystemInput) (err error)
@@ -44,17 +45,21 @@ func (u *System) Get(ident string) (s db.QueryRow, err error) {
 	return s, err
 }
 
+func (u *System) GetAll(userId int64) (s db.QueryRows, err error) {
+	return u.db.GetAll(userId)
+}
+
 //Query 获取用系统管理列表
 func (u *System) Query(name string, status string, pi int, ps int) (data db.QueryRows, count int, err error) {
 	//从缓存获取数据
-	data,count, err = u.cache.QuerySysInfo(name, status, pi, ps)
+	data, count, err = u.cache.QuerySysInfo(name, status, pi, ps)
 	if data == nil || err != nil {
 		data, count, err = u.db.Query(name, status, pi, ps)
 		if err != nil {
 			return nil, 0, err
 		}
 		//保存系统数据到缓存
-		if err = u.cache.SaveSysInfo(name, status, pi, ps, data,count); err != nil {
+		if err = u.cache.SaveSysInfo(name, status, pi, ps, data, count); err != nil {
 			return nil, 0, err
 		}
 	}

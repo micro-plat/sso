@@ -4,6 +4,7 @@ import (
 	"github.com/micro-plat/hydra/component"
 	"github.com/micro-plat/hydra/context"
 	"github.com/micro-plat/sso/modules/base"
+	"github.com/micro-plat/sso/modules/member"
 )
 
 type BaseSysHandler struct {
@@ -21,6 +22,10 @@ func NewBaseSysHandler(container component.IContainer) (u *BaseSysHandler) {
 func (u *BaseSysHandler) Handle(ctx *context.Context) (r interface{}) {
 	ctx.Log.Info("--------查询系统列表--------")
 	ctx.Log.Info("1.获取数据")
+	l := member.Query(ctx, u.container)
+	if l == nil {
+		return context.NewError(context.ERR_FORBIDDEN, "code not be null")
+	}
 	rows, err := u.baseLib.QuerySysList()
 	if err != nil {
 		return context.NewError(context.ERR_NOT_IMPLEMENTED, err)

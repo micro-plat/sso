@@ -4,7 +4,10 @@ import (
 	"encoding/json"
 	"fmt"
 
+	"github.com/micro-plat/lib4go/db"
+
 	"github.com/micro-plat/hydra/component"
+	"github.com/micro-plat/hydra/context"
 	"github.com/micro-plat/lib4go/transform"
 	"github.com/micro-plat/lib4go/types"
 )
@@ -14,6 +17,8 @@ type ICacheMember interface {
 	Save(s *MemberState) error
 	SetLoginSuccess(u string) error
 	SetLoginFail(u string) (int, error)
+	QueryAuth(sysID, userID int64) (err error)
+	SaveAuth(sysID, userID int64, data db.QueryRows) (err error)
 }
 
 //CacheMember 控制用户登录
@@ -27,6 +32,8 @@ const (
 	cacheFormat     = "{sso}:login:state-info:{@userName}-{@ident}"
 	cacheCodeFormat = "{sso}:login:state-code:{@userName}-{@ident}"
 	lockFormat      = "{sso}:login:state-locker:{@userName}"
+
+	cacheSysAuth = "{sso}:sys:auth:{@sysID}-{@userID}"
 )
 
 //NewCacheMember 创建登录对象
@@ -36,6 +43,32 @@ func NewCacheMember(c component.IContainer) *CacheMember {
 		maxFailCnt: 5,
 		cacheTime:  3600 * 24,
 	}
+}
+
+// 缓存系统权限信息
+func (l *CacheMember) QueryAuth(sysID, userID int64) (err error) {
+	//从缓存中获取系统数据
+	cache := l.c.GetRegularCache()
+	key := transform.Translate(cacheSysAuth, "sysID", sysID, "userID", userID)
+	v, err := cache.Get(key)
+	if err != nil {
+		return err
+	}
+	if v == "" {
+		return context.NewError(context.ERR_FORBIDDEN, "无数据")
+	}
+	return nil
+}
+
+// 查询系统权限信息
+func (l *CacheMember) SaveAuth(sysID, userID int64, data db.QueryRows) (err error) {
+	buff, err := json.Marshal(data)
+	if err != nil {
+		return err
+	}
+	cache := l.c.GetRegularCache()
+	key := transform.Translate(cacheSysAuth, "sysID", sysID, "userID", userID)
+	return cache.Set(key, string(buff), l.cacheTime)
 }
 
 //SetLoginSuccess 设置为登录成功

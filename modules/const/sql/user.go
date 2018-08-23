@@ -133,3 +133,8 @@ const QueryUserBind = `select t.email,t.wx_openid from sso_user_info t where t.e
 const ExecUserBind = `update sso_user_info t
 set t.wx_openid = @wx_openid
 where t.email = @email`
+
+const QueryUserBySysCount = `select count(1) from sso_user_role t inner join sso_user_info i on i.user_id=t.user_id where t.sys_id=@sys_id`
+
+const QueryUserBySysList = `select t2.* from (select i.*,rownum as rn from sso_user_role t inner join sso_user_info i on i.user_id=t.user_id where t.sys_id=@sys_id and rownum <= @pi * @ps) 
+t2 where t2.rn > (@pi - 1) * @ps`

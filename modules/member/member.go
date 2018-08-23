@@ -22,7 +22,8 @@ type IMember interface {
 	Login(u string, p string, ident string) (*LoginState, error)
 	Query(uid int64) (db.QueryRow, error)
 	LoginByOpenID(string, string) (*LoginState, error)
-	SendCheckMail(from string, password string, host string, port string, to string, link string) (error)
+	SendCheckMail(from string, password string, host string, port string, to string, link string) error
+	QueryAuth(sysID, userID int64) (err error)
 }
 
 //Member 用户登录管理
@@ -42,6 +43,20 @@ func NewMember(c component.IContainer) *Member {
 //Query 查询用户信息
 func (m *Member) Query(uid int64) (db.QueryRow, error) {
 	return m.db.QueryByID(uid)
+}
+
+func (m *Member) QueryAuth(sysID, userID int64) (err error) {
+	err = m.cache.QueryAuth(sysID, userID)
+	if err != nil {
+		data, err := m.db.QueryAuth(sysID, userID)
+		if err != nil || data == nil {
+			return err
+		}
+		if err = m.cache.SaveAuth(sysID, userID, data); err != nil {
+			return err
+		}
+	}
+	return nil
 }
 
 //SendCheckMail 发送确认邮件
