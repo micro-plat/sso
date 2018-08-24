@@ -4,6 +4,7 @@ import (
 	"github.com/micro-plat/hydra/component"
 	"github.com/micro-plat/hydra/context"
 	"github.com/micro-plat/sso/modules/member"
+	"github.com/micro-plat/sso/modules/operate"
 	"github.com/micro-plat/sso/modules/user"
 )
 
@@ -11,6 +12,7 @@ type UserDelHandler struct {
 	container component.IContainer
 	userLib   user.IUser
 	member    member.IMember
+	op        operate.IOperate
 }
 
 func NewUserDelHandler(container component.IContainer) (u *UserDelHandler) {
@@ -18,6 +20,7 @@ func NewUserDelHandler(container component.IContainer) (u *UserDelHandler) {
 		container: container,
 		userLib:   user.NewUser(container),
 		member:    member.NewMember(container),
+		op:        operate.NewOperate(container),
 	}
 }
 
@@ -40,7 +43,15 @@ func (u *UserDelHandler) Handle(ctx *context.Context) (r interface{}) {
 	if err := u.userLib.Delete(ctx.Request.GetInt("user_id")); err != nil {
 		return context.NewError(context.ERR_NOT_IMPLEMENTED, err)
 	}
-
-	ctx.Log.Info("4.返回结果。")
+	ctx.Log.Info("4.记录行为")
+	if err := u.op.UserOperate(
+		member.Query(ctx, u.container),
+		"删除用户",
+		"user_id",
+		ctx.Request.GetInt("user_id"),
+	); err != nil {
+		return err
+	}
+	ctx.Log.Info("5.返回结果")
 	return "success"
 }

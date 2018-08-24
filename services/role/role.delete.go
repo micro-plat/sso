@@ -3,18 +3,22 @@ package role
 import (
 	"github.com/micro-plat/hydra/component"
 	"github.com/micro-plat/hydra/context"
+	"github.com/micro-plat/sso/modules/member"
+	"github.com/micro-plat/sso/modules/operate"
 	"github.com/micro-plat/sso/modules/role"
 )
 
 type RoleDelHandler struct {
 	container component.IContainer
 	roleLib   role.IRole
+	op        operate.IOperate
 }
 
 func NewRoleDelHandler(container component.IContainer) (u *RoleDelHandler) {
 	return &RoleDelHandler{
 		container: container,
 		roleLib:   role.NewRole(container),
+		op:        operate.NewOperate(container),
 	}
 }
 
@@ -30,7 +34,15 @@ func (u *RoleDelHandler) Handle(ctx *context.Context) (r interface{}) {
 	if err := u.roleLib.Delete(ctx.Request.GetInt("role_id")); err != nil {
 		return context.NewError(context.ERR_NOT_IMPLEMENTED, err)
 	}
-
+	ctx.Log.Info("3.记录行为")
+	if err := u.op.RoleOperate(
+		member.Query(ctx, u.container),
+		"删除角色",
+		"role_id",
+		ctx.Request.GetInt("role_id"),
+	); err != nil {
+		return err
+	}
 	ctx.Log.Info("3.返回结果。")
 	return "success"
 }

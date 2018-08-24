@@ -3,20 +3,26 @@ package system
 import (
 	"fmt"
 
+	"github.com/micro-plat/lib4go/types"
+	"github.com/micro-plat/sso/modules/operate"
+
 	"github.com/micro-plat/hydra/component"
 	"github.com/micro-plat/hydra/context"
+	"github.com/micro-plat/sso/modules/member"
 	sub "github.com/micro-plat/sso/modules/system"
 )
 
 type SystemHandler struct {
 	container component.IContainer
 	subLib    sub.ISystem
+	op        operate.IOperate
 }
 
 func NewSystemHandler(container component.IContainer) (u *SystemHandler) {
 	return &SystemHandler{
 		container: container,
 		subLib:    sub.NewSystem(container),
+		op:        operate.NewOperate(container),
 	}
 }
 
@@ -53,7 +59,16 @@ func (u *SystemHandler) PostHandle(ctx *context.Context) (r interface{}) {
 	if err != nil {
 		return err
 	}
-	ctx.Log.Info("3.返回数据")
+	ctx.Log.Info("3.记录行为")
+	data, _ := types.Struct2Map(&input)
+	if err := u.op.SysOperate(
+		member.Query(ctx, u.container),
+		"添加系统",
+		data,
+	); err != nil {
+		return err
+	}
+	ctx.Log.Info("4.返回数据")
 	return "success"
 }
 
@@ -72,7 +87,15 @@ func (u *SystemHandler) DeleteHandle(ctx *context.Context) (r interface{}) {
 	if err != nil {
 		return err
 	}
-	ctx.Log.Info("3.返回数据")
+	ctx.Log.Info("3.记录行为")
+	if err := u.op.SysOperate(
+		member.Query(ctx, u.container),
+		"删除系统",
+		"id", ctx.Request.GetInt("id"),
+	); err != nil {
+		return err
+	}
+	ctx.Log.Info("4.返回数据")
 	return "success"
 }
 
@@ -86,6 +109,14 @@ func (u *SystemHandler) PutHandle(ctx *context.Context) (r interface{}) {
 	ctx.Log.Info("2.更新数据库查询--------")
 	err := u.subLib.ChangeStatus(ctx.Request.GetInt("id"), ctx.Request.GetInt("status"))
 	if err != nil {
+		return err
+	}
+	ctx.Log.Info("3.记录行为")
+	if err := u.op.SysOperate(
+		member.Query(ctx, u.container),
+		"修改系统状态",
+		"id", ctx.Request.GetInt("id"), "status", ctx.Request.GetInt("status"),
+	); err != nil {
 		return err
 	}
 	ctx.Log.Info("3.返回数据")

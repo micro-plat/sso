@@ -5,6 +5,7 @@ import (
 	"github.com/micro-plat/hydra/context"
 	"github.com/micro-plat/lib4go/security/md5"
 	"github.com/micro-plat/sso/modules/member"
+	"github.com/micro-plat/sso/modules/operate"
 	"github.com/micro-plat/sso/modules/system"
 )
 
@@ -15,6 +16,7 @@ type LoginHandler struct {
 	code   member.ICodeMember
 	wxcode member.IWxcode
 	sys    system.ISystem
+	op     operate.IOperate
 }
 
 //NewLoginHandler 创建登录对象
@@ -25,6 +27,7 @@ func NewLoginHandler(container component.IContainer) (u *LoginHandler) {
 		code:   member.NewCodeMember(container),
 		wxcode: member.NewWxcode(container),
 		sys:    system.NewSystem(container),
+		op:     operate.NewOperate(container),
 	}
 }
 
@@ -70,6 +73,10 @@ func (u *LoginHandler) Handle(ctx *context.Context) (r interface{}) {
 	}
 	//设置jwt数据
 	ctx.Response.SetJWT(member)
+	//记录登录行为
+	if err := u.op.LoginOperate(member); err != nil {
+		return err
+	}
 	return map[string]interface{}{
 		"code":  code,
 		"ident": ctx.Request.GetString("ident"),
