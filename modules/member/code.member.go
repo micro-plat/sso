@@ -13,6 +13,7 @@ import (
 type ICodeMember interface {
 	Query(code string) (ls *LoginState, err error)
 	Save(s *LoginState) (string, error)
+	ExchangeCode(code string, s *LoginState) (newCode string, err error)
 }
 
 //CodeMember 控制用户登录
@@ -60,4 +61,30 @@ func (l *CodeMember) Query(code string) (ls *LoginState, err error) {
 	}
 	//cache.Delete(key)
 	return ls, err
+}
+
+// 删除旧code,生成新code
+func (l *CodeMember) ExchangeCode(code string, s *LoginState) (newCode string, err error) {
+	// 从缓存中查询用户数据
+	cache := l.c.GetRegularCache()
+	key := transform.Translate(l.cacheFormat, "code", code)
+	v, err := cache.Get(key)
+	if err != nil {
+		return "", err
+	}
+	if v == "" {
+		return "", context.NewError(context.ERR_FORBIDDEN, "code无效")
+	}
+	// 删除code
+	if err = cache.Delete(key); err != nil {
+		return "", err
+	}
+	// 生成新code
+	newCode = utility.GetGUID()
+	buff, err := json.Marshal(s)
+	if err != nil {
+		return "", err
+	}
+	key = transform.Translate(l.cacheFormat, "code", newCode)
+	return newCode, cache.Set(key, string(buff), l.cacheTime)
 }

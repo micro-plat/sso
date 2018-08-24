@@ -58,7 +58,7 @@ func (r *SSO) init() {
 	r.Micro("/sso/member/query", member.NewQueryHandler, "*") //查询登录用户信息
 	r.Micro("/sso/menu/verify", menu.NewVerifyHandler, "*")   //检查用户菜单权限
 
-	r.Micro("/sso/user/query", user.NewUserHandler, "/user/index")
+	r.Micro("/sso/user/query", user.NewUserHandler, "*")
 	r.Micro("/sso/user/getall", user.NewUserGetAllHandler, "*") // 根据系统获取系统下的所有用户
 	r.Micro("/sso/user/change", user.NewUserChangeHandler, "/user/index")
 	r.Micro("/sso/user/delete", user.NewUserDelHandler, "/user/index")
