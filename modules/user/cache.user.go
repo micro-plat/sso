@@ -160,7 +160,7 @@ func (l *CacheUser) QueryUser(userID int) (data db.QueryRow, err error) {
 //DeleteUser 缓存用户信息删除
 func (l *CacheUser) DeleteUser() error {
 	cache := l.c.GetRegularCache()
-	return cache.Delete(cacheConst.CacheUserAll)
+	return cache.Delete(cacheConst.CacheUserDeleteFormat)
 }
 
 func (l *CacheUser) SetEmail(Guid string, email string) (err error) {

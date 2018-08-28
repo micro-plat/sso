@@ -23,11 +23,11 @@ func NewUserInfoHandler(container component.IContainer) (u *UserInfoHandler) {
 
 func (u *UserInfoHandler) Handle(ctx *context.Context) (r interface{}) {
 	ctx.Log.Info("--------查询用户信息--------")
+	ctx.Log.Info("1.参数校验")
 	l := member.Query(ctx, u.container)
 	if l == nil {
 		return context.NewError(context.ERR_FORBIDDEN, "code not be null")
 	}
-	ctx.Log.Info("1.参数校验")
 	var uid int64
 	err := ctx.Request.Check("user_id")
 	if err != nil {

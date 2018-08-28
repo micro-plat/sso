@@ -2,6 +2,7 @@ package member
 
 import (
 	"encoding/json"
+	"fmt"
 
 	"github.com/micro-plat/hydra/component"
 	"github.com/micro-plat/hydra/context"
@@ -82,14 +83,16 @@ func Get(ctx *context.Context) *LoginState {
 
 func Query(ctx *context.Context, container component.IContainer) *LoginState {
 	m := &LoginState{}
-	if err := ctx.Request.GetJWT(m); err == nil {
+	err := ctx.Request.GetJWT(m)
+	fmt.Println(m.UserName)
+	if m.UserName != "" && err == nil {
 		return m
 	}
 	if err := ctx.Request.Check("code"); err != nil {
 		return nil
 	}
 	codeMemberLib := NewCodeMember(container)
-	m, err := codeMemberLib.Query(ctx.Request.GetString("code"))
+	m, err = codeMemberLib.Query(ctx.Request.GetString("code"))
 	if err != nil {
 		return nil
 	}

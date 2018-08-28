@@ -38,7 +38,7 @@ func (d *DbOperate) LoginOperate(m *member.LoginState) (err error) {
 		"type":    10,
 		"sys_id":  m.SystemID,
 		"user_id": m.UserID,
-		"content": "用户登录",
+		"content": fmt.Sprintf("{\"desc\":%s,\"data\":%v}", "用户登录", m.UserName),
 	}
 	_, q, a, err := db.Execute(sql.AddOperate, params)
 	if err != nil {

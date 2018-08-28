@@ -10,6 +10,7 @@ const (
 const (
 	CacheUserSysFormat       = "{sso}:user:sys:{@sysID}-{@pi}-{@ps}"
 	CacheUserSysCountFormat  = "{sso}:user:sys-count:{@sysID}"
+	CacheUserDeleteFormat    = "{sso}:user:*"
 	CacheUserListFormat      = "{sso}:user:list:{@userName}-{@roleID}-{@pageSize}-{@pageIndex}"
 	CacheUserListAll         = "{sso}:user:list:*"
 	CacheUserListCountFormat = "{sso}:user:list-count:{@userName}-{@roleID}"
