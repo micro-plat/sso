@@ -1,6 +1,6 @@
 package enum
 
-const UserDefaultPassword = `abc123$`
+const UserDefaultPassword = `123456`
 
 const (
 	Normal   = 0
@@ -12,8 +12,8 @@ const (
 const (
 	From     = "qxuseradmin@163.com"
 	Password = "abc123"
-	Host 	 = "smtp.163.com"
-	Port 	 = "25"
+	Host     = "smtp.163.com"
+	Port     = "25"
 )
 
 const WxApiCode = `https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx9e02ddcc88e13fd4&redirect_uri=%s&response_type=code&scope=snsapi_userinfo&state=STATE#wechat_redirect`

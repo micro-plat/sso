@@ -2,7 +2,6 @@ package member
 
 import (
 	"encoding/json"
-	"fmt"
 
 	"github.com/micro-plat/hydra/component"
 	"github.com/micro-plat/hydra/context"
@@ -84,7 +83,6 @@ func Get(ctx *context.Context) *LoginState {
 func Query(ctx *context.Context, container component.IContainer) *LoginState {
 	m := &LoginState{}
 	err := ctx.Request.GetJWT(m)
-	fmt.Println(m.UserName)
 	if m.UserName != "" && err == nil {
 		return m
 	}

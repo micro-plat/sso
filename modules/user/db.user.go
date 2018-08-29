@@ -21,22 +21,22 @@ type IDbUser interface {
 	Get(userID int) (data db.QueryRow, err error)
 	GetAll(sysID, pi, ps int) (data db.QueryRows, count int, err error)
 	Delete(userID int) (err error)
-	Edit(input *UserEditInput) (err error)
-	Add(input *UserEditInput) (err error)
+	Edit(input *UserInputNew) (err error)
+	Add(input *UserInputNew) (err error)
 	CheckPWD(oldPwd string, userID int64) (err error)
 	EditInfo(username string, tel string, email string) (err error)
 	ChangePwd(user_id int, expassword string, newpassword string) (err error)
 	Bind(email string, openID string) (err error)
+	IsSendEmail(input *UserInputNew) (b bool, err error)
 }
 
-//UserEditInput 编辑用户 输入参数
-type UserEditInput struct {
+// 需要编辑的用户数据
+type UserInputNew struct {
 	UserName string `form:"user_name" json:"user_name" valid:"ascii,required"`
 	UserID   int64  `form:"user_id" json:"user_id"`
 	RoleID   int64  `form:"role_id" json:"role_id" `
 	Mobile   int64  `form:"mobile" json:"mobile" valid:"length(11|11),required"`
 	Status   int    `form:"status" json:"status"`
-	IsAdd    int    `form:"is_add" json:"is_add" valid:"required"`
 	Auth     string `form:"auth" json:"auth" valid:"required"`
 	Email    string `form:"email" json:"email" valid:"email,required"`
 }
@@ -187,7 +187,7 @@ func (u *DbUser) GetAll(sysID, pi, ps int) (data db.QueryRows, count int, err er
 }
 
 //Edit 编辑用户信息
-func (u *DbUser) Edit(input *UserEditInput) (err error) {
+func (u *DbUser) Edit(input *UserInputNew) (err error) {
 	db := u.c.GetRegularDB()
 	dbTrans, err := db.Begin()
 	if err != nil {
@@ -226,8 +226,38 @@ func (u *DbUser) Edit(input *UserEditInput) (err error) {
 	return nil
 }
 
+func (u *DbUser) IsSendEmail(input *UserInputNew) (b bool, err error) {
+	db := u.c.GetRegularDB()
+
+	// 判断用户是否已经绑定微信,已绑定则不需要发邮件
+	if input.UserName != "" {
+		datas, q, a, err := db.Query(sql.QueryUserByName, map[string]interface{}{
+			"user_name": input.UserName,
+		})
+		if err == nil && datas.Get(0).GetString("wx_openid") == "" {
+			goto NEXT
+		} else {
+			return false, fmt.Errorf("用户已绑定微信或获取系统微信登录状态发生错误(err:%v),sql:%s,输入参数:%v", err, q, a)
+		}
+	}
+NEXT:
+	as := strings.Split(input.Auth, "|")
+	for i := 0; i < len(as)-1; i++ {
+		as1 := strings.Split(as[i], ",")
+		sys_id := as1[0]
+		datas, _, _, _ := db.Query(sql.QuerySystemWechantStatus, map[string]interface{}{
+			"sys_id": sys_id,
+		})
+		fmt.Println(datas)
+		if err == nil && datas.Get(0).GetInt("wechat_status") == 1 {
+			return true, nil
+		}
+	}
+	return false, nil
+}
+
 //Add 添加用户
-func (u *DbUser) Add(input *UserEditInput) (err error) {
+func (u *DbUser) Add(input *UserInputNew) (err error) {
 	db := u.c.GetRegularDB()
 	dbTrans, err := db.Begin()
 	if err != nil {

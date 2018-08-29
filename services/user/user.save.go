@@ -29,31 +29,26 @@ func NewUserSaveHandler(container component.IContainer) (u *UserSaveHandler) {
 
 func (u *UserSaveHandler) Handle(ctx *context.Context) (r interface{}) {
 
-	ctx.Log.Info("--------编辑/添加用户信息--------")
+	ctx.Log.Info("--------添加用户信息--------")
 	ctx.Log.Info("1.参数校验")
 	l := member.Query(ctx, u.container)
 	if l == nil {
 		return context.NewError(context.ERR_FORBIDDEN, "code not be null")
 	}
-
-	var inputData user.UserEditInput
+	ctx.Log.Info("2.参数校验")
+	var inputData user.UserInputNew
 	if err := ctx.Request.Bind(&inputData); err != nil {
 		return context.NewError(context.ERR_NOT_ACCEPTABLE, err)
 	}
-	ctx.Log.Info("2.权限验证")
-	// 修改 会验证权限
-	if inputData.IsAdd == 0 {
-		if err := u.member.QueryAuth(int64(l.SystemID), inputData.UserID); err != nil {
-			return err
-		}
-	}
+
 	ctx.Log.Info("3.执行操作")
-	if err := u.userLib.Save(&inputData); err != nil {
+	if err := u.userLib.Add(&inputData); err != nil {
 		return context.NewError(context.ERR_NOT_IMPLEMENTED, err)
 	}
-
-	//新添加用户要进行邮箱检验
-	if inputData.IsAdd == 1 {
+	// 判断是否需要发送邮件
+	b, err := u.userLib.IsSendEmail(&inputData)
+	// 发邮件
+	if err == nil && b == true {
 		guid := utility.GetGUID()
 		conf := app.GetConf(u.container)
 		resUri := url.QueryEscape(fmt.Sprintf(conf.GetBindUrl(), guid))
@@ -66,6 +61,7 @@ func (u *UserSaveHandler) Handle(ctx *context.Context) (r interface{}) {
 			return err
 		}
 	}
+
 	ctx.Log.Info("4.返回结果")
 	return "success"
 }

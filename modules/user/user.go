@@ -11,12 +11,14 @@ type IUser interface {
 	Delete(userID int) (err error)
 	Get(userID int) (data db.QueryRow, err error)
 	GetAll(sysID, pi, ps int) (data db.QueryRows, count int, err error)
-	Save(input *UserEditInput) (err error)
+	Save(input *UserInputNew) (err error)
+	Add(input *UserInputNew) (err error)
 	Edit(username string, tel string, email string) (err error)
 	ChangePwd(user_id int, expassword string, newpassword string) (err error)
 	Bind(email string, openID string) (err error)
 	SetEmail(Guid string, email string) (err error)
 	GetEmail(Guid string) (email string, err error)
+	IsSendEmail(input *UserInputNew) (b bool, err error)
 }
 
 type User struct {
@@ -39,6 +41,11 @@ func (u *User) SetEmail(Guid string, email string) (err error) {
 
 func (u *User) GetEmail(Guid string) (email string, err error) {
 	return u.cache.GetEmail(Guid)
+}
+
+func (u *User) IsSendEmail(input *UserInputNew) (b bool, err error) {
+
+	return u.db.IsSendEmail(input)
 }
 
 //Query 获取用户信息列表
@@ -99,15 +106,19 @@ func (u *User) GetAll(sysID, pi, ps int) (data db.QueryRows, count int, err erro
 	return data, count, nil
 }
 
-//Save 保存用户信息
-func (u *User) Save(input *UserEditInput) (err error) {
+//Save 保存要编辑的用户信息
+func (u *User) Save(input *UserInputNew) (err error) {
 	if err := u.cache.Delete(); err != nil {
 		return err
 	}
-	if input.IsAdd == 1 {
-		return u.db.Add(input)
-	}
 	return u.db.Edit(input)
+}
+
+func (u *User) Add(input *UserInputNew) (err error) {
+	if err := u.cache.Delete(); err != nil {
+		return err
+	}
+	return u.db.Add(input)
 }
 
 func (u *User) Edit(username string, tel string, email string) (err error) {

@@ -112,6 +112,8 @@ values
 (seq_user_role_id.nextval, @user_id, @role_id, @sys_id, 1)
 `
 
+const QueryUserByName = `select t.user_name,t.wx_openid from sso_user_info t where t.user_name=@user_name`
+
 //QueryUserPswd 查询用户密码
 const QueryUserPswd = `select count(1)
   from sso_user_info t
