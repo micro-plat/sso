@@ -15,6 +15,7 @@ type IUser interface {
 	Add(input *UserInputNew) (err error)
 	Edit(username string, tel string, email string) (err error)
 	ChangePwd(user_id int, expassword string, newpassword string) (err error)
+	ResetPwd(user_id int64) (err error)
 	Bind(email string, openID string) (err error)
 	SetEmail(Guid string, email string) (err error)
 	GetEmail(Guid string) (email string, err error)
@@ -130,6 +131,10 @@ func (u *User) Edit(username string, tel string, email string) (err error) {
 
 func (u *User) ChangePwd(user_id int, expassword string, newpassword string) (err error) {
 	return u.db.ChangePwd(user_id, expassword, newpassword)
+}
+
+func (u *User) ResetPwd(user_id int64) (err error) {
+	return u.db.ResetPwd(user_id)
 }
 
 func (u *User) Bind(email string, openID string) (err error) {

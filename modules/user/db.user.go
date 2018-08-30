@@ -26,11 +26,12 @@ type IDbUser interface {
 	CheckPWD(oldPwd string, userID int64) (err error)
 	EditInfo(username string, tel string, email string) (err error)
 	ChangePwd(user_id int, expassword string, newpassword string) (err error)
+	ResetPwd(user_id int64) (err error)
 	Bind(email string, openID string) (err error)
 	IsSendEmail(input *UserInputNew) (b bool, err error)
 }
 
-// 需要编辑的用户数据
+// 需要编辑/添加的用户数据
 type UserInputNew struct {
 	UserName string `form:"user_name" json:"user_name" valid:"ascii,required"`
 	UserID   int64  `form:"user_id" json:"user_id"`
@@ -248,7 +249,6 @@ NEXT:
 		datas, _, _, _ := db.Query(sql.QuerySystemWechantStatus, map[string]interface{}{
 			"sys_id": sys_id,
 		})
-		fmt.Println(datas)
 		if err == nil && datas.Get(0).GetInt("wechat_status") == 1 {
 			return true, nil
 		}
@@ -296,8 +296,6 @@ func (u *DbUser) Add(input *UserInputNew) (err error) {
 	}
 
 	dbTrans.Commit()
-	//发送确认邮件
-
 	return nil
 }
 
@@ -358,6 +356,18 @@ func (u *DbUser) ChangePwd(user_id int, expassword string, newpassword string) (
 		return fmt.Errorf("设置密码错误(err:%v),sql:%s,参数：%v", err, q, a)
 	}
 	dbTrans.Commit()
+	return nil
+}
+
+func (u *DbUser) ResetPwd(user_id int64) (err error) {
+	db := u.c.GetRegularDB()
+	_, q, a, err := db.Execute(sql.SetNewPwd, map[string]interface{}{
+		"user_id":  user_id,
+		"password": md5.Encrypt(enum.UserDefaultPassword),
+	})
+	if err != nil {
+		return fmt.Errorf("重置用户密码发生错误(err:%v),sql:%s,参数：%v", err, q, a)
+	}
 	return nil
 }
 
