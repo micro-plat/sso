@@ -1,8 +1,9 @@
 package main
 
 import (
-	"github.com/micro-plat/hydra/component"
 	"fmt"
+
+	"github.com/micro-plat/hydra/component"
 
 	"github.com/micro-plat/hydra/context"
 	mem "github.com/micro-plat/sso/modules/member"
@@ -12,7 +13,7 @@ import (
 //bind 检查应用程序配置文件，并根据配置初始化服务
 func (r *SSO) handing() {
 	//每个请求执行前执行
-	r.Handling(func(ctx *context.Context) (rt interface{}) {		
+	r.Handling(func(ctx *context.Context) (rt interface{}) {
 
 		//是否配置jwt
 		jwt, err := ctx.Request.GetJWTConfig() //获取jwt配置
@@ -40,7 +41,7 @@ func (r *SSO) handing() {
 			if tag == "*" {
 				return nil
 			}
-			if err = menu.Verify(m.UserID, m.SystemID, tag,ctx.Request.GetMethod()); err == nil {
+			if err = menu.Verify(m.UserID, m.SystemID, tag, ctx.Request.GetMethod()); err == nil {
 				return nil
 			}
 		}

@@ -25,7 +25,11 @@ func (u *UserPasswordHandler) GetHandle(ctx *context.Context) (r interface{}) {
 
 	ctx.Log.Info("--------修改用户密码--------")
 	ctx.Log.Info("1.参数校验")
-	uid := member.Get(ctx).UserID
+	l := member.Query(ctx, u.container)
+	if l == nil {
+		return context.NewError(context.ERR_FORBIDDEN, "code not be null")
+	}
+	uid := l.UserID
 	if err := ctx.Request.Check("expassword", "newpassword"); err != nil {
 		return context.NewError(context.ERR_NOT_ACCEPTABLE, err)
 	}
