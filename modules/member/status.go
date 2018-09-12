@@ -21,6 +21,7 @@ type MemberState struct {
 	RoleID         int    `json:"role_id"`
 	Status         int    `json:"status" m2s:"status"`
 	IndexURL       string `json:"index_url"`
+	LoginURL       string `json:"login_url"`
 	Code           string `json:"code"`
 	ProfilePercent int    `json:"profile_percent"`
 	LoginTimeout   int    `json:"login_timeout" m2s:"login_timeout"`
