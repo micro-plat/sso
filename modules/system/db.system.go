@@ -2,6 +2,7 @@ package system
 
 import (
 	"fmt"
+	"strings"
 
 	"github.com/micro-plat/hydra/component"
 	"github.com/micro-plat/lib4go/db"
@@ -117,6 +118,7 @@ func (u *DbSystem) Add(input *AddSystemInput) (err error) {
 		"theme":         input.Theme,
 		"ident":         input.Ident,
 		"wechat_status": input.Wechat_status,
+		"login_url":     "http://" + strings.Split(strings.Split(input.Addr, "//")[1], "/")[0] + "/member/login",
 	}
 	_, q, a, err := db.Execute(sql.AddSubSystem, params)
 	if err != nil {

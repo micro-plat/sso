@@ -9,26 +9,28 @@ import (
 
 type IDbSystemFunc interface {
 	Get(sysid int) (data []map[string]interface{}, err error)
-	ChangeStatus(id int,status int) (err error)
+	ChangeStatus(id int, status int) (err error)
 	Delete(id int) (err error)
 	Edit(input *SystemFuncEditInput) (err error)
 	Add(input *SystemFuncAddInput) (err error)
 }
 
 type SystemFuncAddInput struct {
-	Parentid int `form:"parentid"`
-	ParentLevel int `form:"parentlevel"`
-	Sysid int `form:"sysid" `
-	Name string `form:"name" valid:"required"`
-	Icon string `form:"icon" valid:"required"`
-	Path string `form:"path" valid:"required"`
+	Parentid    int    `form:"parentid" json:"parentid"`
+	ParentLevel int    `form:"parentlevel" json:"parentlevel"`
+	Sysid       int    `form:"sysid" json:"sysid"`
+	Name        string `form:"name" json:"name" valid:"required"`
+	Icon        string `form:"icon" json:"icon" valid:"required"`
+	Path        string `form:"path" json:"path" valid:"required"`
+	IsOpen      string `form:"is_open" json:"is_open"`
 }
 
 type SystemFuncEditInput struct {
-	Id string `form:"id" valid:"required"`
-	Name string `form:"name" valid:"required"`
-	Icon string `form:"icon" valid:"required"`
-	Path string `form:"path" valid:"required"`
+	Id     string `form:"id" json:"id" valid:"required"`
+	Name   string `form:"name" json:"name" valid:"required"`
+	Icon   string `form:"icon" json:"icon" valid:"required"`
+	Path   string `form:"path" json:"path" valid:"required"`
+	IsOpen string `form:"is_open" json:"is_open"`
 }
 
 type DbSystemFunc struct {
@@ -45,7 +47,7 @@ func NewDbSystemFunc(c component.IContainer) *DbSystemFunc {
 func (u *DbSystemFunc) Get(sysid int) (results []map[string]interface{}, err error) {
 	db := u.c.GetRegularDB()
 	data, q, a, err := db.Query(sql.QuerySysFuncList, map[string]interface{}{
-		"sysid": sysid ,
+		"sysid": sysid,
 	})
 	if err != nil {
 		return nil, fmt.Errorf("获取系统管理列表发生错误(err:%v),sql:%s,输入参数:%v,", err, q, a)
@@ -62,7 +64,7 @@ func (u *DbSystemFunc) Get(sysid int) (results []map[string]interface{}, err err
 						if row3.GetInt("parent") == row2.GetInt("id") && row3.GetInt("level_id") == 3 {
 							children3 := make([]map[string]interface{}, 0, 8)
 							for _, row4 := range data {
-								if row4.GetInt("parent") == row3.GetInt("id") && row4.GetInt("level_id") ==4 {
+								if row4.GetInt("parent") == row3.GetInt("id") && row4.GetInt("level_id") == 4 {
 									children3 = append(children3, row4)
 								}
 							}
@@ -78,62 +80,63 @@ func (u *DbSystemFunc) Get(sysid int) (results []map[string]interface{}, err err
 			result = append(result, row1)
 		}
 	}
-	return result,  nil
+	return result, nil
 }
 
 func (u *DbSystemFunc) ChangeStatus(id int, status int) (err error) {
 	db := u.c.GetRegularDB()
-	_,q,a,err := db.Execute(sql.EnableSysFunc,map[string]interface{}{
-		"id": id,
+	_, q, a, err := db.Execute(sql.EnableSysFunc, map[string]interface{}{
+		"id":     id,
 		"enable": status,
 	})
 	if err != nil {
-		return fmt.Errorf("禁用/启用系统功能发生错误(err:%v),sql:%s,参数：%v", err, q,a)
-	}
-	return   nil
-}
-
-func (u *DbSystemFunc) Delete(id int) (err error){
-	db := u.c.GetRegularDB()
-	_,q,a,err := db.Execute(sql.DeleteSysFunc, map[string]interface{}{
-		"id": id,
-	})
-	if err != nil {
-		return fmt.Errorf("删除系统功能发生错误(err:%v),sql:%s,参数：%v", err, q,a)
-	}
-	return   nil
-}
-
-func (u *DbSystemFunc) Edit(input *SystemFuncEditInput) (err error){
-	db := u.c.GetRegularDB()
-	params := map[string]interface{}{
-		"id": input.Id,
-		"name": input.Name,
-		"icon": input.Icon,
-		"path": input.Path,
-	}
-	_,q,a,err := db.Execute(sql.EditSysFunc,params)
-	if err != nil {
-		return fmt.Errorf("编辑系统功能发生错误(err:%v),sql:%s,参数：%v", err, q,a)
-	}
-	return   nil
-}
-
-func (u *DbSystemFunc) Add(input *SystemFuncAddInput) (err error){
-	db := u.c.GetRegularDB()
-
-	params := map[string]interface{}{
-		"sys_id": input.Sysid,
-		"name": input.Name,
-		"icon": input.Icon,
-		"path": input.Path,
-		"parent": input.Parentid,
-		"level_id": input.ParentLevel +1,
-	}
-	_,q,a,err := db.Execute(sql.AddSysFunc,params)
-	if err != nil {
-		return fmt.Errorf("添加系统功能发生错误(err:%v),sql:%s,参数：%v", err, q,a)
+		return fmt.Errorf("禁用/启用系统功能发生错误(err:%v),sql:%s,参数：%v", err, q, a)
 	}
 	return nil
 }
 
+func (u *DbSystemFunc) Delete(id int) (err error) {
+	db := u.c.GetRegularDB()
+	_, q, a, err := db.Execute(sql.DeleteSysFunc, map[string]interface{}{
+		"id": id,
+	})
+	if err != nil {
+		return fmt.Errorf("删除系统功能发生错误(err:%v),sql:%s,参数：%v", err, q, a)
+	}
+	return nil
+}
+
+func (u *DbSystemFunc) Edit(input *SystemFuncEditInput) (err error) {
+	db := u.c.GetRegularDB()
+	params := map[string]interface{}{
+		"id":      input.Id,
+		"name":    input.Name,
+		"icon":    input.Icon,
+		"path":    input.Path,
+		"is_open": input.IsOpen,
+	}
+	_, q, a, err := db.Execute(sql.EditSysFunc, params)
+	if err != nil {
+		return fmt.Errorf("编辑系统功能发生错误(err:%v),sql:%s,参数：%v", err, q, a)
+	}
+	return nil
+}
+
+func (u *DbSystemFunc) Add(input *SystemFuncAddInput) (err error) {
+	db := u.c.GetRegularDB()
+
+	params := map[string]interface{}{
+		"sys_id":   input.Sysid,
+		"name":     input.Name,
+		"icon":     input.Icon,
+		"path":     input.Path,
+		"parent":   input.Parentid,
+		"level_id": input.ParentLevel + 1,
+		"is_open":  input.IsOpen,
+	}
+	_, q, a, err := db.Execute(sql.AddSysFunc, params)
+	if err != nil {
+		return fmt.Errorf("添加系统功能发生错误(err:%v),sql:%s,参数：%v", err, q, a)
+	}
+	return nil
+}
