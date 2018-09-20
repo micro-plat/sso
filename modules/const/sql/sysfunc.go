@@ -1,6 +1,6 @@
 package sql
 
-const QuerySysFuncList = `select t.* from sso_system_menu t where t.sys_id=@sysid`
+const QuerySysFuncList = `select t.* from sso_system_menu t where t.sys_id=@sysid order by t.sortrank,t.id`
 
 const EnableSysFunc = `update sso_system_menu t
 set  t.enable = @enable

@@ -107,11 +107,15 @@ func checkJWT(ctx *gin.Context, auth *conf.Auth) (data interface{}, err context.
 	return data, nil
 }
 func getToken(ctx *gin.Context, jwt *conf.Auth) string {
+	getLogger(ctx).Debugf("jwt:%+v", jwt)
+
 	switch strings.ToUpper(jwt.Source) {
 	case "HEADER", "H":
+		getLogger(ctx).Debugf("header:%s", ctx.GetHeader(jwt.Name))
 		return ctx.GetHeader(jwt.Name)
 	default:
 		cookie, _ := ctx.Cookie(jwt.Name)
+		getLogger(ctx).Debugf("cookie:%s,%v", cookie)
 		return cookie
 	}
 }
