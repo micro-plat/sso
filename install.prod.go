@@ -7,8 +7,6 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
-
-	"github.com/micro-plat/hydra/component"
 )
 
 //bindConf 绑定启动配置， 启动时检查注册中心配置是否存在，不存在则引导用户输入配置参数并自动创建到注册中心
@@ -91,7 +89,7 @@ func (s *SSO) install() {
 				"appid":"wx9e02ddcc88e13fd4",
 				"secret":"45d25cb71f3bee254c2bc6fc0dc0caf1",
 				"wechat-url":"http://59.151.30.153:9999/wx9e02ddcc88e13fd4/wechat/token/get",
-				"hostname": "http://sso2.100bm.cn"
+				"hostname": "sso.sinopecscsy.com"
 			}			
 			`)
 	s.Conf.API.SetSubConf("header", `
@@ -112,7 +110,7 @@ func (s *SSO) install() {
 				"expireAt": 36000,
 				"mode": "HS512",
 				"name": "__jwt__",
-				"secret": "12345678"
+				"secret": "4ec816d2389483d2da9148d3f0c4441b"
 			}
 		}
 		`)
@@ -122,7 +120,7 @@ func (s *SSO) install() {
 		"appid":"wx9e02ddcc88e13fd4",
 		"secret":"45d25cb71f3bee254c2bc6fc0dc0caf1",
 		"wechat-url":"http://59.151.30.153:9999/wx9e02ddcc88e13fd4/wechat/token/get",
-		"hostname": "http://sso2.100bm.cn"
+		"hostname": "http://sso.sinopecscsy.com"
 	}			
 			`)
 	s.Conf.Plat.SetVarConf("db", "db", `{			
@@ -156,7 +154,7 @@ func (s *SSO) install() {
 				"appid":"wx9e02ddcc88e13fd4",
 				"secret":"45d25cb71f3bee254c2bc6fc0dc0caf1",
 				"wechat-url":"http://59.151.30.153:9999/wx9e02ddcc88e13fd4/wechat/token/get",
-				"hostname": "http://sso2.100bm.cn"
+				"hostname": "http://sso.sinopecscsy.com"
 			}			
 			`)
 	s.Conf.WS.SetSubConf("auth", `
@@ -167,40 +165,40 @@ func (s *SSO) install() {
 					"expireAt": 36000,
 					"mode": "HS512",
 					"name": "__jwt__",
-					"secret": "12345678"
+					"secret": "4ec816d2389483d2da9148d3f0c4441b"
 				}
 			}
 			`)
 	s.Conf.CRON.SetSubConf("task", `{"tasks":[{"cron":"@every 30s","service":"/sso/notify/send"}]}`)
 
 	//自定义安装程序
-	s.Conf.API.Installer(func(c component.IContainer) error {
-		if !s.Conf.Confirm("创建数据库表结构,添加基础数据?") {
-			return nil
-		}
-		path, err := getSQLPath()
-		if err != nil {
-			return err
-		}
-		sqls, err := s.Conf.GetSQL(path)
-		if err != nil {
-			return err
-		}
-		db, err := c.GetDB()
-		if err != nil {
-			return err
-		}
-		for _, sql := range sqls {
-			if sql != "" {
-				if _, q, _, err := db.Execute(sql, map[string]interface{}{}); err != nil {
-					if !strings.Contains(err.Error(), "ORA-00942") {
-						s.Conf.Log.Errorf("执行SQL失败： %v %s\n", err, q)
-					}
-				}
-			}
-		}
-		return nil
-	})
+	// s.Conf.API.Installer(func(c component.IContainer) error {
+	// 	if !s.Conf.Confirm("创建数据库表结构,添加基础数据?") {
+	// 		return nil
+	// 	}
+	// 	path, err := getSQLPath()
+	// 	if err != nil {
+	// 		return err
+	// 	}
+	// 	sqls, err := s.Conf.GetSQL(path)
+	// 	if err != nil {
+	// 		return err
+	// 	}
+	// 	db, err := c.GetDB()
+	// 	if err != nil {
+	// 		return err
+	// 	}
+	// 	for _, sql := range sqls {
+	// 		if sql != "" {
+	// 			if _, q, _, err := db.Execute(sql, map[string]interface{}{}); err != nil {
+	// 				if !strings.Contains(err.Error(), "ORA-00942") {
+	// 					s.Conf.Log.Errorf("执行SQL失败： %v %s\n", err, q)
+	// 				}
+	// 			}
+	// 		}
+	// 	}
+	// 	return nil
+	// })
 
 }
 
