@@ -8,4 +8,4 @@ where t.ident=@ident`
 const QuerySystemWechantStatus = `select t.id,t.wechat_status from sso_system_info t where t.id=@sys_id`
 
 const QueryAllSystemInfo = `select t.sys_id,s.name,s.index_url,s.ident from sso_user_role t 
-left join sso_system_info s on s.id=t.sys_id where t.user_id=@user_id`
+inner join sso_system_info s on s.id=t.sys_id where t.user_id=@user_id`
