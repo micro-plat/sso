@@ -34,3 +34,19 @@ t.ident=@ident,
 t.wechat_status=@wechat_status 
 where t.id=@id
 `
+const GetUsers = `
+select
+  r.USER_ID,u.USER_NAME
+from SSO_SYSTEM_INFO i
+ inner join SSO_USER_ROLE r ON r.SYS_ID = i.ID
+inner join SSO_USER_INFO u ON u.USER_ID = r.USER_ID
+where i.IDENT=@system_name order by r.USER_ID
+`
+
+const GetAllUser = `
+select distinct r.USER_ID,u.USER_NAME
+from SSO_SYSTEM_INFO i
+ inner join SSO_USER_ROLE r ON r.SYS_ID = i.ID
+inner join SSO_USER_INFO u ON u.USER_ID = r.USER_ID
+where i.id>=0  order by r.USER_ID
+`

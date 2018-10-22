@@ -51,6 +51,7 @@ func (r *SSO) init() {
 	r.Micro("/wx/login", wx.NewLoginHandler, "*")          //微信端登录
 
 	r.Micro("/sso/sys/get", system.NewSystemIdentHandler, "*") //根据系统编号获取系统信息
+	r.Micro("/sso/sys/getusers", system.NewUserHandler, "*")   //根据系统名称获取系统用户信息
 	r.Micro("/sso/menu/get", menu.NewMenuHandler, "*")         //获取用户所在系统的菜单信息
 	r.Micro("/sso/popular", menu.NewPopularHandler, "*")       //获取用户所在系统的常用菜单
 

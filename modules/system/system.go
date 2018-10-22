@@ -13,6 +13,7 @@ type ISystem interface {
 	Add(input *AddSystemInput) (err error)
 	ChangeStatus(sysId int, status int) (err error)
 	Edit(input *SystemEditInput) (err error)
+	GetUsers(systemName string) (user db.QueryRows, allUser db.QueryRows, err error)
 }
 
 type System struct {
@@ -102,4 +103,9 @@ func (u *System) Edit(input *SystemEditInput) (err error) {
 	//更新缓存
 	return u.cache.FreshSysInfo()
 
+}
+
+//GetUsers 获取系统下所有用户
+func (u *System) GetUsers(systemName string) (user db.QueryRows, allUser db.QueryRows, err error) {
+	return u.db.GetUsers(systemName)
 }

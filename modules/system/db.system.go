@@ -18,6 +18,7 @@ type IDbSystem interface {
 	Add(input *AddSystemInput) (err error)
 	ChangeStatus(sysID int, status int) (err error)
 	Edit(input *SystemEditInput) (err error)
+	GetUsers(systemName string) (user db.QueryRows, allUser db.QueryRows, err error)
 }
 
 type SystemEditInput struct {
@@ -158,4 +159,23 @@ func (u *DbSystem) Edit(input *SystemEditInput) (err error) {
 		return fmt.Errorf("更新系统管理数据发生错误(err:%v),sql:%s,输入参数:%v,", err, q, a)
 	}
 	return nil
+}
+
+//GetUsers 获取系统下所有用户
+func (u *DbSystem) GetUsers(systemName string) (user db.QueryRows, allUser db.QueryRows, err error) {
+
+	db := u.c.GetRegularDB()
+	data, q, a, err := db.Query(sql.GetUsers, map[string]interface{}{
+		"system_name": systemName,
+	})
+	if err != nil {
+		return nil, nil, fmt.Errorf("获取系统下所有用户发生错误(err:%v),sql:%s,输入参数:%v,", err, q, a)
+	}
+
+	datas, q, a, err := db.Query(sql.GetAllUser, map[string]interface{}{})
+	if err != nil {
+		return nil, nil, fmt.Errorf("获取所有用户发生错误(err:%v),sql:%s,输入参数:%v,", err, q, a)
+	}
+	return data, datas, nil
+
 }
