@@ -37,8 +37,9 @@ func NewWebResponsiveServer(registryAddr string, cnf conf.IServerConf, logger *l
 	if h.webServer, err = NewWebServer(cnf.GetServerName(),
 		cnf.GetString("address", ":8080"),
 		nil,
+		WithShowTrace(cnf.GetBool("trace", false)),
 		WithLogger(logger),
-		WithTimeout(cnf.GetInt("rTimeout", 3), cnf.GetInt("wTimeout", 3), cnf.GetInt("rhTimeout", 3))); err != nil {
+		WithTimeout(cnf.GetInt("rTimeout", 10), cnf.GetInt("wTimeout", 10), cnf.GetInt("rhTimeout", 10))); err != nil {
 		return
 	}
 	h.server = h.webServer
@@ -65,9 +66,11 @@ func (w *WebResponsiveServer) Restart(cnf conf.IServerConf) (err error) {
 	}
 	if w.server, err = NewWebServer(cnf.GetServerName(),
 		cnf.GetString("address", ":8080"),
-		nil, WithLogger(w.Logger),
+		nil,
+		WithShowTrace(cnf.GetBool("trace", false)),
 		WithLogger(w.Logger),
-		WithTimeout(cnf.GetInt("rTimeout", 3), cnf.GetInt("wTimeout", 3), cnf.GetInt("rhTimeout", 3))); err != nil {
+		WithLogger(w.Logger),
+		WithTimeout(cnf.GetInt("rTimeout", 10), cnf.GetInt("wTimeout", 10), cnf.GetInt("rhTimeout", 10))); err != nil {
 		return
 	}
 

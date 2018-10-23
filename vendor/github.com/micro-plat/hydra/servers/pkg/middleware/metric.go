@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"sync"
 
+	"github.com/micro-plat/lib4go/xsync"
+
 	"github.com/micro-plat/hydra/conf"
 	"github.com/micro-plat/hydra/servers/pkg/dispatcher"
 	"github.com/micro-plat/hydra/servers/pkg/timer"
@@ -30,6 +32,7 @@ type Metric struct {
 	mu              sync.Mutex
 	currentRegistry metrics.Registry
 	conf            *conf.MetadataConf
+	ticket          *xsync.Ticket
 	ip              string
 	timer           *timer.Timer
 	done            bool
@@ -43,6 +46,7 @@ func NewMetric(conf *conf.MetadataConf) *Metric {
 		currentRegistry: metrics.NewRegistry(),
 		ip:              net.GetLocalIPAddress(),
 		closeChan:       make(chan struct{}),
+		ticket:          xsync.Sequence.Get(),
 	}
 }
 
@@ -50,6 +54,7 @@ func NewMetric(conf *conf.MetadataConf) *Metric {
 func (m *Metric) Stop() {
 	m.mu.Lock()
 	defer m.mu.Unlock()
+	m.ticket.Done()
 	if !m.done {
 		close(m.closeChan)
 	}
@@ -60,7 +65,6 @@ func (m *Metric) Stop() {
 	if m.timer != nil {
 		m.timer.Close()
 	}
-
 }
 
 //Restart restart metric
@@ -86,11 +90,18 @@ func (m *Metric) Restart(host string, dataBase string, userName string, password
 	}
 
 	go m.reporter.reporter.Run()
+	go m.collectSys()
+	m.timer.Start()
+	return nil
+}
+func (m *Metric) collectSys() {
+	if !m.ticket.Wait() {
+		return
+	}
 	go m.loopCollectCPU()
 	go m.loopCollectDisk()
 	go m.loopCollectMem()
-	m.timer.Start()
-	return nil
+	go m.loopNetConnCount()
 }
 
 //Handle 处理请求
@@ -98,9 +109,9 @@ func (m *Metric) Handle() dispatcher.HandlerFunc {
 	return func(ctx *dispatcher.Context) {
 		url := ctx.Request.GetService()
 
-		conterName := metrics.MakeName(m.conf.Type+".server.request", metrics.WORKING, "server", m.conf.Name, "ip", m.ip, "url", url) //堵塞计数
-		timerName := metrics.MakeName(m.conf.Type+".server.request", metrics.TIMER, "server", m.conf.Name, "ip", m.ip, "url", url)    //堵塞计数
-		requestName := metrics.MakeName(m.conf.Type+".server.request", metrics.QPS, "server", m.conf.Name, "ip", m.ip, "url", url)    //请求数
+		conterName := metrics.MakeName(m.conf.Type+".server.request", metrics.WORKING, "server", m.conf.Name, "host", m.ip, "url", url) //堵塞计数
+		timerName := metrics.MakeName(m.conf.Type+".server.request", metrics.TIMER, "server", m.conf.Name, "host", m.ip, "url", url)    //堵塞计数
+		requestName := metrics.MakeName(m.conf.Type+".server.request", metrics.QPS, "server", m.conf.Name, "host", m.ip, "url", url)    //请求数
 
 		metrics.GetOrRegisterQPS(requestName, m.currentRegistry).Mark(1)
 
@@ -110,7 +121,7 @@ func (m *Metric) Handle() dispatcher.HandlerFunc {
 		counter.Dec(1)
 
 		statusCode := ctx.Writer.Status()
-		responseName := metrics.MakeName(m.conf.Type+".server.response", metrics.METER, "server", m.conf.Name, "ip", m.ip,
+		responseName := metrics.MakeName(m.conf.Type+".server.response", metrics.METER, "server", m.conf.Name, "host", m.ip,
 			"url", url, "status", fmt.Sprintf("%d", statusCode)) //完成数
 		metrics.GetOrRegisterMeter(responseName, m.currentRegistry).Mark(1)
 	}

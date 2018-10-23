@@ -51,7 +51,7 @@ func NewMQProducer(address string, opts ...Option) (MQProducer, error) {
 	}
 	resolver, ok := mqProducerResolvers[proto]
 	if !ok {
-		return nil, fmt.Errorf("mq: unknown adapter name %q (forgotten import?)", proto)
+		return nil, fmt.Errorf("mq.producer: unknown adapter name %q (forgotten import?)", proto)
 	}
 	return resolver.Resolve(addrs[0], opts...)
 }

@@ -78,7 +78,7 @@ func (client *ZookeeperClient) create(path string, data string, flags int32, acl
 		err = ErrColientCouldNotConnect
 		return
 	}
-	buff, err := encoding.UTF82GBK(data)
+	buff, err := encoding.Encode(data, "gbk")
 	if err != nil {
 		return "", err
 	}

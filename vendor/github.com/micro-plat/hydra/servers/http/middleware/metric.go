@@ -11,6 +11,7 @@ import (
 	"github.com/micro-plat/lib4go/logger"
 	"github.com/micro-plat/lib4go/metrics"
 	"github.com/micro-plat/lib4go/net"
+	"github.com/micro-plat/lib4go/xsync"
 )
 
 type reporter struct {
@@ -27,6 +28,7 @@ type Metric struct {
 	logger          *logger.Logger
 	reporter        *reporter
 	registry        cmap.ConcurrentMap
+	ticket          *xsync.Ticket
 	mu              sync.Mutex
 	currentRegistry metrics.Registry
 	conf            *conf.MetadataConf
@@ -43,6 +45,7 @@ func NewMetric(conf *conf.MetadataConf) *Metric {
 		currentRegistry: metrics.NewRegistry(),
 		ip:              net.GetLocalIPAddress(),
 		closeChan:       make(chan struct{}),
+		ticket:          xsync.Sequence.Get(),
 	}
 }
 
@@ -50,6 +53,7 @@ func NewMetric(conf *conf.MetadataConf) *Metric {
 func (m *Metric) Stop() {
 	m.mu.Lock()
 	defer m.mu.Unlock()
+	m.ticket.Done()
 	if !m.done {
 		close(m.closeChan)
 	}
@@ -60,7 +64,6 @@ func (m *Metric) Stop() {
 	if m.timer != nil {
 		m.timer.Close()
 	}
-
 }
 
 //Restart restart metric
@@ -86,20 +89,27 @@ func (m *Metric) Restart(host string, dataBase string, userName string, password
 	}
 
 	go m.reporter.reporter.Run()
+	go m.collectSys()
+	m.timer.Start()
+	return nil
+}
+func (m *Metric) collectSys() {
+	if !m.ticket.Wait() {
+		return
+	}
 	go m.loopCollectCPU()
 	go m.loopCollectDisk()
 	go m.loopCollectMem()
-	m.timer.Start()
-	return nil
+	go m.loopNetConnCount()
 }
 
 //Handle 处理请求
 func (m *Metric) Handle() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		url := ctx.Request.URL.Path
-		conterName := metrics.MakeName(m.conf.Type+".server.request", metrics.WORKING, "name", m.conf.Name, "ip", m.ip, "url", url) //堵塞计数
-		timerName := metrics.MakeName(m.conf.Type+".server.request", metrics.TIMER, "name", m.conf.Name, "ip", m.ip, "url", url)    //堵塞计数
-		requestName := metrics.MakeName(m.conf.Type+".server.request", metrics.QPS, "name", m.conf.Name, "ip", m.ip, "url", url)    //请求数
+		conterName := metrics.MakeName(m.conf.Type+".server.request", metrics.WORKING, "name", m.conf.Name, "host", m.ip, "url", url) //堵塞计数
+		timerName := metrics.MakeName(m.conf.Type+".server.request", metrics.TIMER, "name", m.conf.Name, "host", m.ip, "url", url)    //堵塞计数
+		requestName := metrics.MakeName(m.conf.Type+".server.request", metrics.QPS, "name", m.conf.Name, "host", m.ip, "url", url)    //请求数
 		metrics.GetOrRegisterQPS(requestName, m.currentRegistry).Mark(1)
 
 		counter := metrics.GetOrRegisterCounter(conterName, m.currentRegistry)
@@ -108,7 +118,7 @@ func (m *Metric) Handle() gin.HandlerFunc {
 		counter.Dec(1)
 
 		statusCode := ctx.Writer.Status()
-		responseName := metrics.MakeName(m.conf.Type+".server.response", metrics.METER, "name", m.conf.Name, "ip", m.ip,
+		responseName := metrics.MakeName(m.conf.Type+".server.response", metrics.METER, "name", m.conf.Name, "host", m.ip,
 			"url", url, "status", fmt.Sprintf("%d", statusCode)) //完成数
 		metrics.GetOrRegisterMeter(responseName, m.currentRegistry).Mark(1)
 	}

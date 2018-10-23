@@ -44,7 +44,7 @@ func NewCache(address string, conf string) (ICache, error) {
 	}
 	resolver, ok := cacheResolvers[proto]
 	if !ok {
-		return nil, fmt.Errorf("mq: unknown adapter name %q (forgotten import?)", proto)
+		return nil, fmt.Errorf("cache: unknown adapter name %q (forgotten import?)", proto)
 	}
 	return resolver.Resolve(addrs, conf)
 }

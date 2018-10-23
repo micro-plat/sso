@@ -92,6 +92,18 @@ func getCTX(c *gin.Context) *context.Context {
 	}
 	return result.(*context.Context)
 }
+func getTrace(cnf *conf.MetadataConf) bool {
+	return cnf.GetMetadata("show-trace").(bool)
+}
+func setResponseRaw(c *gin.Context, raw string) {
+	c.Set("__response_raw_", raw)
+}
+func getResponseRaw(c *gin.Context) (string, bool) {
+	if v, ok := c.Get("__response_raw_"); ok {
+		return v.(string), true
+	}
+	return "", false
+}
 
 func setMetadataConf(c *gin.Context, cnf *conf.MetadataConf) {
 	c.Set("__metadata-conf_", cnf)
@@ -114,7 +126,7 @@ func ContextHandler(exhandler interface{}, name string, engine string, service s
 	return func(c *gin.Context) {
 		//处理输入参数
 		ctn, _ := exhandler.(context.IContainer)
-		ctx := context.GetContext(name, engine, service, ctn, makeQueyStringData(c), makeFormData(c), makeParamsData(c), makeSettingData(c, mSetting), makeExtData(c), getLogger(c))
+		ctx := context.GetContext(exhandler, name, engine, service, ctn, makeQueyStringData(c), makeFormData(c), makeParamsData(c), makeSettingData(c, mSetting), makeExtData(c), getLogger(c))
 
 		defer setServiceName(c, ctx.Service)
 		defer setCTX(c, ctx)
@@ -127,10 +139,10 @@ func ContextHandler(exhandler interface{}, name string, engine string, service s
 		//处理错误err,5xx
 		if err := ctx.Response.GetError(); err != nil {
 			err = fmt.Errorf("error:%v", err)
+			getLogger(c).Error(err)
 			if !servers.IsDebug {
 				err = errors.New("error:Internal Server Error")
 			}
-			getLogger(c).Error(err)
 			ctx.Response.ShouldContent(err)
 		}
 	}
@@ -142,6 +154,7 @@ func makeFormData(ctx *gin.Context) InputData {
 		ctx.Request.ParseForm()
 		ctx.Request.ParseMultipartForm(32 << 20)
 	}
+
 	return ctx.GetPostForm
 }
 func makeQueyStringData(ctx *gin.Context) InputData {
@@ -205,7 +218,11 @@ func makeExtData(c *gin.Context) map[string]interface{} {
 		if err != nil {
 			return "", err
 		}
-		return encoding.Convert(buff, ch)
+		nbuff, err := encoding.DecodeBytes(buff, ch)
+		if err != nil {
+			return "", err
+		}
+		return string(nbuff), nil
 
 	}
 	return input

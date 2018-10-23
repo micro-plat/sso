@@ -67,13 +67,15 @@ func NewApiResponsiveServer(registryAddr string, cnf conf.IServerConf, logger *l
 	if h.server, err = NewApiServer(cnf.GetServerName(),
 		cnf.GetString("address", ":8090"),
 		nil,
+		WithShowTrace(cnf.GetBool("trace", false)),
 		WithLogger(logger),
-		WithTimeout(cnf.GetInt("rTimeout", 3), cnf.GetInt("wTimeout", 3), cnf.GetInt("rhTimeout", 3))); err != nil {
+		WithTimeout(cnf.GetInt("rTimeout", 10), cnf.GetInt("wTimeout", 10), cnf.GetInt("rhTimeout", 10))); err != nil {
 		return
 	}
 	if err = h.SetConf(true, h.currentConf); err != nil {
 		return
 	}
+
 	return
 }
 
@@ -95,8 +97,9 @@ func (w *ApiResponsiveServer) Restart(cnf conf.IServerConf) (err error) {
 	if w.server, err = NewApiServer(cnf.GetServerName(),
 		cnf.GetString("address", ":8090"),
 		nil,
+		WithShowTrace(cnf.GetBool("trace", false)),
 		WithLogger(w.Logger),
-		WithTimeout(cnf.GetInt("rTimeout", 3), cnf.GetInt("wTimeout", 3), cnf.GetInt("rhTimeout", 3))); err != nil {
+		WithTimeout(cnf.GetInt("rTimeout", 10), cnf.GetInt("wTimeout", 10), cnf.GetInt("rhTimeout", 10))); err != nil {
 		return
 	}
 	if err = w.SetConf(true, cnf); err != nil {

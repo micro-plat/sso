@@ -21,6 +21,17 @@ type extParams struct {
 	hasTransMap bool
 }
 
+func (w *extParams) Clear() {
+	w.ext = nil
+	w.ctx = nil
+	w.body = ""
+	w.bodyReadErr = nil
+	w.hasReadBody = false
+	w.bodyMap = nil
+	w.bodyMapErr = nil
+	w.hasTransMap = false
+}
+
 // func (w *extParams) Get(name string) (interface{}, bool) {
 // 	v, ok := w.ext[name]
 // 	return v, ok
@@ -85,6 +96,9 @@ func (w *extParams) GetBodyMap(encoding ...string) (map[string]interface{}, erro
 	body, err := w.GetBody(encoding...)
 	if err != nil {
 		return nil, err
+	}
+	if body == "" {
+		return nil, nil
 	}
 	data := make(map[string]interface{})
 	err = json.Unmarshal([]byte(body), &data)

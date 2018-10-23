@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"reflect"
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/asaskevich/govalidator"
@@ -24,6 +25,17 @@ type Request struct {
 	CircuitBreaker *circuitBreakerParam //熔断处理
 	Http           *httpRequest
 	*extParams
+}
+
+//clear 清空数据
+func (r *Request) clear() {
+	r.Form.Clear()
+	r.QueryString.Clear()
+	r.Param.Clear()
+	r.Setting.Clear()
+	r.CircuitBreaker.Clear()
+	r.Http.Clear()
+	r.extParams.Clear()
 }
 
 func newRequest() *Request {
@@ -86,7 +98,7 @@ func (r *Request) BindWith(obj interface{}, contentType string) error {
 
 //Check 检查输入参数和配置参数是否为空
 func (r *Request) Check(field ...string) error {
-	data, _ := r.GetBodyMap()
+	data, err := r.GetBodyMap()
 	for _, fd := range field {
 		if err := r.Form.Check(fd); err == nil {
 			continue
@@ -95,7 +107,7 @@ func (r *Request) Check(field ...string) error {
 			continue
 		}
 		if v, ok := data[fd]; !ok && fmt.Sprint(v) != "" {
-			return fmt.Errorf("输入参数:%s值不能为空", fd)
+			return fmt.Errorf("输入参数:%s值不能为空 %v", fd, err)
 		}
 	}
 	return nil
@@ -167,6 +179,13 @@ func (r *Request) GetInt64(name string, p ...int64) int64 {
 	var v int64
 	var err error
 	if b {
+		if strings.Contains(strings.ToUpper(value), "E+") {
+			var n float64
+			_, err := fmt.Sscanf(value, "%e", &n)
+			if err == nil {
+				return int64(n)
+			}
+		}
 		v, err = strconv.ParseInt(value, 10, 64)
 		if err == nil {
 			return v
@@ -199,12 +218,36 @@ func (r *Request) Translate(format string, a bool) string {
 	return str
 }
 
+//GetFloat32 获取float64数字
+func (r *Request) GetFloat32(name string, p ...float32) float32 {
+	value, b := r.Get(name)
+	if b {
+		x, err := strconv.ParseFloat(value, 32)
+		if err == nil {
+			return float32(x)
+		}
+	}
+
+	if len(p) > 0 {
+		return p[0]
+	}
+	return 0
+}
+
 //GetFloat64 获取float64数字
 func (r *Request) GetFloat64(name string, p ...float64) float64 {
 	value, b := r.Get(name)
 	var v float64
 	var err error
 	if b {
+		if strings.Contains(strings.ToUpper(value), "E+") {
+			var n float64
+			_, err := fmt.Sscanf(value, "%e", &n)
+			if err == nil {
+				return n
+			}
+		}
+
 		v, err = strconv.ParseFloat(value, 64)
 		if err == nil {
 			return v
@@ -238,16 +281,4 @@ func (r *Request) GetDataTimeByFormat(name string, format string, p ...time.Time
 		return p[0], nil
 	}
 	return v, err
-}
-
-//clear 清空数据
-func (r *Request) clear() {
-	r.QueryString.data = nil
-	r.Form.data = nil
-	r.Param.data = nil
-	r.Setting.data = nil
-	r.CircuitBreaker.inputParams.data = nil
-	r.CircuitBreaker.ext = nil
-	r.extParams.ext = nil
-	r.Http.ext = nil
 }

@@ -68,11 +68,11 @@ func (x *XMQMessage) MakeMessage() (string, error) {
 	buff.WriteString(fmt.Sprint(x.SEQ))
 	buff.WriteString(fmt.Sprint(x.Timestmap))
 	buff.WriteString(fmt.Sprint(x.signKey))
-	gbkValue, err := encoding.Convert(buff.Bytes(), "gbk")
+	gbkValue, err := encoding.DecodeBytes(buff.Bytes(), "gbk")
 	if err != nil {
 		return "", err
 	}
-	x.Sign = strings.ToUpper(md5.EncryptBytes([]byte(gbkValue)))
+	x.Sign = strings.ToUpper(md5.EncryptBytes(gbkValue))
 	r, err := jsons.Marshal(x)
 	if err != nil {
 		return "", err

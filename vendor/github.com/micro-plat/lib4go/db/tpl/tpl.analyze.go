@@ -3,6 +3,7 @@ package tpl
 import (
 	"fmt"
 	"regexp"
+	"strings"
 )
 
 func isNil(input interface{}) bool {
@@ -49,16 +50,17 @@ func AnalyzeTPLFromCache(name string, tpl string, input map[string]interface{}, 
 func AnalyzeTPL(tpl string, input map[string]interface{}, prefix func() string) (sql string, params []interface{}, names []string) {
 	params = make([]interface{}, 0)
 	names = make([]string, 0)
-	word, _ := regexp.Compile(`[\\]?[@|#|&|~|\||!|\$|\?|>|<]\w?[\.]?\w+`)
+	word, _ := regexp.Compile(`[\\]?[@|#|&|~|\||!|\$|\?]\w?[\.]?\w+`)
 	//@变量, 将数据放入params中
 	sql = word.ReplaceAllStringFunc(tpl, func(s string) string {
-		//fullKey := s[1:]
+		fullKey := s[1:]
 		key := s[1:]
-		//if strings.Index(fullKey, ".") > 0 {
-		//key = strings.Split(fullKey, ".")[1]
-		//}
+		name := s[1:]
+		if strings.Index(fullKey, ".") > 0 {
+			name = strings.Split(fullKey, ".")[1]
+		}
 		pre := s[:1]
-		value := input[key]
+		value := input[name]
 		switch pre {
 		case "@":
 			if !isNil(value) {
@@ -81,20 +83,20 @@ func AnalyzeTPL(tpl string, input map[string]interface{}, prefix func() string) 
 				return fmt.Sprintf("and %s like '%%'||%s||'%%'", key, prefix())
 			}
 			return ""
-		case ">":
-			if !isNil(value) {
-				names = append(names, key)
-				params = append(params, value)
-				return fmt.Sprintf("and %s > %s", key, prefix())
-			}
-			return ""
-		case "<":
-			if !isNil(value) {
-				names = append(names, key)
-				params = append(params, value)
-				return fmt.Sprintf("and %s < %s", key, prefix())
-			}
-			return ""
+		// case ",":
+		// 	if !isNil(value) {
+		// 		names = append(names, key)
+		// 		params = append(params, value)
+		// 		return fmt.Sprintf("and %s > %s", key, prefix())
+		// 	}
+		// 	return ""
+		// case ".":
+		// 	if !isNil(value) {
+		// 		names = append(names, key)
+		// 		params = append(params, value)
+		// 		return fmt.Sprintf("and %s < %s", key, prefix())
+		// 	}
+		// 	return ""
 		case "$":
 			if !isNil(value) {
 				return fmt.Sprintf("%v", value)

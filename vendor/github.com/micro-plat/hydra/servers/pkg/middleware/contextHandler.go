@@ -9,9 +9,11 @@ import (
 	"time"
 
 	"github.com/golang/snappy"
+	"github.com/micro-plat/hydra/conf"
 	"github.com/micro-plat/hydra/context"
 	"github.com/micro-plat/hydra/servers"
 	"github.com/micro-plat/hydra/servers/pkg/dispatcher"
+	"github.com/micro-plat/lib4go/encoding/base64"
 	"github.com/micro-plat/lib4go/logger"
 )
 
@@ -59,12 +61,24 @@ func setServiceName(c *dispatcher.Context, v string) {
 func setCTX(c *dispatcher.Context, r *context.Context) {
 	c.Set("__context_", r)
 }
+func getTrace(cnf *conf.MetadataConf) bool {
+	return cnf.GetMetadata("show-trace").(bool)
+}
 func getCTX(c *dispatcher.Context) *context.Context {
 	result, _ := c.Get("__context_")
 	if result == nil {
 		return nil
 	}
 	return result.(*context.Context)
+}
+func setResponseRaw(c *dispatcher.Context, raw string) {
+	c.Set("__response_raw_", raw)
+}
+func getResponseRaw(c *dispatcher.Context) (string, bool) {
+	if v, ok := c.Get("__response_raw_"); ok {
+		return v.(string), true
+	}
+	return "", false
 }
 
 //ContextHandler api请求处理程序
@@ -77,7 +91,7 @@ func ContextHandler(exhandler interface{}, name string, engine string, service s
 
 	return func(c *dispatcher.Context) {
 		//处理输入参数
-		ctx := context.GetContext(name, engine, service, exhandler.(context.IContainer), makeQueyStringData(c), makeFormData(c), makeParamsData(c), makeSettingData(c, mSetting), makeExtData(c, ext), getLogger(c))
+		ctx := context.GetContext(exhandler, name, engine, service, exhandler.(context.IContainer), makeQueyStringData(c), makeFormData(c), makeParamsData(c), makeSettingData(c, mSetting), makeExtData(c, ext), getLogger(c))
 
 		defer setServiceName(c, service)
 		defer setCTX(c, ctx)
@@ -89,6 +103,7 @@ func ContextHandler(exhandler interface{}, name string, engine string, service s
 		//处理错误err,5xx
 		if err := ctx.Response.GetError(); err != nil {
 			err = fmt.Errorf("error:%v", err)
+			getLogger(c).Error(err)
 			if !servers.IsDebug {
 				err = errors.New("error:Internal Server Error")
 			}
@@ -148,11 +163,13 @@ func makeExtData(c *dispatcher.Context, ext map[string]interface{}) map[string]i
 	input["__func_body_get_"] = func(ch string) (string, error) {
 		if s, ok := c.Request.GetForm()["__body_"]; ok {
 			if v, ok := c.Request.GetHeader()["__encode_snappy_"]; ok && v == "true" {
-				buff := []byte(s.(string))
-				var nbuff []byte
-				nbuffer, err := snappy.Decode(nbuff, buff)
+				buff, err := base64.DecodeBytes(s.(string))
 				if err != nil {
-					return "", err
+					return "", fmt.Errorf("snappy压缩过的串必须是base64编码")
+				}
+				nbuffer, err := snappy.Decode(nil, buff)
+				if err != nil {
+					return "", fmt.Errorf("snappy.decode.err:%v %s", err, v)
 				}
 				return string(nbuffer), nil
 			}

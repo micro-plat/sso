@@ -38,7 +38,7 @@ func NewMQConsumer(address string, opts ...Option) (MQConsumer, error) {
 	}
 	resolver, ok := mqConsumerResolvers[proto]
 	if !ok {
-		return nil, fmt.Errorf("mq: unknown adapter name %q (forgotten import?)", proto)
+		return nil, fmt.Errorf("mq.consumer: unknown adapter name %q (forgotten import?)", proto)
 	}
 	return resolver.Resolve(addrs[0], opts...)
 }
