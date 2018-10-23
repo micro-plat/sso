@@ -20,7 +20,7 @@ func (s *SSO) install() {
 				"appid":"appid",
 				"secret":"app_secret",
 				"wechat-url":"http://wx_token_server_host/appid/wechat/token/get",
-				"hostname":"wx_host_name"
+				"hostname":"http://sso.100bm.cn"
 			}
 			`)
 	s.Conf.API.SetSubConf("header", `
@@ -34,16 +34,16 @@ func (s *SSO) install() {
 			`)
 
 	s.Conf.API.SetSubConf("auth", `
-		{
-			"jwt": {
-				"exclude": ["/sso/login","/sso/login/code","/sso/wxcode/get","/sso/sys/get","/qrcode/login","/qrcode/login/put","/sso/user/bind","/wx/login","/sso/notify/send","/qrcode/login/get","/sso/img/upload","/sso/user/getall","/sso/user/info","/sso/user/save","/sso/user/edit","/sso/user/delete","/sso/role/query","/sso/menu/get","/sso/sys/func/query","/sso/user/changepwd"],
-				"expireAt": 36000,
-				"source":"header",
-				"mode": "HS512",
-				"name": "__jwt__",
-				"secret": "4ec816d2389483d2da9148d3f0c4441b"
-			}
+	{
+		"jwt": {
+			"exclude": ["/sso/notify/send","/sso/sys/getusers","/sso/login","/sso/login/code","/sso/wxcode/get","/sso/sys/get","/qrcode/login","/qrcode/login/put","/sso/user/bind","/wx/login","/sso/notify/send", "/qrcode/login/get", "/sso/img/upload", "/sso/user/getall", "/sso/user/info", "/sso/user/save", "/sso/user/edit","/sso/user/delete","/sso/role/query","/sso/menu/get", "/sso/sys/func/query","/sso/user/changepwd"],
+			"expireAt": 36000,
+			"source": "header",
+			"mode": "HS512",
+			"name": "__jwt__",
+			"secret": "4ec816d2389483d2da9148d3f0c4441b"
 		}
+	}
 		`)
 	s.Conf.CRON.SetSubConf("task", `{"tasks":[{"cron":"@every 30s","service":"/sso/notify/send"}]}`)
 	s.Conf.WS.SetSubConf("app", `

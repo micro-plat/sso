@@ -103,7 +103,7 @@ func (u *DbUser) Query(input *QueryUserInput) (data db.QueryRows, total int, err
 		user["roles"] = roles[uid]
 		user["rolestr"] = rolestr[uid]
 	}
-	return data, types.ToInt(count, 0), nil
+	return data, types.GetInt(count, 0), nil
 }
 
 //ChangeStatus 修改用户状态
@@ -183,7 +183,7 @@ func (u *DbUser) GetAll(sysID, pi, ps int) (data db.QueryRows, count int, err er
 		return nil, 0, fmt.Errorf("获取用户列表发生错误(err:%v),sql:%s,输入参数:%v,", err, q, a)
 	}
 	fmt.Println("data:", data, pi, ps, q, a)
-	return data, types.ToInt(c), nil
+	return data, types.GetInt(c), nil
 
 }
 

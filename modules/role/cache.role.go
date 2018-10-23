@@ -12,7 +12,7 @@ import (
 
 type ICacheRole interface {
 	Get(sysID, roleID int, path string) (data db.QueryRows, err error)
-	SetPageAuth(sysID int,roleID int,path string,data db.QueryRows) (error)
+	SetPageAuth(sysID int, roleID int, path string, data db.QueryRows) error
 	Query(s *QueryRoleInput) (data db.QueryRows, count int, err error)
 	Save(s *QueryRoleInput, data db.QueryRows, count int) error
 	Delete() error
@@ -34,8 +34,8 @@ const (
 	cacheRoleListCountAll    = "{sso}:role:list-count:*"
 	cacheRoleFormat          = "{sso}:role:menu:{@roleID}-{@sysID}"
 	cacheRoleAll             = "{sso}:role:menu:*"
-	cachePageAuth			 = "{sso}:page:auth:{@sysID}-{@roleID}-{@path}"
-	cachePageAuthAll		 = "{sso}:page:auth:*"
+	cachePageAuth            = "{sso}:page:auth:{@sysID}-{@roleID}-{@path}"
+	cachePageAuthAll         = "{sso}:page:auth:*"
 )
 
 //NewCacheRole 创建角色缓存对象
@@ -45,9 +45,9 @@ func NewCacheRole(c component.IContainer) *CacheRole {
 		cacheTime: 3600 * 24,
 	}
 }
-func (l *CacheRole) Get(sysID, roleID int, path string) (data db.QueryRows, err error){
+func (l *CacheRole) Get(sysID, roleID int, path string) (data db.QueryRows, err error) {
 	cache := l.c.GetRegularCache()
-	key := transform.Translate(cachePageAuth,"sysID", sysID, "roleID", roleID, "path", path)
+	key := transform.Translate(cachePageAuth, "sysID", sysID, "roleID", roleID, "path", path)
 	v, err := cache.Get(key)
 	if err != nil {
 		return nil, err
@@ -55,21 +55,21 @@ func (l *CacheRole) Get(sysID, roleID int, path string) (data db.QueryRows, err 
 	if v == "" {
 		return nil, fmt.Errorf("无数据")
 	}
-	nmap := make(db.QueryRows,0,0)
+	nmap := make(db.QueryRows, 0, 0)
 	if err = json.Unmarshal([]byte(v), &nmap); err != nil {
 		return nil, err
 	}
 	return nmap, err
 }
 
-func (l *CacheRole) SetPageAuth(sysID int, roleID int, path string, data db.QueryRows) (error) {
+func (l *CacheRole) SetPageAuth(sysID int, roleID int, path string, data db.QueryRows) error {
 	buff, err := json.Marshal(data)
 	if err != nil {
 		return err
 	}
 	cache := l.c.GetRegularCache()
 	key := transform.Translate(cachePageAuth, "sysID", sysID, "roleID", roleID, "path", path)
-	return cache.Set(key,string(buff), l.cacheTime)
+	return cache.Set(key, string(buff), l.cacheTime)
 }
 
 //Save 缓存角色列表信息
@@ -109,7 +109,7 @@ func (l *CacheRole) Query(s *QueryRoleInput) (data db.QueryRows, count int, err 
 	if err != nil {
 		return nil, 0, err
 	}
-	return nmap, types.ToInt(c, 0), err
+	return nmap, types.GetInt(c, 0), err
 }
 
 //Delete 缓存角色列表信息删除

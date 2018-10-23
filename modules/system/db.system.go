@@ -94,7 +94,7 @@ func (u *DbSystem) Query(name string, status string, pi int, ps int) (data db.Qu
 		return nil, 0, fmt.Errorf("获取系统管理列表发生错误(err:%v),sql:%s,输入参数:%v,", err, q, a)
 	}
 	fmt.Println("data:", data, pi, ps, q, a)
-	return data, types.ToInt(c), nil
+	return data, types.GetInt(c), nil
 }
 
 func (u *DbSystem) Delete(id int) (err error) {
