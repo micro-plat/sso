@@ -98,7 +98,7 @@ func (l *CacheMember) getLoginFailCnt(u string) (int, error) {
 	if s == "" {
 		return 0, nil
 	}
-	return types.ToInt(s, 0), nil
+	return types.GetInt(s, 0), nil
 }
 
 //Save 缓存用户信息

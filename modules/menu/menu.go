@@ -1,15 +1,14 @@
 package menu
 
-
 import (
-	"strings"
 	"fmt"
 	"regexp"
-	
+	"strings"
+
 	"github.com/micro-plat/hydra/component"
 	"github.com/micro-plat/hydra/context"
-	"github.com/micro-plat/sso/modules/const/sql"
 	"github.com/micro-plat/lib4go/types"
+	"github.com/micro-plat/sso/modules/const/sql"
 )
 
 //Get 获取全局imenu
@@ -24,7 +23,7 @@ func Set(c component.IContainer) {
 
 type IMenu interface {
 	Query(uid int64, sysid int) ([]map[string]interface{}, error)
-	Verify(uid int64, sysid int, menuURL string,method string) error
+	Verify(uid int64, sysid int, menuURL string, method string) error
 }
 
 type Menu struct {
@@ -72,55 +71,55 @@ func (l *Menu) Query(uid int64, sysid int) ([]map[string]interface{}, error) {
 }
 
 //Verify 获取用户指定系统的菜单信息
-func (l *Menu) Verify(uid int64, sysid int, menuURL string,method string) error {
+func (l *Menu) Verify(uid int64, sysid int, menuURL string, method string) error {
 	db := l.c.GetRegularDB()
 	//根据用户名密码，查询用户信息
-	
-	url,funcs,err:=getFuncs(menuURL,method)
+
+	url, funcs, err := getFuncs(menuURL, method)
 	data, _, _, err := db.Scalar(sql.QueryUserMenu, map[string]interface{}{
 		"user_id": uid,
 		"sys_id":  sysid,
-		"path":   "'"+url+"'",
+		"path":    "'" + url + "'",
 	})
-	if err != nil || types.ToInt(data) != 1 {
-		return context.NewError(context.ERR_FORBIDDEN, fmt.Errorf("未查找到菜单 %v",err))
+	if err != nil || types.GetInt(data) != 1 {
+		return context.NewError(context.ERR_FORBIDDEN, fmt.Errorf("未查找到菜单 %v", err))
 	}
-	if len(funcs)==0{
+	if len(funcs) == 0 {
 		return nil
 	}
 	data, _, _, err = db.Scalar(sql.QueryUserMenu, map[string]interface{}{
 		"user_id": uid,
 		"sys_id":  sysid,
-		"path":   "'"+strings.Join(funcs,"','")+"'",
+		"path":    "'" + strings.Join(funcs, "','") + "'",
 	})
-	if err != nil || types.ToInt(data) !=len(funcs){
-		return context.NewError(context.ERR_FORBIDDEN, fmt.Errorf("未查找到菜单 %v",err))
+	if err != nil || types.GetInt(data) != len(funcs) {
+		return context.NewError(context.ERR_FORBIDDEN, fmt.Errorf("未查找到菜单 %v", err))
 	}
 	return nil
 }
 
-func getFuncs(urlParams string, method string) (string,[]string, error) {
+func getFuncs(urlParams string, method string) (string, []string, error) {
 	funcs := make([]string, 0, 2)
 	items := strings.Split(urlParams, "#")
 	if len(items) == 0 {
-	  return "",nil, fmt.Errorf("传入的页面地址不能为空")
+		return "", nil, fmt.Errorf("传入的页面地址不能为空")
 	}
-	url:=items[0]
+	url := items[0]
 	if len(items) == 1 {
-	  return url,nil, nil
+		return url, nil, nil
 	}
 	word := regexp.MustCompile(`\[?\w*[\:]?\w+\]?`)
 	names := word.FindAllString(strings.Join(items[1:], "#"), -1)
 	for _, n := range names {
-	  text := strings.Split(strings.Trim(strings.Trim(n, "]"), "["), ":")
-	  if len(text) == 1 {
-		funcs = append(funcs, text[0])
-	  } else {
-		if strings.ToUpper(text[0]) == strings.ToUpper(method) {
-		  funcs = append(funcs, text[1])
+		text := strings.Split(strings.Trim(strings.Trim(n, "]"), "["), ":")
+		if len(text) == 1 {
+			funcs = append(funcs, text[0])
+		} else {
+			if strings.ToUpper(text[0]) == strings.ToUpper(method) {
+				funcs = append(funcs, text[1])
+			}
 		}
-	  }
 	}
 	funcs = append(funcs, items[0])
-	return url,funcs, nil
-  }
+	return url, funcs, nil
+}

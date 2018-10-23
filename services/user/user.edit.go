@@ -30,6 +30,7 @@ func NewUserEditHandler(container component.IContainer) (u *UserEditHandler) {
 	}
 }
 
+//GetHandle 编辑个人基本资料
 func (u *UserEditHandler) GetHandle(ctx *context.Context) (r interface{}) {
 
 	ctx.Log.Info("--------编辑个人基本资料--------")
@@ -58,6 +59,7 @@ func (u *UserEditHandler) GetHandle(ctx *context.Context) (r interface{}) {
 	return "success"
 }
 
+//PostHandle 编辑用户详细资料（包括系统数据）
 func (u *UserEditHandler) PostHandle(ctx *context.Context) (r interface{}) {
 	ctx.Log.Info("------编辑用户详细资料（包括系统数据）--------")
 	ctx.Log.Info("1.参数校验")
@@ -71,12 +73,6 @@ func (u *UserEditHandler) PostHandle(ctx *context.Context) (r interface{}) {
 		return context.NewError(context.ERR_NOT_ACCEPTABLE, err)
 	}
 
-	ctx.Log.Info("2.权限验证")
-	// 修改数据 验证权限
-	if err := u.member.QueryAuth(int64(l.SystemID), input.UserID); err != nil {
-		return err
-	}
-
 	ctx.Log.Info("3.执行操作")
 	if err := u.userLib.Save(&input); err != nil {
 		return context.NewError(context.ERR_NOT_IMPLEMENTED, err)
@@ -88,9 +84,9 @@ func (u *UserEditHandler) PostHandle(ctx *context.Context) (r interface{}) {
 	if err == nil && b == true {
 		guid := utility.GetGUID()
 		conf := app.GetConf(u.container)
-		resUri := url.QueryEscape(fmt.Sprintf(conf.GetBindUrl(), guid))
+		resURI := url.QueryEscape(fmt.Sprintf(conf.GetBindUrl(), guid))
 		ctx.Log.Infof("发送验证邮件到:%s,guid：%v", input.Email, guid)
-		link := fmt.Sprintf(enum.WxApiCode, resUri)
+		link := fmt.Sprintf(enum.WxApiCode, resURI)
 		if err := u.member.SendCheckMail(enum.From, enum.Password, enum.Host, enum.Port, input.Email, link); err != nil {
 			return err
 		}

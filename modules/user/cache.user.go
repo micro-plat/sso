@@ -59,7 +59,7 @@ func (l *CacheUser) QueryUserBySys(sysID, pi, ps int) (data db.QueryRows, counr 
 	if err != nil {
 		return nil, 0, err
 	}
-	return nmap, types.ToInt(c, 0), err
+	return nmap, types.GetInt(c, 0), err
 }
 
 func (l *CacheUser) SaveUserBySys(sysID, pi, ps int, data db.QueryRows, count int) (err error) {
@@ -115,7 +115,7 @@ func (l *CacheUser) Query(s *QueryUserInput) (data db.QueryRows, total int, err 
 	if err != nil {
 		return nil, 0, err
 	}
-	return nmap, types.ToInt(c, 0), err
+	return nmap, types.GetInt(c, 0), err
 }
 
 //Delete 缓存用户列表信息删除
