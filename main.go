@@ -12,7 +12,7 @@ func main() {
 		hydra.NewApp(
 			hydra.WithPlatName("sso"),
 			hydra.WithSystemName("sso"),
-			hydra.WithServerTypes("api-ws-cron"),
+			hydra.WithServerTypes("api-cron"),
 			hydra.WithDebug()),
 	}
 

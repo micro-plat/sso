@@ -1,6 +1,8 @@
 package member
 
 import (
+	"fmt"
+
 	"github.com/micro-plat/hydra/component"
 	"github.com/micro-plat/hydra/context"
 	"github.com/micro-plat/lib4go/security/md5"
@@ -17,6 +19,8 @@ type LoginHandler struct {
 	wxcode member.IWxcode
 	sys    system.ISystem
 	op     operate.IOperate
+	member member.IDBMember
+	cache  member.ICacheMember
 }
 
 //NewLoginHandler 创建登录对象
@@ -28,11 +32,13 @@ func NewLoginHandler(container component.IContainer) (u *LoginHandler) {
 		wxcode: member.NewWxcode(container),
 		sys:    system.NewSystem(container),
 		op:     operate.NewOperate(container),
+		member: member.NewDBMember(container),
+		cache:  member.NewCacheMember(container),
 	}
 }
 
-//Handle 处理用户登录，登录成功后转跳到指定的系统
-func (u *LoginHandler) Handle(ctx *context.Context) (r interface{}) {
+//GetHandle 处理用户登录，登录成功后转跳到指定的系统
+func (u *LoginHandler) GetHandle(ctx *context.Context) (r interface{}) {
 
 	//检查系统是否设置需要微信登录
 	b, err := u.isWechatLogin(ctx.Request.GetString("ident"))
@@ -79,6 +85,68 @@ func (u *LoginHandler) Handle(ctx *context.Context) (r interface{}) {
 	}
 	return map[string]interface{}{
 		"code":  code,
+		"ident": ctx.Request.GetString("ident"),
+	}
+}
+
+//PostHandle 根据登录get获取用户信息，jwt信息获取用户信息
+func (u *LoginHandler) PostHandle(ctx *context.Context) (r interface{}) {
+	if err := ctx.Request.Check("code"); err != nil {
+		return context.NewError(context.ERR_NOT_ACCEPTABLE, fmt.Errorf("code不能为空"))
+	}
+	code := ctx.Request.GetString("code")
+	state, err := u.code.Query(code)
+	if err != nil {
+		return err
+	}
+	ctx.Response.SetJWT(state)
+	// jwtConf, err := ctx.Request.GetJWTConfig() //获取jwt配置
+	// if err != nil {
+	// 	return err
+	// }
+	// jwtToken, err := jwt.Encrypt(jwtConf.Secret, jwtConf.Mode, state, jwtConf.ExpireAt)
+	// if err != nil {
+	// 	return err
+	// }
+	// return map[string] interface{}{
+	// 	"state":state,
+	// 	"jwt":jwtToken,
+	// }
+	return state
+}
+
+//CodeHandle  切换系统，用旧code换取新code
+func (u *LoginHandler) CodeHandle(ctx *context.Context) (r interface{}) {
+	ctx.Log.Info("--------换取code-------")
+	ctx.Log.Info("1.检查参数")
+	if err := ctx.Request.Check("code", "ident", "username"); err != nil {
+		return context.NewError(context.ERR_NOT_ACCEPTABLE, err)
+	}
+	ctx.Log.Info("2.检查传入code是否有效")
+	codeMember := member.NewCodeMember(u.c)
+	loginState, err := codeMember.Query(ctx.Request.GetString("code"))
+	if err != nil {
+		return err
+	}
+	ctx.Log.Info("3.获取新系统用户数据")
+	m, err := u.member.Query(ctx.Request.GetString("username"), loginState.Password, ctx.Request.GetString("ident"))
+	if err != nil {
+		return err
+	}
+	ctx.Log.Info("4.生成新code和新的系统数据")
+	newCode, err := u.code.ExchangeCode(ctx.Request.GetString("code"), (*member.LoginState)(m))
+	if err != nil {
+		return err
+	}
+	ctx.Log.Info("5.缓存用户数据")
+	if err := u.cache.Save(m); err != nil {
+		return err
+	}
+	ctx.Log.Info("6.返回数据")
+	// 设置jwt数据
+	ctx.Response.SetJWT((*member.LoginState)(m))
+	return map[string]interface{}{
+		"code":  newCode,
 		"ident": ctx.Request.GetString("ident"),
 	}
 }
