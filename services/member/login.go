@@ -39,7 +39,7 @@ func NewLoginHandler(container component.IContainer) (u *LoginHandler) {
 
 //GetHandle 处理用户登录，登录成功后转跳到指定的系统
 func (u *LoginHandler) GetHandle(ctx *context.Context) (r interface{}) {
-
+	ctx.Log.Info("-------用户登录---------")
 	//检查系统是否设置需要微信登录
 	b, err := u.isWechatLogin(ctx.Request.GetString("ident"))
 	if err != nil {
@@ -50,6 +50,7 @@ func (u *LoginHandler) GetHandle(ctx *context.Context) (r interface{}) {
 			return context.NewError(context.ERR_NOT_ACCEPTABLE, err)
 		}
 	}
+	ctx.Log.Info("1.检查参数")
 	//检查输入参数
 	if err := ctx.Request.Check("username", "password", "ident"); err != nil {
 		return context.NewError(context.ERR_NOT_ACCEPTABLE, err)
@@ -61,6 +62,7 @@ func (u *LoginHandler) GetHandle(ctx *context.Context) (r interface{}) {
 			return err
 		}
 	}
+	ctx.Log.Info("2.执行操作")
 	//处理用户登录
 	member, err := u.m.Login(ctx.Request.GetString("username"),
 		md5.Encrypt(ctx.Request.GetString("password")),
@@ -83,6 +85,7 @@ func (u *LoginHandler) GetHandle(ctx *context.Context) (r interface{}) {
 	if err := u.op.LoginOperate(member); err != nil {
 		return err
 	}
+	ctx.Log.Info("3.返回数据")
 	return map[string]interface{}{
 		"code":  code,
 		"ident": ctx.Request.GetString("ident"),
@@ -91,6 +94,7 @@ func (u *LoginHandler) GetHandle(ctx *context.Context) (r interface{}) {
 
 //PostHandle 根据登录get获取用户信息，jwt信息获取用户信息
 func (u *LoginHandler) PostHandle(ctx *context.Context) (r interface{}) {
+	ctx.Log.Info("-------根据登录get获取用户信息，jwt信息获取用户信息---------")
 	if err := ctx.Request.Check("code"); err != nil {
 		return context.NewError(context.ERR_NOT_ACCEPTABLE, fmt.Errorf("code不能为空"))
 	}

@@ -88,7 +88,7 @@ func (s *SSO) install() {
 	s.Conf.CRON.SetSubConf("auth", `
 			{
 				"jwt": {
-					"exclude": ["/sso/login","/sso/login/code","/sso/wxcode/get","/sso/sys/get","/sso/ident","/qrcode/login/put","/sso/user/bind","/wx/login","/sso/notify/send","/qrcode/login/get","/sso/img/upload","/sso/user/getall","/sso/user/info","/sso/user/save","/sso/user/edit","/sso/user/delete","/sso/role/query","/sso/menu/get","/sso/sys/func/query","/sso/user/changepwd"],
+					"exclude": ["/sso/notify/send"],
 					"source":"header",
 					"expireAt": 36000,
 					"mode": "HS512",
