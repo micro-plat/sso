@@ -46,6 +46,18 @@ func (s *SSO) install() {
 	}
 		`)
 	s.Conf.CRON.SetSubConf("task", `{"tasks":[{"cron":"@every 30s","service":"/sso/notify/send"}]}`)
+	s.Conf.CRON.SetSubConf("auth", `
+			{
+				"jwt": {
+					"exclude": ["/sso/notify/send"],
+					"source":"header",
+					"expireAt": 36000,
+					"mode": "HS512",
+					"name": "__jwt__",
+					"secret": "4ec816d2389483d2da9148d3f0c4441b"
+				}
+			}
+			`)
 	s.Conf.WS.SetSubConf("app", `
 			{
 				"qrlogin-check-url":"http://wx_host_name/member/wxlogin",

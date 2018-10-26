@@ -1,5 +1,3 @@
-// +build !v2
-
 package main
 
 import (
@@ -12,11 +10,9 @@ import (
 	"github.com/micro-plat/sso/services/member"
 	"github.com/micro-plat/sso/services/menu"
 	"github.com/micro-plat/sso/services/notify"
-	"github.com/micro-plat/sso/services/qrcode"
 	"github.com/micro-plat/sso/services/role"
 	"github.com/micro-plat/sso/services/system"
 	"github.com/micro-plat/sso/services/user"
-	"github.com/micro-plat/sso/services/wx"
 )
 
 //init 检查应用程序配置文件，并根据配置初始化服务
@@ -46,48 +42,28 @@ func (r *SSO) init() {
 		xmenu.Set(c) //保存全局菜单变量
 		return nil
 	})
-	r.Micro("/sso/login", member.NewLoginHandler, "*")     //用户名密码登录
-	r.Micro("/sso/login/code", member.NewCodeHandler, "*") //根据用户登录code设置jwt信息
-	r.WS("/qrcode/login", qrcode.NewLoginHandler, "*")     //二维码登录（获取二维码登录地址,接收用户扫码后的消息推送）
-	r.Micro("/qrcode/login", qrcode.NewLoginHandler, "*")  //二维码登录(调用二维码登录接口地址，推送到PC端登录消息)
-	r.Micro("/wx/login", wx.NewLoginHandler, "*")          //微信端登录
 
-	r.Micro("/sso/sys/get", system.NewSystemIdentHandler, "*") //根据系统编号获取系统信息
-	r.Micro("/sso/sys/getusers", system.NewUserHandler, "*")   //根据系统名称获取系统用户信息
-	r.Micro("/sso/menu/get", menu.NewMenuHandler, "*")         //获取用户所在系统的菜单信息
-	r.Micro("/sso/popular", menu.NewPopularHandler, "*")       //获取用户所在系统的常用菜单
+	r.Micro("/sso/login", member.NewLoginHandler, "*") //用户名密码登录,子系统模拟登录
 
-	//r.Micro("/sso/login/check", member.NewCheckHandler)  //用户登录状态检查，检查用户jwt是否有效
-	r.Micro("/sso/member/query", member.NewQueryHandler, "*") //查询登录用户信息
-	r.Micro("/sso/menu/verify", menu.NewVerifyHandler, "*")   //检查用户菜单权限
+	r.Micro("/sso/ident", system.NewSystemIdentHandler, "*") //系统信息获取
 
-	r.Micro("/sso/user/query", user.NewUserHandler, "*")
-	r.Micro("/sso/user/getall", user.NewUserGetAllHandler, "*") // 根据系统获取系统下的所有用户
-	r.Micro("/sso/user/change", user.NewUserChangeHandler, "/user/index")
-	r.Micro("/sso/user/delete", user.NewUserDelHandler, "/user/index")
-	r.Micro("/sso/user/info", user.NewUserInfoHandler, "/user/index")
-	r.Micro("/sso/user/edit", user.NewUserEditHandler, "*")          // 用户编辑
-	r.Micro("/sso/user/save", user.NewUserSaveHandler, "*")          // 用户添加
-	r.Micro("/sso/user/changepwd", user.NewUserPasswordHandler, "*") // 修改密码
-	r.Micro("/sso/user/bind", user.NewUserBindHandler, "*")          // 绑定用户
-	r.Micro("/sso/base/userrole", base.NewBaseUserHandler, "*")
-	r.Micro("/sso/base/sys", base.NewBaseSysHandler, "*")
+	r.Micro("/sso/menu", menu.NewMenuHandler, "*") //系统菜单相关接口
 
-	r.Micro("/sso/role/query", role.NewRoleHandler, "/user/role")
-	r.Micro("/sso/role/change", role.NewRoleChangeHandler, "/user/role")
-	r.Micro("/sso/role/delete", role.NewRoleDelHandler, "/user/role")
-	r.Micro("/sso/role/save", role.NewRoleSaveHandler, "/user/role")
-	r.Micro("/sso/role/auth", role.NewRoleAuthHandler, "/user/role")
-	r.Micro("/sso/role/authmenu", role.NewAuthMenuHandler, "/user/role")
+	r.Micro("/sso/member", member.NewQueryHandler, "*") //查询登录用户信息
 
-	r.Micro("/sso/sys/manage", system.NewSystemHandler, "/sys/index#[post:addsys]") //系统管理
-	r.Micro("/sso/sys/edit", system.NewSystemEditHandler, "/sys/index")             //系统编辑
+	r.Micro("/sso/changepwd", user.NewUserPasswordHandler, "*") // 修改密码
 
-	r.Micro("/sso/sys/func/query", function.NewSystemFuncQueryHandler, "/sys/index")   //获取功能列表
-	r.Micro("/sso/sys/func/enable", function.NewSystemFuncEnableHandler, "/sys/index") //功能禁用/启用
-	r.Micro("/sso/sys/func/delete", function.NewSystemFuncDeleteHandler, "/sys/index") //功能删除
-	r.Micro("/sso/sys/func/edit", function.NewSystemFuncEditHandler, "/sys/index")     //功能编辑
-	r.Micro("/sso/sys/func/add", function.NewSystemFuncAddHandler, "/sys/index")       //功能添加
+	r.Micro("/sso/base", base.NewBaseUserHandler, "*")
+
+	r.Micro("/sso/user", user.NewUserHandler, "*") //用户相关接口
+
+	r.Micro("/sso/auth", role.NewRoleAuthHandler, "/user/role") //权限管理
+
+	r.Micro("/sso/role", role.NewRoleHandler, "/user/role") //角色管理相关接口
+
+	r.Micro("/sso/sys/manage", system.NewSystemHandler, "/sys/index#[post:addsys]") //系统管理相关接口
+
+	r.Micro("/sso/sys/func", function.NewSystemFuncHandler, "/sys/index") //系统功能相关接口
 
 	r.Micro("/sso/img/upload", image.NewImageHandler("./static/static/img", "http://sso.sinopecscsy.com"), "*") //图片上传
 
