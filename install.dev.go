@@ -26,7 +26,7 @@ func (s *SSO) install() {
 	s.Conf.API.SetSubConf("auth", `
 		{
 			"jwt": {
-				"exclude": ["/sso/login","/sso/login/code","/sso/wxcode/get","/sso/sys/get","/sso/ident","/qrcode/login/put","/sso/user/bind","/wx/login","/sso/notify/send","/qrcode/login/get","/sso/img/upload","/sso/user/getall","/sso/user/info","/sso/user/save","/sso/user/edit","/sso/user/delete","/sso/role/query","/sso/menu/get","/sso/sys/func/query","/sso/user/changepwd"],
+				"exclude": ["/sso/login","/sso/sys/func/enable","/sso/sys/manage/edit","/sso/login/code","/subsys/login","/subsys/menu","/sso/wxcode/get","/sso/sys/get","/sso/ident","/qrcode/login/put","/sso/user/bind","/wx/login","/sso/notify/send","/qrcode/login/get","/sso/img/upload","/sso/user/getall","/sso/user/info","/sso/user/save","/sso/user/edit","/sso/user/delete","/sso/role/query","/sso/menu/get","/sso/sys/func/query","/sso/user/changepwd"],
 				"source":"header",
 				"expireAt": 36000,
 				"mode": "HS512",
@@ -76,7 +76,7 @@ func (s *SSO) install() {
 	s.Conf.WS.SetSubConf("auth", `
 			{
 				"jwt": {
-					"exclude": ["/sso/login","/sso/login/code","/sso/wxcode/get","/sso/sys/get","/qrcode/login","/qrcode/login/put","/sso/user/bind","/wx/login","/sso/notify/send","/qrcode/login/get"],
+					"exclude": ["/sso/login","/subsys/login","/subsys/menu","/sso/login/code","/sso/wxcode/get","/sso/sys/get","/qrcode/login","/qrcode/login/put","/sso/user/bind","/wx/login","/sso/notify/send","/qrcode/login/get"],
 					"source":"header",
 					"expireAt": 36000,
 					"mode": "HS512",

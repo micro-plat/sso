@@ -1,6 +1,7 @@
 package menu
 
 import (
+	"fmt"
 	"strings"
 
 	"github.com/micro-plat/sso/modules/member"
@@ -36,6 +37,23 @@ func (u *MenuHandler) GetHandle(ctx *context.Context) (r interface{}) {
 	if err != nil {
 		return err
 	}
+	return data
+}
+
+//QueryHandle 查询指定用户在指定系统的菜单列表
+func (u *MenuHandler) QueryHandle(ctx *context.Context) (r interface{}) {
+	ctx.Log.Info("-------子系统调用，根据系统名称获取系统的所有用户------")
+	ctx.Log.Info("1.参数校验")
+	if err := ctx.Request.Check("user_id", "system_id"); err != nil {
+		return fmt.Errorf("参数错误：%v", err)
+	}
+
+	ctx.Log.Info("2. 执行操作")
+	data, err := u.m.Query(ctx.Request.GetInt64("user_id"), ctx.Request.GetInt("system_id"))
+	if err != nil {
+		return err
+	}
+	ctx.Log.Info("3. 返回数据")
 	return data
 }
 

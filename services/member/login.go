@@ -9,6 +9,7 @@ import (
 	"github.com/micro-plat/sso/modules/member"
 	"github.com/micro-plat/sso/modules/operate"
 	"github.com/micro-plat/sso/modules/system"
+	"github.com/micro-plat/sso/modules/util"
 )
 
 //LoginHandler 用户登录对象
@@ -41,7 +42,7 @@ func NewLoginHandler(container component.IContainer) (u *LoginHandler) {
 func (u *LoginHandler) GetHandle(ctx *context.Context) (r interface{}) {
 	ctx.Log.Info("-------用户登录---------")
 	//检查系统是否设置需要微信登录
-	b, err := u.isWechatLogin(ctx.Request.GetString("ident"))
+	b, _, err := u.isWechatLogin(ctx.Request.GetString("ident"))
 	if err != nil {
 		return err
 	}
@@ -90,6 +91,63 @@ func (u *LoginHandler) GetHandle(ctx *context.Context) (r interface{}) {
 		"code":  code,
 		"ident": ctx.Request.GetString("ident"),
 	}
+}
+
+//SysHandle 子系统远程登录
+func (u *LoginHandler) SysHandle(ctx *context.Context) (r interface{}) {
+	ctx.Log.Info("-------子系统用户远程登录---------")
+	//检查输入参数
+	if err := ctx.Request.Check("username", "password", "ident", "timestamp", "sign"); err != nil {
+		return context.NewError(context.ERR_NOT_ACCEPTABLE, err)
+	}
+
+	//检查系统是否设置需要微信登录
+	b, secret, err := u.isWechatLogin(ctx.Request.GetString("ident"))
+	if err != nil {
+		return err
+	}
+	if b == true {
+		if err := ctx.Request.Check("wxcode"); err != nil {
+			return context.NewError(context.ERR_NOT_ACCEPTABLE, err)
+		}
+	}
+	ctx.Log.Info("1.检查参数")
+
+	//校验签名
+	d := map[string]interface{}{}
+	d["username"] = ctx.Request.GetString("username")
+	d["password"] = ctx.Request.GetString("password")
+	d["ident"] = ctx.Request.GetString("ident")
+	if ok := util.VerifySign(d, secret, ctx.Request.GetString("sign")); ok != true {
+		return context.NewError(context.ERR_NOT_ACCEPTABLE, "sign签名错误")
+	}
+
+	ctx.Log.Info("2.执行操作")
+	//处理用户登录
+	member, err := u.m.Login(ctx.Request.GetString("username"),
+		md5.Encrypt(ctx.Request.GetString("password")),
+		ctx.Request.GetString("ident"))
+	if err != nil {
+		return err
+	}
+	url := ctx.Request.GetString("redirect_uri")
+	if url == "" {
+		url = member.IndexURL
+	}
+
+	//保存用户信息
+	_, err = u.code.Save(member)
+	if err != nil {
+		return err
+	}
+
+	//记录登录行为
+	if err := u.op.LoginOperate(member); err != nil {
+		return err
+	}
+	ctx.Log.Info("3.返回数据")
+	return member
+
 }
 
 //PostHandle 根据登录get获取用户信息，jwt信息获取用户信息
@@ -155,16 +213,16 @@ func (u *LoginHandler) CodeHandle(ctx *context.Context) (r interface{}) {
 	}
 }
 
-func (u *LoginHandler) isWechatLogin(ident string) (bool, error) {
+func (u *LoginHandler) isWechatLogin(ident string) (bool, string, error) {
 	if ident == "" {
-		return false, context.NewError(context.ERR_NOT_ACCEPTABLE, "ident not exists")
+		return false, "", context.NewError(context.ERR_NOT_ACCEPTABLE, "ident not exists")
 	}
 	data, err := u.sys.Get(ident)
 	if err != nil {
-		return false, err
+		return false, "", err
 	}
 	if data.GetInt("wechat_status") == 1 {
-		return true, nil
+		return false, data.GetString("secret"), nil
 	}
-	return false, nil
+	return false, data.GetString("secret"), nil
 }

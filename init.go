@@ -11,6 +11,7 @@ import (
 	"github.com/micro-plat/sso/services/menu"
 	"github.com/micro-plat/sso/services/notify"
 	"github.com/micro-plat/sso/services/role"
+	"github.com/micro-plat/sso/services/subsys"
 	"github.com/micro-plat/sso/services/system"
 	"github.com/micro-plat/sso/services/user"
 )
@@ -43,11 +44,13 @@ func (r *SSO) init() {
 		return nil
 	})
 
-	r.Micro("/sso/login", member.NewLoginHandler, "*") //用户名密码登录,子系统模拟登录
+	r.Micro("/sso/login", member.NewLoginHandler, "*") //用户名密码登录
+	r.Micro("/sso/menu", menu.NewMenuHandler, "*")     //系统菜单相关接口
+
+	r.Micro("/subsys/login", subsys.NewLoginHandler, "*") //子系统远程登录
+	r.Micro("/subsys/menu", menu.NewMenuHandler, "*")     //子系统远程登录
 
 	r.Micro("/sso/ident", system.NewSystemIdentHandler, "*") //系统信息获取
-
-	r.Micro("/sso/menu", menu.NewMenuHandler, "*") //系统菜单相关接口
 
 	r.Micro("/sso/member", member.NewQueryHandler, "*") //查询登录用户信息
 
@@ -68,6 +71,7 @@ func (r *SSO) init() {
 	r.Micro("/sso/img/upload", image.NewImageHandler("./static/static/img", "http://sso.sinopecscsy.com"), "*") //图片上传
 
 	r.Micro("/sso/notify/info", notify.NewNotifyHandler, "*")
+
 	r.Micro("/sso/notify/settings", notify.NewNotifySetHandler, "*")
 
 	r.CRON("/sso/notify/send", notify.NewNotifySendHandler, "*") // 发送消息
