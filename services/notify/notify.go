@@ -2,6 +2,8 @@
 package notify
 
 import (
+	"strconv"
+
 	"github.com/micro-plat/hydra/component"
 	"github.com/micro-plat/hydra/context"
 	"github.com/micro-plat/sso/modules/member"
@@ -28,6 +30,12 @@ func (u *NotifyHandler) GetHandle(ctx *context.Context) (r interface{}) {
 	if err := ctx.Request.Bind(&input); err != nil {
 		return context.NewError(context.ERR_NOT_ACCEPTABLE, err)
 	}
+	l := member.Query(ctx, u.container)
+	if l == nil {
+		return context.NewError(context.ERR_FORBIDDEN, "没有权限访问")
+	}
+	input.UserID = strconv.Itoa(int(l.UserID))
+	input.SysID = strconv.Itoa(l.SystemID)
 	ctx.Log.Info("2.执行操作")
 	data, count, err := u.Lib.Query(&input)
 	if err != nil {

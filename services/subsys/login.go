@@ -92,6 +92,5 @@ func (u *LoginHandler) getSecret(ident string) (string, error) {
 	if err != nil {
 		return "", err
 	}
-
 	return data.GetString("secret"), nil
 }

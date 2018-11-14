@@ -15,11 +15,10 @@ func (s *SSO) install() {
 			`)
 	s.Conf.API.SetSubConf("header", `
 				{
-					"Access-Control-Allow-Origin": "*", 
-					"Access-Control-Allow-Methods": "GET,POST,PUT,DELETE,PATCH,OPTIONS", 
-					"Access-Control-Allow-Headers": "__jwt__", 
-					"Access-Control-Allow-Credentials": "true",
-					"Access-Control-Expose-Headers":"__jwt__"    
+					"Access-Control-Allow-Origin": "*",
+					"Access-Control-Allow-Methods": "GET,POST,PUT,DELETE,PATCH,OPTIONS",
+					"Access-Control-Allow-Headers": "X-Requested-With,Content-Type",
+					"Access-Control-Allow-Credentials": "true"
 				}
 			`)
 
@@ -27,7 +26,6 @@ func (s *SSO) install() {
 		{
 			"jwt": {
 				"exclude": ["/sso/login","/sso/sys/func/enable","/sso/sys/manage/edit","/sso/login/code","/subsys/login","/subsys/menu","/sso/wxcode/get","/sso/sys/get","/sso/ident","/qrcode/login/put","/sso/user/bind","/wx/login","/sso/notify/send","/qrcode/login/get","/sso/img/upload","/sso/user/getall","/sso/user/info","/sso/user/save","/sso/user/edit","/sso/user/delete","/sso/role/query","/sso/menu/get","/sso/sys/func/query","/sso/user/changepwd"],
-				"source":"header",
 				"expireAt": 36000,
 				"mode": "HS512",
 				"name": "__jwt__",
@@ -35,7 +33,7 @@ func (s *SSO) install() {
 			}
 		}
 		`)
-
+	//"source":"header",
 	s.Conf.WS.SetSubConf("app", `
 	{
 		"appid":"wx9e02ddcc88e13fd4",

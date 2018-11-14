@@ -28,7 +28,7 @@ func NewMenuHandler(container component.IContainer) (u *MenuHandler) {
 	}
 }
 
-//GetHandle 查询指定用户在指定系统的菜单列表
+//Handle 查询指定用户在指定系统的菜单列表
 func (u *MenuHandler) Handle(ctx *context.Context) (r interface{}) {
 	ctx.Log.Info("-------子系统调用，查询指定用户在指定系统的菜单列表------")
 	ctx.Log.Info("1.参数校验")
@@ -45,6 +45,7 @@ func (u *MenuHandler) Handle(ctx *context.Context) (r interface{}) {
 	d := map[string]interface{}{}
 	d["user_id"] = ctx.Request.GetString("user_id")
 	d["system_id"] = ctx.Request.GetString("system_id")
+	d["ident"] = ctx.Request.GetString("ident")
 	d["timestamp"] = ctx.Request.GetString("timestamp")
 	if ok := util.VerifySign(d, secret, ctx.Request.GetString("sign")); ok != true {
 		return context.NewError(context.ERR_NOT_ACCEPTABLE, "sign签名错误")

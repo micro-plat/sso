@@ -48,7 +48,7 @@ func (r *SSO) init() {
 	r.Micro("/sso/menu", menu.NewMenuHandler, "*")     //系统菜单相关接口
 
 	r.Micro("/subsys/login", subsys.NewLoginHandler, "*") //子系统远程登录
-	r.Micro("/subsys/menu", menu.NewMenuHandler, "*")     //子系统远程登录
+	r.Micro("/subsys/menu", subsys.NewMenuHandler, "*")   //子系统远程登录
 
 	r.Micro("/sso/ident", system.NewSystemIdentHandler, "*") //系统信息获取
 
@@ -70,9 +70,9 @@ func (r *SSO) init() {
 
 	r.Micro("/sso/img/upload", image.NewImageHandler("./static/static/img", "http://sso.sinopecscsy.com"), "*") //图片上传
 
-	r.Micro("/sso/notify/info", notify.NewNotifyHandler, "*")
+	r.Micro("/sso/notify/info", notify.NewNotifyHandler, "*") //获取报警消息列表
 
-	r.Micro("/sso/notify/settings", notify.NewNotifySetHandler, "*")
+	r.Micro("/sso/notify/settings", notify.NewNotifySetHandler, "*") //报警消息设置
 
 	r.CRON("/sso/notify/send", notify.NewNotifySendHandler, "*") // 发送消息
 

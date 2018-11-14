@@ -13,8 +13,8 @@ import (
 
 type UserNotifyInput struct {
 	Title  string `form:"title" json:"title"`
-	UserID string `form:"user_id" json:"user_id" valid:"required"`
-	SysID  string `form:"sys_id" json:"sys_id" valid:"required"`
+	UserID string `form:"user_id" json:"user_id"`
+	SysID  string `form:"sys_id" json:"sys_id"`
 	Pi     string `form:"pi" json:"pi" valid:"required"`
 	Ps     string `form:"ps" json:"ps" valid:"required"`
 }
@@ -22,8 +22,8 @@ type UserNotifyInput struct {
 type SettingsInput struct {
 	Keywords string `form:"keywords" json:"keywords" valid:"required"`
 	Level    string `form:"level_id" json:"level_id" valid:"required"`
-	UserID   string `form:"user_id" json:"user_id" valid:"required"`
-	SysID    string `form:"sys_id" json:"sys_id" valid:"required"`
+	UserID   string `form:"user_id" json:"user_id"`
+	SysID    string `form:"sys_id" json:"sys_id"`
 }
 
 type EditSettingsInput struct {
