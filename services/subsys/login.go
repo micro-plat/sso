@@ -44,20 +44,19 @@ func (u *LoginHandler) Handle(ctx *context.Context) (r interface{}) {
 	if err := ctx.Request.Check("username", "password", "ident", "timestamp", "sign"); err != nil {
 		return context.NewError(context.ERR_NOT_ACCEPTABLE, err)
 	}
-
 	//获取secret
 	secret, err := u.getSecret(ctx.Request.GetString("ident"))
 	if err != nil {
 		return err
 	}
-
 	//校验签名
 	d := map[string]interface{}{}
 	d["username"] = ctx.Request.GetString("username")
 	d["password"] = ctx.Request.GetString("password")
 	d["ident"] = ctx.Request.GetString("ident")
 	d["timestamp"] = ctx.Request.GetString("timestamp")
-	if ok := util.VerifySign(d, secret, ctx.Request.GetString("sign")); ok != true {
+	ctx.Log.Info("请求原数据", d)
+	if ok := util.VerifySign(ctx, d, secret, ctx.Request.GetString("sign")); ok != true {
 		return context.NewError(context.ERR_NOT_ACCEPTABLE, "sign签名错误")
 	}
 

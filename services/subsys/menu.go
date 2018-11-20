@@ -47,7 +47,8 @@ func (u *MenuHandler) Handle(ctx *context.Context) (r interface{}) {
 	d["system_id"] = ctx.Request.GetString("system_id")
 	d["ident"] = ctx.Request.GetString("ident")
 	d["timestamp"] = ctx.Request.GetString("timestamp")
-	if ok := util.VerifySign(d, secret, ctx.Request.GetString("sign")); ok != true {
+	ctx.Log.Info("请求菜单数据：", d)
+	if ok := util.VerifySign(ctx, d, secret, ctx.Request.GetString("sign")); ok != true {
 		return context.NewError(context.ERR_NOT_ACCEPTABLE, "sign签名错误")
 	}
 	ctx.Log.Info("2. 执行操作")

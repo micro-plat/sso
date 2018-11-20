@@ -118,7 +118,7 @@ func (u *LoginHandler) SysHandle(ctx *context.Context) (r interface{}) {
 	d["username"] = ctx.Request.GetString("username")
 	d["password"] = ctx.Request.GetString("password")
 	d["ident"] = ctx.Request.GetString("ident")
-	if ok := util.VerifySign(d, secret, ctx.Request.GetString("sign")); ok != true {
+	if ok := util.VerifySign(ctx, d, secret, ctx.Request.GetString("sign")); ok != true {
 		return context.NewError(context.ERR_NOT_ACCEPTABLE, "sign签名错误")
 	}
 

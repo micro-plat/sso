@@ -6,24 +6,26 @@ import (
 	"fmt"
 	"sort"
 	"strings"
+
+	"github.com/micro-plat/hydra/context"
 )
 
 //wxpayVerifySign 微信支付签名验证函数
-func VerifySign(needVerifyM map[string]interface{}, secret, sign string) bool {
+func VerifySign(ctx *context.Context, needVerifyM map[string]interface{}, secret, sign string) bool {
 
-	signCalc := makeSign(needVerifyM, secret)
-	fmt.Printf("计算出来的sign: %v\n", signCalc)
-	fmt.Printf("请求sign: %v\n", sign)
+	raw, signCalc := makeSign(needVerifyM, secret)
+	ctx.Log.Infof("计算出来的sign: %v\n", signCalc)
+	ctx.Log.Infof("请求sign: %v\n", sign)
 	if sign == signCalc {
-		fmt.Println("签名校验通过!")
+		ctx.Log.Infof("签名校验通过!")
 		return true
 	}
 
-	fmt.Println("签名校验失败!")
+	ctx.Log.Infof("签名校验失败![%s]", raw)
 	return false
 }
 
-func makeSign(mReq map[string]interface{}, secret string) (sign string) {
+func makeSign(mReq map[string]interface{}, secret string) (raw string, sign string) {
 	fmt.Println("签名计算, API KEY:", secret)
 	//1, 对key进行升序排序.
 	sortedKeys := make([]string, 0)
@@ -53,5 +55,5 @@ func makeSign(mReq map[string]interface{}, secret string) (sign string) {
 	md5Ctx.Write([]byte(signStrings))
 	cipherStr := md5Ctx.Sum(nil)
 	upperSign := strings.ToUpper(hex.EncodeToString(cipherStr))
-	return upperSign
+	return signStrings, upperSign
 }
