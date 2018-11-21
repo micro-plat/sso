@@ -3,8 +3,8 @@ package function
 import (
 	"github.com/micro-plat/hydra/component"
 	"github.com/micro-plat/hydra/context"
-	sub "github.com/micro-plat/sso/modules/function"
-	"github.com/micro-plat/sso/modules/member"
+	sub "github.com/micro-plat/sso/flowserver/modules/function"
+	"github.com/micro-plat/sso/flowserver/modules/member"
 )
 
 type SystemFuncQueryHandler struct {

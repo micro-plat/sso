@@ -3,8 +3,8 @@ package role
 import (
 	"github.com/micro-plat/hydra/component"
 	"github.com/micro-plat/hydra/context"
-	"github.com/micro-plat/sso/modules/member"
-	"github.com/micro-plat/sso/modules/role"
+	"github.com/micro-plat/sso/flowserver/modules/member"
+	"github.com/micro-plat/sso/flowserver/modules/role"
 )
 
 //RoleAuthHandler is

@@ -10,12 +10,14 @@ import (
 	"github.com/micro-plat/lib4go/db"
 	"github.com/micro-plat/lib4go/net/http"
 	"github.com/micro-plat/lib4go/utility"
-	"github.com/micro-plat/sso/modules/app"
-	"github.com/micro-plat/sso/modules/const/enum"
-	"github.com/micro-plat/sso/modules/member"
-	"github.com/micro-plat/sso/modules/operate"
-	"github.com/micro-plat/sso/modules/system"
-	"github.com/micro-plat/sso/modules/user"
+	"github.com/micro-plat/sso/flowserver/modules/app"
+	"github.com/micro-plat/sso/flowserver/modules/const/enum"
+	"github.com/micro-plat/sso/flowserver/modules/operate"
+	"github.com/micro-plat/sso/flowserver/modules/system"
+
+	"github.com/micro-plat/sso/flowserver/modules/member"
+	"github.com/micro-plat/sso/flowserver/modules/user"
+
 	"github.com/micro-plat/wechat/mp/oauth2"
 )
 

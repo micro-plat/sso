@@ -9,17 +9,15 @@ import (
 )
 
 const (
-	cacheFormat = "{sso}:system:func:{@sysid}"
+	cacheFormat    = "{sso}:system:func:{@sysid}"
 	cacheFormatDel = "{sso}:system:func:*"
 	cacheMenuAll   = "{sso}:role:menu:*"
 )
 
-
 type ICacheSystemFunc interface {
-	Save(sysID int,data []map[string]interface{}) (err error)
-	Query(sysID int) (data []map[string]interface{},err error)
-	Fresh()(err error)
-
+	Save(sysID int, data []map[string]interface{}) (err error)
+	Query(sysID int) (data []map[string]interface{}, err error)
+	Fresh() (err error)
 }
 
 type CacheSystemFunc struct {
@@ -36,13 +34,13 @@ func NewCacheSystemFunc(c component.IContainer) *CacheSystemFunc {
 }
 
 //Save 缓存功能信息
-func (l *CacheSystemFunc) Save(sysID int,data []map[string]interface{}) (err error) {
+func (l *CacheSystemFunc) Save(sysID int, data []map[string]interface{}) (err error) {
 	buff, err := json.Marshal(data)
 	if err != nil {
 		return err
 	}
 	cache := l.c.GetRegularCache()
-	key := transform.Translate(cacheFormat, "sysid",sysID)
+	key := transform.Translate(cacheFormat, "sysid", sysID)
 	return cache.Set(key, string(buff), l.cacheTime)
 }
 
@@ -66,7 +64,7 @@ func (l *CacheSystemFunc) Query(sysID int) (data []map[string]interface{}, err e
 }
 
 //Fresh 刷新缓存
-func (l *CacheSystemFunc) Fresh()(err error){
+func (l *CacheSystemFunc) Fresh() (err error) {
 	cache := l.c.GetRegularCache()
 	_ = cache.Delete(cacheMenuAll)
 	return cache.Delete(cacheFormatDel)

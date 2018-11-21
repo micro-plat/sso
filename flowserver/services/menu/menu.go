@@ -4,11 +4,11 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/micro-plat/sso/modules/member"
+	"github.com/micro-plat/sso/flowserver/modules/member"
 
 	"github.com/micro-plat/hydra/component"
 	"github.com/micro-plat/hydra/context"
-	"github.com/micro-plat/sso/modules/menu"
+	"github.com/micro-plat/sso/flowserver/modules/menu"
 )
 
 //MenuHandler 菜单查询对象

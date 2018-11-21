@@ -6,8 +6,8 @@ import (
 	"github.com/micro-plat/hydra/component"
 
 	"github.com/micro-plat/hydra/context"
-	mem "github.com/micro-plat/sso/modules/member"
-	xmenu "github.com/micro-plat/sso/modules/menu"
+	mem "github.com/micro-plat/sso/flowserver/modules/member"
+	xmenu "github.com/micro-plat/sso/flowserver/modules/menu"
 )
 
 //bind 检查应用程序配置文件，并根据配置初始化服务

@@ -5,9 +5,9 @@ import (
 
 	"github.com/micro-plat/hydra/component"
 	"github.com/micro-plat/hydra/context"
-	"github.com/micro-plat/sso/modules/menu"
-	"github.com/micro-plat/sso/modules/system"
-	"github.com/micro-plat/sso/modules/util"
+	"github.com/micro-plat/sso/flowserver/modules/menu"
+	"github.com/micro-plat/sso/flowserver/modules/system"
+	"github.com/micro-plat/sso/flowserver/modules/util"
 )
 
 //MenuHandler 菜单查询对象

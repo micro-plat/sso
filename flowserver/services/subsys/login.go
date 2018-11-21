@@ -4,10 +4,10 @@ import (
 	"github.com/micro-plat/hydra/component"
 	"github.com/micro-plat/hydra/context"
 	"github.com/micro-plat/lib4go/security/md5"
-	"github.com/micro-plat/sso/modules/member"
-	"github.com/micro-plat/sso/modules/operate"
-	"github.com/micro-plat/sso/modules/system"
-	"github.com/micro-plat/sso/modules/util"
+	"github.com/micro-plat/sso/flowserver/modules/member"
+	"github.com/micro-plat/sso/flowserver/modules/operate"
+	"github.com/micro-plat/sso/flowserver/modules/system"
+	"github.com/micro-plat/sso/flowserver/modules/util"
 )
 
 //LoginHandler 用户登录对象

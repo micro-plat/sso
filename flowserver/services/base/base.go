@@ -3,8 +3,8 @@ package base
 import (
 	"github.com/micro-plat/hydra/component"
 	"github.com/micro-plat/hydra/context"
-	"github.com/micro-plat/sso/modules/base"
-	"github.com/micro-plat/sso/modules/member"
+	"github.com/micro-plat/sso/flowserver/modules/base"
+	"github.com/micro-plat/sso/flowserver/modules/member"
 )
 
 //BaseUserHandler is

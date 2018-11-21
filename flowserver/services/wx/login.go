@@ -8,10 +8,10 @@ import (
 	"github.com/micro-plat/hydra/context"
 	"github.com/micro-plat/lib4go/db"
 	"github.com/micro-plat/lib4go/net/http"
-	"github.com/micro-plat/sso/modules/app"
-	"github.com/micro-plat/sso/modules/member"
-	"github.com/micro-plat/wechat/mp/oauth2"
 	"github.com/micro-plat/lib4go/security/jwt"
+	"github.com/micro-plat/sso/flowserver/modules/app"
+	"github.com/micro-plat/sso/flowserver/modules/member"
+	"github.com/micro-plat/wechat/mp/oauth2"
 )
 
 type LoginHandler struct {
@@ -73,9 +73,9 @@ func (u *LoginHandler) Handle(ctx *context.Context) (r interface{}) {
 	ctx.Response.SetJWT(member)
 
 	jwtAuth, err := ctx.Request.GetJWTConfig() //获取jwt配置
-		if err != nil {
-			return err
-		}	
+	if err != nil {
+		return err
+	}
 	jwtToken, err := jwt.Encrypt(jwtAuth.Secret, jwtAuth.Mode, member, jwtAuth.ExpireAt)
 	if err != nil {
 		return err
@@ -83,6 +83,6 @@ func (u *LoginHandler) Handle(ctx *context.Context) (r interface{}) {
 
 	return map[string]interface{}{
 		"code": loginCode,
-		"jwt": jwtToken,
+		"jwt":  jwtToken,
 	}
 }
