@@ -16,6 +16,7 @@ import (
 	"github.com/micro-plat/sso/flowserver/modules/operate"
 	"github.com/micro-plat/sso/flowserver/modules/system"
 	"github.com/micro-plat/sso/flowserver/modules/user"
+
 	"github.com/micro-plat/wechat/mp/oauth2"
 )
 
