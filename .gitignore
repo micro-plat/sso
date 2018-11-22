@@ -12,3 +12,5 @@
 ./mgrserver/*.ntvs*
 ./mgrserver/*.njsproj
 ./mgrserver/*.sln
+conf/
+logs/
