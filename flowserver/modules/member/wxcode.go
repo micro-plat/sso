@@ -8,8 +8,9 @@ import (
 	"github.com/micro-plat/hydra/component"
 	"github.com/micro-plat/hydra/context"
 	"github.com/micro-plat/lib4go/transform"
-	"github.com/micro-plat/sso/modules/app"
-	"github.com/micro-plat/sso/modules/system"
+	"github.com/micro-plat/sso/flowserver/modules/app"
+	"github.com/micro-plat/sso/flowserver/modules/system"
+
 	"github.com/micro-plat/wechat/mp/message/template"
 )
 

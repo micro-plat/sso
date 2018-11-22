@@ -9,8 +9,8 @@ import (
 	"github.com/micro-plat/lib4go/db"
 	"github.com/micro-plat/lib4go/security/md5"
 	"github.com/micro-plat/lib4go/types"
-	"github.com/micro-plat/sso/modules/const/enum"
-	"github.com/micro-plat/sso/modules/const/sql"
+	"github.com/micro-plat/sso/flowserver/modules/const/enum"
+	"github.com/micro-plat/sso/flowserver/modules/const/sql"
 )
 
 var _ IDbUser = &DbUser{}

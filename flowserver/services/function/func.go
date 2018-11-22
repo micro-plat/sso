@@ -4,9 +4,9 @@ import (
 	"github.com/micro-plat/hydra/component"
 	"github.com/micro-plat/hydra/context"
 	"github.com/micro-plat/lib4go/types"
-	sub "github.com/micro-plat/sso/modules/function"
-	"github.com/micro-plat/sso/modules/member"
-	"github.com/micro-plat/sso/modules/operate"
+	sub "github.com/micro-plat/sso/flowserver/modules/function"
+	"github.com/micro-plat/sso/flowserver/modules/member"
+	"github.com/micro-plat/sso/flowserver/modules/operate"
 )
 
 //SystemFuncHandler is

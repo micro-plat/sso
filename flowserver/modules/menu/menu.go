@@ -8,7 +8,7 @@ import (
 	"github.com/micro-plat/hydra/component"
 	"github.com/micro-plat/hydra/context"
 	"github.com/micro-plat/lib4go/types"
-	"github.com/micro-plat/sso/modules/const/sql"
+	"github.com/micro-plat/sso/flowserver/modules/const/sql"
 )
 
 //Get 获取全局imenu

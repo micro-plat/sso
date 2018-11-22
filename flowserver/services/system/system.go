@@ -4,12 +4,12 @@ import (
 	"fmt"
 
 	"github.com/micro-plat/lib4go/types"
-	"github.com/micro-plat/sso/modules/operate"
+	"github.com/micro-plat/sso/flowserver/modules/operate"
 
 	"github.com/micro-plat/hydra/component"
 	"github.com/micro-plat/hydra/context"
-	"github.com/micro-plat/sso/modules/member"
-	sub "github.com/micro-plat/sso/modules/system"
+	"github.com/micro-plat/sso/flowserver/modules/member"
+	sub "github.com/micro-plat/sso/flowserver/modules/system"
 )
 
 type SystemHandler struct {

@@ -3,7 +3,7 @@ package operate
 
 import (
 	"github.com/micro-plat/hydra/component"
-	"github.com/micro-plat/sso/modules/member"
+	"github.com/micro-plat/sso/flowserver/modules/member"
 )
 
 type IOperate interface {

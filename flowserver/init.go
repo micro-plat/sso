@@ -2,18 +2,18 @@ package main
 
 import (
 	"github.com/micro-plat/hydra/component"
-	"github.com/micro-plat/sso/modules/app"
-	xmenu "github.com/micro-plat/sso/modules/menu"
-	"github.com/micro-plat/sso/services/base"
-	"github.com/micro-plat/sso/services/function"
-	"github.com/micro-plat/sso/services/image"
-	"github.com/micro-plat/sso/services/member"
-	"github.com/micro-plat/sso/services/menu"
-	"github.com/micro-plat/sso/services/notify"
-	"github.com/micro-plat/sso/services/role"
-	"github.com/micro-plat/sso/services/subsys"
-	"github.com/micro-plat/sso/services/system"
-	"github.com/micro-plat/sso/services/user"
+	"github.com/micro-plat/sso/flowserver/modules/app"
+	xmenu "github.com/micro-plat/sso/flowserver/modules/menu"
+	"github.com/micro-plat/sso/flowserver/services/base"
+	"github.com/micro-plat/sso/flowserver/services/function"
+	"github.com/micro-plat/sso/flowserver/services/image"
+	"github.com/micro-plat/sso/flowserver/services/member"
+	"github.com/micro-plat/sso/flowserver/services/menu"
+	"github.com/micro-plat/sso/flowserver/services/notify"
+	"github.com/micro-plat/sso/flowserver/services/role"
+	"github.com/micro-plat/sso/flowserver/services/subsys"
+	"github.com/micro-plat/sso/flowserver/services/system"
+	"github.com/micro-plat/sso/flowserver/services/user"
 )
 
 //init 检查应用程序配置文件，并根据配置初始化服务
@@ -49,6 +49,8 @@ func (r *SSO) init() {
 
 	r.Micro("/subsys/login", subsys.NewLoginHandler, "*") //子系统远程登录
 	r.Micro("/subsys/menu", subsys.NewMenuHandler, "*")   //子系统远程登录
+	r.Micro("/subsys/user", subsys.NewUserHandler, "*")   //子系统,获取用户列表
+	r.Micro("/subsys/pwd", subsys.NewPwdHandler, "*")     //子系统,修改密码
 
 	r.Micro("/sso/ident", system.NewSystemIdentHandler, "*") //系统信息获取
 

@@ -8,7 +8,7 @@ import (
 	"github.com/micro-plat/lib4go/db"
 	"github.com/micro-plat/lib4go/transform"
 	"github.com/micro-plat/lib4go/types"
-	cacheConst "github.com/micro-plat/sso/modules/const/cache"
+	cacheConst "github.com/micro-plat/sso/flowserver/modules/const/cache"
 )
 
 type ICacheUser interface {

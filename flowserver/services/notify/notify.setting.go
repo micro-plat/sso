@@ -7,8 +7,8 @@ import (
 
 	"github.com/micro-plat/hydra/component"
 	"github.com/micro-plat/hydra/context"
-	"github.com/micro-plat/sso/modules/member"
-	"github.com/micro-plat/sso/modules/notify"
+	"github.com/micro-plat/sso/flowserver/modules/member"
+	"github.com/micro-plat/sso/flowserver/modules/notify"
 )
 
 var keywords = []string{"数据库", "网络", "参数"}

@@ -79,4 +79,3 @@ func (ch *ImageHandler) PostHandle(ctx *context.Context) (r interface{}) {
 		"url": name,
 	}
 }
-

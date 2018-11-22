@@ -4,7 +4,7 @@ import (
 	"fmt"
 
 	"github.com/micro-plat/hydra/component"
-	"github.com/micro-plat/sso/modules/const/sql"
+	"github.com/micro-plat/sso/flowserver/modules/const/sql"
 )
 
 type IPopular interface {
