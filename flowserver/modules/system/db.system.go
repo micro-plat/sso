@@ -2,7 +2,6 @@ package system
 
 import (
 	"fmt"
-	"strings"
 
 	"github.com/micro-plat/hydra/component"
 	"github.com/micro-plat/lib4go/db"
@@ -32,6 +31,7 @@ type SystemEditInput struct {
 	Layout        string `form:"layout" json:"layout"`
 	Ident         string `form:"ident" json:"ident"`
 	Wechat_status string `form:"wechat_status" json:"wechat_status" valid:"required"`
+	Secret        string `form:"secret" json:"secret" valid:"required"`
 }
 
 type AddSystemInput struct {
@@ -43,6 +43,7 @@ type AddSystemInput struct {
 	Theme         string `form:"theme" json:"theme"`
 	Ident         string `form:"ident" json:"ident" vaild:"required"`
 	Wechat_status string `form:"wechat_status" json:"wechat_status" valid:"required"`
+	Secret        string `form:"secret" json:"secret" valid:"required"`
 }
 
 type DbSystem struct {
@@ -119,7 +120,8 @@ func (u *DbSystem) Add(input *AddSystemInput) (err error) {
 		"theme":         input.Theme,
 		"ident":         input.Ident,
 		"wechat_status": input.Wechat_status,
-		"login_url":     "http://" + strings.Split(strings.Split(input.Addr, "//")[1], "/")[0] + "/member/login",
+		"login_url":     "http://member/login",
+		"secret":        input.Secret,
 	}
 	_, q, a, err := db.Execute(sql.AddSubSystem, params)
 	if err != nil {
@@ -153,6 +155,7 @@ func (u *DbSystem) Edit(input *SystemEditInput) (err error) {
 		"theme":         input.Theme,
 		"ident":         input.Ident,
 		"wechat_status": input.Wechat_status,
+		"secret":        input.Secret,
 	}
 	_, q, a, err := db.Execute(sql.UpdateEdit, params)
 	if err != nil {

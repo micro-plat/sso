@@ -118,6 +118,7 @@ func (l *DBMember) Query(u string, p string, ident string) (s *MemberState, err 
 	s.IndexURL = roles.Get(0).GetString("index_url")
 	s.LoginURL = roles.Get(0).GetString("login_url")
 	s.SystemID = roles.Get(0).GetInt("sys_id")
+	s.ExtParams = data.Get(0).GetString("ext_params")
 	s.SysIdent = ident
 	return s, err
 }

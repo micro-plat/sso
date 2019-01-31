@@ -9,7 +9,6 @@ import (
 	"github.com/micro-plat/sso/flowserver/services/image"
 	"github.com/micro-plat/sso/flowserver/services/member"
 	"github.com/micro-plat/sso/flowserver/services/menu"
-	"github.com/micro-plat/sso/flowserver/services/notify"
 	"github.com/micro-plat/sso/flowserver/services/role"
 	"github.com/micro-plat/sso/flowserver/services/subsys"
 	"github.com/micro-plat/sso/flowserver/services/system"
@@ -38,7 +37,6 @@ func (r *SSO) init() {
 		if _, err := c.GetCache(); err != nil {
 			return err
 		}
-		r.Micro("/sso/wxcode/get", member.NewWxcodeHandler(conf.AppID, conf.Secret, conf.WechatTSAddr)) //发送微信验证码
 
 		xmenu.Set(c) //保存全局菜单变量
 		return nil
@@ -51,6 +49,7 @@ func (r *SSO) init() {
 	r.Micro("/subsys/menu", subsys.NewMenuHandler, "*")   //子系统远程登录
 	r.Micro("/subsys/user", subsys.NewUserHandler, "*")   //子系统,获取用户列表
 	r.Micro("/subsys/pwd", subsys.NewPwdHandler, "*")     //子系统,修改密码
+	r.Micro("/subsys/info", subsys.NewInfoHandler, "*")   //子系统,获取系统信息
 
 	r.Micro("/sso/ident", system.NewSystemIdentHandler, "*") //系统信息获取
 
@@ -66,16 +65,16 @@ func (r *SSO) init() {
 
 	r.Micro("/sso/role", role.NewRoleHandler, "/user/role") //角色管理相关接口
 
-	r.Micro("/sso/sys/manage", system.NewSystemHandler, "/sys/index#[post:addsys]") //系统管理相关接口
+	r.Micro("/sso/sys/manage", system.NewSystemHandler, "*") //系统管理相关接口
 
 	r.Micro("/sso/sys/func", function.NewSystemFuncHandler, "/sys/index") //系统功能相关接口
 
 	r.Micro("/sso/img/upload", image.NewImageHandler("./static/static/img", "http://sso.sinopecscsy.com"), "*") //图片上传
 
-	r.Micro("/sso/notify/info", notify.NewNotifyHandler, "*") //获取报警消息列表
+	// r.Micro("/sso/notify/info", notify.NewNotifyHandler, "*") //获取报警消息列表
 
-	r.Micro("/sso/notify/settings", notify.NewNotifySetHandler, "*") //报警消息设置
+	// r.Micro("/sso/notify/settings", notify.NewNotifySetHandler, "*") //报警消息设置
 
-	r.CRON("/sso/notify/send", notify.NewNotifySendHandler, "*") // 发送消息
+	//r.CRON("/sso/notify/send", notify.NewNotifySendHandler, "*") // 发送消息
 
 }

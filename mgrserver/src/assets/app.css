@@ -5205,7 +5205,7 @@ a.text-#000000:hover {
 .height-min .form-group{margin-bottom: 2px;}
 
 .pre-scrollable {
-    max-height: 760px;
+    /*max-height: 760px;*/
     overflow-y: auto;
     padding-bottom: 30px;
   }

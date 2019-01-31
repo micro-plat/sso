@@ -25,6 +25,7 @@ type MemberState struct {
 	Code           string `json:"code"`
 	ProfilePercent int    `json:"profile_percent"`
 	LoginTimeout   int    `json:"login_timeout" m2s:"login_timeout"`
+	ExtParams      string `json:"ext_params" m2s:"ext_params"`
 }
 
 //LoginState 用户登录状态

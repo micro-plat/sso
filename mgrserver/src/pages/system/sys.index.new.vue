@@ -28,76 +28,62 @@
           </form>
         </div>
       </div>
-      <div class="table-responsive">
+      <el-scrollbar style="height:100%">
+        <el-table :data="datalist" stripe  style="width: 100%">
 
-         <table class="table table-striped m-b-none">
-        <thead>
-          <tr>
-            <th>编号</th>
-            <th>系统名称</th>
-            <th class="visible-md  visible-lg">首页地址</th>
-            <th>状态</th>
-            <th class="visible-md  visible-lg">超时时长</th>
-            <th class="visible-md  visible-lg">logo</th>
-            <th>操作</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr v-for="(item, index) in datalist" :key="index">
-            <td>{{item.id}}</td>
-            <td>{{item.name}}</td>
-            <td class="visible-md  visible-lg">{{item.index_url}}</td>
-            <td v-if="item.enable==0" class="text-danger">禁用</td>
-            <td v-if="item.enable==1" class="text-success">启用</td>
-            <td class="visible-md  visible-lg">{{item.login_timeout}}</td>
-            <td class="visible-md  visible-lg ">
-              <img v-if="item.theme" :class="item.theme.split('|')[0]"
-                   :src="item.logo" :onerror="errorImg" alt="">
-            </td>
-            <td>
-              <div class="form-group form-inline">
-              <div class="form-group">
-                <button class="btn btn-xs btn-primary visible-md visible-lg" @click="edit(item.id)">编辑</button>
-              </div>
-              <div class="form-group" >
-                <a class="btn btn-xs btn-warning" @click="enable(item.id,1)" v-if="item.enable==0" >启用</a>
-                <a class="btn btn-xs btn-warning" @click="enable(item.id,0)" v-if="item.enable==1" >禁用</a>
-              </div>
-              <div class="form-group">
-                <a class="btn btn-xs btn-danger visible-md visible-lg" @click="deleteById(item.id)">删除</a>
+          <el-table-column width="100" prop="id" label="编号" ></el-table-column>
+          <el-table-column width="200" prop="name" label="系统名称" ></el-table-column>
+          <el-table-column width="200" prop="index_url" label="首页地址" ></el-table-column>
 
-              </div>
-              <div class="form-group">
-                <a class="btn btn-xs btn-default visible-md visible-lg" @click="manage(item.id)">管理</a>
-              </div>
-              </div>
-            </td>
-          </tr>
-        </tbody>
-      </table>
-        <div class="form-group form-inline paging visible-lg-block visible-md-block">
-          <div class="form-group">
+          <el-table-column  width="150" prop="enable" label="状态" >
+            <template slot-scope="scope">
 
-            <div class="list-number">
-              共 {{datacount}} 条记录 | 每页显示:
-              <select id="ddlps" v-model="ps" @change="goPage({page:pi})">
-                <option v-for="(psl,k) in pageSizeList" :key="k" :value="psl">{{psl}}</option>
-              </select>
-              条
-            </div>
+              <el-tag type="info" v-if="scope.row.enable == 0">禁用</el-tag>
+              <el-tag type="success" v-if="scope.row.enable == 1">启用</el-tag>
+            </template>
+          </el-table-column>
+          <el-table-column width="100" prop="login_timeout" label="超时时长" ></el-table-column>
 
-            <div class="list-page">
-            <pager
-              :total-page="totalPage"
-              :init-page="pi"
-              @go-page="goPage"></pager>
-            </div>
+          <el-table-column width="200" prop="logo" label="logo" >
+            <template slot-scope="scope">
+              <img v-if="scope.row.theme" :class="scope.row.theme.split('|')[0]"
+                   :src="scope.row.logo" :onerror="errorImg" alt="">
 
-          </div>
+            </template>
+          </el-table-column>
 
-        </div>
+          <el-table-column width="300" prop="secret" label="secret" ></el-table-column>
 
+          <el-table-column  label="操作">
+            <template slot-scope="scope">
+              <el-button plain type="primary" size="mini" @click="edit(scope.row.id)">编辑</el-button>
+              <el-button plain type="success" size="mini" @click="enable(scope.row.id,1)" v-if="scope.row.enable == 0" >启用</el-button>
+
+              <el-button plain type="info" size="mini" @click="enable(scope.row.id,0)" v-if="scope.row.enable == 1">禁用</el-button>
+
+              <el-button plain  type="danger" size="mini" @click="deleteById(scope.row.id)">删除</el-button>
+
+              <el-button plain  type="warning" size="mini" @click="manage(scope.row.id)">管理</el-button>
+
+            </template>
+          </el-table-column>
+        </el-table>
+
+      </el-scrollbar>
+      <div class="page-pagination">
+        <el-pagination
+          @size-change="handleSizeChange"
+          @current-change="goPage"
+          :current-page="pi"
+          :page-size="ps"
+          :page-sizes="pageSizeList"
+          layout="total, sizes, prev, pager, next, jumper"
+          :total="totalPage">
+        </el-pagination>
       </div>
+
+
+
     <bootstrap-modal ref="theModal" :need-header="true" :need-footer="true" >
       <div slot="title">
         删除系统
@@ -150,23 +136,13 @@
                 <div class="form-height text-danger"><span v-show="errors.first('time_out')">超时时常不能为空且必须为数字</span> </div>
               </div>
               <div class="form-group">
-                <label>微信登录</label>
-                <div class="radio">
-                  <label class="i-checks">
-                    <input type="radio" name="toasts" v-model="addData.wechat_status"  value="1" class="ng-pristine ng-untouched ng-valid">
-                    <i></i>
-                    启用
-                  </label>
-                  <label class="i-checks">
-                    <input type="radio" name="toasts" v-model="addData.wechat_status" value="0" class="ng-pristine ng-untouched ng-valid">
-                    <i></i>
-                    禁用
-                  </label>
-                </div>
+                <label>secret</label>
+                <input class="form-control" placeholder="请输系统签名所需的secret" v-validate="'required'" v-model="addData.secret" name="secret"  type="text">
+                <div class="form-height text-danger"><span v-show="errors.first('secret')">secret不能为空</span> </div>
               </div>
               <div class="form-group">
                 <!--<label>logo</label>-->
-                <input class="form-control" placeholder="请输入logo地址" v-validate="'required'" name="logo" v-model="addData.logo"  type="hidden">
+                <input class="form-control" placeholder="logo地址" v-validate="'required'" name="logo" v-model="addData.logo"  readonly>
                 <!--<div class="form-height text-danger"> <span v-show="errors.first('logo')">logo地址不能为空</span> </div>-->
                 <uploader :options="options" class="uploader-example" :file-status-text="statusText"   ref="uploader" @file-success="fileSuccess" @file-error="fileError">
                   <uploader-unsupport></uploader-unsupport>
@@ -526,19 +502,9 @@
                 <div class="form-height text-danger"><span v-show="errors.first('time_out2')">超时时常不能为空且必须为数字</span></div>
               </div>
               <div class="form-group">
-                <label>微信登录</label>
-                <div class="radio">
-                  <label class="i-checks">
-                    <input type="radio" name="toasts" v-model="editData.wechat_status"  value="1" class="ng-pristine ng-untouched ng-valid">
-                    <i></i>
-                    启用
-                  </label>
-                  <label class="i-checks">
-                    <input type="radio" name="toasts" v-model="editData.wechat_status" value="0" class="ng-pristine ng-untouched ng-valid">
-                    <i></i>
-                    禁用
-                  </label>
-                </div>
+                <label>secret</label>
+                <input class="form-control" placeholder="请输系统签名所需的secret" v-validate="'required'" v-model="editData.secret" name="secret"  type="text">
+                <div class="form-height text-danger"><span v-show="errors.first('secret')">secret不能为空</span> </div>
               </div>
               <div class="form-group">
                 <label>{{editData.logo}}</label>
@@ -956,7 +922,8 @@ export default {
         logo: "",
         theme: "",
         style: [],
-        ident: ""
+        ident: "",
+        secret:"",
       },
       editData: {},
       enableData: { id: null, status: null },
@@ -1058,9 +1025,13 @@ export default {
           }
         });
     },
-    goPage(data) {
-      this.pi = data.page;
-      this.$fetch("/sso/sys/manage", { pi: data.page ,ps:this.ps,name: this.sysname,status: this.selected})
+    handleSizeChange(val){
+      this.ps =val;
+      this.query()
+    },
+    goPage(val) {
+      this.pi = val;
+      this.$fetch("/sso/sys/manage", { pi: val ,ps:this.ps,name: this.sysname,status: this.selected})
         .then(res => {
           this.datalist = res.list;
           this.datacount = res.count;
@@ -1194,18 +1165,22 @@ export default {
         });
     },
     enable(id, status) {
-      this.$refs.msg2Modal.open();
+
       this.enableData.id = id;
       this.enableData.status = status;
-    },
-    enableOk() {
-      this.$put("/sso/sys/manage", {
-        id: this.enableData.id,
-        status: this.enableData.status
-      })
-        .then(res => {
-          this.goPage({ page: this.pi });
-          this.cancel();
+
+      this.$confirm("确定执行此操作?, 是否继续?", "提示", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        type: "warning"
+      }).then(() => {
+        this.$put("/sso/sys/manage", {
+          id: this.enableData.id,
+          status: this.enableData.status
+        })
+          .then(res => {
+            this.goPage(this.pi);
+
             this.$notify({
               title: '成功',
               message: '状态修改成功',
@@ -1213,20 +1188,30 @@ export default {
               offset: 50,
               duration:2000,
             });
-        })
-        .catch(err => {
-          if (err.response.status == 403) {
-            this.$router.push("/member/login");
-          }else{
-            this.$notify({
-              title: '错误',
-              message: '网络错误,请稍后再试',
-              type: 'error',
-              offset: 50,
-              duration:2000,
-            });
-          }
+          })
+          .catch(err => {
+
+              this.$notify({
+                title: '错误',
+                message: '网络错误,请稍后再试',
+                type: 'error',
+                offset: 50,
+                duration:2000,
+              });
+
+          });
+
+      }).catch(() => {
+        this.$message({
+          type: "info",
+          message: "已取消删除"
         });
+      });
+
+
+    },
+    enableOk() {
+
     },
     edit(id) {
       this.datalist.forEach((item, index) => {
@@ -1307,6 +1292,6 @@ export default {
     overflow-x: hidden;
     overflow-y: auto;
   }
-  .list-number{display: inline-block;padding: 15px 0 3px 15px;}
-  .list-page{display: inline-block;position: absolute;right: 15px;margin-top: -43px;}
+  .page-pagination{padding: 10px 15px;text-align: right;}
 </style>
+

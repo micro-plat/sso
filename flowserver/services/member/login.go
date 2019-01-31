@@ -17,7 +17,6 @@ type LoginHandler struct {
 	c      component.IContainer
 	m      member.IMember
 	code   member.ICodeMember
-	wxcode member.IWxcode
 	sys    system.ISystem
 	op     operate.IOperate
 	member member.IDBMember
@@ -30,7 +29,6 @@ func NewLoginHandler(container component.IContainer) (u *LoginHandler) {
 		c:      container,
 		m:      member.NewMember(container),
 		code:   member.NewCodeMember(container),
-		wxcode: member.NewWxcode(container),
 		sys:    system.NewSystem(container),
 		op:     operate.NewOperate(container),
 		member: member.NewDBMember(container),
@@ -40,29 +38,14 @@ func NewLoginHandler(container component.IContainer) (u *LoginHandler) {
 
 //GetHandle 处理用户登录，登录成功后转跳到指定的系统
 func (u *LoginHandler) GetHandle(ctx *context.Context) (r interface{}) {
+
 	ctx.Log.Info("-------用户登录---------")
-	//检查系统是否设置需要微信登录
-	b, _, err := u.isWechatLogin(ctx.Request.GetString("ident"))
-	if err != nil {
-		return err
-	}
-	if b == true {
-		if err := ctx.Request.Check("wxcode"); err != nil {
-			return context.NewError(context.ERR_NOT_ACCEPTABLE, err)
-		}
-	}
 	ctx.Log.Info("1.检查参数")
 	//检查输入参数
 	if err := ctx.Request.Check("username", "password", "ident"); err != nil {
 		return context.NewError(context.ERR_NOT_ACCEPTABLE, err)
 	}
 
-	if b == true {
-		if err := u.wxcode.Check(ctx.Request.GetString("username"),
-			ctx.Request.GetString("wxcode")); err != nil {
-			return err
-		}
-	}
 	ctx.Log.Info("2.执行操作")
 	//处理用户登录
 	member, err := u.m.Login(ctx.Request.GetString("username"),
@@ -71,10 +54,7 @@ func (u *LoginHandler) GetHandle(ctx *context.Context) (r interface{}) {
 	if err != nil {
 		return err
 	}
-	url := ctx.Request.GetString("redirect_uri")
-	if url == "" {
-		url = member.IndexURL
-	}
+
 	//保存用户信息
 	code, err := u.code.Save(member)
 	if err != nil {

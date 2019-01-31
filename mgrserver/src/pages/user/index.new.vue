@@ -45,6 +45,15 @@
                     <input name="email1" type="text" class="form-control" v-validate="'required|email'" v-model="userInfo.email" placeholder="请输入邮箱" required>
                     <div class="form-heigit"><span v-show="errors.first('email1')" class="text-danger">请输入正确的邮箱！</span></div>
                   </div>
+                  <div class="form-group">
+                    <label>扩展参数(非必须)</label>
+                    <textarea name="ext_params" type="text" class="form-control" v-model="userInfo.ext_params" placeholder="扩展参数" >
+                    </textarea>
+                    <div class="form-heigit">
+                      <span v-show="errors.first('ext')" class="text-danger">请输入正确的邮箱！</span>
+                    </div>
+
+                  </div>
                   <div class="form-group sel-col-5">
                     <div class="form-inline">
                       <label>系统与角色</label>
@@ -89,74 +98,65 @@
           </div>
         </bootstrap-modal>
 
-        <div class="table-responsive">
+        <el-scrollbar style="height:100%">
+          <el-table :data="datalist.items" stripe  style="width: 100%">
 
-          <table class="table table-striped m-b-none">
-            <thead>
-            <tr>
-              <th>用户名</th>
-              <th  class="visible-md-block  visible-lg-block">系统/角色</th>
-              <th class="border-no">联系电话</th>
-              <th class="visible-md-block  visible-lg-block border-no">邮箱</th>
-              <th>状态</th>
-              <th class="visible-md-block visible-lg-block border-no">创建时间</th>
-              <th>操作</th>
-            </tr>
-            </thead>
+            <el-table-column width="100" prop="user_name" label="用户名" ></el-table-column>
 
-            <tbody class="table-border">
-            <tr v-for="(item, index) in datalist.items" :key="index">
-              <td>{{item.user_name}}</td>
-              <td class="visible-md-block visible-lg-block over-text" :title="item.rolestr">{{item.rolestr}}</td>
-              <td >{{item.mobile}}</td>
-              <td class="visible-md-block visible-lg-block">{{item.email}}</td>
-              <td v-if="item.status==2" class="text-danger">{{item.status_label}}</td>
-              <td v-if="item.status==1" class="text-warning">{{item.status_label}}</td>
-              <td v-if="item.status==0" class="text-success">{{item.status_label}}</td>
-              <td class="visible-md-block  visible-lg-block">{{item.create_time}}</td>
-              <td>
-                <div class="form-inline">
-                  <div class="form-group">
-                    <button class="btn btn-xs btn-primary" @click="showModal(2,item)">编辑</button>
-                  </div>
-                  <div class="form-group">
-                    <button class="btn btn-xs btn-warning" @click="userChange(2,item.user_id)" v-if="item.status==0" >禁用</button>
-                    <button class="btn btn-xs btn-warning" @click="userChange(0,item.user_id)" v-if="item.status==2" >启用</button>
-                    <button class="btn btn-xs btn-warning" @click="userChange(11,item.user_id)" v-if="item.status==1" >解锁</button>
-                  </div>
-                  <div class="form-group">
-                    <button class="btn btn-xs btn-danger visible-md visible-lg" @click="userDel(item.user_id)">删除</button>
-                  </div>
-                </div>
-              </td>
-            </tr>
-            </tbody>
+            <el-table-column prop="rolestr" label="系统/角色" ></el-table-column>
 
-          </table>
-          <div class="form-group form-inline paging visible-lg-block visible-md-block">
-            <div class="form-group">
+            <el-table-column  width="130" prop="mobile" label="联系电话" ></el-table-column>
+            <el-table-column width="150" prop="email" label="邮箱" ></el-table-column>
 
-              <div class="list-number">
-                共 {{datalist.count}} 条记录 | 每页显示:
-                <select id="ddlps" v-model="paging.ps" @change="searchClick">
-                  <option v-for="psl in pageSizeList" :key="psl.id" :value="psl">{{psl}}</option>
-                </select>
-                条
-              </div>
+            <el-table-column  width="80" prop="status" label="状态" >
+              <template slot-scope="scope">
 
-              <div class="list-page">
-                <pager class="visible-md visible-lg"
-                       :total-page="totalpage"
-                       :init-page="paging.pi"
-                       :showItems="5"
-                       @go-page="pageChange">
-                </pager>
-              </div>
+                <el-tag type="success" v-if="scope.row.status == 0">{{scope.row.status_label}}</el-tag>
+                <el-tag type="info" v-if="scope.row.status == 2">{{scope.row.status_label}}</el-tag>
+              </template>
+            </el-table-column>
 
-            </div>
+            <el-table-column prop="create_time" label="创建时间" >
+              <template slot-scope="scope">
+                <i class="el-icon-time"></i>
+                <span style="margin-left: 10px">{{ scope.row.create_time }}</span>
+              </template>
+            </el-table-column>
+            <el-table-column prop="create_time" label="扩展参数" >
+              <template slot-scope="scope">
 
-          </div>
+                <span style="margin-left: 10px">{{ scope.row.ext_params }}</span>
+              </template>
+            </el-table-column>
+
+            <el-table-column  label="操作">
+              <template slot-scope="scope">
+                <el-button plain type="primary" size="mini" @click="showModal(2,scope.row)">编辑</el-button>
+                <el-button plain type="success" size="mini" @click="userChange(0,scope.row.user_id)" v-if="scope.row.status == 2" >启用</el-button>
+                <el-button plain type="info" size="mini" @click="userChange(2,scope.row.user_id)" v-if="scope.row.status == 0">禁用</el-button>
+
+
+
+                <el-button plain  type="danger" size="mini" @click="userDel(scope.row.user_id)">删除</el-button>
+
+              </template>
+            </el-table-column>
+          </el-table>
+
+        </el-scrollbar>
+
+        <div class="page-pagination">
+          <el-pagination
+            @size-change="handleSizeChange"
+            @current-change="pageChange"
+            :current-page="paging.pi"
+            :page-size="paging.ps"
+            :page-sizes="pageSizes"
+            layout="total, sizes, prev, pager, next, jumper"
+            :total="totalpage">
+          </el-pagination>
         </div>
+
 
 
       </div>
@@ -174,8 +174,9 @@ export default {
   },
   data() {
     return {
-      paging: { ps: 10, pi: 1, username: "", role_id: "" },
-      pageSizeList: [5, 10, 20, 50], //可选显示数据条数
+      paging: { ps: 5, pi: 1, username: "", role_id: "" },
+      pageSizes: [5, 10, 20, 50], //可选显示数据条数
+
       datalist: { count: 0, items: [] },
       userInfo: {
         user_name: "",
@@ -185,7 +186,9 @@ export default {
         email: null,
         status: 0,
         is_add: 2,
+        ext_params:"",
       },
+
       totalpage: 0,
       sysList: [],
       roleList: [], //角色列表
@@ -208,6 +211,8 @@ export default {
         }, 1000);
       });
     },
+
+
     queryData: function() {
       if (this.paging.pi == 0) {
         this.paging.pi = 1;
@@ -216,7 +221,7 @@ export default {
         .then(res => {
           this.datalist.items = res.list;
           this.datalist.count = new Number(res.count);
-          this.totalpage = Math.ceil(this.datalist.count / this.paging.ps);
+          this.totalpage = res.count;
         })
         .catch(err => {
           if (err.response.status == 403) {
@@ -232,9 +237,14 @@ export default {
           }
         });
     },
-    pageChange: function(data) {
-      this.paging.pi = data.page;
+    pageChange(val) {
+
+      this.paging.pi = val;
       this.queryData();
+    },
+    handleSizeChange(val){
+      this.paging.ps = val
+      this.queryData()
     },
 
     searchClick: function() {
@@ -305,6 +315,7 @@ export default {
         this.userInfo.lists = j.roles;
         this.userInfo.is_add = 2;
         this.userInfo.email = j.email;
+        this.userInfo.ext_params = j.ext_params;
         for (var s = 0; s < j.roles.length; s++) {
           this.selectSys.push(j.roles[s].sys_id);
         }
@@ -313,8 +324,12 @@ export default {
       this.$refs.editModal.open();
     },
     userChange: function(ests, userid) {
-      var r = confirm("确认执行该操作吗？");
-      if (r == true) {
+      var r
+      this.$confirm("确认执行该操作吗?", "提示", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        type: "warning"
+      }).then(() => {
         var user = { status: ests, user_id: userid };
         this.$put("/sso/user", user)
           .then(res => {
@@ -349,40 +364,35 @@ export default {
               });
             }
           });
-      } else {
-        return false;
-      }
+
+      }).catch(() => {
+        this.$message({
+          type: "info",
+          message: "已取消删除"
+        });
+
+      });
     },
     userDel: function(userid) {
-      var r = confirm("警告！确认删除该用户吗？");
-      if (!r) {
-        return false;
-      }
       var user = { user_id: userid };
-      this.$post("/sso/user/delete", user)
-        .then(res => {
-          this.queryData();
-          this.$notify({
-            title: '成功',
-            message: '成功删除用户',
-            type: 'success',
-            offset: 50,
-            duration:2000
-          });
-        })
-        .catch(err => {
-          if (err.response.status == 403) {
+
+      this.$confirm("此操作将永久删除该数据, 是否继续?", "提示", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        type: "warning"
+      }).then(() => {
+        this.$post("/sso/user/delete", user)
+          .then(res => {
+            this.queryData();
             this.$notify({
-              title: '错误',
-              message: '登录超时,请重新登录',
-              type: 'error',
+              title: '成功',
+              message: '成功删除用户',
+              type: 'success',
               offset: 50,
-              duration:2000,
-              onClose:() => {
-                this.$router.push("/login");
-              }
+              duration:2000
             });
-          }else{
+          })
+          .catch(err => {
             this.$notify({
               title: '错误',
               message: '网络错误,请稍后再试',
@@ -390,8 +400,14 @@ export default {
               offset: 50,
               duration:2000,
             });
-          }
+          });
+
+      }).catch(() => {
+        this.$message({
+          type: "info",
+          message: "已取消删除"
         });
+      });
     },
     add() {
       this.userInfo.lists.push({
@@ -574,7 +590,6 @@ export default {
 </script>
 
 <style scoped>
-  .list-number{display: inline-block;padding: 15px 0 3px 15px;}
-  .list-page{display: inline-block;position: absolute;right: 15px;margin-top: -43px;}
+  .page-pagination{padding: 10px 15px;text-align: right;}
 </style>
 

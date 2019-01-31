@@ -10,7 +10,8 @@ from (select L.*
 							 decode(t.status,0,'正常',1,'锁定',2,'禁用') status_label,
 							 t.mobile,
 							 to_char(t.create_time, 'yyyy/mm/dd hh24:mi') create_time,
-							 t.email
+							 t.email,
+							 t.ext_params
 						from sso_user_info t
 						left join sso_user_role r on r.user_id = t.user_id
 						where 1=1 
@@ -20,7 +21,8 @@ from (select L.*
                                   t.user_name,
                                   t.status,
                                   t.mobile,
-                                  t.email,
+								  t.email,
+								  t.ext_params,
                                   t.create_time
 					   order by t.user_id) R
 			   where rownum <= @pi * @ps) L
@@ -84,9 +86,17 @@ const DeleteUser = `delete from sso_user_info t where t.user_id = @user_id`
 const QueryUserInfo = `select t.user_id,t.user_name,t.mobile,t.email from sso_user_info t where t.user_id=@user_id`
 
 //EditUserInfo 编辑用户信息
-const EditUserInfo = `update sso_user_info t
-set t.status = @status, t.user_name = @user_name, t.mobile = @mobile, t.email = @email
-where t.user_id = @user_id
+const EditUserInfo = `
+update 
+	sso_user_info t
+set 
+	t.status = @status, 
+	t.user_name = @user_name, 
+	t.mobile = @mobile,
+	t.email = @email,
+	t.ext_params = @ext_params
+where 
+	t.user_id = @user_id
 `
 
 //DelUserRole 删除用户角色
@@ -99,10 +109,12 @@ const EditUserRole = `update sso_user_role t set t.role_id = @role_id where t.us
 const GetNewUserID = `select seq_user_info_id.nextval from dual`
 
 //AddUserInfo 添加用户信息
-const AddUserInfo = `insert into sso_user_info t
-(user_id, user_name, status, password, mobile, email)
+const AddUserInfo = `
+insert 
+	into sso_user_info 
+	(user_id, user_name, status, password, mobile, email, ext_params)
 values
-(@user_id, @user_name, @status, @password, @mobile, @email)
+	(@user_id, @user_name, @status, @password, @mobile, @email, @ext_params)
 `
 
 //AddUserRole 添加用户角色
@@ -120,9 +132,13 @@ const QueryUserPswd = `select count(1)
  where t.user_id=@user_id
  &password
 `
-const EditInfo = `update sso_user_info t
-set  t.mobile = @tel, t.email = @email
-where t.user_name = @username`
+const EditInfo = `
+update 
+	sso_user_info t
+set  
+	t.mobile = @tel, t.email = @email, t.ext_params = @ext_params
+where 
+	t.user_name = @username`
 
 const QueryOldPwd = `select t.password,t.changepwd_times from sso_user_info t where t.user_id=@user_id`
 

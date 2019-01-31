@@ -1,6 +1,7 @@
 ./mgrserver/.DS_Store
-./mgrserver/node_modules/
-./mgrserver//dist/
+*node_modules/
+*dist/
+./mgrserver/dist/
 ./mgrserver/npm-debug.log*
 ./mgrserver/yarn-debug.log*
 ./mgrserver/yarn-error.log*
@@ -12,6 +13,5 @@
 ./mgrserver/*.ntvs*
 ./mgrserver/*.njsproj
 ./mgrserver/*.sln
-conf/
 logs/
 *sso

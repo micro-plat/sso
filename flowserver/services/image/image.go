@@ -6,6 +6,8 @@ import (
 	"os"
 	"path/filepath"
 
+	"github.com/micro-plat/sso/flowserver/modules/app"
+
 	"github.com/micro-plat/hydra/context"
 
 	"github.com/micro-plat/hydra/component"
@@ -76,6 +78,6 @@ func (ch *ImageHandler) PostHandle(ctx *context.Context) (r interface{}) {
 	}
 	ctx.Log.Info("3.返回数据")
 	return map[string]interface{}{
-		"url": name,
+		"url": app.GetConf(ch.container).GetWebHostName() + "/static/img/" + name,
 	}
 }

@@ -15,7 +15,6 @@ type LoginHandler struct {
 	c      component.IContainer
 	m      member.IMember
 	code   member.ICodeMember
-	wxcode member.IWxcode
 	sys    system.ISystem
 	op     operate.IOperate
 	member member.IDBMember
@@ -28,7 +27,6 @@ func NewLoginHandler(container component.IContainer) (u *LoginHandler) {
 		c:      container,
 		m:      member.NewMember(container),
 		code:   member.NewCodeMember(container),
-		wxcode: member.NewWxcode(container),
 		sys:    system.NewSystem(container),
 		op:     operate.NewOperate(container),
 		member: member.NewDBMember(container),
@@ -57,7 +55,7 @@ func (u *LoginHandler) Handle(ctx *context.Context) (r interface{}) {
 	d["timestamp"] = ctx.Request.GetString("timestamp")
 	ctx.Log.Info("请求原数据", d)
 	if ok := util.VerifySign(ctx, d, secret, ctx.Request.GetString("sign")); ok != true {
-		return context.NewError(context.ERR_NOT_ACCEPTABLE, "sign签名错误")
+		return context.NewError(context.ERR_PAYMENT_REQUIRED, "sign签名错误(402)")
 	}
 
 	ctx.Log.Info("2.执行操作")
@@ -78,6 +76,7 @@ func (u *LoginHandler) Handle(ctx *context.Context) (r interface{}) {
 	if err := u.op.LoginOperate(member); err != nil {
 		return err
 	}
+	ctx.Log.Infof("%+v", member)
 	ctx.Log.Info("3.返回数据")
 	return member
 

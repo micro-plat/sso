@@ -1,13 +1,13 @@
 // The Vue build version to load with the `import` command
 // (runtime-only or standalone) has been set in webpack.base.conf with an alias.
-require('bootstrap')
+import "jquery"
+import "bootstrap"
+
 import Vue from 'vue'
 import Vuex from 'vuex'
 import App from './App'
 import router from './router'
-import $ from 'jquery'
-//import 'bootstrap/dist/js/bootstrap.min'
-//import '@/assets/app.css'
+
 import VeeValidate from 'vee-validate';
 import store from './store'
 import 'vue-tree-halower/dist/halower-tree.min.css'
@@ -25,10 +25,7 @@ import {
     del
 } from './services/http'
 
-import {
-    ws,
-    wssend
-} from './services/ws'
+
 
 import VueCookies from 'vue-cookies'
 
@@ -44,8 +41,8 @@ Vue.prototype.$fetch = fetch;
 Vue.prototype.$patch = patch;
 Vue.prototype.$put = put;
 Vue.prototype.$del = del;
-Vue.prototype.$wssend = wssend;
-Vue.prototype.$ws = ws;
+
+
 Vue.config.productionTip = false;
 
   /* eslint-disable no-new */

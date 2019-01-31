@@ -3,14 +3,14 @@ import Router from 'vue-router';
 import menu from '@/pages/member/menu';
 import login from '@/pages/member/login';
 import check from '@/pages/member/check';
-import sysindex from '@/pages/system/sys.index.vue'
+import sysindex from '@/pages/system/sys.index.new.vue'
 import sysfunc from '@/pages/system/func.index.vue'
-import userindex from '@/pages/user/index.vue'
+import userindex from '@/pages/user/index.new.vue'
 // import userindex from '@/pages/user/index';
 import changepassword from '@/pages/user/change.pwd';
 import changeInfo from '@/pages/user/change.info';
 import userBind from '@/pages/user/user.bind';
-import roleindex from '@/pages/role/index';
+import roleindex from '@/pages/role/index.new';
 import roleauth from '@/pages/role/auth';
 import notifyRecords from '@/pages/notify/notify.records.vue';
 import notifySettings from '@/pages/notify/notify.settings.vue';

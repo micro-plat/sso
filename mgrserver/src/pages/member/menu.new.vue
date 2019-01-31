@@ -75,9 +75,9 @@
         copyright: "2018 admin-web", //版权信息
         themes: "bg-danger|bg-danger|bg-dark light-danger", //顶部左侧背景颜色,顶部右侧背景颜色,右边菜单背景颜色
         menus: [{}],  //菜单数据
-        systemName: "用户权限系统",  //系统名称
-        userinfo: {name:'wule',role:"管理员"},
-        indexUrl: "/user/index",
+        systemName: "admin-web 系统",  //系统名称
+        userinfo: {},
+        indexUrl: "/",
         dialogAddVisible:false,     //添加表单显示隐藏
         updateInfo:{
           password_old: "",
@@ -104,26 +104,25 @@
       navMenu
     },
     created(){
-      //this.getAllDictionaryData();
+      this.getAllDictionaryData();
       this.getMenu();
     },
     mounted(){
-      // this.$get("/member/getsysinfo",{})
-      //   .then(res=>{
-      //     console.log("系统信息",res);
-      //     this.systemName =res.name;
-      //     this.logo = res.logo;
-      //     this.themes = res.theme;
-      //     if (res.index_url){
-      //       this.indexUrl  = res.index_url
-      //     }
-      //     this.$refs.NewTap.add("首页", this.indexUrl ,{});   //设置默认页面
-      //   }).catch(err=>{
-      //   console.log(err)
-      // });
-      this.$refs.NewTap.add("首页", this.indexUrl ,{});
+      this.$get("/member/getsysinfo",{})
+        .then(res=>{
+          console.log("系统信息",res);
+          this.systemName =res.name;
+          this.logo = res.logo;
+          this.themes = res.theme;
+          if (res.index_url){
+            this.indexUrl  = res.index_url
+          }
+          this.$refs.NewTap.add("首页", this.indexUrl ,{});   //设置默认页面
+        }).catch(err=>{
+        console.log(err)
+      });
 
-      //this.userinfo = JSON.parse(sessionStorage.getItem("userinfo"));
+      this.userinfo = JSON.parse(sessionStorage.getItem("userinfo"));
       document.title = "用户权限系统";
     },
     methods:{
@@ -166,7 +165,7 @@
       },
 
       getMenu(){
-        this.$fetch("/sso/menu")
+        this.$get("/sso/menu")
           .then(res => {
             this.menus = res;
           })

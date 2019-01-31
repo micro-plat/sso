@@ -17,10 +17,7 @@ func (s *SSO) install() {
 	s.Conf.API.SetMainConf(`{"address":":6688"}`)
 	s.Conf.API.SetSubConf("app", `
 			{
-				"appid":"wx9e02ddcc88e13fd4",
-				"secret":"45d25cb71f3bee254c2bc6fc0dc0caf1",
-				"wechat-url":"http://59.151.30.153:9999/wx9e02ddcc88e13fd4/wechat/token/get",
-				"hostname": "http://sso2.100bm.cn"
+				"web_host_name": "#web_host_name"
 			}			
 			`)
 	s.Conf.API.SetSubConf("header", `
@@ -35,7 +32,31 @@ func (s *SSO) install() {
 	s.Conf.API.SetSubConf("auth", `
 		{
 			"jwt": {
-				"exclude": ["/sso/login","/sso/sys/func/enable","/sso/sys/manage/edit","/sso/login/code","/subsys/login","/subsys/menu","/sso/wxcode/get","/sso/sys/get","/sso/ident","/qrcode/login/put","/sso/user/bind","/wx/login","/sso/notify/send","/qrcode/login/get","/sso/img/upload","/sso/user/getall","/sso/user/info","/sso/user/save","/sso/user/edit","/sso/user/delete","/sso/role/query","/sso/menu/get","/sso/sys/func/query","/sso/user/changepwd"],
+				"exclude": [
+					"/sso/login",
+					"/sso/sys/func/enable",
+					"/sso/sys/manage/edit",
+					"/sso/login/code",
+					"/subsys/info",
+					"/subsys/pwd",
+					"/subsys/user",
+					"/subsys/login",
+					"/subsys/menu",
+					"/sso/sys/get",
+					"/sso/ident",
+					"/sso/user/bind",
+					"/sso/notify/send",
+					"/sso/img/upload",
+					"/sso/user/getall",
+					"/sso/user/info",
+					"/sso/user/save",
+					"/sso/user/edit",
+					"/sso/user/delete",
+					"/sso/role/query",
+					"/sso/menu/get",
+					"/sso/sys/func/query",
+					"/sso/user/changepwd"
+					],
 				"expireAt": 36000,
 				"mode": "HS512",
 				"name": "__jwt__",
@@ -43,15 +64,7 @@ func (s *SSO) install() {
 			}
 		}
 		`)
-	//"source":"header",
-	s.Conf.WS.SetSubConf("app", `
-	{
-		"appid":"wx9e02ddcc88e13fd4",
-		"secret":"45d25cb71f3bee254c2bc6fc0dc0caf1",
-		"wechat-url":"http://59.151.30.153:9999/wx9e02ddcc88e13fd4/wechat/token/get",
-		"hostname": "http://sso2.100bm.cn"
-	}			
-			`)
+
 	s.Conf.Plat.SetVarConf("db", "db", `{			
 			"provider":"ora",
 			"connString":"#db_string",
@@ -73,41 +86,4 @@ func (s *SSO) install() {
 			"pool_size":10
 	}		
 		`)
-	// "192.168.0.111:6379",
-	// 			"192.168.0.112:6379",
-	// 			"192.168.0.113:6379",
-	// 			"192.168.0.114:6379",
-	// 			"192.168.0.115:6379",
-	// 			"192.168.0.116:6379"
-	s.Conf.CRON.SetSubConf("app", `
-			{
-				"appid":"wx9e02ddcc88e13fd4",
-				"secret":"45d25cb71f3bee254c2bc6fc0dc0caf1",
-				"wechat-url":"http://59.151.30.153:9999/wx9e02ddcc88e13fd4/wechat/token/get",
-				"hostname": "http://sso.100bm.cn"
-			}			
-			`)
-	s.Conf.WS.SetSubConf("auth", `
-			{
-				"jwt": {
-					"exclude": ["/sso/login","/subsys/login","/subsys/menu","/sso/login/code","/sso/wxcode/get","/sso/sys/get","/qrcode/login","/qrcode/login/put","/sso/user/bind","/wx/login","/sso/notify/send","/qrcode/login/get"],
-					"expireAt": 36000,
-					"mode": "HS512",
-					"name": "__jwt__",
-					"secret": "12345678"
-				}
-			}
-			`)
-	s.Conf.CRON.SetSubConf("auth", `
-			{
-				"jwt": {
-					"exclude": ["/sso/notify/send"],
-					"expireAt": 36000,
-					"mode": "HS512",
-					"name": "__jwt__",
-					"secret": "12345678"
-				}
-			}
-			`)
-	s.Conf.CRON.SetSubConf("task", `{"tasks":[{"cron":"@every 30s","service":"/sso/notify/send"}]}`)
 }

@@ -1,7 +1,7 @@
 <style>
-  div.ztree_content_wrap {height:680px; }
+  div.ztree_content_wrap {height:100%; }
   div.ztree_content_wrap div.left{float: left;width: 100%;}
-  div.zTreeDemoBackground {width:100%;height:500px;text-align:left;}
+  div.zTreeDemoBackground {width:100%;height:100%;text-align:left;}
 
   .expendIcon {
     background-position: -74px -36px;
@@ -128,15 +128,17 @@
   .disablefont {
     color: #96abbb;
   }
+  .qx-add-scrollbox{ overflow-y: auto; overflow-x: hidden;}
+
 </style>
 
 <template>
   <!--（ztree－🌲）-->
   <div class="ztree_content_wrap" v-if='treeDataSource.length>0'>
     <div class="zTreeDemoBackground left">
-      <div class="row pre-scrollable">
+      <div class="row qx-add-scrollbox">
       <ul class="ztree">
-        <ztree-item v-for='(m,i) in treeDataSource' :key='i' :model.sync="m" :num.sync='i' root='0' :nodes.sync='treeDataSource.length' :ischeck='isCheck' :callback='func' :expandfunc='expand' :cxtmenufunc='contextmenu' :trees.sync='treeDataSource'></ztree-item>
+        <ztree-item v-for='(m,i) in treeDataSource' :key='i' :model.sync="m" :num.sync='i' root='0' :nodes.sync='treeDataSource.length' :ischeck='isCheck' :callback='func' :checkfunc='checkfunc' :expandfunc='expand' :cxtmenufunc='contextmenu' :trees.sync='treeDataSource'></ztree-item>
       </ul>
       </div>
     </div>
@@ -164,6 +166,10 @@
       // 点击节点回调
       func: {
         type: Function,
+        default: null
+      },
+      checkfunc:{
+        type:Function,
         default: null
       },
       // 点击展开回调

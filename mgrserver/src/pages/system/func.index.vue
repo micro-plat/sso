@@ -3,7 +3,7 @@
   <div class="app-content-body fade-in-up ng-scope">
     <div class="fade-in-down ng-scope">
       <div class="wrapper wrapper-lg">
-            <vue-ztree :list='ztreeDataSource' :func='nodeClick' :expand='expandClick'
+            <vue-ztree :list='ztreeDataSource' :func='nodeClick' :checkfunc="checkFunc" :expand='expandClick'
                        :contextmenu='contextmenuClick' :is-open='true'></vue-ztree>
       </div>
     </div>
@@ -647,10 +647,16 @@ export default {
     },
     editFunc() {
       let data = this.currentData;
+      let icon;
+      if (data.iconTemp == ""){
+          icon = data.icon
+      }else{
+          icon = data.iconTemp + " " + data.color
+      }
           this.$put("/sso/sys/func", {
             id: data.id,
             name: data.name,
-            icon: data.iconTemp + " " + data.color,
+            icon: icon,
             path: data.path,
             is_open: data.is_open,
           })
@@ -764,6 +770,10 @@ export default {
           this.$refs.editModal1.open();
         }
       }
+    },
+    //点击选中
+    checkFunc(m) {
+      console.log("m",m)
     },
     // 右击事件
     contextmenuClick: function(m) {},

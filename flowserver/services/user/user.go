@@ -1,23 +1,12 @@
 package user
 
 import (
-	"encoding/json"
-	"fmt"
-	"net/url"
-
 	"github.com/micro-plat/hydra/component"
 	"github.com/micro-plat/hydra/context"
-	"github.com/micro-plat/lib4go/db"
-	"github.com/micro-plat/lib4go/net/http"
-	"github.com/micro-plat/lib4go/utility"
-	"github.com/micro-plat/sso/flowserver/modules/app"
-	"github.com/micro-plat/sso/flowserver/modules/const/enum"
 	"github.com/micro-plat/sso/flowserver/modules/member"
 	"github.com/micro-plat/sso/flowserver/modules/operate"
 	"github.com/micro-plat/sso/flowserver/modules/system"
 	"github.com/micro-plat/sso/flowserver/modules/user"
-
-	"github.com/micro-plat/wechat/mp/oauth2"
 )
 
 //UserHandler is
@@ -239,23 +228,6 @@ func (u *UserHandler) EditHandle(ctx *context.Context) (r interface{}) {
 		return context.NewError(context.ERR_NOT_IMPLEMENTED, err)
 	}
 
-	// 判断是否需要发送邮件
-	b, err := u.userLib.IsSendEmail(&input)
-	// 发邮件
-	if err == nil && b == true {
-		guid := utility.GetGUID()
-		conf := app.GetConf(u.container)
-		resURI := url.QueryEscape(fmt.Sprintf(conf.GetBindUrl(), guid))
-		ctx.Log.Infof("发送验证邮件到:%s,guid：%v", input.Email, guid)
-		link := fmt.Sprintf(enum.WxApiCode, resURI)
-		if err := u.member.SendCheckMail(enum.From, enum.Password, enum.Host, enum.Port, input.Email, link); err != nil {
-			return err
-		}
-		if err := u.userLib.SetEmail(guid, input.Email); err != nil {
-			return err
-		}
-	}
-
 	ctx.Log.Info("4.返回结果")
 	return "success"
 }
@@ -279,63 +251,7 @@ func (u *UserHandler) SaveHandle(ctx *context.Context) (r interface{}) {
 	if err := u.userLib.Add(&inputData); err != nil {
 		return context.NewError(context.ERR_NOT_IMPLEMENTED, err)
 	}
-	// 判断是否需要发送邮件
-	b, err := u.userLib.IsSendEmail(&inputData)
-	// 发邮件
-	if err == nil && b == true {
-		guid := utility.GetGUID()
-		conf := app.GetConf(u.container)
-		resURI := url.QueryEscape(fmt.Sprintf(conf.GetBindUrl(), guid))
-		ctx.Log.Infof("发送验证邮件到:%s,guid：%v", inputData.Email, guid)
-		link := fmt.Sprintf(enum.WxApiCode, resURI)
-		if err := u.member.SendCheckMail(enum.From, enum.Password, enum.Host, enum.Port, inputData.Email, link); err != nil {
-			return err
-		}
-		if err := u.userLib.SetEmail(guid, inputData.Email); err != nil {
-			return err
-		}
-	}
 
 	ctx.Log.Info("4.返回结果")
-	return "success"
-}
-
-//BindHandle 绑定用户邮箱
-func (u *UserHandler) BindHandle(ctx *context.Context) (r interface{}) {
-
-	ctx.Log.Info("--------绑定用户邮箱--------")
-	ctx.Log.Info("1.参数校验")
-	if err := ctx.Request.Check("guid", "code"); err != nil {
-		return err
-	}
-	guid := ctx.Request.GetString("guid")
-	code := ctx.Request.GetString("code")
-
-	//判断邮箱是否过期
-	email, err := u.userLib.GetEmail(guid)
-	if err != nil || email == "" {
-		return fmt.Errorf("链接已经过期，请联系管理员.错误：%v,邮箱：%v", err, email)
-	}
-	ctx.Log.Info("2. 根据code查询用户openid")
-
-	conf := app.GetConf(u.container)
-	endpoint := oauth2.NewEndpoint(conf.AppID, conf.Secret)
-	url := endpoint.ExchangeTokenURL(code)
-	client := http.NewHTTPClient()
-	content, status, err := client.Get(url)
-	if err != nil || status != 200 {
-		return fmt.Errorf("远程请求失败:%s(%v)%d", url, err, status)
-	}
-	userInfo := make(db.QueryRow)
-	if err = json.Unmarshal([]byte(content), &userInfo); err != nil {
-		return fmt.Errorf("返回串无法解析:(%v)%s", err, content)
-	}
-	ctx.Log.Info("3. 根据openid进行用户绑定")
-	openID := userInfo.GetString("openid")
-	if err := u.userLib.Bind(email, openID); err != nil {
-		return err
-	}
-
-	ctx.Log.Info("3.返回结果")
 	return "success"
 }

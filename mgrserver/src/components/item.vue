@@ -3,251 +3,277 @@
   <li :class="liClassVal">
 
     <span :class="spanClassVal" @click='open(model)'></span>
-    <a  @mouseenter='enterFunc(model)' @mouseleave='leaveFunc(model)'  @contextmenu.prevent='cxtmenufunc(model)'>
+    <span title='选中'  >
+         <input type="checkbox" @click.stop="checkNode(model)" :checked="model.checked" >
+      </span>
+    <a @mouseenter='enterFunc(model)' @mouseleave='leaveFunc(model)' @contextmenu.prevent='cxtmenufunc(model)'>
       <span :class="{loadSyncNode:model.loadNode==1}" v-if='model.loadNode==1'></span>
       <span :class='model.icon' v-else></span>
-      <span v-show='ischeck' id="treeDemo_5_check" class="button chk" :class='{"checkbox_false_full":!model.ckbool,"checkbox_true_full":model.ckbool}' @click='ckFunc(model)' treenode_check=""></span>
-      <span :class='enableClass' @click='Func(model)' v-if="model.level_id == 4" style="color: #23b7e5" >{{model.name}}</span>
-      <span :class='enableClass' @click='Func(model)' v-if="model.level_id < 4" >{{model.name}}</span>
+      <span v-show='ischeck' id="treeDemo_5_check" class="button chk"
+            :class='{"checkbox_false_full":!model.ckbool,"checkbox_true_full":model.ckbool}' @click='ckFunc(model)'
+            treenode_check=""></span>
+      <span :class='enableClass' @click='Func(model)' v-if="model.level_id == 4"
+            style="color: #23b7e5">{{model.name}}</span>
+      <span :class='enableClass' @click='Func(model)' v-if="model.level_id < 4">{{model.name}}</span>
       <!--新增-->
-      <span  v-show='model.hover' v-if="model.parent < 4 || model.level_id <= 3" title='新增' class="button add" @click="addNode(model)"></span>
+      <span v-show='model.hover' v-if="model.parent < 4 || model.level_id <= 3" title='新增' class="button add"
+            @click="addNode(model)"></span>
       <!--删除-->
       <span v-show='model.hover' title='删除' class="button remove" @click="delNode(model)"></span>
       <!--启用禁用-->
-      <span v-show='model.hover' v-if="model.enable == 0" title='启用' class="button enable" @click="enable(model)"></span>
-      <span v-show='model.hover' v-if="model.enable == 1" title='禁用' class="button disable" @click="enable(model)"></span>
+      <span v-show='model.hover' v-if="model.enable == 0" title='启用' class="button enable"
+            @click="enable(model)"></span>
+      <span v-show='model.hover' v-if="model.enable == 1" title='禁用' class="button disable"
+            @click="enable(model)"></span>
       <!--上移-->
       <span v-show='model.hover' title='上移' class="button up" @click="upNode(model)"></span>
       <!--下移-->
       <span v-show='model.hover' title='下移' class="button down" @click="downNode(model)"></span>
-      <span v-show='model.hover' v-if='model.parent == 0' title='添加顶级节点' class="button add_line" @click="addTopNode(model)"></span>
+
+      <span v-show='model.hover' v-if='model.parent == 0' title='添加顶级节点' class="button add_line"
+            @click="addTopNode(model)"></span>
     </a>
 
     <ul v-show='model.isFolder'>
-      <ztree-item v-for="(item,i) in model.children" :key='i' :callback='callback' :expandfunc='expandfunc' :cxtmenufunc='cxtmenufunc' :model.sync="item" :num.sync='i' root='1' :nodes.sync='model.children.length' :ischeck='ischeck' :trees.sync='trees'></ztree-item>
+      <ztree-item v-for="(item,i) in model.children" :key='i' :callback='callback' :checkfunc="checkfunc" :expandfunc='expandfunc'
+                  :cxtmenufunc='cxtmenufunc' :model.sync="item" :num.sync='i' root='1'
+                  :nodes.sync='model.children.length' :ischeck='ischeck' :trees.sync='trees'></ztree-item>
     </ul>
   </li>
 </template>
 
 <script>
-  export default
-  {
+  export default {
     name: 'ztreeItem',
-    data(){
+    data() {
       return {
-        parentNodeModel : null
+        parentNodeModel: null,
+        checkedNames: []
       }
     },
     props: {
-      model:{
-        type:Object,
-        twoWay:true
+      model: {
+        type: Object,
+        twoWay: true
       },
-      num:{
-        type:Number,
-        twoWay:true
+      num: {
+        type: Number,
+        twoWay: true
       },
-      nodes:{
-        type:Number,
-        twoWay:true,
-        default:0
+      nodes: {
+        type: Number,
+        twoWay: true,
+        default: 0
       },
-      trees:{
-        type:Array,
-        twoWay:true,
-        default:[]
+      trees: {
+        type: Array,
+        twoWay: true,
+        default: []
       },
-      root:{
-        type:String,
-        twoWay:true
+      root: {
+        type: String,
+        twoWay: true
       },
-      callback:{
+      callback: {
+        type: Function
+      },
+      checkfunc:{
         type:Function
       },
-      expandfunc:{
-        type:Function
+      expandfunc: {
+        type: Function
       },
-      cxtmenufunc:{
-        type:Function
+      cxtmenufunc: {
+        type: Function
       },
-      ischeck:{
-        type:Boolean,
-        twoWay:true,
-        default:false
+
+      ischeck: {
+        type: Boolean,
+        twoWay: true,
+        default: false
       }
     },
-    update(){
+    update() {
       this.initTreeData();
     },
-    mounted(){
+    mounted() {
     },
-    methods:{
-      Func(m){
+    methods: {
+      checkNode(m) {
+        console.log("checked")
+        m.checked = !m.checked;
+        if (typeof this.checkfunc == "function") {
+          if (m.checked){
+                this.checkfunc(m.id);
+          }
+        }
+      },
+      Func(m) {
         // 查找点击的子节点
-        var recurFunc = (data,list) => {
-          data.forEach((i)=>{
-            if(i.id==m.id){
+        var recurFunc = (data, list) => {
+          data.forEach((i) => {
+            if (i.id == m.id) {
               i.clickNode = true;
-              if(typeof this.callback == "function") {
-                this.callback.call(null,m,list,this.trees);
+              if (typeof this.callback == "function") {
+                this.callback.call(null, m, list, this.trees);
               }
-            }else {
+            } else {
               i.clickNode = false;
             }
 
-            if(i.children){
-              recurFunc(i.children,i);
+            if (i.children) {
+              recurFunc(i.children, i);
             }
           })
         }
 
-        recurFunc(this.trees,this.trees);
+        recurFunc(this.trees, this.trees);
       },
-      ckFunc(m){
+      ckFunc(m) {
         m.ckbool = !m.ckbool;
 
         // 查找复选框的所有子节点
         var recurFuncChild = (data) => {
-          data.forEach((i)=>{
+          data.forEach((i) => {
             i.ckbool = m.ckbool;
-            if(i.children)  recurFuncChild(i.children);
+            if (i.children) recurFuncChild(i.children);
           })
         }
         recurFuncChild(m.children);
 
         // 查找复选框的所有父节点
-        var isFindRootBool  = false, parentId = m.parentId;
-        var recurFuncParent = (data,list) => {
-          data.forEach((i)=>{
-            if(!isFindRootBool) {
-              if(i.id == parentId && parentId>0) {
+        var isFindRootBool = false, parentId = m.parentId;
+        var recurFuncParent = (data, list) => {
+          data.forEach((i) => {
+            if (!isFindRootBool) {
+              if (i.id == parentId && parentId > 0) {
                 parentId = i.parentId;
                 i.ckbool = m.ckbool;
                 // 重新查找
-                recurFuncParent(this.trees,this.trees);
-              }else if(i.id == m.id && i.parentId==0) {
+                recurFuncParent(this.trees, this.trees);
+              } else if (i.id == m.id && i.parentId == 0) {
                 i.ckbool = m.ckbool;
                 isFindRootBool = true;
-              }else {
-                recurFuncParent(i.children,i);
+              } else {
+                recurFuncParent(i.children, i);
               }
             }
           })
 
         }
-        recurFuncParent(this.trees,this.trees);
+        recurFuncParent(this.trees, this.trees);
       },
-      getParentNode(m,cb){
+      getParentNode(m, cb) {
         // 查找点击的子节点
-        var recurFunc = (data,list) => {
-          data.forEach((i)=>{
-            if(i.id==m.id) this.parentNodeModel = list;
-            if(i.children) {
+        var recurFunc = (data, list) => {
+          data.forEach((i) => {
+            if (i.id == m.id) this.parentNodeModel = list;
+            if (i.children) {
               (typeof cb == "function") && cb.call(i.children);
-              recurFunc(i.children,i);
+              recurFunc(i.children, i);
             }
           })
         }
-        recurFunc(this.trees,this.trees);
+        recurFunc(this.trees, this.trees);
       },
-      open(m){
+      open(m) {
         m.isExpand = !m.isExpand;
 
-        if(typeof this.expandfunc == "function" && m.isExpand) {
-          if(m.loadNode!=2) {
-            this.expandfunc.call(null,m);
-          }else {
+        if (typeof this.expandfunc == "function" && m.isExpand) {
+          if (m.loadNode != 2) {
+            this.expandfunc.call(null, m);
+          } else {
             m.isFolder = !m.isFolder;
           }
         } else {
           m.isFolder = !m.isFolder;
         }
       },
-      enterFunc(m){
+      enterFunc(m) {
         m.hover = true;
-        this.getParentNode(m,null);
+        this.getParentNode(m, null);
       },
-      leaveFunc(m){
+      leaveFunc(m) {
         m.hover = false;
       },
       // 新增节点
-      addNode(nodeModel){
+      addNode(nodeModel) {
         console.log(nodeModel)
-        if (nodeModel.level_id >= 4){
+        if (nodeModel.level_id >= 4) {
           return false
         }
-        if(nodeModel) {
+        if (nodeModel) {
           var _nid = +new Date();
           nodeModel.children.push({
-            id:_nid,
-            parentId:nodeModel.id,
-            parentLevel:nodeModel.level_id,
-            name:"",
-            path:"-",
-            icon:"-",
-            clickNode:false,
+            id: _nid,
+            parentId: nodeModel.id,
+            parentLevel: nodeModel.level_id,
+            name: "",
+            path: "-",
+            icon: "-",
+            clickNode: false,
             isNew: true,
-            ckbool:false,
-            isCheck:this.ischeck,
-            isFolder:false,
-            isExpand:false,
-            hover:false,
-            loadNode:0,
-            children:[]
+            ckbool: false,
+            isCheck: this.ischeck,
+            isFolder: false,
+            isExpand: false,
+            hover: false,
+            loadNode: 0,
+            children: []
           });
           nodeModel.isFolder = true;
-          nodeModel.children.forEach((item,index)=> {
+          nodeModel.children.forEach((item, index) => {
             if (item.isNew == true) {
               this.Func(item)
             }
           })
-        }else {
+        } else {
           return false
         }
       },
-      addTopNode(nodeModel){
-        if(nodeModel) {
+      addTopNode(nodeModel) {
+        if (nodeModel) {
           var _nid = +new Date();
           this.parentNodeModel.push({
-            id:_nid,
-            parentId:0,
-            parentLevel:0,
-            name:"",
-            path:"-",
-            icon:"-",
-            clickNode:false,
+            id: _nid,
+            parentId: 0,
+            parentLevel: 0,
+            name: "",
+            path: "-",
+            icon: "-",
+            clickNode: false,
             isNew: true,
-            ckbool:false,
-            isCheck:this.ischeck,
-            isFolder:false,
-            isExpand:false,
-            hover:false,
-            loadNode:0,
-            children:[]
+            ckbool: false,
+            isCheck: this.ischeck,
+            isFolder: false,
+            isExpand: false,
+            hover: false,
+            loadNode: 0,
+            children: []
           });
           nodeModel.isFolder = true;
-          this.parentNodeModel.forEach((item,index)=> {
+          this.parentNodeModel.forEach((item, index) => {
             if (item.isNew == true) {
               this.Func(item)
             }
           })
-        }else {
+        } else {
 
           return false
         }
       },
       // 删除节点
-      delNode(nodeModel){
-        if(nodeModel) {
-          this.$del("/sso/sys/func",{data:{id:nodeModel.id}})
+      delNode(nodeModel) {
+        if (nodeModel) {
+          this.$del("/sso/sys/func", {data: {id: nodeModel.id}})
             .then(res => {
-                if(this.parentNodeModel.hasOwnProperty("children")) {
-                  this.parentNodeModel.children.splice(this.parentNodeModel.children.indexOf(nodeModel),1);
-                }else if(this.parentNodeModel instanceof Array){
-                  // 第一级根节点处理
-                  this.parentNodeModel.splice(this.parentNodeModel.indexOf(nodeModel),1);
-                }
-                nodeModel = null;
+              if (this.parentNodeModel.hasOwnProperty("children")) {
+                this.parentNodeModel.children.splice(this.parentNodeModel.children.indexOf(nodeModel), 1);
+              } else if (this.parentNodeModel instanceof Array) {
+                // 第一级根节点处理
+                this.parentNodeModel.splice(this.parentNodeModel.indexOf(nodeModel), 1);
+              }
+              nodeModel = null;
               this.$notify({
                 title: '成功',
                 message: '删除节点成功',
@@ -262,37 +288,37 @@
                   message: '登录超时,请重新登录',
                   type: 'error',
                   offset: 50,
-                  duration:2000,
+                  duration: 2000,
                   onClose: function () {
                     this.$router.push("/login");
                   }
                 });
-              }else{
+              } else {
                 this.$notify({
                   title: '错误',
                   message: '网络错误,请稍后再试',
                   type: 'error',
                   offset: 50,
-                  duration:2000,
+                  duration: 2000,
                 });
               }
             });
 
-        }else {
-         return false;
+        } else {
+          return false;
         }
       },
       enable(nodeModel) {
-        if(nodeModel) {
-          let status
-          if (nodeModel.enable == 1){
+        if (nodeModel) {
+          let status;
+          if (nodeModel.enable == 1) {
             status = 0
-          }else{
+          } else {
             status = 1
           }
-          this.$post("/sso/sys/func/enable",{id:nodeModel.id,status:status})
+          this.$post("/sso/sys/func/enable", {id: nodeModel.id, status: status})
             .then(res => {
-              nodeModel.enable = status
+              nodeModel.enable = status;
               this.$notify({
                 title: '成功',
                 message: '状态修改成功',
@@ -307,61 +333,62 @@
                   message: '登录超时,请重新登录',
                   type: 'error',
                   offset: 50,
-                  duration:2000,
+                  duration: 2000,
                   onClose: function () {
                     this.$router.push("/login");
                   }
                 });
-              }else{
+              } else {
                 this.$notify({
                   title: '错误',
                   message: '网络错误,请稍后再试',
                   type: 'error',
                   offset: 50,
-                  duration:2000,
+                  duration: 2000,
                 });
               }
             });
 
-        }else {
-         return false;
+        } else {
+          return false;
         }
       },
-      upNode(nodeModel){
-        if(this.parentNodeModel.hasOwnProperty("children")) {
+      upNode(nodeModel) {
+        console.log("upNode", nodeModel);
+        if (this.parentNodeModel.hasOwnProperty("children")) {
           var index = this.parentNodeModel.children.indexOf(nodeModel);
-          if(index-1>=0) {
-            var model = this.parentNodeModel.children.splice(this.parentNodeModel.children.indexOf(nodeModel),1);
-            this.parentNodeModel.children.splice(index-1,0,model[0]);
+          if (index - 1 >= 0) {
+            var model = this.parentNodeModel.children.splice(this.parentNodeModel.children.indexOf(nodeModel), 1);
+            this.parentNodeModel.children.splice(index - 1, 0, model[0]);
           }
-        }else if(this.parentNodeModel instanceof Array){
+        } else if (this.parentNodeModel instanceof Array) {
           // 第一级根节点处理
           var index = this.parentNodeModel.indexOf(nodeModel);
-          if(index-1>=0) {
-            var model = this.parentNodeModel.splice(this.parentNodeModel.indexOf(nodeModel),1);
-            this.parentNodeModel.splice(index-1,0,model[0]);
+          if (index - 1 >= 0) {
+            var model = this.parentNodeModel.splice(this.parentNodeModel.indexOf(nodeModel), 1);
+            this.parentNodeModel.splice(index - 1, 0, model[0]);
           }
         }
       },
-      downNode(nodeModel){
-
-        if(this.parentNodeModel.hasOwnProperty("children")) {
+      downNode(nodeModel) {
+        console.log(nodeModel);
+        if (this.parentNodeModel.hasOwnProperty("children")) {
           var index = this.parentNodeModel.children.indexOf(nodeModel);
-          if(index+1<=this.parentNodeModel.children.length) {
-            var model = this.parentNodeModel.children.splice(this.parentNodeModel.children.indexOf(nodeModel),1);
-            this.parentNodeModel.children.splice(index+1,0,model[0]);
+          if (index + 1 <= this.parentNodeModel.children.length) {
+            var model = this.parentNodeModel.children.splice(this.parentNodeModel.children.indexOf(nodeModel), 1);
+            this.parentNodeModel.children.splice(index + 1, 0, model[0]);
           }
-        }else if(this.parentNodeModel instanceof Array){
+        } else if (this.parentNodeModel instanceof Array) {
           // 第一级根节点处理
           var index = this.parentNodeModel.indexOf(nodeModel);
-          if(index+1<=this.parentNodeModel.length) {
-            var model = this.parentNodeModel.splice(this.parentNodeModel.indexOf(nodeModel),1);
-            this.parentNodeModel.splice(index+1,0,model[0]);
+          if (index + 1 <= this.parentNodeModel.length) {
+            var model = this.parentNodeModel.splice(this.parentNodeModel.indexOf(nodeModel), 1);
+            this.parentNodeModel.splice(index + 1, 0, model[0]);
           }
         }
       }
     },
-    computed:{
+    computed: {
       rootClass() {
         var strRootClass = "";
 
@@ -449,6 +476,6 @@
 </script>
 
 <style>
-  @import 'font-awesome/css/font-awesome.css';
+  @import "font-awesome/css/font-awesome.css";
 </style>
 
