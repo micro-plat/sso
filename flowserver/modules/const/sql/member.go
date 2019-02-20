@@ -19,3 +19,19 @@ inner join sso_role_info i on i.role_id=r.role_id where r.user_id=@user_id and s
 const QuerySysAuth = `select t.* from sso_user_role t 
 inner join sso_user_info i on i.user_id=t.user_id 
 where t.sys_id=@sys_id and t.user_id=@user_id`
+
+//QueryUserByUserName 根据用户名获取用户信息
+const QueryUserByUserName = `
+	select 
+		user_id,
+		user_name,
+		status,
+		wx_openid,
+		ext_params 
+	from 
+		sso_user_info
+	where 
+		user_name=@user_name 
+	and 
+		rownum<=1
+`

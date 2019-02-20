@@ -12,6 +12,7 @@ import (
 type IDBMember interface {
 	QueryByID(uid int64) (db.QueryRow, error)
 	Query(u string, p string, ident string) (s *MemberState, err error)
+	QueryByUserName(u string, ident string) (info db.QueryRow, err error)
 	GetUserInfo(u string) (db.QueryRow, error)
 	QueryByOpenID(string) (db.QueryRow, error)
 	QueryAuth(sysID, userID int64) (data db.QueryRows, err error)
@@ -121,4 +122,31 @@ func (l *DBMember) Query(u string, p string, ident string) (s *MemberState, err 
 	s.ExtParams = data.Get(0).GetString("ext_params")
 	s.SysIdent = ident
 	return s, err
+}
+
+func (l *DBMember) QueryByUserName(u string, ident string) (info db.QueryRow, err error) {
+	//根据用户名，查询用户信息
+	db := l.c.GetRegularDB()
+	data, _, _, err := db.Query(sql.QueryUserByUserName, map[string]interface{}{
+		"user_name": u,
+	})
+	if err != nil {
+		return nil, context.NewError(context.ERR_SERVICE_UNAVAILABLE, "暂时无法登录系统")
+	}
+	if data.IsEmpty() {
+		return nil, context.NewError(context.ERR_FORBIDDEN, "用户不存在")
+	}
+	//查询用户所在系统的登录地址及角色编号
+	roles, _, _, err := db.Query(sql.QueryUserRole, map[string]interface{}{
+		"user_id": data.Get(0).GetInt64("user_id", -1),
+		"ident":   ident,
+	})
+	if roles.IsEmpty() {
+		return nil, context.NewError(context.ERR_UNSUPPORTED_MEDIA_TYPE, "不允许登录系统")
+	}
+
+	userData := data.Get(0)
+	userData["ident"] = ident
+
+	return userData, err
 }

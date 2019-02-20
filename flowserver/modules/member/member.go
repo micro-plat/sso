@@ -20,6 +20,7 @@ const (
 //IMember 用户登录
 type IMember interface {
 	Login(u string, p string, ident string) (*LoginState, error)
+	QueryUserInfo(u string, ident string) (info db.QueryRow, err error)
 	Query(uid int64) (db.QueryRow, error)
 	LoginByOpenID(string, string) (*LoginState, error)
 	SendCheckMail(from string, password string, host string, port string, to string, link string) error
@@ -110,4 +111,20 @@ func (m *Member) Login(u string, p string, ident string) (s *LoginState, err err
 	//设置登录成功
 	err = m.cache.SetLoginSuccess(u)
 	return (*LoginState)(ls), err
+}
+
+func (m *Member) QueryUserInfo(u string, ident string) (ls db.QueryRow, err error) {
+
+	if ls, err = m.db.QueryByUserName(u, ident); err != nil {
+		return nil, err
+	}
+	//检查用户是否已锁定
+	if ls.GetInt("status") == UserLock {
+		return nil, context.NewError(context.ERR_LOCKED, "用户被锁定暂时无法登录")
+	}
+	//检查用户是否已禁用
+	if ls.GetInt("status") == UserDisable {
+		return nil, context.NewError(context.ERR_FORBIDDEN, "用户被禁用请联系管理员")
+	}
+	return ls, err
 }
