@@ -1,11 +1,8 @@
 ./mgrserver/.DS_Store
 *node_modules/
-<<<<<<< HEAD
 *dist/
+.vscode/
 ./mgrserver/dist/
-=======
-
->>>>>>> 750f5c63baeb3b4a71bc53caecd154a8e0ed6969
 ./mgrserver/npm-debug.log*
 ./mgrserver/yarn-debug.log*
 ./mgrserver/yarn-error.log*
