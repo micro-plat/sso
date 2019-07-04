@@ -57,7 +57,7 @@ func (s *SSO) install() {
 
 	s.Conf.Plat.SetVarConf("db", "db", `{			
 		"provider":"mysql",
-		"connString":"root:rTo0CesHi2018Qx$@tcp(192.168.0.36:3306)/sso?charset=utf8",
+		"connString":"root:rTo0CesHi2018Qx@tcp(192.168.0.36:3306)/sso?charset=utf8",
 		"max":8,
 		"maxOpen":20,
 	 	"maxIdle":10,
