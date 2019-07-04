@@ -46,19 +46,29 @@ func NewDbUser(c component.IContainer) *DbUser {
 func (u *DbUser) Query(input *model.QueryUserInput) (data db.QueryRows, total int, err error) {
 	db := u.c.GetRegularDB()
 	params := map[string]interface{}{
-		"role_id":   input.RoleID,
-		"user_name": " and t.user_name like '%" + input.UserName + "%'",
-		"pi":        input.PageIndex,
-		"ps":        input.PageSize,
+		"role_id":     input.RoleID,
+		"user_name":   " and t.user_name like '%" + input.UserName + "%'",
+		"currentPage": (types.GetInt(input.PageIndex) - 1) * types.GetInt(input.PageSize),
+		"pageSize":    input.PageSize,
 	}
 	count, q, a, err := db.Scalar(sql.QueryUserInfoListCount, params)
 	if err != nil {
 		return nil, 0, fmt.Errorf("获取用户信息列表条数发生错误(err:%v),sql:%s,输入参数:%v", err, q, a)
 	}
+
 	data, q, a, err = db.Query(sql.QueryUserInfoList, params)
 	if err != nil {
 		return nil, 0, fmt.Errorf("获取用户信息列表发生错误(err:%v),sql:%s,输入参数:%v", err, q, a)
 	}
+	var userIDString string
+	for i, v := range data {
+		if i != len(data)-1 {
+			userIDString += v.GetString("user_id") + ","
+		} else {
+			userIDString += v.GetString("user_id")
+		}
+	}
+	params["user_id_string"] = userIDString
 	sysRoles, q, a, err := db.Query(sql.QueryUserRoleList, params)
 	if err != nil {
 		return nil, 0, fmt.Errorf("获取用户信息列表发生错误(err:%v),sql:%s,输入参数:%v", err, q, a)
@@ -157,9 +167,9 @@ func (u *DbUser) GetAll(sysID, pi, ps int) (data db.QueryRows, count int, err er
 		return nil, 0, fmt.Errorf("获取用户信息列表条数发生错误(err:%v),sql:%s,输入参数:%v", err, q, a)
 	}
 	data, q, a, err = db.Query(sql.QueryUserBySysList, map[string]interface{}{
-		"sys_id": sysID,
-		"pi":     pi,
-		"ps":     ps,
+		"sys_id":      sysID,
+		"currentPage": (types.GetInt(pi) - 1) * types.GetInt(ps),
+		"pageSize":    ps,
 	})
 	if err != nil {
 		return nil, 0, fmt.Errorf("获取用户列表发生错误(err:%v),sql:%s,输入参数:%v,", err, q, a)
@@ -250,16 +260,8 @@ func (u *DbUser) Add(input *model.UserInputNew) (err error) {
 		dbTrans.Rollback()
 		return fmt.Errorf("Struct2Map Error(err:%v)", err)
 	}
-
-	n, _, _, err := dbTrans.Scalar(sql.GetNewUserID, map[string]interface{}{})
-	if err != nil {
-		dbTrans.Rollback()
-		return fmt.Errorf("获取新用户ID发生错误(err:%v)", err)
-	}
-	params["user_id"] = n.(string)
 	params["password"] = md5.Encrypt(enum.UserDefaultPassword)
-
-	_, q, a, err := dbTrans.Execute(sql.AddUserInfo, params)
+	lastInsertID, _, q, a, err := dbTrans.Executes(sql.AddUserInfo, params)
 	if err != nil {
 		dbTrans.Rollback()
 		return fmt.Errorf("添加用户发生错误(err:%v),sql:%s,输入参数:%v", err, q, a)
@@ -270,6 +272,7 @@ func (u *DbUser) Add(input *model.UserInputNew) (err error) {
 		as1 := strings.Split(as[i], ",")
 		params["sys_id"] = as1[0]
 		params["role_id"] = as1[1]
+		params["user_id"] = lastInsertID
 		_, q, a, err = dbTrans.Execute(sql.AddUserRole, params)
 		if err != nil {
 			dbTrans.Rollback()

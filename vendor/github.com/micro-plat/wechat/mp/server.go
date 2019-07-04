@@ -8,16 +8,21 @@ import (
 	"runtime/debug"
 	"strconv"
 
+	"github.com/micro-plat/hydra/component"
 	"github.com/micro-plat/hydra/context"
 
 	"github.com/micro-plat/wechat/util"
 )
 
+type IMessageHandler interface {
+	Handle(*WConf, *MixedMsg, *context.Context) *Reply
+}
+
 //Server struct
 type Server struct {
 	*WConf
-
-	messageHandler func(*WConf, *MixedMsg, *context.Context) *Reply
+	container      component.IContainer
+	messageHandler IMessageHandler
 
 	requestRawXMLMsg []byte
 
@@ -27,6 +32,14 @@ type Server struct {
 	timestamp  int64
 }
 
+func NewMessageSeverHandler(c *WConf, handler func(container component.IContainer) IMessageHandler) func(container component.IContainer) *Server {
+	return func(container component.IContainer) (u *Server) {
+		u = NewMessageServer(c)
+		u.messageHandler = handler(container)
+		return u
+	}
+}
+
 //NewMessageServer init
 func NewMessageServer(c *WConf) *Server {
 	srv := new(Server)
@@ -34,17 +47,8 @@ func NewMessageServer(c *WConf) *Server {
 	return srv
 }
 
-//NewMessageSeverHandler init
-func NewMessageSeverHandler(c *WConf, handler func(*WConf, *MixedMsg, *context.Context) *Reply) func() *Server {
-	return func() *Server {
-		s := NewMessageServer(c)
-		s.messageHandler = handler
-		return s
-	}
-}
-
 //Handle 处理微信的请求消息
-func (srv *Server) Handle(name string, engine string, service string, ctx *context.Context) (r interface{}) {
+func (srv *Server) Handle(ctx *context.Context) (r interface{}) {
 	if !srv.Validate(ctx) {
 		return fmt.Errorf("请求校验失败")
 	}
@@ -92,7 +96,7 @@ func (srv *Server) handleRequest(ctx *context.Context) (reply *Reply, mixMsg *Mi
 		err = errors.New("消息类型转换失败")
 		return
 	}
-	reply = srv.messageHandler(srv.WConf, mixMessage, ctx)
+	reply = srv.messageHandler.Handle(srv.WConf, mixMessage, ctx)
 	return reply, mixMessage, nil
 }
 
@@ -149,7 +153,7 @@ func (srv *Server) parseRequestMessage(rawXMLMsgBytes []byte) (msg *MixedMsg, er
 }
 
 //SetMessageHandler 设置用户自定义的回调方法
-func (srv *Server) SetMessageHandler(handler func(*WConf, *MixedMsg, *context.Context) *Reply) {
+func (srv *Server) SetMessageHandler(handler IMessageHandler) {
 	srv.messageHandler = handler
 }
 

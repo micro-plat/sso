@@ -98,13 +98,22 @@ func (m *MemberLogic) Login(u string, p string, ident string) (s *model.LoginSta
 		return nil, context.NewError(context.ERR_LOCKED, "用户被锁定暂时无法登录(423)")
 	}
 	//检查用户是否已禁用
+<<<<<<< HEAD:mgrapi/modules/logic/member.go
 	if ls.Status == enum.UserDisable {
 		return nil, context.NewError(context.ERR_LENGTH_REQUIRED, "用户被禁用请联系管理员(411)")
+=======
+	if ls.Status == UserDisable {
+		return nil, context.NewError(context.ERR_LENGTH_REQUIRED, "用户被禁用请联系管理员")
+>>>>>>> 750f5c63baeb3b4a71bc53caecd154a8e0ed6969:flowserver/modules/member/member.go
 	}
 	//检查密码是否有效，无效时累加登录失败次数
 	if strings.ToLower(ls.Password) != strings.ToLower(p) {
 		v, _ := m.cache.SetLoginFail(u)
+<<<<<<< HEAD:mgrapi/modules/logic/member.go
 		return nil, context.NewError(context.ERR_PRECONDITION_FAILED, fmt.Sprintf("用户名或密码错误(412):%d", v))
+=======
+		return nil, context.NewError(context.ERR_PRECONDITION_FAILED, fmt.Sprintf("用户名或密码错误:%d", v))
+>>>>>>> 750f5c63baeb3b4a71bc53caecd154a8e0ed6969:flowserver/modules/member/member.go
 	}
 	//设置登录成功
 	err = m.cache.SetLoginSuccess(u)

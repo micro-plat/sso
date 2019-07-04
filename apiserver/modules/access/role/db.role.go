@@ -75,7 +75,8 @@ func (r *DbRole) Query(input *QueryRoleInput) (data db.QueryRows, count int, err
 	if err != nil {
 		return nil, 0, fmt.Errorf("Struct2Map Error(err:%v)", err)
 	}
-
+	params["currentPage"] = (types.GetInt(input.PageIndex) - 1) * types.GetInt(input.PageSize)
+	params["pageSize"] = input.PageSize
 	params["role_sql"] = " and t.name like '%" + input.RoleName + "%' "
 	c, q, a, err := db.Scalar(sql.QueryRoleInfoListCount, params)
 	if err != nil {

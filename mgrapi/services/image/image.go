@@ -6,7 +6,11 @@ import (
 	"os"
 	"path/filepath"
 
+<<<<<<< HEAD:mgrapi/services/image/image.go
 	"github.com/micro-plat/sso/mgrapi/modules/app"
+=======
+	"github.com/micro-plat/sso/flowserver/modules/app"
+>>>>>>> 750f5c63baeb3b4a71bc53caecd154a8e0ed6969:flowserver/services/image/image.go
 
 	"github.com/micro-plat/hydra/context"
 
@@ -42,7 +46,7 @@ func isImage(f string) bool {
 	return false
 }
 
-//Handle 处理图片上传
+//PostHandle 处理图片上传
 func (ch *ImageHandler) PostHandle(ctx *context.Context) (r interface{}) {
 	ctx.Log.Info("--上传图片--")
 	ctx.Log.Info("1.检查参数")
@@ -77,7 +81,12 @@ func (ch *ImageHandler) PostHandle(ctx *context.Context) (r interface{}) {
 		return context.NewError(500, err)
 	}
 	ctx.Log.Info("3.返回数据")
+	host := app.GetConf(ch.container).HostName
 	return map[string]interface{}{
+<<<<<<< HEAD:mgrapi/services/image/image.go
 		"url": app.GetConf(ch.container).GetWebHostName() + "/static/img/" + name,
+=======
+		"url": host + "/static/img/" + name,
+>>>>>>> 750f5c63baeb3b4a71bc53caecd154a8e0ed6969:flowserver/services/image/image.go
 	}
 }

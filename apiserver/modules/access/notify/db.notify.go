@@ -81,11 +81,11 @@ func (d *DbNotify) Query(input *UserNotifyInput) (data db.QueryRows, count int, 
 		return nil, 0, fmt.Errorf("获取消息列表条数发生错误(err:%v),sql:(%s),输入参数:%v,", err, q, a)
 	}
 	data, q, a, err = db.Query(sql.QueryUserNotifyPageList, map[string]interface{}{
-		"title":   input.Title,
-		"user_id": input.UserID,
-		"sys_id":  input.SysID,
-		"pi":      input.Pi,
-		"ps":      input.Ps,
+		"title":       input.Title,
+		"user_id":     input.UserID,
+		"sys_id":      input.SysID,
+		"currentPage": (types.GetInt(input.Pi) - 1) * types.GetInt(input.Ps),
+		"pageSize":    input.Ps,
 	})
 	if err != nil {
 		return nil, 0, fmt.Errorf("获取消息列表发生错误(err:%v),sql:%s,输入参数:%v,", err, q, a)
@@ -103,10 +103,10 @@ func (d *DbNotify) Get(userID, sysID, pi, ps int64) (data db.QueryRows, count in
 		return nil, 0, fmt.Errorf("获取消息设置列表条数发生错误(err:%v),sql:(%s),输入参数:%v,", err, q, a)
 	}
 	data, q, a, err = db.Query(sql.QueryUserNotifySetPageList, map[string]interface{}{
-		"user_id": userID,
-		"sys_id":  sysID,
-		"pi":      pi,
-		"ps":      ps,
+		"user_id":     userID,
+		"sys_id":      sysID,
+		"currentPage": (types.GetInt(pi) - 1) * types.GetInt(ps),
+		"pageSize":    ps,
 	})
 	if err != nil {
 		return nil, 0, fmt.Errorf("获取消息设置列表发生错误(err:%v),sql:%s,输入参数:%v,", err, q, a)

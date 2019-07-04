@@ -475,7 +475,12 @@
   }
 </script>
 
+<<<<<<< HEAD
 <style>
   @import "font-awesome/css/font-awesome.css";
+=======
+<style >
+  /* @import 'font-awesome/css/font-awesome.css'; */
+>>>>>>> 750f5c63baeb3b4a71bc53caecd154a8e0ed6969
 </style>
 

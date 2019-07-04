@@ -1,68 +1,152 @@
 package sql
 
-
-const QueryUserNotifyCount = `select count(1) from sso_notify_user where 1=1 ?title &sys_id &user_id`
-
-const QueryUserNotifyPageList  = `
+//QueryUserNotifyCount .
+const QueryUserNotifyCount = `
 select 
-t2.* 
+	count(1) 
 from 
-(select t.*,to_char(t.create_time, 'yyyy-MM-dd hh24:mi:ss') create_times,to_char(t.finish_time, 'yyyy-MM-dd hh24:mi:ss') finish_times,rownum as rn from sso_notify_user t 
-	where t.title like '%'||@title||'%' 
+	sso_notify_user 
+where 
+	1=1 ?title &sys_id &user_id`
+
+//QueryUserNotifyPageList .
+const QueryUserNotifyPageList = `
+select 
+	t.*,
+	t.create_time create_times,
+	t.finish_time finish_times
+from 
+	sso_notify_user t 
+	where t.title like '%#title%' 
 	and t.user_id=@user_id 
 	and t.sys_id=@sys_id
-	and rownum < @pi * @ps) t2 
-where 
-t2.rn > (@pi - 1) * @ps`
-
-
-const QueryUserNotifySetCount = `select count(1) from sso_notify_subscribe where user_id=@user_id and sys_id=@sys_id`
-
-const QueryUserNotifySetPageList = `
-select 
-t2.* 
-from 
-(select t.*,to_char(t.create_time, 'yyyy-MM-dd hh24:mi:ss') create_times,rownum as rn from sso_notify_subscribe t 
-	where t.user_id=@user_id 
-	and t.sys_id=@sys_id
-	and rownum < @pi * @ps) t2 
-where 
-t2.rn > (@pi - 1) * @ps`
-
-const AddNotifySettings = `insert into sso_notify_subscribe(id,user_id,sys_id,level_id,keywords) 
-values(seq_notify_subscribe_id.nextval,@user_id,@sys_id,@level_id,@keywords)`
-
-const DelNotifySettings = `delete from sso_notify_subscribe where id = @id and user_id=@uid`
-
-const DelNotify = `delete from sso_notify_user where id = @id and user_id=@uid`
-
-const EditNotifySettings = `update sso_notify_subscribe t
-set  t.keywords = @keywords,t.level_id=@level_id,t.status=@status
-where t.id=@id
+limit 
+	#pageSize offset #currentPage
 `
 
-const InsertNotify = `insert into 
-sso_notify_records(id,sys_id,level_id,title,keywords,content) 
-values(seq_notify_records_id.nextval,@sys_id,@level_id,@title,@keywords,@content)`
+//QueryUserNotifySetCount .
+const QueryUserNotifySetCount = `
+select 
+	count(1) 
+from 
+	sso_notify_subscribe 
+where 
+	user_id=@user_id 
+	and sys_id=@sys_id`
 
-const InsertNotifyUser = `INSERT INTO SSO_NOTIFY_USER (ID,USER_ID,SYS_ID,LEVEL_ID,TITLE,KEYWORDS,CONTENT,FLOW_TIMEOUT) 
-SELECT SEQ_NOTIFY_USER_ID.nextval,USER_ID,SYS_ID,LEVEL_ID,@title,@keywords,@content,SYSDATE 
-FROM SSO_NOTIFY_SUBSCRIBE
-where KEYWORDS=@keywords AND SYS_ID=@sys_id AND (LEVEL_ID=0 or LEVEL_ID=@level_id)`
+//QueryUserNotifySetPageList .
+const QueryUserNotifySetPageList = `
+select 
+	t.*,
+	t.create_time create_times
+from 
+	sso_notify_subscribe t 
+where 
+	t.user_id=@user_id 
+	and t.sys_id=@sys_id
+limit 
+	#pageSize offset #currentPage
+`
 
+// AddNotifySettings .
+const AddNotifySettings = `
+insert into 
+	sso_notify_subscribe
+	(user_id,sys_id,level_id,keywords) 
+values
+	(@user_id,@sys_id,@level_id,@keywords)`
 
-const UpdateNotifyUser = `update sso_notify_user t
-set t.status = 2,t.scan_batch_id = @guid,t.send_count=t.send_count +1,t.flow_timeout = sysdate + 1/24/60
-where t.send_count <= 3 and t.flow_timeout < SYSDATE and t.flow_timeout > sysdate - 5/24/60 and t.status in (1,2)`
+//DelNotifySettings .
+const DelNotifySettings = `
+delete from 
+	sso_notify_subscribe 
+where 
+	id = @id 
+	and user_id=@uid
+`
 
-const QueryToUserNotify = `select t.id,t.title,t.content,to_char(t.create_time, 'yyyy-MM-dd hh24:mi:ss') create_times,u.wx_openid,s.name
-from sso_notify_user t
-left join sso_user_info u ON u.user_id = t.user_id
-left join sso_system_info s ON s.id = t.sys_id 
-where t.scan_batch_id=@guid and t.flow_timeout > sysdate`
+//DelNotify .
+const DelNotify = `
+delete from 
+	sso_notify_user 
+where 
+	id = @id 
+	and user_id=@uid
+`
 
+//EditNotifySettings .
+const EditNotifySettings = `
+update 
+	sso_notify_subscribe t
+set  
+	t.keywords = @keywords,t.level_id=@level_id,t.status=@status
+where 
+	t.id=@id
+`
 
-const SendNotifyUserSucc = `update sso_notify_user t
-set  t.status = 0,t.finish_time=SYSDATE
-where t.id=@id
+//InsertNotify .
+const InsertNotify = `
+insert into 
+	sso_notify_records
+	(sys_id,level_id,title,keywords,content) 
+values
+	(@sys_id,@level_id,@title,@keywords,@content)`
+
+// InsertNotifyUser .
+const InsertNotifyUser = `
+insert into 
+	sso_notify_user 
+	(user_id,sys_id,level_id,title,keywords,content,flow_timeout) 
+select 
+	user_id,sys_id,level_id,@title,@keywords,@content,now() 
+from 
+	sso_notify_subscribe
+where 
+	keywords=@keywords 
+	and sys_id=@sys_id 
+	and (level_id=0 or level_id=@level_id)`
+
+//UpdateNotifyUser .
+const UpdateNotifyUser = `
+update 
+	sso_notify_user t
+set 
+	t.status = 2,
+	t.scan_batch_id = @guid,
+	t.send_count=t.send_count +1,
+	t.flow_timeout = now() + 1/24/60
+where 
+	t.send_count <= 3 
+	and t.flow_timeout < now() 
+	and t.flow_timeout > now() - 5/24/60 
+	and t.status in (1,2)`
+
+//QueryToUserNotify .
+const QueryToUserNotify = `
+select 
+	t.id,
+	t.title,
+	t.content,
+	t.create_time create_times,
+	u.wx_openid,
+	s.name
+from 
+	sso_notify_user t
+left join 
+	sso_user_info u ON u.user_id = t.user_id
+left join 
+	sso_system_info s ON s.id = t.sys_id 
+where 
+	t.scan_batch_id=@guid 
+	and to_seconds(t.flow_timeout) > to_seconds(now())`
+
+//SendNotifyUserSucc .
+const SendNotifyUserSucc = `
+update 
+	sso_notify_user t
+set  
+	t.status = 0,
+	t.finish_time=now()
+where 
+	t.id=@id
 `

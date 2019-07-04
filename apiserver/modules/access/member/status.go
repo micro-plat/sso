@@ -8,7 +8,28 @@ import (
 
 const maxErrorCnt = 5
 
+<<<<<<< HEAD:apiserver/modules/access/member/status.go
 /*
+=======
+//MemberState 用户信息
+type MemberState struct {
+	Password       string `json:"password,omitempty"`
+	UserID         int64  `json:"user_id" m2s:"user_id"`
+	UserName       string `json:"user_name" m2s:"user_name"`
+	RoleName       string `json:"role_name" m2s:"role_name"`
+	SystemID       int    `json:"sys_id" `
+	SysIdent       string `json:"ident" `
+	RoleID         int    `json:"role_id"`
+	Status         int    `json:"status" m2s:"status"`
+	IndexURL       string `json:"index_url"`
+	LoginURL       string `json:"login_url"`
+	Code           string `json:"code"`
+	ProfilePercent int    `json:"profile_percent"`
+	LoginTimeout   int    `json:"login_timeout" m2s:"login_timeout"`
+	ExtParams      string `json:"ext_params" m2s:"ext_params"`
+}
+
+>>>>>>> 750f5c63baeb3b4a71bc53caecd154a8e0ed6969:flowserver/modules/member/status.go
 //LoginState 用户登录状态
 type LoginState model.MemberState
 

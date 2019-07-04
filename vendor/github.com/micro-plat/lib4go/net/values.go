@@ -2,8 +2,10 @@ package net
 
 import (
 	"bytes"
+	"fmt"
 	"net/url"
 	"sort"
+	"strings"
 )
 
 type val struct {
@@ -43,6 +45,25 @@ func (s *Values) Set(key, value string) *Values {
 	return s
 }
 
+//SetMap 指定map[string]interface{}并添加到values中
+func (s *Values) SetMap(m map[string]interface{}) *Values {
+	for k, v := range m {
+		value := fmt.Sprint(v)
+		s.u[k] = []string{value}
+		s.s = append(s.s, val{k: k, v: value})
+	}
+	return s
+}
+
+//SetSMap 指定map[string]string并添加到values中
+func (s *Values) SetSMap(m map[string]string) *Values {
+	for k, value := range m {
+		s.u[k] = []string{value}
+		s.s = append(s.s, val{k: k, v: value})
+	}
+	return s
+}
+
 //Encode 参数编号返回编码后的字符串
 func (s *Values) Encode() string {
 	return s.u.Encode()
@@ -57,32 +78,48 @@ func (s *Values) Sort() *Values {
 }
 
 //JoinAll 对参数进行拼接
-func (s *Values) JoinAll(a string, b string) string {
+func (s *Values) JoinAll(a string, b string, e ...string) string {
 	buffer := bytes.NewBufferString("")
-	for i, v := range s.s {
+	for _, v := range s.s {
 		buffer.WriteString(v.k)
 		buffer.WriteString(a)
 		buffer.WriteString(v.v)
-		if i < len(s.s)-1 {
+	}
+	if len(e) > 0 {
+		for i := 0; i < len(e)/2; i++ {
+			buffer.WriteString(e[i*2])
+			buffer.WriteString(a)
+			buffer.WriteString(e[i*2+1])
 			buffer.WriteString(b)
 		}
+		if len(e)%2 == 1 {
+			buffer.WriteString(e[len(e)-1])
+		}
 	}
-	return buffer.String()
+	return strings.Trim(buffer.String(), b)
 }
 
 //Join 只拼接值不为空的参数
-func (s *Values) Join(a string, b string) string {
+func (s *Values) Join(a string, b string, e ...string) string {
 	buffer := bytes.NewBufferString("")
-	for i, v := range s.s {
+	for _, v := range s.s {
 		if v.v != "" {
 			buffer.WriteString(v.k)
 			buffer.WriteString(a)
 			buffer.WriteString(v.v)
-			if i < len(s.s)-1 {
-				buffer.WriteString(b)
-			}
+			buffer.WriteString(b)
 		}
-
 	}
-	return buffer.String()
+	if len(e) > 0 {
+		for i := 0; i < len(e)/2; i++ {
+			buffer.WriteString(e[i*2])
+			buffer.WriteString(a)
+			buffer.WriteString(e[i*2+1])
+			buffer.WriteString(b)
+		}
+		if len(e)%2 == 1 {
+			buffer.WriteString(e[len(e)-1])
+		}
+	}
+	return strings.Trim(buffer.String(), b)
 }
