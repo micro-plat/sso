@@ -3,22 +3,21 @@ package function
 import (
 	"github.com/micro-plat/hydra/component"
 	"github.com/micro-plat/hydra/context"
-	sub "github.com/micro-plat/sso/mgrapi/modules/function"
-	"github.com/micro-plat/sso/mgrapi/modules/member"
-	"github.com/micro-plat/sso/mgrapi/modules/operate"
+	"github.com/micro-plat/sso/mgrapi/modules/access/member"
+	"github.com/micro-plat/sso/mgrapi/modules/logic"
 )
 
 type SystemFuncEnableHandler struct {
 	container component.IContainer
-	subLib    sub.ISystemFunc
-	op        operate.IOperate
+	subLib    logic.ISystemFuncLogic
+	op        logic.IOperateLogic
 }
 
 func NewSystemFuncEnableHandler(container component.IContainer) (u *SystemFuncEnableHandler) {
 	return &SystemFuncEnableHandler{
 		container: container,
-		subLib:    sub.NewSystemFunc(container),
-		op:        operate.NewOperate(container),
+		subLib:    logic.NewSystemFuncLogic(container),
+		op:        logic.NewOperateLogic(container),
 	}
 }
 

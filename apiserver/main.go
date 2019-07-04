@@ -1,6 +1,9 @@
 package main
 
-import "github.com/micro-plat/hydra/hydra"
+import (
+	_ "github.com/go-sql-driver/mysql"
+	"github.com/micro-plat/hydra/hydra"
+)
 
 //SSO 单点登录系统
 type SSO struct {

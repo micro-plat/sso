@@ -4,11 +4,11 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/micro-plat/sso/mgrapi/modules/member"
+	"github.com/micro-plat/sso/mgrapi/modules/access/member"
 
 	"github.com/micro-plat/hydra/component"
 	"github.com/micro-plat/hydra/context"
-	"github.com/micro-plat/sso/mgrapi/modules/menu"
+	"github.com/micro-plat/sso/mgrapi/modules/access/menu"
 )
 
 //MenuHandler 菜单查询对象

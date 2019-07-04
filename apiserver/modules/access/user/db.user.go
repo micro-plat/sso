@@ -251,16 +251,17 @@ NEXT:
 //Add 添加用户
 func (u *DbUser) Add(input *model.UserInputNew) (err error) {
 	db := u.c.GetRegularDB()
+	params, err := types.Struct2Map(input)
+	if err != nil {
+		return fmt.Errorf("Struct2Map Error(err:%v)", err)
+	}
+	params["password"] = md5.Encrypt(enum.UserDefaultPassword)
+
 	dbTrans, err := db.Begin()
 	if err != nil {
 		return fmt.Errorf("开启DB事务出错(err:%v)", err)
 	}
-	params, err := types.Struct2Map(input)
-	if err != nil {
-		dbTrans.Rollback()
-		return fmt.Errorf("Struct2Map Error(err:%v)", err)
-	}
-	params["password"] = md5.Encrypt(enum.UserDefaultPassword)
+
 	lastInsertID, _, q, a, err := dbTrans.Executes(sql.AddUserInfo, params)
 	if err != nil {
 		dbTrans.Rollback()

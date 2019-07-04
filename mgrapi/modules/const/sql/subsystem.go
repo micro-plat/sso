@@ -1,19 +1,45 @@
 package sql
 
-const QuerySubSystemTotalCount = `select count(1) from sso_system_info where 1=1 ?name &enable`
+//QuerySubSystemTotalCount .
+const QuerySubSystemTotalCount = `
+select 
+  count(1) 
+from 
+  sso_system_info 
+where 
+  #name_sql
+  &enable  
+`
 
-const QuerySubSystemList = `select t.* from sso_system_info t where t.id >= @id`
+//QuerySubSystemList .
+const QuerySubSystemList = `
+select 
+  t.* 
+from 
+  sso_system_info t 
+where 
+  t.id >= @id`
 
+//QuerySubSystemPageList .
 const QuerySubSystemPageList = `
 select 
-t2.* 
+  t.*
 from 
-(select t.*,rownum as rn from sso_system_info t 
-  where t.name like '%'||@name||'%' &t.enable and rownum <= @pi * @ps) t2 
+  sso_system_info t 
 where 
-t2.rn > (@pi - 1) * @ps`
+  #name_sql
+  &enable 
+limit 
+	#pageSize offset #currentPage
+`
 
-const DeleteSubSystemById = `delete from sso_system_info where id = @id`
+//DeleteSubSystemById .
+const DeleteSubSystemById = `
+delete from  
+  sso_system_info 
+where 
+  id = @id
+`
 
 const AddSubSystem = `
 insert into 
@@ -46,11 +72,17 @@ values
     @secret
   )`
 
-const UpdateEnable = `update sso_system_info t
-set  t.enable = @enable
-where t.id=@id
+//UpdateEnable .
+const UpdateEnable = `
+update 
+  sso_system_info t
+set  
+  t.enable = @enable
+where 
+  t.id=@id
 `
 
+//UpdateEdit .
 const UpdateEdit = `
 update 
   sso_system_info t
@@ -68,19 +100,35 @@ set
 where 
   t.id = @id
 `
+
+// GetUsers .
 const GetUsers = `
 select
-  r.USER_ID,u.USER_NAME
-from SSO_SYSTEM_INFO i
- inner join SSO_USER_ROLE r ON r.SYS_ID = i.ID
-inner join SSO_USER_INFO u ON u.USER_ID = r.USER_ID
-where i.IDENT=@system_name order by r.USER_ID
+  r.user_id,u.user_name
+from 
+  sso_system_info i
+inner join 
+  sso_user_role r on r.sys_id = i.id
+inner join 
+  sso_user_info u on u.user_id = r.user_id
+where 
+  i.ident=@system_name 
+order by 
+  r.user_id
 `
 
+// GetAllUser .
 const GetAllUser = `
-select distinct r.USER_ID,u.USER_NAME
-from SSO_SYSTEM_INFO i
- inner join SSO_USER_ROLE r ON r.SYS_ID = i.ID
-inner join SSO_USER_INFO u ON u.USER_ID = r.USER_ID
-where i.id>=0  order by r.USER_ID
+select 
+  distinct r.user_id,u.user_name
+from 
+  sso_system_info i
+inner join 
+  sso_user_role r on r.sys_id = i.id
+inner join 
+  sso_user_info u on u.user_id = r.user_id
+where 
+  i.id>=0  
+order by 
+  r.user_id
 `

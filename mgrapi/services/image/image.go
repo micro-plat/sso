@@ -6,16 +6,10 @@ import (
 	"os"
 	"path/filepath"
 
-<<<<<<< HEAD:mgrapi/services/image/image.go
-	"github.com/micro-plat/sso/mgrapi/modules/app"
-=======
-	"github.com/micro-plat/sso/flowserver/modules/app"
->>>>>>> 750f5c63baeb3b4a71bc53caecd154a8e0ed6969:flowserver/services/image/image.go
-
-	"github.com/micro-plat/hydra/context"
-
 	"github.com/micro-plat/hydra/component"
+	"github.com/micro-plat/hydra/context"
 	"github.com/micro-plat/lib4go/utility"
+	"github.com/micro-plat/sso/mgrapi/modules/model"
 )
 
 var imageExts = []string{".jpg", ".jpeg", ".gif", ".png"}
@@ -81,12 +75,7 @@ func (ch *ImageHandler) PostHandle(ctx *context.Context) (r interface{}) {
 		return context.NewError(500, err)
 	}
 	ctx.Log.Info("3.返回数据")
-	host := app.GetConf(ch.container).HostName
 	return map[string]interface{}{
-<<<<<<< HEAD:mgrapi/services/image/image.go
-		"url": app.GetConf(ch.container).GetWebHostName() + "/static/img/" + name,
-=======
-		"url": host + "/static/img/" + name,
->>>>>>> 750f5c63baeb3b4a71bc53caecd154a8e0ed6969:flowserver/services/image/image.go
+		"url": model.GetConf(ch.container).GetWebHostName() + "/static/img/" + name,
 	}
 }

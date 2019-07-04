@@ -4,24 +4,24 @@ import (
 	"github.com/micro-plat/hydra/component"
 	"github.com/micro-plat/hydra/context"
 	"github.com/micro-plat/lib4go/types"
-	sub "github.com/micro-plat/sso/mgrapi/modules/function"
-	"github.com/micro-plat/sso/mgrapi/modules/member"
-	"github.com/micro-plat/sso/mgrapi/modules/operate"
+	"github.com/micro-plat/sso/mgrapi/modules/access/member"
+	"github.com/micro-plat/sso/mgrapi/modules/logic"
+	"github.com/micro-plat/sso/mgrapi/modules/model"
 )
 
 //SystemFuncHandler is
 type SystemFuncHandler struct {
 	container component.IContainer
-	subLib    sub.ISystemFunc
-	op        operate.IOperate
+	subLib    logic.ISystemFuncLogic
+	op        logic.IOperateLogic
 }
 
 //NewSystemFuncHandler is
 func NewSystemFuncHandler(container component.IContainer) (u *SystemFuncHandler) {
 	return &SystemFuncHandler{
 		container: container,
-		subLib:    sub.NewSystemFunc(container),
-		op:        operate.NewOperate(container),
+		subLib:    logic.NewSystemFuncLogic(container),
+		op:        logic.NewOperateLogic(container),
 	}
 }
 
@@ -47,7 +47,7 @@ func (u *SystemFuncHandler) GetHandle(ctx *context.Context) (r interface{}) {
 func (u *SystemFuncHandler) PostHandle(ctx *context.Context) (r interface{}) {
 	ctx.Log.Info("------添加系统功能------")
 	ctx.Log.Info("1. 参数检查")
-	var input sub.SystemFuncAddInput
+	var input model.SystemFuncAddInput
 	if err := ctx.Request.Bind(&input); err != nil {
 		return context.NewError(context.ERR_NOT_ACCEPTABLE, err)
 	}
@@ -73,7 +73,7 @@ func (u *SystemFuncHandler) PostHandle(ctx *context.Context) (r interface{}) {
 func (u *SystemFuncHandler) PutHandle(ctx *context.Context) (r interface{}) {
 	ctx.Log.Info("------编辑系统功能------")
 	ctx.Log.Info("1. 参数检查")
-	var input sub.SystemFuncEditInput
+	var input model.SystemFuncEditInput
 	if err := ctx.Request.Bind(&input); err != nil {
 		return context.NewError(context.ERR_NOT_ACCEPTABLE, err)
 	}

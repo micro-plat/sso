@@ -6,33 +6,33 @@ import (
 	"github.com/micro-plat/hydra/component"
 	"github.com/micro-plat/hydra/context"
 	"github.com/micro-plat/lib4go/security/md5"
-	"github.com/micro-plat/sso/mgrapi/modules/member"
-	"github.com/micro-plat/sso/mgrapi/modules/operate"
-	"github.com/micro-plat/sso/mgrapi/modules/system"
+	"github.com/micro-plat/sso/mgrapi/modules/logic"
+	"github.com/micro-plat/sso/mgrapi/modules/model"
+
 	"github.com/micro-plat/sso/mgrapi/modules/util"
 )
 
 //LoginHandler 用户登录对象
 type LoginHandler struct {
-	c      component.IContainer
-	m      member.IMember
-	code   member.ICodeMember
-	sys    system.ISystem
-	op     operate.IOperate
-	member member.IDBMember
-	cache  member.ICacheMember
+	c    component.IContainer
+	m    logic.IMemberLogic
+	code logic.ICodeMemberLogic
+	sys  logic.ISystemLogic
+	op   logic.IOperateLogic
+	//member logic.IDBMember
+	//cache  logic.ICacheMember
 }
 
 //NewLoginHandler 创建登录对象
 func NewLoginHandler(container component.IContainer) (u *LoginHandler) {
 	return &LoginHandler{
-		c:      container,
-		m:      member.NewMember(container),
-		code:   member.NewCodeMember(container),
-		sys:    system.NewSystem(container),
-		op:     operate.NewOperate(container),
-		member: member.NewDBMember(container),
-		cache:  member.NewCacheMember(container),
+		c:    container,
+		m:    logic.NewMemberLogic(container),
+		code: logic.NewCodeMemberLogic(container),
+		sys:  logic.NewSystemLogic(container),
+		op:   logic.NewOperateLogic(container),
+		//member: member.NewDBMember(container),
+		//cache:  member.NewCacheMember(container),
 	}
 }
 
@@ -165,28 +165,28 @@ func (u *LoginHandler) CodeHandle(ctx *context.Context) (r interface{}) {
 		return context.NewError(context.ERR_NOT_ACCEPTABLE, err)
 	}
 	ctx.Log.Info("2.检查传入code是否有效")
-	codeMember := member.NewCodeMember(u.c)
-	loginState, err := codeMember.Query(ctx.Request.GetString("code"))
+	//codeMember := u.code.NewCodeMember(u.c)
+	loginState, err := u.code.Query(ctx.Request.GetString("code"))
 	if err != nil {
 		return err
 	}
 	ctx.Log.Info("3.获取新系统用户数据")
-	m, err := u.member.Query(ctx.Request.GetString("username"), loginState.Password, ctx.Request.GetString("ident"))
+	m, err := u.m.QueryRoleByNameAndIdent(ctx.Request.GetString("username"), loginState.Password, ctx.Request.GetString("ident"))
 	if err != nil {
 		return err
 	}
 	ctx.Log.Info("4.生成新code和新的系统数据")
-	newCode, err := u.code.ExchangeCode(ctx.Request.GetString("code"), (*member.LoginState)(m))
+	newCode, err := u.code.ExchangeCode(ctx.Request.GetString("code"), (*model.LoginState)(m))
 	if err != nil {
 		return err
 	}
 	ctx.Log.Info("5.缓存用户数据")
-	if err := u.cache.Save(m); err != nil {
+	if err := u.m.SaveLoginStateToCache(m); err != nil {
 		return err
 	}
 	ctx.Log.Info("6.返回数据")
 	// 设置jwt数据
-	ctx.Response.SetJWT((*member.LoginState)(m))
+	ctx.Response.SetJWT((*model.LoginState)(m))
 	return map[string]interface{}{
 		"code":  newCode,
 		"ident": ctx.Request.GetString("ident"),

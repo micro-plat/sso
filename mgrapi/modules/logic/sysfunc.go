@@ -1,33 +1,35 @@
-package function
+package logic
 
 import (
 	"github.com/micro-plat/hydra/component"
+	"github.com/micro-plat/sso/mgrapi/modules/access/function"
+	"github.com/micro-plat/sso/mgrapi/modules/model"
 )
 
-type ISystemFunc interface {
+type ISystemFuncLogic interface {
 	Get(sysid int) (result []map[string]interface{}, err error)
 	ChangeStatus(id int, status int) (err error)
 	Delete(id int) (err error)
-	Edit(input *SystemFuncEditInput) (err error)
-	Add(input *SystemFuncAddInput) (err error)
+	Edit(input *model.SystemFuncEditInput) (err error)
+	Add(input *model.SystemFuncAddInput) (err error)
 }
 
-type SystemFunc struct {
+type SystemFuncLogic struct {
 	c     component.IContainer
-	cache ICacheSystemFunc
-	db    IDbSystemFunc
+	cache function.ICacheSystemFunc
+	db    function.IDbSystemFunc
 }
 
-func NewSystemFunc(c component.IContainer) *SystemFunc {
-	return &SystemFunc{
+func NewSystemFuncLogic(c component.IContainer) *SystemFuncLogic {
+	return &SystemFuncLogic{
 		c:     c,
-		cache: NewCacheSystemFunc(c),
-		db:    NewDbSystemFunc(c),
+		cache: function.NewCacheSystemFunc(c),
+		db:    function.NewDbSystemFunc(c),
 	}
 }
 
 //Query 获取用系统管理列表
-func (u *SystemFunc) Get(sysid int) (data []map[string]interface{}, err error) {
+func (u *SystemFuncLogic) Get(sysid int) (data []map[string]interface{}, err error) {
 	//从缓存中获取功能信息，不存在时从数据库中获取
 	data, err = u.cache.Query(sysid)
 	if data == nil || err != nil {
@@ -44,7 +46,7 @@ func (u *SystemFunc) Get(sysid int) (data []map[string]interface{}, err error) {
 }
 
 //ChangeStatus 修改功能状态
-func (u *SystemFunc) ChangeStatus(id int, status int) (err error) {
+func (u *SystemFuncLogic) ChangeStatus(id int, status int) (err error) {
 	if err = u.db.ChangeStatus(id, status); err != nil {
 		return
 	}
@@ -52,7 +54,7 @@ func (u *SystemFunc) ChangeStatus(id int, status int) (err error) {
 }
 
 //Delete 删除系统功能
-func (u *SystemFunc) Delete(id int) (err error) {
+func (u *SystemFuncLogic) Delete(id int) (err error) {
 	if err = u.db.Delete(id); err != nil {
 		return
 	}
@@ -61,7 +63,7 @@ func (u *SystemFunc) Delete(id int) (err error) {
 }
 
 //Edit 编辑功能
-func (u *SystemFunc) Edit(input *SystemFuncEditInput) (err error) {
+func (u *SystemFuncLogic) Edit(input *model.SystemFuncEditInput) (err error) {
 	if err = u.db.Edit(input); err != nil {
 		return
 	}
@@ -69,7 +71,7 @@ func (u *SystemFunc) Edit(input *SystemFuncEditInput) (err error) {
 }
 
 //Add 添加功能
-func (u *SystemFunc) Add(input *SystemFuncAddInput) (err error) {
+func (u *SystemFuncLogic) Add(input *model.SystemFuncAddInput) (err error) {
 	if err = u.db.Add(input); err != nil {
 		return
 	}

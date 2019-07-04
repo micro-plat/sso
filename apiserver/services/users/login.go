@@ -60,11 +60,8 @@ func (u *LoginHandler) Handle(ctx *context.Context) (r interface{}) {
 
 	ctx.Log.Info("请求原数据", d)
 	if ok := util.VerifySign(ctx, d, secret, ctx.Request.GetString("sign")); ok != true {
-<<<<<<< HEAD:apiserver/services/users/login.go
 		return context.NewError(context.ERR_PAYMENT_REQUIRED, "sign签名错误(402)")
-=======
-		return context.NewError(context.ERR_UNSUPPORTED_MEDIA_TYPE, "sign签名错误")
->>>>>>> 750f5c63baeb3b4a71bc53caecd154a8e0ed6969:flowserver/services/subsys/login.go
+
 	}
 
 	//处理用户登录
@@ -84,10 +81,6 @@ func (u *LoginHandler) Handle(ctx *context.Context) (r interface{}) {
 	if err := u.op.LoginOperate(member); err != nil {
 		return err
 	}
-<<<<<<< HEAD:apiserver/services/users/login.go
-=======
-	ctx.Log.Info("3.返回数据")
->>>>>>> 750f5c63baeb3b4a71bc53caecd154a8e0ed6969:flowserver/services/subsys/login.go
 	ctx.Log.Infof("%+v", member)
 	return member
 }

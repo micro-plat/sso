@@ -20,9 +20,12 @@ type IMemberLogic interface {
 	Login(u string, p string, ident string) (*model.LoginState, error)  //在用
 	QueryUserInfo(u string, ident string) (info db.QueryRow, err error) //在用
 	Query(uid int64) (db.QueryRow, error)
+	CacheQuery(u string, ident string) (ls *model.MemberState, err error)
 	LoginByOpenID(string, string) (*model.LoginState, error)
 	SendCheckMail(from string, password string, host string, port string, to string, link string) error
 	QueryAuth(sysID, userID int64) (err error)
+	QueryRoleByNameAndIdent(name, password, ident string) (s *model.MemberState, err error)
+	SaveLoginStateToCache(s *model.MemberState) error
 }
 
 //Member 用户登录管理
@@ -42,6 +45,19 @@ func NewMemberLogic(c component.IContainer) *MemberLogic {
 //Query 查询用户信息
 func (m *MemberLogic) Query(uid int64) (db.QueryRow, error) {
 	return m.db.QueryByID(uid)
+}
+
+func (m *MemberLogic) CacheQuery(userName string, ident string) (ls *model.MemberState, err error) {
+	return m.cache.Query(userName, ident)
+}
+
+func (m *MemberLogic) SaveLoginStateToCache(s *model.MemberState) error {
+	return m.cache.Save(s)
+}
+
+//QueryRoleByNameAndIdent xx
+func (m *MemberLogic) QueryRoleByNameAndIdent(name, password, ident string) (s *model.MemberState, err error) {
+	return m.db.Query(name, password, ident)
 }
 
 func (m *MemberLogic) QueryAuth(sysID, userID int64) (err error) {
@@ -98,22 +114,13 @@ func (m *MemberLogic) Login(u string, p string, ident string) (s *model.LoginSta
 		return nil, context.NewError(context.ERR_LOCKED, "用户被锁定暂时无法登录(423)")
 	}
 	//检查用户是否已禁用
-<<<<<<< HEAD:mgrapi/modules/logic/member.go
 	if ls.Status == enum.UserDisable {
-		return nil, context.NewError(context.ERR_LENGTH_REQUIRED, "用户被禁用请联系管理员(411)")
-=======
-	if ls.Status == UserDisable {
 		return nil, context.NewError(context.ERR_LENGTH_REQUIRED, "用户被禁用请联系管理员")
->>>>>>> 750f5c63baeb3b4a71bc53caecd154a8e0ed6969:flowserver/modules/member/member.go
 	}
 	//检查密码是否有效，无效时累加登录失败次数
 	if strings.ToLower(ls.Password) != strings.ToLower(p) {
 		v, _ := m.cache.SetLoginFail(u)
-<<<<<<< HEAD:mgrapi/modules/logic/member.go
-		return nil, context.NewError(context.ERR_PRECONDITION_FAILED, fmt.Sprintf("用户名或密码错误(412):%d", v))
-=======
 		return nil, context.NewError(context.ERR_PRECONDITION_FAILED, fmt.Sprintf("用户名或密码错误:%d", v))
->>>>>>> 750f5c63baeb3b4a71bc53caecd154a8e0ed6969:flowserver/modules/member/member.go
 	}
 	//设置登录成功
 	err = m.cache.SetLoginSuccess(u)

@@ -1,34 +1,5 @@
 package sql
 
-//QueryUserInfoList 查询用户信息列表
-<<<<<<< HEAD:apiserver/modules/const/sql/user.go
-const QueryUserInfoList = `select TAB1.*
-from (select L.*
-		from (select rownum LINENUM, R.*
-				from (select to_char(t.user_id) user_id,
-							 t.user_name,
-							 t.status,
-							 decode(t.status,0,'正常',1,'锁定',2,'禁用') status_label,
-							 t.mobile,
-							 to_char(t.create_time, 'yyyy/mm/dd hh24:mi') create_time,
-							 t.email,
-							 t.ext_params
-						from sso_user_info t
-						left join sso_user_role r on r.user_id = t.user_id
-						where 1=1 
-						and r.role_id = nvl(@role_id, r.role_id)
-						#user_name
-						group by t.user_id,
-                                  t.user_name,
-                                  t.status,
-                                  t.mobile,
-								  t.email,
-								  t.ext_params,
-                                  t.create_time
-					   order by t.user_id) R
-			   where rownum <= @pi * @ps) L
-	   where L.LINENUM > @ps * (@pi - 1)) TAB1
-=======
 const QueryUserInfoList = `
 select 
 	t.user_id,
@@ -37,7 +8,8 @@ select
 	case when t.status = 0 then '正常' when t.status=1 then '锁定' when t.status = 2 then '禁用' end status_label,
 	t.mobile,
 	t.create_time,
-	t.email
+	t.email,
+	t.ext_params
 from sso_user_info t
 left join sso_user_role r on r.user_id = t.user_id
 where 
@@ -49,12 +21,12 @@ group by t.user_id,
 			t.status,
 			t.mobile,
 			t.email,
-			t.create_time
+			t.create_time,
+			t.ext_params
 order by 
 	t.user_id
 limit 
 	#pageSize offset #currentPage
->>>>>>> 750f5c63baeb3b4a71bc53caecd154a8e0ed6969:flowserver/modules/const/sql/user.go
 `
 
 //QueryUserRoleList 查询用户角色信息列表
@@ -141,14 +113,9 @@ update
 set 
 	t.status = @status, 
 	t.user_name = @user_name, 
-<<<<<<< HEAD:apiserver/modules/const/sql/user.go
 	t.mobile = @mobile,
 	t.email = @email,
 	t.ext_params = @ext_params
-=======
-	t.mobile = @mobile, 
-	t.email = @email
->>>>>>> 750f5c63baeb3b4a71bc53caecd154a8e0ed6969:flowserver/modules/const/sql/user.go
 where 
 	t.user_id = @user_id
 `
@@ -178,19 +145,11 @@ from
 
 //AddUserInfo 添加用户信息
 const AddUserInfo = `
-<<<<<<< HEAD:apiserver/modules/const/sql/user.go
 insert 
 	into sso_user_info 
-	(user_id, user_name, status, password, mobile, email, ext_params)
+	(user_name, status, password, mobile, email, ext_params)
 values
-	(@user_id, @user_name, @status, @password, @mobile, @email, @ext_params)
-=======
-insert into 
-	sso_user_info 
-	( user_name, status, password, mobile, email)
-values
-	( @user_name, @status, @password, @mobile, @email)
->>>>>>> 750f5c63baeb3b4a71bc53caecd154a8e0ed6969:flowserver/modules/const/sql/user.go
+	(@user_name, @status, @password, @mobile, @email, @ext_params)
 `
 
 //AddUserRole 添加用户角色
@@ -222,24 +181,12 @@ where
 	t.user_id=@user_id
  	&password
 `
-<<<<<<< HEAD:apiserver/modules/const/sql/user.go
-const EditInfo = `
-update 
-	sso_user_info t
-set  
-	t.mobile = @tel, t.email = @email, t.ext_params = @ext_params
-where 
-	t.user_name = @username`
-=======
->>>>>>> 750f5c63baeb3b4a71bc53caecd154a8e0ed6969:flowserver/modules/const/sql/user.go
 
-//EditInfo .
 const EditInfo = `
 update 
 	sso_user_info t
 set  
-	t.mobile = @tel, 
-	t.email = @email
+	t.mobile = @tel, t.email = @email
 where 
 	t.user_name = @username`
 

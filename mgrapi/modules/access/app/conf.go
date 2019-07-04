@@ -1,3 +1,6 @@
+package xx
+
+/*
 package app
 
 import (
@@ -6,11 +9,6 @@ import (
 	"github.com/asaskevich/govalidator"
 	"github.com/micro-plat/hydra/component"
 )
-
-//Conf 应用程序配置
-type Conf struct {
-	WebHostName string `json:"web_host_name" valid:"required"`
-}
 
 //Valid 验证配置参数是否合法
 func (c Conf) Valid() error {
@@ -34,3 +32,4 @@ func SaveConf(c component.IContainer, m *Conf) {
 func GetConf(c component.IContainer) *Conf {
 	return c.Get("__AppConf__").(*Conf)
 }
+*/

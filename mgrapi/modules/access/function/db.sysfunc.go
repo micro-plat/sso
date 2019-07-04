@@ -5,32 +5,15 @@ import (
 
 	"github.com/micro-plat/hydra/component"
 	"github.com/micro-plat/sso/mgrapi/modules/const/sql"
+	"github.com/micro-plat/sso/mgrapi/modules/model"
 )
 
 type IDbSystemFunc interface {
 	Get(sysid int) (data []map[string]interface{}, err error)
 	ChangeStatus(id int, status int) (err error)
 	Delete(id int) (err error)
-	Edit(input *SystemFuncEditInput) (err error)
-	Add(input *SystemFuncAddInput) (err error)
-}
-
-type SystemFuncAddInput struct {
-	Parentid    int    `form:"parentid" json:"parentid"`
-	ParentLevel int    `form:"parentlevel" json:"parentlevel"`
-	Sysid       int    `form:"sysid" json:"sysid"`
-	Name        string `form:"name" json:"name" valid:"required"`
-	Icon        string `form:"icon" json:"icon" valid:"required"`
-	Path        string `form:"path" json:"path" valid:"required"`
-	IsOpen      string `form:"is_open" json:"is_open"`
-}
-
-type SystemFuncEditInput struct {
-	Id     string `form:"id" json:"id" valid:"required"`
-	Name   string `form:"name" json:"name" valid:"required"`
-	Icon   string `form:"icon" json:"icon" valid:"required"`
-	Path   string `form:"path" json:"path" valid:"required"`
-	IsOpen string `form:"is_open" json:"is_open"`
+	Edit(input *model.SystemFuncEditInput) (err error)
+	Add(input *model.SystemFuncAddInput) (err error)
 }
 
 type DbSystemFunc struct {
@@ -43,7 +26,7 @@ func NewDbSystemFunc(c component.IContainer) *DbSystemFunc {
 	}
 }
 
-//Query 获取用户信息列表
+//Query 获取功能信息列表
 func (u *DbSystemFunc) Get(sysid int) (results []map[string]interface{}, err error) {
 	db := u.c.GetRegularDB()
 	data, q, a, err := db.Query(sql.QuerySysFuncList, map[string]interface{}{
@@ -106,7 +89,7 @@ func (u *DbSystemFunc) Delete(id int) (err error) {
 	return nil
 }
 
-func (u *DbSystemFunc) Edit(input *SystemFuncEditInput) (err error) {
+func (u *DbSystemFunc) Edit(input *model.SystemFuncEditInput) (err error) {
 	db := u.c.GetRegularDB()
 	params := map[string]interface{}{
 		"id":      input.Id,
@@ -122,7 +105,7 @@ func (u *DbSystemFunc) Edit(input *SystemFuncEditInput) (err error) {
 	return nil
 }
 
-func (u *DbSystemFunc) Add(input *SystemFuncAddInput) (err error) {
+func (u *DbSystemFunc) Add(input *model.SystemFuncAddInput) (err error) {
 	db := u.c.GetRegularDB()
 
 	params := map[string]interface{}{

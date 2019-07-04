@@ -2,8 +2,9 @@ package main
 
 import (
 	"github.com/micro-plat/hydra/component"
-	"github.com/micro-plat/sso/mgrapi/modules/app"
-	xmenu "github.com/micro-plat/sso/mgrapi/modules/menu"
+	//"github.com/micro-plat/sso-1/modules/app"
+	"github.com/micro-plat/sso/mgrapi/modules/logic"
+	"github.com/micro-plat/sso/mgrapi/modules/model"
 	"github.com/micro-plat/sso/mgrapi/services/base"
 	"github.com/micro-plat/sso/mgrapi/services/function"
 	"github.com/micro-plat/sso/mgrapi/services/image"
@@ -18,11 +19,11 @@ import (
 func (r *SSO) init() {
 	//初始化
 	r.Initializing(func(c component.IContainer) error {
-		var conf app.Conf
+		var conf model.Conf
 		if err := c.GetAppConf(&conf); err != nil {
 			return err
 		}
-		app.SaveConf(c, &conf)
+		model.SaveConf(c, &conf)
 		if err := conf.Valid(); err != nil {
 			return err
 		}
@@ -37,7 +38,7 @@ func (r *SSO) init() {
 			return err
 		}
 
-		xmenu.Set(c) //保存全局菜单变量
+		logic.Set(c) //保存全局菜单变量
 		return nil
 	})
 

@@ -3,19 +3,19 @@ package function
 import (
 	"github.com/micro-plat/hydra/component"
 	"github.com/micro-plat/hydra/context"
-	sub "github.com/micro-plat/sso/mgrapi/modules/function"
-	"github.com/micro-plat/sso/mgrapi/modules/member"
+	"github.com/micro-plat/sso/mgrapi/modules/access/member"
+	"github.com/micro-plat/sso/mgrapi/modules/logic"
 )
 
 type SystemFuncQueryHandler struct {
 	container component.IContainer
-	subLib    sub.ISystemFunc
+	subLib    logic.ISystemFuncLogic
 }
 
 func NewSystemFuncQueryHandler(container component.IContainer) (u *SystemFuncQueryHandler) {
 	return &SystemFuncQueryHandler{
 		container: container,
-		subLib:    sub.NewSystemFunc(container),
+		subLib:    logic.NewSystemFuncLogic(container),
 	}
 }
 

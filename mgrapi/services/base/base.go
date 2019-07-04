@@ -3,21 +3,21 @@ package base
 import (
 	"github.com/micro-plat/hydra/component"
 	"github.com/micro-plat/hydra/context"
-	"github.com/micro-plat/sso/mgrapi/modules/base"
-	"github.com/micro-plat/sso/mgrapi/modules/member"
+	"github.com/micro-plat/sso/mgrapi/modules/access/member"
+	"github.com/micro-plat/sso/mgrapi/modules/logic"
 )
 
 //BaseUserHandler is
 type BaseUserHandler struct {
 	container component.IContainer
-	baseLib   base.IBase
+	baseLib   logic.IBaseLogic
 }
 
 //NewBaseUserHandler is
 func NewBaseUserHandler(container component.IContainer) (u *BaseUserHandler) {
 	return &BaseUserHandler{
 		container: container,
-		baseLib:   base.NewBase(container),
+		baseLib:   logic.NewBaseLogic(container),
 	}
 }
 
