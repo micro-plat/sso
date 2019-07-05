@@ -12,8 +12,8 @@ func main() {
 
 	app := &ums{
 		hydra.NewApp(
-			hydra.WithPlatName("sso"),
-			hydra.WithSystemName("sso"),
+			hydra.WithPlatName("ums"),
+			hydra.WithSystemName("ums"),
 			hydra.WithServerTypes("web"),
 		),
 	}

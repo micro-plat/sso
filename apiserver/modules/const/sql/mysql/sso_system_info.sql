@@ -14,10 +14,7 @@
 		login_url varchar(64)  DEFAULT null    comment '登录地址' ,
 		wechat_status tinyint(2)  DEFAULT 1 not null    comment '微信功能状态 1:开启,0:关闭' ,
 		secret varchar(32)      comment '签名密钥' 		
-  )COMMENT='系统信息表';
+  ) AUTO_INCREMENT = 700,COMMENT='系统信息表';
 
-alter table sso_system_info add index index_sso_system_info_name_ident(name,ident) 
-
-
-
+alter table sso_system_info add index index_sso_system_info_name_ident(name,ident);
 

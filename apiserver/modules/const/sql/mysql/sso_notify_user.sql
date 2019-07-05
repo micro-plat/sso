@@ -16,7 +16,7 @@
 		flow_timeout datetime      comment '流程超时时间' ,
 		finish_time datetime      comment '完成时间' 
 				
-  )COMMENT='报警消息表';
+  ) AUTO_INCREMENT = 11000, COMMENT='报警消息表';
 
  
 
