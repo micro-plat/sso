@@ -7,6 +7,6 @@
 		`status` tinyint(1) DEFAULT 0 not null    comment '状态 0:正常 2:禁用' ,
 		`create_time` datetime DEFAULT CURRENT_TIMESTAMP not null comment '创建时间' 
 				
-  )COMMENT='角色信息';
+  ) AUTO_INCREMENT = 11000,COMMENT='角色信息';
 
-  alter table sso_role_info add index index_role_info_name(name)
+  alter table sso_role_info add index index_role_info_name(name);

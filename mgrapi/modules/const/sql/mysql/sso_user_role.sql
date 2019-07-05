@@ -1,5 +1,5 @@
 
- drop table sso_user_role;
+ /*drop table sso_user_role;*/
 
 	create table sso_user_role(
 		id bigint primary key auto_increment  not null   comment '编号' ,
@@ -12,6 +12,3 @@
 
 alter table sso_user_role add unique(user_id,sys_id,role_id);
 alter table sso_user_role add index index_user_role_sysid_roleid(sys_id, user_id, role_id); 
-
-
-
