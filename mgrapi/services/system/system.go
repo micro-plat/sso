@@ -35,6 +35,12 @@ func (u *SystemHandler) GetHandle(ctx *context.Context) (r interface{}) {
 	ps := ctx.Request.GetInt("ps", 10)
 	name := ctx.Request.GetString("name")
 	status := ctx.Request.GetString("status")
+
+	ctx.Log.Info("pi", pi)
+	ctx.Log.Info("ps", ps)
+	ctx.Log.Info("name", name)
+	ctx.Log.Info("status", status)
+
 	rows, count, err := u.subLib.Query(name, status, pi, ps)
 	if err != nil {
 		return context.NewError(context.ERR_NOT_IMPLEMENTED, err)

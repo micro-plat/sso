@@ -7,8 +7,9 @@ select
 from 
   sso_system_info 
 where 
-  #name_sql
-  &enable  
+  1 = 1
+  #name
+  &enable
 `
 
 //QuerySubSystemList .
@@ -26,11 +27,10 @@ select
   t.*
 from 
   sso_system_info t 
-where 
-  #name_sql
-  &enable 
-limit 
-	#pageSize offset #currentPage
+where 1 = 1 
+  #name
+  &enable
+limit @start, @ps;
 `
 
 //DeleteSubSystemById .

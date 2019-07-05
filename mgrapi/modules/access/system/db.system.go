@@ -53,23 +53,24 @@ func (l *DbSystem) GetAll(userId int64) (s db.QueryRows, err error) {
 func (u *DbSystem) Query(name string, status string, pi int, ps int) (data db.QueryRows, count int, err error) {
 	db := u.c.GetRegularDB()
 	c, q, a, err := db.Scalar(sql.QuerySubSystemTotalCount, map[string]interface{}{
-		"name":   name,
+		"name":   " and name like '%" + name + "%'",
 		"enable": status,
 	})
-	fmt.Println("data:", c, q, a)
+
 	if err != nil {
 		return nil, 0, fmt.Errorf("获取系统管理列表条数发生错误(err:%v),sql:(%s),输入参数:%v,", err, q, a)
 	}
 	data, q, a, err = db.Query(sql.QuerySubSystemPageList, map[string]interface{}{
-		"name":   name,
+		"name":   " and t.name like '%" + name + "%'",
 		"enable": status,
-		"pi":     pi,
+		"start":  (pi - 1) * ps,
 		"ps":     ps,
 	})
+
 	if err != nil {
 		return nil, 0, fmt.Errorf("获取系统管理列表发生错误(err:%v),sql:%s,输入参数:%v,", err, q, a)
 	}
-	fmt.Println("data:", data, pi, ps, q, a)
+
 	return data, types.GetInt(c), nil
 }
 
