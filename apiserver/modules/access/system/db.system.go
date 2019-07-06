@@ -86,6 +86,10 @@ func (u *DbSystem) Delete(id int) (err error) {
 }
 
 func (u *DbSystem) Add(input *model.AddSystemInput) (err error) {
+	if input.Wechat_status == "" {
+		input.Wechat_status = "0"
+	}
+
 	db := u.c.GetRegularDB()
 	params := map[string]interface{}{
 		"name":          input.Name,

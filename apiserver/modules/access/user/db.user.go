@@ -46,10 +46,10 @@ func NewDbUser(c component.IContainer) *DbUser {
 func (u *DbUser) Query(input *model.QueryUserInput) (data db.QueryRows, total int, err error) {
 	db := u.c.GetRegularDB()
 	params := map[string]interface{}{
-		"role_id":     input.RoleID,
-		"user_name":   " and t.user_name like '%" + input.UserName + "%'",
-		"currentPage": (types.GetInt(input.PageIndex) - 1) * types.GetInt(input.PageSize),
-		"pageSize":    input.PageSize,
+		"role_id":   input.RoleID,
+		"user_name": " and t.user_name like '%" + input.UserName + "%'",
+		"start":     (input.PageIndex - 1) * input.PageSize,
+		"ps":        input.PageSize,
 	}
 	count, q, a, err := db.Scalar(sql.QueryUserInfoListCount, params)
 	if err != nil {

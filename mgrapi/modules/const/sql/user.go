@@ -25,8 +25,7 @@ group by t.user_id,
 			t.ext_params
 order by 
 	t.user_id
-limit 
-	#pageSize offset #currentPage
+limit @start, @ps
 `
 
 //QueryUserRoleList 查询用户角色信息列表
@@ -136,12 +135,14 @@ set
 where 
 	t.user_id = @user_id`
 
-//GetNewUserID 获取新用户ID
+//GetNewUserID 获取新用户ID 这个不用,mysql中处理方式不一样
+/*
 const GetNewUserID = `
-select 
-	seq_user_info_id.nextval 
-from 
+select
+	seq_user_info_id.nextval
+from
 	dual`
+*/
 
 //AddUserInfo 添加用户信息
 const AddUserInfo = `

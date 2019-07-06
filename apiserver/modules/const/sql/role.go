@@ -14,8 +14,7 @@ where
 	1 = 1 #role_sql
 order by 
 	t.role_id
-limit 
-	#pageSize offset #currentPage
+limit limit @start, @ps
 `
 
 //QueryRoleInfoListCount 获取角色信息列表数量

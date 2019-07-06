@@ -8,14 +8,12 @@ select
 	t.status,
 	case when t.status = 0 then '正常' when t.status = 2 then '禁用' end status_label,
 	t.create_time
-from 
-	sso_role_info t
+from sso_role_info t
 where 
 	1 = 1 #role_sql
 order by 
 	t.role_id
-limit 
-	#pageSize offset #currentPage
+limit @start, @ps
 `
 
 //QueryRoleInfoListCount 获取角色信息列表数量

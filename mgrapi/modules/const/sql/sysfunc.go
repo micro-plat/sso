@@ -48,4 +48,4 @@ insert into
 	sso_system_menu
 	(name,parent,sys_id,level_id,icon,path,sortrank,is_open) 
 values
-	(@name,@parent,@sys_id,@level_id,@icon,@path,@@IDENTITY +1,@is_open)`
+	(@name,@parent,@sys_id,@level_id,@icon,@path,1,@is_open)`

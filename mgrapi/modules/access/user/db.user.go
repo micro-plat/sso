@@ -48,7 +48,7 @@ func (u *DbUser) Query(input *model.QueryUserInput) (data db.QueryRows, total in
 	params := map[string]interface{}{
 		"role_id":   input.RoleID,
 		"user_name": " and t.user_name like '%" + input.UserName + "%'",
-		"pi":        input.PageIndex,
+		"start":     (input.PageIndex - 1) * input.PageSize,
 		"ps":        input.PageSize,
 	}
 	count, q, a, err := db.Scalar(sql.QueryUserInfoListCount, params)
@@ -240,31 +240,33 @@ NEXT:
 
 //Add 添加用户
 func (u *DbUser) Add(input *model.UserInputNew) (err error) {
+	params, err := types.Struct2Map(input)
+	if err != nil {
+		return fmt.Errorf("Struct2Map Error(err:%v)", err)
+	}
+
 	db := u.c.GetRegularDB()
 	dbTrans, err := db.Begin()
 	if err != nil {
 		return fmt.Errorf("开启DB事务出错(err:%v)", err)
 	}
-	params, err := types.Struct2Map(input)
-	if err != nil {
-		dbTrans.Rollback()
-		return fmt.Errorf("Struct2Map Error(err:%v)", err)
-	}
+	/*
+		n, _, _, err := dbTrans.Scalar(sql.GetNewUserID, map[string]interface{}{})
+		if err != nil {
+			dbTrans.Rollback()
+			return fmt.Errorf("获取新用户ID发生错误(err:%v)", err)
+		}
+		params["user_id"] = n.(string)
+	*/
 
-	n, _, _, err := dbTrans.Scalar(sql.GetNewUserID, map[string]interface{}{})
-	if err != nil {
-		dbTrans.Rollback()
-		return fmt.Errorf("获取新用户ID发生错误(err:%v)", err)
-	}
-	params["user_id"] = n.(string)
 	params["password"] = md5.Encrypt(enum.UserDefaultPassword)
-
-	_, q, a, err := dbTrans.Execute(sql.AddUserInfo, params)
+	user_id, _, q, a, err := dbTrans.Executes(sql.AddUserInfo, params)
 	if err != nil {
 		dbTrans.Rollback()
 		return fmt.Errorf("添加用户发生错误(err:%v),sql:%s,输入参数:%v", err, q, a)
 	}
 
+	params["user_id"] = user_id
 	as := strings.Split(input.Auth, "|")
 	for i := 0; i < len(as)-1; i++ {
 		as1 := strings.Split(as[i], ",")

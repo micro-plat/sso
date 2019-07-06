@@ -70,14 +70,17 @@ func (r *DbRole) Get(sysID int, roleID int, path string) (data db.QueryRows, err
 
 //Query 获取角色信息列表
 func (r *DbRole) Query(input *QueryRoleInput) (data db.QueryRows, count int, err error) {
+	params := map[string]interface{}{
+		"role_sql": " and t.name like '%" + input.RoleName + "%' ",
+		"start":    (input.PageIndex - 1) * input.PageSize,
+		"ps":       input.PageSize,
+	}
+
 	db := r.c.GetRegularDB()
-	params, err := types.Struct2Map(input)
 	if err != nil {
 		return nil, 0, fmt.Errorf("Struct2Map Error(err:%v)", err)
 	}
-	params["currentPage"] = (types.GetInt(input.PageIndex) - 1) * types.GetInt(input.PageSize)
-	params["pageSize"] = input.PageSize
-	params["role_sql"] = " and t.name like '%" + input.RoleName + "%' "
+
 	c, q, a, err := db.Scalar(sql.QueryRoleInfoListCount, params)
 	if err != nil {
 		return nil, 0, fmt.Errorf("获取角色信息列表条数发生错误(err:%v),sql:%s,输入参数:%v", err, q, a)

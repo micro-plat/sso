@@ -43,6 +43,7 @@
               <el-button plain type="info" size="mini" @click="roleChange(2,scope.row.role_id)" v-if="scope.row.status == 0">禁用</el-button>
 
               <el-button plain  type="danger" size="mini" @click="roleDel(scope.row.role_id)">删除</el-button>
+              <el-button plain  type="info" size="mini" @click="roleAuth(scope.row.role_id)">授权</el-button>
 
             </template>
           </el-table-column>
@@ -330,7 +331,7 @@ export default {
         }
       });
     },
-    auth(id) {
+    roleAuth(id) {
       this.$router.push({
         name: "roleauth",
         query: {

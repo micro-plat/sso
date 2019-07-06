@@ -45,7 +45,6 @@ const AddSubSystem = `
 insert into 
   sso_system_info
   (
-    id,
     name,
     index_url,
     login_timeout,
@@ -59,7 +58,6 @@ insert into
   ) 
 values
   (
-    seq_system_info_id.nextval,
     @name,
     @addr,
     @time_out,
