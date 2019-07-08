@@ -139,9 +139,9 @@
         // console.log(this.addData)
         this.$refs[formName].validate((valid) => {
           if (valid) {
-            this.$get("/member/changepwd",{
-              password_old : this.updateInfo.password_old,
-              password : this.updateInfo.password,
+            this.$fetch("/sso/user/changepwd",{
+              expassword : this.updateInfo.password_old,
+              newpassword : this.updateInfo.password,
             }).then(res=>{
               this.$notify({
                 title:'成功',

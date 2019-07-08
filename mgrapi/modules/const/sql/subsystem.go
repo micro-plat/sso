@@ -99,6 +99,27 @@ where
   t.id = @id
 `
 
+const QuerySsoSystemMenu = `
+select t.*
+  from sso_system_menu t
+ where t.sys_id = @sys_id
+   and t.level_id = @level_id
+   order by t.sortrank asc`
+
+const UpSsoSystemMenu = `
+update sso_system_menu t
+   set t.sortrank = @num
+ where t.sys_id = @sys_id
+   and t.level_id = @level_id
+   and t.id = @id
+`
+const UpSsoSystemMenuList = `
+update sso_system_menu t
+   set t.sortrank = @sortrank 
+ where t.sys_id = @sys_id
+   and t.level_id = @level_id
+   and t.id = @i`
+
 // GetUsers .
 const GetUsers = `
 select

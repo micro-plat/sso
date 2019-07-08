@@ -92,11 +92,12 @@ func (u *DbSystemFunc) Delete(id int) (err error) {
 func (u *DbSystemFunc) Edit(input *model.SystemFuncEditInput) (err error) {
 	db := u.c.GetRegularDB()
 	params := map[string]interface{}{
-		"id":      input.Id,
-		"name":    input.Name,
-		"icon":    input.Icon,
-		"path":    input.Path,
-		"is_open": input.IsOpen,
+		"id":       input.Id,
+		"name":     input.Name,
+		"sortrank": input.Sortrank,
+		"icon":     input.Icon,
+		"path":     input.Path,
+		"is_open":  input.IsOpen,
 	}
 	_, q, a, err := db.Execute(sql.EditSysFunc, params)
 	if err != nil {
@@ -128,6 +129,8 @@ func (u *DbSystemFunc) Add(input *model.SystemFuncAddInput) (err error) {
 	if err != nil {
 		return fmt.Errorf("添加系统功能发生错误(err:%v),sql:%s,参数：%v", err, q, arg)
 	}
+
+	fmt.Println(sortrank)
 
 	params["sortrank"] = sortrank
 	_, q, arg, err = db.Execute(sql.AddSysFunc, params)

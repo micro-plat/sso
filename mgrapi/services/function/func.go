@@ -51,6 +51,11 @@ func (u *SystemFuncHandler) PostHandle(ctx *context.Context) (r interface{}) {
 	if err := ctx.Request.Bind(&input); err != nil {
 		return context.NewError(context.ERR_NOT_ACCEPTABLE, err)
 	}
+	/*验证当没有根节点时，不能增加子节点*/
+	if input.Parentid == 0 && input.ParentLevel != 0 {
+		return context.NewError(context.ERR_BAD_REQUEST, "请先保存根节点")
+	}
+
 	ctx.Log.Info("2.更新数据库数据--------")
 	err := u.subLib.Add(&input)
 	if err != nil {

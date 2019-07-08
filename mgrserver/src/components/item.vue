@@ -353,22 +353,37 @@
           return false;
         }
       },
+
       upNode(nodeModel) {
+        console.log(nodeModel,"所有参数")
+        this.$post("/sso/sys/manage/up",nodeModel).then(res =>{
+            this.$notify({
+              title: '成功',
+              message: '上移成功',
+            });
+          })
         console.log("upNode", nodeModel);
-        if (this.parentNodeModel.hasOwnProperty("children")) {
-          var index = this.parentNodeModel.children.indexOf(nodeModel);
-          if (index - 1 >= 0) {
-            var model = this.parentNodeModel.children.splice(this.parentNodeModel.children.indexOf(nodeModel), 1);
-            this.parentNodeModel.children.splice(index - 1, 0, model[0]);
-          }
-        } else if (this.parentNodeModel instanceof Array) {
-          // 第一级根节点处理
-          var index = this.parentNodeModel.indexOf(nodeModel);
-          if (index - 1 >= 0) {
-            var model = this.parentNodeModel.splice(this.parentNodeModel.indexOf(nodeModel), 1);
-            this.parentNodeModel.splice(index - 1, 0, model[0]);
-          }
-        }
+        // if (this.parentNodeModel.hasOwnProperty("children")) {
+        //   var index = this.parentNodeModel.children.indexOf(nodeModel);
+        //   if (index - 1 >= 0) {
+        //     var model = this.parentNodeModel.children.splice(this.parentNodeModel.children.indexOf(nodeModel), 1);
+        //     this.parentNodeModel.children.splice(index - 1, 0, model[0]);
+        //   }
+        //   this.$get("/sso/sys/manage/up",nodeModel).then(res =>{
+        //     this.$notify({
+        //       title: '成功',
+        //       message: '上移成功',
+              
+        //     });
+        //   })
+        // } else if (this.parentNodeModel instanceof Array) {
+        //   // 第一级根节点处理
+        //   var index = this.parentNodeModel.indexOf(nodeModel);
+        //   if (index - 1 >= 0) {
+        //     var model = this.parentNodeModel.splice(this.parentNodeModel.indexOf(nodeModel), 1);
+        //     this.parentNodeModel.splice(index - 1, 0, model[0]);
+        //   }
+        // }
       },
       downNode(nodeModel) {
         console.log(nodeModel);

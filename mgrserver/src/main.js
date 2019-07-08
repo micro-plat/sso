@@ -25,14 +25,16 @@ import {
     del
 } from './services/http'
 
-
+const config = {
+    fieldsBagName: 'vee-fields'
+    }
 
 import VueCookies from 'vue-cookies'
 
 Vue.use(VueCookies);
 
 Vue.use(VTree);
-Vue.use(VeeValidate);
+Vue.use(VeeValidate,config);
 
 
 //定义全局变量

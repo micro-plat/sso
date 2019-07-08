@@ -11,9 +11,10 @@ type SystemFuncAddInput struct {
 }
 
 type SystemFuncEditInput struct {
-	Id     string `form:"id" json:"id" valid:"required"`
-	Name   string `form:"name" json:"name" valid:"required"`
-	Icon   string `form:"icon" json:"icon" valid:"required"`
-	Path   string `form:"path" json:"path" valid:"required"`
-	IsOpen string `form:"is_open" json:"is_open"`
+	Id       string `form:"id" json:"id" valid:"required"`
+	Name     string `form:"name" json:"name" valid:"required"`
+	Icon     string `form:"icon" json:"icon" valid:"required"`
+	Path     string `form:"path" json:"path" valid:"required"`
+	IsOpen   string `form:"is_open" json:"is_open"`
+	Sortrank string `form:"sortrank" json:"sortrank" valid:"required"`
 }

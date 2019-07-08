@@ -72,10 +72,10 @@
       return {
         headpic: "http://sso2.100bm.cn:6888/static/img/a0.jpg",
         logo: "http://sso2.100bm.cn:6888/static/img/d663155de6dc8e060415bbcd891cb9d4.png",
-        copyright: "2018 admin-web", //版权信息
+        copyright: "2018 四川千行你我科技有限公司", //版权信息
         themes: "bg-danger|bg-danger|bg-dark light-danger", //顶部左侧背景颜色,顶部右侧背景颜色,右边菜单背景颜色
         menus: [{}],  //菜单数据
-        systemName: "admin-web 系统",  //系统名称
+        systemName: "用户系统",  //系统名称
         userinfo: {},
         indexUrl: "/",
         dialogAddVisible:false,     //添加表单显示隐藏
@@ -138,9 +138,9 @@
         // console.log(this.addData)
         this.$refs[formName].validate((valid) => {
           if (valid) {
-            this.$get("/member/changepwd",{
-              password_old : this.updateInfo.password_old,
-              password : this.updateInfo.password,
+            this.$fetch("/sso/user/changepwd",{
+              expassword : this.updateInfo.password_old,
+              newpassword : this.updateInfo.password,
             }).then(res=>{
               this.$notify({
                 title:'成功',

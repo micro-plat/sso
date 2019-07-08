@@ -45,6 +45,7 @@ func (s *SSO) install() {
 				"/sso/role/query",
 				"/sso/menu/get",
 				"/sso/sys/func/query",
+				"/sso/sys/manage/up",
 				"/sso/user/changepwd"],
 				"expireAt": 36000,
 				"mode": "HS512",

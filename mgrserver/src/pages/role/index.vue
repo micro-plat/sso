@@ -22,7 +22,7 @@
         <div slot="body">
           <div class="panel panel-default">
             <div class="panel-body">
-              <form role="form" class="ng-pristine ng-valid ng-submitted height-min">
+              <form role="form" class="ng-pristine ng-valid ng-submitted height-min" >
                 <div class="form-group">
                   <label>角色名</label>
                   <input name="ename" type="text" class="form-control" v-validate="'required'" v-model="roleInfo.role_name" placeholder="请输入角色名" required >
@@ -46,19 +46,19 @@
         <table class="table table-striped m-b-none">
           <thead>
           <tr>
-            <th>角色名</th>
-            <th>状态</th>
-            <th class="visible-md-block visible-lg-block border-no">创建时间</th>
-            <th>操作</th>
+            <th style="text-align:center">角色名</th>
+            <th style="text-align:center">状态</th>
+            <th  style="text-align:center" class="visible-md-block visible-lg-block border-no">创建时间</th>
+            <th style="text-align:center" >操作</th>
           </tr>
           </thead>
           <tbody class="table-border">
           <tr v-for="(item, index) in datalist.items" :key="index">
-            <td>{{item.role_name}}</td>
-            <td v-if="item.status==2" class="text-danger">{{item.status_label}}</td>
-            <td v-if="item.status==0" class="text-success">{{item.status_label}}</td>
-            <td class="visible-md-block  visible-lg-block">{{item.create_time}}</td>
-            <td>
+            <td style="text-align:center" >{{item.role_name}}</td>
+            <td style="text-align:center" v-if="item.status==2" class="text-danger">{{item.status_label}}</td>
+            <td style="text-align:center" v-if="item.status==0" class="text-success">{{item.status_label}}</td>
+            <td style="text-align:center" class="visible-md-block  visible-lg-block">{{item.create_time}}</td>
+            <td style="text-align:center">
               <div class="form-inline">
                 <div class="form-group">
                   <button class="btn btn-xs btn-primary visible-md visible-lg" @click="showModal(0,item)">编辑</button>

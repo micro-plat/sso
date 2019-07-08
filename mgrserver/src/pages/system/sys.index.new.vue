@@ -23,7 +23,7 @@
               <script type="text/ng-template" id="myModalContent.html">
                 <div ng-include="'src/pages/user/index/add.vue'"></div>
               </script>
-              <a class="visible-sm-inline visible-md-inline  visible-lg-inline btn btn-primary" ref="addsys" @click="openAdd">添加</a>
+              <a class="visible-sm-inline visible-md-inline  visible-lg-inline btn btn-primary" ref="addsys" @click="Add">添加</a>
             </span>
           </form>
         </div>
@@ -78,7 +78,7 @@
           :page-size="ps"
           :page-sizes="pageSizeList"
           layout="total, sizes, prev, pager, next, jumper"
-          :total="totalPage">
+          :total="datacount">
         </el-pagination>
       </div>
 
@@ -873,7 +873,7 @@
         <button class="btn btn-sm btn-primary" @click="cancel">取消</button>
       </div>
     </bootstrap-modal>
-
+    <add-modal ref="addModal" v-on:refresh-data="query"></add-modal>
   </div>
 
   </div>
@@ -882,8 +882,10 @@
 <script>
   import pager from "vue-simple-pager"
   import PullTo from 'vue-pull-to'
+  import AddModal from './addModal.vue'
 export default {
   components: {
+    "add-modal": AddModal,
     "bootstrap-modal": require("vue2-bootstrap-modal"),
     pager,
     PullTo
@@ -924,6 +926,7 @@ export default {
         style: [],
         ident: "",
         secret:"",
+        wechat_status:"1"
       },
       editData: {},
       enableData: { id: null, status: null },
@@ -937,7 +940,8 @@ export default {
   props:["path"],
   mounted() {
     this.$refs.main.style.height = document.documentElement.clientHeight + 'px';
-    this.goPage({ page: 1,ps:this.ps });
+    this.query()
+    // this.goPage({ page: 1,ps:this.ps });
     //this.queryTags(this.path);
   },
   computed: {
@@ -996,6 +1000,9 @@ export default {
           duration:2000,
         });
     },
+    Add() {
+            this.$refs.addModal.setModal()
+        },
     next(){
       let pi =this.pi;
       this.pi = pi + 1;
@@ -1031,27 +1038,28 @@ export default {
     },
     goPage(val) {
       this.pi = val;
-      this.$fetch("/sso/sys/manage", { pi: val ,ps:this.ps,name: this.sysname,status: this.selected})
-        .then(res => {
-          this.datalist = res.list;
-          this.datacount = res.count;
-          this.totalPage = Math.ceil(res.count / 10);
-        })
-        .catch(err => {
-          if (err.response) {
-            if (err.response.status == 403) {
-              this.$router.push("/member/login");
-            }else{
-              this.$notify({
-                title: '错误',
-                message: '网络错误,请稍后再试',
-                type: 'error',
-                offset: 50,
-                duration:2000,
-              });
-            }
-          }
-        });
+      this.query()
+      // this.$fetch("/sso/sys/manage", { pi: val ,ps:this.ps,name: this.sysname,status: this.selected})
+      //   .then(res => {
+      //     this.datalist = res.list;
+      //     this.datacount = res.count;
+      //     this.totalPage = Math.ceil(res.count / 10);
+      //   })
+      //   .catch(err => {
+      //     if (err.response) {
+      //       if (err.response.status == 403) {
+      //         this.$router.push("/member/login");
+      //       }else{
+      //         this.$notify({
+      //           title: '错误',
+      //           message: '网络错误,请稍后再试',
+      //           type: 'error',
+      //           offset: 50,
+      //           duration:2000,
+      //         });
+      //       }
+      //     }
+      //   });
     },
     query() {
       this.$fetch("/sso/sys/manage", {
@@ -1095,6 +1103,7 @@ export default {
         style: str,
         theme: this.addData.theme,
         ident: this.addData.ident,
+        secret:this.addData.secret,
         wechat_status: this.addData.wechat_status,
       })
         .then(res => {
@@ -1134,7 +1143,6 @@ export default {
       this.$refs.theModal.close();
       this.$refs.msgModal.close();
       this.$refs.editModal.close();
-      this.$refs.addModal.close();
       this.$refs.msg2Modal.close();
     },
     ok() {

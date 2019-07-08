@@ -15,6 +15,7 @@ type ISystemLogic interface {
 	Add(input *model.AddSystemInput) (err error)
 	ChangeStatus(sysId int, status int) (err error)
 	Edit(input *model.SystemEditInput) (err error)
+	Up(sysID int, sortrank int, levelID int, id int) (err error)
 	GetUsers(systemName string) (user db.QueryRows, allUser db.QueryRows, err error)
 }
 
@@ -105,6 +106,14 @@ func (u *SystemLogic) Edit(input *model.SystemEditInput) (err error) {
 	//更新缓存
 	return u.cache.FreshSysInfo()
 
+}
+
+// Up 对菜单功能排序
+func (u *SystemLogic) Up(sysID int, sortrank int, levelID int, id int) (err error) {
+	if err = u.db.Up(sysID, sortrank, levelID, id); err != nil {
+		return
+	}
+	return u.cache.FreshSysInfo()
 }
 
 //GetUsers 获取系统下所有用户

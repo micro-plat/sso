@@ -59,6 +59,23 @@ func (u *DbUser) Query(input *model.QueryUserInput) (data db.QueryRows, total in
 	if err != nil {
 		return nil, 0, fmt.Errorf("获取用户信息列表发生错误(err:%v),sql:%s,输入参数:%v", err, q, a)
 	}
+
+	params["user_id_string"] = ""
+	//查询给定用户的角色数据
+	if types.GetInt(count) > 0 {
+		userids := make([]string, 0)
+		for _, v := range data {
+			userId := v.GetString("user_id")
+			if userId == "" {
+				continue
+			}
+			userids = append(userids, userId)
+		}
+		params["user_id_string"] = strings.Join(userids, ",")
+	}
+
+	fmt.Println("user_id_string", params["user_id_string"])
+
 	sysRoles, q, a, err := db.Query(sql.QueryUserRoleList, params)
 	if err != nil {
 		return nil, 0, fmt.Errorf("获取用户信息列表发生错误(err:%v),sql:%s,输入参数:%v", err, q, a)

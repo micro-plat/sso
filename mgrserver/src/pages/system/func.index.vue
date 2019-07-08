@@ -152,6 +152,12 @@
                 <div class="form-height text-danger"><span v-show="errors.first('path')">地址不能为空</span></div>
               </div>
               <div class="form-group">
+                <label>排序编号</label>
+                <input class="form-control" placeholder="" v-validate="'required'" name="sortrank" 
+                      v-model="currentData.sortrank" type="text">
+                      <div class="form-height text-danger"><span v-show="errors.first('sortrank')">排序编号不能为空</span></div>
+              </div>
+              <div class="form-group">
                 <label>图标</label>
                 <span class="fa-stack fa-lg">
                      <i :class="currentData.icon +' '+ currentData.color" v-show="!currentData.iconTemp"></i>
@@ -392,6 +398,12 @@
                        v-model="currentData.path" type="text">
                 <div class="form-height text-danger"><span v-show="errors.first('path3')">地址不能为空</span></div>
               </div>
+              <!--<div class="form-group">
+                <label>排序编号</label>
+                <input class="form-control" placeholder="" v-validate="'required'" name="sortrank" 
+                      v-model="currentData.sortrank" type="text">
+                <div class="form-height text-danger"><span v-show="errors.first('sortrank')"></span></div>
+              </div>-->
               <div class="form-group">
                 <label>图标</label>
                 <span class="fa-stack fa-lg">
@@ -612,10 +624,12 @@ export default {
     initData() {
       let routerParams = this.$route.query;
       this.id = routerParams.id;
+      console.log(this.id,"编号")
       this.$fetch("/sso/sys/func", { id: this.id })
         .then(res => {
           if (res.length != 0) {
             this.ztreeDataSource = res;
+            console.log(this.ztreeDataSource,"数据")
             return;
           }
           this.ztreeDataSource.push({
@@ -656,6 +670,7 @@ export default {
           this.$put("/sso/sys/func", {
             id: data.id,
             name: data.name,
+            sortrank:data.sortrank,
             icon: icon,
             path: data.path,
             is_open: data.is_open,
@@ -694,6 +709,7 @@ export default {
         parentid: this.currentData.parentId,
         parentlevel: this.currentData.parentLevel,
         sysid: this.id,
+        sortrank: this.currentData.sortrank,
         name: this.currentData.name,
         icon: this.currentData.iconTemp +" "+ this.currentData.color,
         path: this.currentData.path,
@@ -814,7 +830,6 @@ export default {
       }
     },
     cancel() {
-      this.initData();
       this.$refs.editModal1.close();
       this.$refs.editModal2.close();
       this.$refs.editModal3.close();

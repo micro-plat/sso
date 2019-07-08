@@ -1,348 +1,362 @@
 <!--角色基础信息查询-->
 <template>
-  <div ref="main">
+<div ref="main">
 
     <div class="panel panel-default">
-      <div class="panel panel-default">
-        <div class="panel-body">
-          <form class="form-inline" role="form">
-            <div class="form-group">
-              <label class="sr-only" >角色名</label>
-              <input type="text" class="form-control" v-model="paging.role_name"  placeholder="请输入角色名">
+        <div class="panel panel-default">
+            <div class="panel-body">
+                <form class="form-inline" role="form">
+                    <div class="form-group">
+                        <!-- <label class="sr-only" >角色名</label> -->
+                        <input type="text" class="form-control" v-model="paging.role_name"  placeholder="请输入角色名">
             </div>
-            <a class="btn btn-success" @click="searchClick" >查询</a>
-            <a class="btn btn-primary" @click="showModal(1,{})" >添加角色</a>
-          </form>
-        </div>
-      </div>
-
-      <el-scrollbar style="height:100%">
-        <el-table :data="datalist.items" stripe  style="width: 100%">
-
-          <el-table-column width="200" prop="role_name" label="角色名" ></el-table-column>
-
-          <el-table-column  width="180" prop="status" label="状态" >
-            <template slot-scope="scope">
-
-              <el-tag type="success" v-if="scope.row.status == 0">{{scope.row.status_label}}</el-tag>
-              <el-tag type="info" v-if="scope.row.status == 2">{{scope.row.status_label}}</el-tag>
-            </template>
-          </el-table-column>
-
-          <el-table-column prop="create_time" label="创建时间" >
-            <template slot-scope="scope">
-              <i class="el-icon-time"></i>
-              <span style="margin-left: 10px">{{ scope.row.create_time }}</span>
-            </template>
-          </el-table-column>
-
-          <el-table-column  label="操作">
-            <template slot-scope="scope">
-              <el-button plain type="primary" size="mini" @click="showModal(0,scope.row)">编辑</el-button>
-              <el-button plain type="success" size="mini" @click="roleChange(0,scope.row.role_id)" v-if="scope.row.status == 2" >启用</el-button>
-              <el-button plain type="info" size="mini" @click="roleChange(2,scope.row.role_id)" v-if="scope.row.status == 0">禁用</el-button>
-
-              <el-button plain  type="danger" size="mini" @click="roleDel(scope.row.role_id)">删除</el-button>
-              <el-button plain  type="info" size="mini" @click="roleAuth(scope.row.role_id)">授权</el-button>
-
-            </template>
-          </el-table-column>
-        </el-table>
-
-      </el-scrollbar>
-
-      <el-dialog   width="30%"  @closed="closed" :visible.sync="dialogFormVisible">
-        <div slot="title">
-          {{isAdd == 1 ? "添加角色" : "编辑角色"}}
+                        <a class="btn btn-success" @click="searchClick" >查询</a>
+                        <a class="btn btn-primary" @click="showModal(1,{})" >添加角色</a>
+                </form>
+            </div>
         </div>
 
-        <el-form :model="roleInfo"  >
-          <el-form-item label="角色名">
-            <el-input clearable v-model="roleInfo.role_name"
-                      placeholder="请输入角色名">
+        <el-scrollbar style="height:100%">
+            <el-table :data="datalist.items" stripe style="width: 100%">
 
-            </el-input>
-          </el-form-item>
-          <el-form-item label="是否启用" v-if="isAdd == 1">
-            <el-checkbox  clearable v-model="roleInfo.status">
+                <el-table-column align="center" width="200" prop="role_name" label="角色名"></el-table-column>
 
-            </el-checkbox>
-          </el-form-item>
+                <el-table-column align="center" width="180" prop="status" label="状态">
+                    <template slot-scope="scope">
 
-        </el-form>
-        <div slot="footer" class="dialog-footer">
-          <el-button size="small" @click="dialogFormVisible = false">取 消</el-button>
-          <el-button type="success" size="small" @click="submitUser">确 定</el-button>
+                        <el-tag type="success" v-if="scope.row.status == 0">{{scope.row.status_label}}</el-tag>
+                        <el-tag type="info" v-if="scope.row.status == 2">{{scope.row.status_label}}</el-tag>
+                    </template>
+                </el-table-column>
+
+                <el-table-column align="center" prop="create_time" label="创建时间">
+                    <template slot-scope="scope">
+                        <i class="el-icon-time"></i>
+                        <span style="margin-left: 10px">{{ scope.row.create_time }}</span>
+                    </template>
+                </el-table-column>
+
+                <el-table-column align="center" label="操作">
+                    <template slot-scope="scope">
+                        <el-button plain type="primary" size="mini" @click="showModal(0,scope.row)">编辑</el-button>
+                        <el-button plain type="success" size="mini" @click="roleChange(0,scope.row.role_id)" v-if="scope.row.status == 2">启用</el-button>
+                        <el-button plain type="info" size="mini" @click="roleChange(2,scope.row.role_id)" v-if="scope.row.status == 0">禁用</el-button>
+
+                        <el-button plain type="danger" size="mini" @click="roleDel(scope.row.role_id)">删除</el-button>
+
+                        <el-button plain type="success" size="mini" @click="auth(scope.row.role_id)">授权</el-button>
+
+                    </template>
+                </el-table-column>
+            </el-table>
+
+        </el-scrollbar>
+
+        <el-dialog width="30%" @closed="closed" :visible.sync="dialogFormVisible">
+            <div slot="title">
+                {{isAdd == 1 ? "添加角色" : "编辑角色"}}
+            </div>
+            <form role="form" class="ng-pristine ng-valid ng-submitted height-min">
+                <div class="form-group">
+                    <label>角色名</label>
+                    <input name="rolename1" type="text" class="form-control" v-model="roleInfo.role_name" v-validate="'required'" placeholder="请输入角色名" required maxlength="32">
+                    <div class="form-heigit"> <span v-show="errors.first('rolename1')" class="text-danger">角色名不能为空！</span> </div>
+                </div>
+                <div class="form-group" v-if="isAdd == 1">
+                    <label class="checkbox-inline">
+                      <input id="statuscheck" type="checkbox">是否启用
+                    </label>
+                </div>
+            </form>
+            <div slot="footer" class="dialog-footer">
+                <el-button size="small" @click="dialogFormVisible = false">取消</el-button>
+                <el-button type="success" size="small" @click="submitUser">提交</el-button>
+            </div>
+        </el-dialog>
+
+        <div class="page-pagination">
+            <el-pagination @size-change="handleSizeChange" @current-change="pageChange" :current-page="paging.pi" :page-size="paging.ps" :page-sizes="pageSizes" layout="total, sizes, prev, pager, next, jumper" :total="totalpage">
+            </el-pagination>
         </div>
-      </el-dialog>
-
-      <div class="page-pagination">
-        <el-pagination
-          @size-change="handleSizeChange"
-          @current-change="pageChange"
-          :current-page="paging.pi"
-          :page-size="paging.ps"
-          :page-sizes="pageSizes"
-          layout="total, sizes, prev, pager, next, jumper"
-          :total="totalpage">
-        </el-pagination>
-      </div>
 
     </div>
 
-  </div>
+</div>
 </template>
+
 <script>
 import pager from "vue-simple-pager";
 import PullTo from 'vue-pull-to';
 export default {
-  components: {
-    "bootstrap-modal": require("vue2-bootstrap-modal"),
-    pager: pager,
-    PullTo
-  },
-  data() {
-    return {
-      title:()=>{
-        if (this.isAdd == 1){
-            return "添加"
-        }else{
-          return "编辑"
-        }
-      },
-      editOrAddData:{},
-      dialogFormVisible:false,
-      paging: { ps: 10, pi: 1, role_name: "" },
-      pageSizeList: [5, 10, 20, 50], //可选显示数据条数
-      datalist: { count: 0, items: [] },
-      totalpage: 0,
-      isShowLog: false,
-      isAdd: 1,
-      selectRole: {},
-      roleInfo: {
-        role_name: "",
-        role_id: -1,
-        status: 0,
-        is_add: 2
-      }
-    };
-  },
-  mounted() {
-    this.$refs.main.style.height = document.documentElement.clientHeight + 'px';
-    this.queryData();
-  },
-  methods: {
-    closed(){
-      console.log("colsed")
-      // this.query()
+    components: {
+        "bootstrap-modal": require("vue2-bootstrap-modal"),
+        pager: pager,
+        PullTo
     },
-    loadmore: function(loaded) {
-      return new Promise(function(resolve, reject) {
-        setTimeout(function() {
-          loaded("done");
-        }, 1000);
-      });
-    },
-    next(){
-      let pi = this.paging.pi
-      this.paging.pi = pi + 1;
-      this.$post("/sso/role", this.paging)
-        .then(res => {
-          if(res.list.length <= 0) {
-            this.paging.pi = pi
-            return false
-          }
-          this.datalist.items = this.datalist.items.concat(res.list);
-          this.datalist.count = new Number(res.count);
-          this.totalpage = Math.ceil(this.datalist.count / this.paging.ps);
-        })
-        .catch(err => {
-          if (err.response.status == 403) {
-            this.$router.push("/login");
-          }else{
-            this.$notify({
-              title: '错误',
-              message: '网络错误,请稍后再试',
-              type: 'error',
-              offset: 50,
-              duration:2000,
-            });
-          }
-        });
-    },
-    queryData: function() {
-      if (this.paging.pi == 0) {
-        this.paging.pi = 1;
-      }
-      this.$fetch("/sso/role", this.paging)
-        .then(res => {
-          this.datalist.items = res.list;
-          this.datalist.count = new Number(res.count);
-          this.totalpage = res.count;
-        })
-        .catch(err => {
-          if (err.response.status == 403) {
-            this.$router.push("/login");
-          }else{
-            this.$notify({
-              title: '错误',
-              message: '网络错误,请稍后再试',
-              type: 'error',
-              offset: 50,
-              duration:2000,
-            });
-          }
-        });
-    },
-    pageChange: function(data) {
-      this.paging.pi = data;
-      this.queryData();
-    },
-    handleSizeChange(val){
-      this.paging.ps = val;
-      this.queryData()
-    },
-    searchClick: function() {
-      this.paging.pi = 1;
-      this.queryData();
-    },
-
-    showModal: function(i, j) {
-      if (i == 1) {
-        this.isAdd = 1;
-        this.roleInfo.role_name = "";
-        this.roleInfo.role_id = -1;
-        this.roleInfo.status = 0;
-        this.roleInfo.is_add = 1;
-      } else {
-        this.isAdd = 0;
-        this.roleInfo.role_name = j.role_name;
-        this.roleInfo.role_id = j.role_id;
-        this.roleInfo.status = j.status;
-        this.roleInfo.is_add = 2;
-      }
-      this.dialogFormVisible =true
-      //this.$refs.editModal.open();
-    },
-    roleChange: function(ests, roleid) {
-      var role = { status: ests, role_id: roleid };
-      this.$confirm("确认执行该操作吗?, 是否继续?", "提示", {
-        confirmButtonText: "确定",
-        cancelButtonText: "取消",
-        type: "warning"
-      }).then(() => {
-        this.$put("/sso/role", role)
-          .then(res => {
-            this.queryData();
-            this.$notify({
-              title: '成功',
-              message: '状态修改成功',
-              type: 'success',
-              offset: 50,
-              duration:2000
-            });
-          })
-          .catch(err => {
-
-            this.$notify({
-              title: '错误',
-              message: '网络错误,请稍后再试',
-              type: 'error',
-              offset: 50,
-              duration:2000,
-            });
-
-          });
-
-      }).catch(() => {
-        this.$message({
-          type: "info",
-          message: "已取消删除"
-        });
-      });
-
-    },
-    roleDel: function(roleid) {
-      var role = {data:{ role_id: roleid }};
-
-      this.$confirm("此操作将永久删除该数据, 是否继续?", "提示", {
-        confirmButtonText: "确定",
-        cancelButtonText: "取消",
-        type: "warning"
-      }).then(() => {
-        this.$del("/sso/role", role)
-          .then(res => {
-            this.queryData();
-            this.$notify({
-              title: '成功',
-              message: '删除成功',
-              type: 'success',
-              offset: 50,
-              duration:2000,
-            });
-          })
-          .catch(err => {
-            this.$notify({
-              title: '错误',
-              message: '网络错误,请稍后再试',
-              type: 'error',
-              offset: 50,
-              duration:2000,
-            });
-          });
-
-      }).catch(() => {
-        this.$message({
-          type: "info",
-          message: "已取消删除"
-        });
-      });
-
-    },
-    submitUser() {
-      this.$validator.validate().then(result => {
-        if (!result) {
-          return false;
-        } else {
-          if (this.isAdd == 1) {
-            this.roleInfo.is_add = 1;
-
-            if (this.roleInfo.status) {
-              this.roleInfo.status = 0;
-            } else {
-              this.roleInfo.status = 2;
+    data() {
+        return {
+            title: () => {
+                if (this.isAdd == 1) {
+                    return "添加"
+                } else {
+                    return "编辑"
+                }
+            },
+            editOrAddData: {},
+            dialogFormVisible: false,
+            paging: {
+                ps: 10,
+                pi: 1,
+                role_name: ""
+            },
+            pageSizes: [5, 10, 20, 50], //可选显示数据条数
+            datalist: {
+                count: 0,
+                items: []
+            },
+            totalpage: 0,
+            isShowLog: false,
+            isAdd: 1,
+            selectRole: {},
+            roleInfo: {
+                role_name: "",
+                role_id: -1,
+                status: 0,
+                is_add: 2
             }
-          }
+        };
+    },
+    mounted() {
+        this.$refs.main.style.height = document.documentElement.clientHeight + 'px';
+        this.queryData();
+    },
+    methods: {
+        closed() {
+            console.log("colsed")
+            // this.query()
+        },
+        loadmore: function (loaded) {
+            return new Promise(function (resolve, reject) {
+                setTimeout(function () {
+                    loaded("done");
+                }, 1000);
+            });
+        },
+        next() {
+            let pi = this.paging.pi
+            this.paging.pi = pi + 1;
+            this.$post("/sso/role", this.paging)
+                .then(res => {
+                    if (res.list.length <= 0) {
+                        this.paging.pi = pi
+                        return false
+                    }
+                    this.datalist.items = this.datalist.items.concat(res.list);
+                    this.datalist.count = new Number(res.count);
+                    this.totalpage = Math.ceil(this.datalist.count / this.paging.ps);
+                })
+                .catch(err => {
+                    if (err.response.status == 403) {
+                        this.$router.push("/login");
+                    } else {
+                        this.$notify({
+                            title: '错误',
+                            message: '网络错误,请稍后再试',
+                            type: 'error',
+                            offset: 50,
+                            duration: 2000,
+                        });
+                    }
+                });
+        },
+        queryData: function () {
+            if (this.paging.pi == 0) {
+                this.paging.pi = 1;
+            }
+            this.$fetch("/sso/role", this.paging)
+                .then(res => {
+                    this.datalist.items = res.list;
+                    this.datalist.count = new Number(res.count);
+                    this.totalpage = res.count;
+                })
+                .catch(err => {
+                    if (err.response.status == 403) {
+                        this.$router.push("/login");
+                    } else {
+                        this.$notify({
+                            title: '错误',
+                            message: '网络错误,请稍后再试',
+                            type: 'error',
+                            offset: 50,
+                            duration: 2000,
+                        });
+                    }
+                });
+        },
+        pageChange: function (data) {
+            this.paging.pi = data;
+            this.queryData();
+        },
+        handleSizeChange(val) {
+            this.paging.ps = val;
+            this.queryData()
+        },
+        searchClick: function () {
+            this.paging.pi = 1;
+            this.queryData();
+        },
 
-          this.$post("/sso/role", this.roleInfo)
-            .then(res => {
-              this.dialogFormVisible=false;
-              this.queryData();
-            })
-            .catch(err => {
-                this.$notify({
-                  title: '错误',
-                  message: '网络错误,请稍后再试',
-                  type: 'error',
-                  offset: 50,
-                  duration:2000,
+        showModal: function (i, j) {
+            if (i == 1) {
+                this.isAdd = 1;
+                this.roleInfo.role_name = "";
+                this.roleInfo.role_id = -1;
+                this.roleInfo.status = 0;
+                this.roleInfo.is_add = 1;
+            } else {
+                this.isAdd = 0;
+                this.roleInfo.role_name = j.role_name;
+                this.roleInfo.role_id = j.role_id;
+                this.roleInfo.status = j.status;
+                this.roleInfo.is_add = 2;
+            }
+            this.dialogFormVisible = true
+            //this.$refs.editModal.open();
+        },
+        roleChange: function (ests, roleid) {
+            var role = {
+                status: ests,
+                role_id: roleid
+            };
+            this.$confirm("确认执行该操作吗?, 是否继续?", "提示", {
+                confirmButtonText: "确定",
+                cancelButtonText: "取消",
+                type: "warning"
+            }).then(() => {
+                this.$put("/sso/role", role)
+                    .then(res => {
+                        this.queryData();
+                        this.$notify({
+                            title: '成功',
+                            message: '状态修改成功',
+                            type: 'success',
+                            offset: 50,
+                            duration: 2000
+                        });
+                    })
+                    .catch(err => {
+
+                        this.$notify({
+                            title: '错误',
+                            message: '网络错误,请稍后再试',
+                            type: 'error',
+                            offset: 50,
+                            duration: 2000,
+                        });
+
+                    });
+
+            }).catch(() => {
+                this.$message({
+                    type: "info",
+                    message: "已取消删除"
                 });
             });
+
+        },
+        roleDel: function (roleid) {
+            var role = {
+                data: {
+                    role_id: roleid
+                }
+            };
+
+            this.$confirm("此操作将永久删除该数据, 是否继续?", "提示", {
+                confirmButtonText: "确定",
+                cancelButtonText: "取消",
+                type: "warning"
+            }).then(() => {
+                this.$del("/sso/role", role)
+                    .then(res => {
+                        this.queryData();
+                        this.$notify({
+                            title: '成功',
+                            message: '删除成功',
+                            type: 'success',
+                            offset: 50,
+                            duration: 2000,
+                        });
+                    })
+                    .catch(err => {
+                        this.$notify({
+                            title: '错误',
+                            message: '网络错误,请稍后再试',
+                            type: 'error',
+                            offset: 50,
+                            duration: 2000,
+                        });
+                    });
+
+            }).catch(() => {
+                this.$message({
+                    type: "info",
+                    message: "已取消删除"
+                });
+            });
+
+        },
+        submitUser() {
+            this.$validator.validate().then(result => {
+                if (!result) {
+                    return false;
+                } else {
+                    if (this.isAdd == 1) {
+                        this.roleInfo.is_add = 1;
+
+                        // if (this.roleInfo.status) {
+                        //   this.roleInfo.status = 0;
+                        // } else {
+                        //   this.roleInfo.status = 2;
+                        // }
+                        var x = document.getElementById("statuscheck").checked;
+                        if (x) {
+                            this.roleInfo.status = 0
+                        } else {
+                            this.roleInfo.status = 2
+                        }
+                    }
+                    this.$post("/sso/role", this.roleInfo)
+                        .then(res => {
+                            this.dialogFormVisible = false;
+                            this.queryData();
+                        })
+                        .catch(err => {
+                            this.$notify({
+                                title: '错误',
+                                message: '网络错误,请稍后再试',
+                                type: 'error',
+                                offset: 50,
+                                duration: 2000,
+                            });
+                        });
+                }
+            });
+        },
+        auth(id) {
+            this.$router.push({
+                name: "roleauth",
+                query: {
+                    role_id: id
+                }
+            });
         }
-      });
-    },
-    roleAuth(id) {
-      this.$router.push({
-        name: "roleauth",
-        query: {
-          role_id: id
-        }
-      });
     }
-  }
 };
 </script>
 
 <style scoped>
-  .page-pagination{padding: 10px 15px;text-align: right;}
+.page-pagination {
+    padding: 10px 15px;
+    text-align: right;
+}
 </style>

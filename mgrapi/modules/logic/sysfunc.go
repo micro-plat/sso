@@ -42,7 +42,7 @@ func (u *SystemFuncLogic) Get(sysid int) (data []map[string]interface{}, err err
 			return nil, err
 		}
 	}
-	return data, err
+	return data, u.cache.Fresh()
 }
 
 //ChangeStatus 修改功能状态

@@ -42,11 +42,11 @@ func (r *SSO) init() {
 		return nil
 	})
 
-	r.Micro("/sso/login", member.NewLoginHandler, "*")          //用户名密码登录
-	r.Micro("/sso/menu", menu.NewMenuHandler, "*")              //系统菜单相关接口
-	r.Micro("/sso/ident", system.NewSystemIdentHandler, "*")    //系统信息获取
-	r.Micro("/sso/member", member.NewQueryHandler, "*")         //查询登录用户信息
-	r.Micro("/sso/changepwd", user.NewUserPasswordHandler, "*") // 修改密码
+	r.Micro("/sso/login", member.NewLoginHandler, "*")               //用户名密码登录
+	r.Micro("/sso/menu", menu.NewMenuHandler, "*")                   //系统菜单相关接口
+	r.Micro("/sso/ident", system.NewSystemIdentHandler, "*")         //系统信息获取
+	r.Micro("/sso/member", member.NewQueryHandler, "*")              //查询登录用户信息
+	r.Micro("/sso/user/changepwd", user.NewUserPasswordHandler, "*") // 修改密码
 	r.Micro("/sso/base", base.NewBaseUserHandler, "*")
 	r.Micro("/sso/user", user.NewUserHandler, "*")                                                              //用户相关接口
 	r.Micro("/sso/auth", role.NewRoleAuthHandler, "/user/role")                                                 //权限管理

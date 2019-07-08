@@ -155,3 +155,29 @@ func (u *SystemHandler) EditHandle(ctx *context.Context) (r interface{}) {
 	ctx.Log.Info("3.返回数据。")
 	return "success"
 }
+
+// UpHandle 排序功能菜单
+func (u *SystemHandler) UpHandle(ctx *context.Context) (r interface{}) {
+	ctx.Log.Info("------上移------")
+	ctx.Log.Info("1.参数校验")
+	if err := ctx.Request.Check("sys_id", "sortrank", "level_id", "id"); err != nil {
+		return context.NewError(context.ERR_NOT_ACCEPTABLE, err)
+	}
+
+	ctx.Log.Info("2.执行操作")
+	err := u.subLib.Up(ctx.Request.GetInt("sys_id"), ctx.Request.GetInt("sortrank"), ctx.Request.GetInt("level_id"), ctx.Request.GetInt("id"))
+	if err != nil {
+		return err
+	}
+
+	ctx.Log.Info("3.记录行为")
+	if err := u.op.SysOperate(
+		member.Query(ctx, u.container),
+		"上移",
+		"sys_id", ctx.Request.GetInt("sys_id"), "sortrank", ctx.Request.GetInt("sortrank"), "level_id", ctx.Request.GetInt("level_id"), "id", ctx.Request.GetInt("id"),
+	); err != nil {
+		return err
+	}
+
+	return "success"
+}
