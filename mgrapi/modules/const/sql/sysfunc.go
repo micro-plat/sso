@@ -46,6 +46,13 @@ where
 const AddSysFunc = `
 insert into 
 	sso_system_menu
-	(name,parent,sys_id,level_id,icon,path,sortrank,is_open) 
+	(name,parent,sys_id,level_id,icon,path,sortrank,is_open)
 values
-	(@name,@parent,@sys_id,@level_id,@icon,@path,1,@is_open)`
+	(@name,@parent,@sys_id,@level_id,@icon,@path,@sortrank,@is_open)`
+
+//GetSysFuncSortRank 查询目录结构下的最大sortrank
+const GetSysFuncSortRank = `
+select 
+	max(IFNULL(sortrank, 0) + 1) as sortrank  
+from sso_system_menu where sys_id = @sys_id and level_id = @level_id and parent = @parent
+`

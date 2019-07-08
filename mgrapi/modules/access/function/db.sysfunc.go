@@ -117,9 +117,22 @@ func (u *DbSystemFunc) Add(input *model.SystemFuncAddInput) (err error) {
 		"level_id": input.ParentLevel + 1,
 		"is_open":  input.IsOpen,
 	}
-	_, q, a, err := db.Execute(sql.AddSysFunc, params)
+	var (
+		sortrank interface{}
+		q        string
+		arg      []interface{}
+	)
+
+	//1: 查询目录结构中的最大值
+	sortrank, q, arg, err = db.Scalar(sql.GetSysFuncSortRank, params)
 	if err != nil {
-		return fmt.Errorf("添加系统功能发生错误(err:%v),sql:%s,参数：%v", err, q, a)
+		return fmt.Errorf("添加系统功能发生错误(err:%v),sql:%s,参数：%v", err, q, arg)
+	}
+
+	params["sortrank"] = sortrank
+	_, q, arg, err = db.Execute(sql.AddSysFunc, params)
+	if err != nil {
+		return fmt.Errorf("添加系统功能发生错误(err:%v),sql:%s,参数：%v", err, q, arg)
 	}
 	return nil
 }
