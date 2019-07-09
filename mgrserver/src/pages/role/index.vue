@@ -8,7 +8,7 @@
           <form class="form-inline" role="form">
             <div class="form-group">
               <label class="sr-only" for="exampleInputEmail2">角色名</label>
-              <input type="text" class="form-control" v-model="paging.role_name"  placeholder="请输入角色名">
+              <input type="text" class="form-control" onkeypress="if(event.keyCode == 13) return false;" v-model="paging.role_name"  placeholder="请输入角色名">
             </div>
             <a class="btn btn-success" @click="searchClick" >查询</a>
             <a class="btn btn-primary" @click="showModal(1,{})" >添加角色</a>

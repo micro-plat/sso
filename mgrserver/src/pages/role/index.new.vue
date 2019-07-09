@@ -8,7 +8,7 @@
                 <form class="form-inline" role="form">
                     <div class="form-group">
                         <!-- <label class="sr-only" >角色名</label> -->
-                        <input type="text" class="form-control" v-model="paging.role_name"  placeholder="请输入角色名">
+                        <input type="text" class="form-control" onkeypress="if(event.keyCode == 13) return false;" v-model="paging.role_name"  placeholder="请输入角色名">
             </div>
                         <a class="btn btn-success" @click="searchClick" >查询</a>
                         <a class="btn btn-primary" @click="showModal(1,{})" >添加角色</a>
@@ -59,7 +59,7 @@
             <form role="form" class="ng-pristine ng-valid ng-submitted height-min">
                 <div class="form-group">
                     <label>角色名</label>
-                    <input name="rolename1" type="text" class="form-control" v-model="roleInfo.role_name" v-validate="'required'" placeholder="请输入角色名" required maxlength="32">
+                    <input name="rolename1" type="text" class="form-control" v-model="roleInfo.role_name"  v-validate="'required'" placeholder="请输入角色名" required maxlength="32">
                     <div class="form-heigit"> <span v-show="errors.first('rolename1')" class="text-danger">角色名不能为空！</span> </div>
                 </div>
                 <div class="form-group" v-if="isAdd == 1">

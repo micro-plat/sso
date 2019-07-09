@@ -8,7 +8,7 @@
           <form class="form-inline">
             <div class="form-group">
               <label class="sr-only">系统名</label>
-              <input type="text" class="form-control" v-model="sysname" placeholder="请输入系统名称">
+              <input type="text" class="form-control" onkeypress="if(event.keyCode == 13) return false;" v-model="sysname" placeholder="请输入系统名称">
             </div>
             <div class="form-group">
               <label class="col-sm-2 control-label sr-only">状态</label>
@@ -18,7 +18,7 @@
                 <option value="1">启用</option>
               </select>
             </div>
-            <a class="visible-xs-inline visible-sm-inline visible-md-inline  visible-lg-inline btn btn btn-success" @click="query">查询</a>
+            <a class="visible-xs-inline visible-sm-inline visible-md-inline  visible-lg-inline btn btn btn-success" @click="querySearch">查询</a>
             <span ng-controller="ModalDemoCtrl">
               <script type="text/ng-template" id="myModalContent.html">
                 <div ng-include="'src/pages/user/index/add.vue'"></div>
@@ -873,7 +873,7 @@
         <button class="btn btn-sm btn-primary" @click="cancel">取消</button>
       </div>
     </bootstrap-modal>
-    <add-modal ref="addModal" v-on:refresh-data="query"></add-modal>
+    <add-modal ref="addModal" v-on:refresh-data="querySearch"></add-modal>
   </div>
 
   </div>
@@ -1061,6 +1061,13 @@ export default {
       //     }
       //   });
     },
+
+    //点查询事件
+    querySearch() {
+      this.pi = 1;
+      this.query();
+    },
+
     query() {
       this.$fetch("/sso/sys/manage", {
         pi: this.pi,

@@ -66,6 +66,11 @@ export default new Router({
     }]
   },
     {
+      path: '/member/login',
+      name: 'loginss',
+      component: login
+    },
+    {
       path: '/:ident/member/login',
       name: 'logins',
       component: login

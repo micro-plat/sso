@@ -361,8 +361,9 @@
               title: '成功',
               message: '上移成功',
             });
+            console.log("sysid: ", nodeModel.sys_id);
+            this.$emit('update-tree-list',nodeModel.sys_id)
           })
-        console.log("upNode", nodeModel);
         // if (this.parentNodeModel.hasOwnProperty("children")) {
         //   var index = this.parentNodeModel.children.indexOf(nodeModel);
         //   if (index - 1 >= 0) {
@@ -401,7 +402,45 @@
             this.parentNodeModel.splice(index + 1, 0, model[0]);
           }
         }
+      },
+
+      //获取系统下面的菜单数据
+      getSysMenu(sysId) {
+        this.$fetch("/sso/sys/func", { id: sysId })
+        .then(res => {
+          if (res.length != 0) {
+            this.model = res;
+            console.log(this.model,"数据")
+            return;
+          }
+          this.model.push({
+            name: "新节点",
+            children: [],
+            path: "-",
+            icon: "-",
+            isNew: true,
+            parentId: 0,
+            parentLevel: 0,
+            level_id:1,
+          })
+        })
+        .catch(err => {
+          if (err.response) {
+            if (err.response.status == 403) {
+              this.$router.push("/login");
+            }else{
+              this.$notify({
+                title: '错误',
+                message: '网络错误,请稍后再试',
+                type: 'error',
+                offset: 50,
+                duration:2000,
+              });
+            }
+          }
+        });
       }
+
     },
     computed: {
       rootClass() {

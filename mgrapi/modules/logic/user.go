@@ -53,21 +53,16 @@ func (u *UserLogic) IsSendEmail(input *model.UserInputNew) (b bool, err error) {
 
 //Query 获取用户信息列表
 func (u *UserLogic) Query(input *model.QueryUserInput) (data db.QueryRows, count int, err error) {
-	if data, count, err = u.db.Query(input); err != nil {
-		return nil, 0, err
-	}
-	/*
-		//从缓存中获取用户信息，不存在时从数据库中获取
-		data, count, err = u.cache.Query(input)
-		if data == nil || count == 0 || err != nil {
-			if data, count, err = u.db.Query(input); err != nil {
-				return nil, 0, err
-			}
-			if err = u.cache.Save(input, data, count); err != nil {
-				return nil, 0, err
-			}
+	//从缓存中获取用户信息，不存在时从数据库中获取
+	data, count, err = u.cache.Query(input)
+	if data == nil || count == 0 || err != nil {
+		if data, count, err = u.db.Query(input); err != nil {
+			return nil, 0, err
 		}
-	*/
+		if err = u.cache.Save(input, data, count); err != nil {
+			return nil, 0, err
+		}
+	}
 	return data, count, nil
 }
 

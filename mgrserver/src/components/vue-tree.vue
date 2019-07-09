@@ -138,7 +138,7 @@
     <div class="zTreeDemoBackground left">
       <div class="row qx-add-scrollbox">
       <ul class="ztree">
-        <ztree-item v-for='(m,i) in treeDataSource' :key='i' :model.sync="m" :num.sync='i' root='0' :nodes.sync='treeDataSource.length' :ischeck='isCheck' :callback='func' :checkfunc='checkfunc' :expandfunc='expand' :cxtmenufunc='contextmenu' :trees.sync='treeDataSource'></ztree-item>
+        <ztree-item v-for='(m,i) in treeDataSource' :key='i' :model.sync="m" :num.sync='i' root='0' :nodes.sync='treeDataSource.length' :ischeck='isCheck' :callback='func' :checkfunc='checkfunc' :expandfunc='expand' :cxtmenufunc='contextmenu' :trees.sync='treeDataSource' v-on:update-tree-list="updateList"></ztree-item>
       </ul>
       </div>
     </div>
@@ -245,6 +245,9 @@
 
         this.treeDataSource = tempList;
       },
+      updateList(sysid) {
+        console.log("parent: ", sysid)
+      }
     },
 
   }

@@ -11,6 +11,7 @@
                 type="text"
                 class="form-control"
                 v-model="paging.username"
+                onkeypress="if(event.keyCode == 13) return false;"
                 placeholder="请输入用户名"
               />
             </div>

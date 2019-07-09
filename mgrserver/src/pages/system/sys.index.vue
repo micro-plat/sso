@@ -8,7 +8,7 @@
           <form class="form-inline">
             <div class="form-group">
               <label class="sr-only">系统名</label>
-              <input type="text" class="form-control" v-model="sysname" placeholder="请输入系统名称">
+              <input type="text" class="form-control" onkeypress="if(event.keyCode == 13) return false;" v-model="sysname" placeholder="请输入系统名称">
             </div>
             <div class="form-group">
               <label class="col-sm-2 control-label sr-only">状态</label>
