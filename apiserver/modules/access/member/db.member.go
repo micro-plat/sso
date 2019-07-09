@@ -100,6 +100,7 @@ func (l *DBMember) Query(u string, p string, ident string) (s *model.MemberState
 	if data.IsEmpty() {
 		return nil, context.NewError(context.ERR_FORBIDDEN, "用户名或密码错误")
 	}
+
 	s = &model.MemberState{}
 	// if err = data.Get(0).ToStruct(s); err != nil {
 	// 	return nil, err
@@ -113,6 +114,7 @@ func (l *DBMember) Query(u string, p string, ident string) (s *model.MemberState
 		return nil, context.NewError(context.ERR_UNSUPPORTED_MEDIA_TYPE, "不允许登录系统")
 	}
 	s.UserID = data.Get(0).GetInt64("user_id", -1)
+	s.Status = data.Get(0).GetInt("status")
 	s.Password = data.Get(0).GetString("password")
 	s.UserName = data.Get(0).GetString("user_name")
 	s.RoleID = roles.Get(0).GetInt("role_id")
