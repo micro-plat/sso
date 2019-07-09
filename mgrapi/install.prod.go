@@ -51,6 +51,7 @@ func (s *SSO) install() {
 					"/sso/menu/get",
 					"/sso/sys/func/query",
 					"/sso/sys/manage/up",
+					"/sso/sys/manage/down",
 					"/sso/user/changepwd"
 					],
 				"expireAt": 36000,

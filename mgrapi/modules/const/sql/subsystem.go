@@ -102,23 +102,20 @@ where
 const QuerySsoSystemMenu = `
 select t.*
   from sso_system_menu t
- where t.sys_id = @sys_id
+where t.sys_id = @sys_id
    and t.level_id = @level_id
-   order by t.sortrank asc`
+   and t.parent =@parent
+   #sortrank
+#orderby
+limit 1;`
 
 const UpSsoSystemMenu = `
 update sso_system_menu t
-   set t.sortrank = @num
+   set t.sortrank = @sortrank
  where t.sys_id = @sys_id
    and t.level_id = @level_id
    and t.id = @id
 `
-const UpSsoSystemMenuList = `
-update sso_system_menu t
-   set t.sortrank = @sortrank 
- where t.sys_id = @sys_id
-   and t.level_id = @level_id
-   and t.id = @i`
 
 // GetUsers .
 const GetUsers = `

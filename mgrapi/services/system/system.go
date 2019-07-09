@@ -165,7 +165,15 @@ func (u *SystemHandler) UpHandle(ctx *context.Context) (r interface{}) {
 	}
 
 	ctx.Log.Info("2.执行操作")
-	err := u.subLib.Up(ctx.Request.GetInt("sys_id"), ctx.Request.GetInt("sortrank"), ctx.Request.GetInt("level_id"), ctx.Request.GetInt("id"))
+	request := ctx.Request
+	err := u.subLib.Sort(
+		request.GetInt("sys_id"),
+		request.GetInt("sortrank"),
+		request.GetInt("level_id"),
+		request.GetInt("id"),
+		request.GetInt("parent"),
+		true)
+
 	if err != nil {
 		return err
 	}
@@ -174,6 +182,40 @@ func (u *SystemHandler) UpHandle(ctx *context.Context) (r interface{}) {
 	if err := u.op.SysOperate(
 		member.Query(ctx, u.container),
 		"上移",
+		"sys_id", ctx.Request.GetInt("sys_id"), "sortrank", ctx.Request.GetInt("sortrank"), "level_id", ctx.Request.GetInt("level_id"), "id", ctx.Request.GetInt("id"),
+	); err != nil {
+		return err
+	}
+
+	return "success"
+}
+
+// DownHandle 向下排序功能菜单
+func (u *SystemHandler) DownHandle(ctx *context.Context) (r interface{}) {
+	ctx.Log.Info("------下移------")
+	ctx.Log.Info("1.参数校验")
+	if err := ctx.Request.Check("sys_id", "sortrank", "level_id", "id"); err != nil {
+		return context.NewError(context.ERR_NOT_ACCEPTABLE, err)
+	}
+
+	ctx.Log.Info("2.执行操作")
+	request := ctx.Request
+	err := u.subLib.Sort(
+		request.GetInt("sys_id"),
+		request.GetInt("sortrank"),
+		request.GetInt("level_id"),
+		request.GetInt("id"),
+		request.GetInt("parent"),
+		false)
+
+	if err != nil {
+		return err
+	}
+
+	ctx.Log.Info("3.记录行为")
+	if err := u.op.SysOperate(
+		member.Query(ctx, u.container),
+		"下移",
 		"sys_id", ctx.Request.GetInt("sys_id"), "sortrank", ctx.Request.GetInt("sortrank"), "level_id", ctx.Request.GetInt("level_id"), "id", ctx.Request.GetInt("id"),
 	); err != nil {
 		return err

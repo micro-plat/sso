@@ -746,8 +746,8 @@ export default {
     },
     // 点击节点
     nodeClick: function(d) {
-      /*向上排序 */
-      if (d.isUp === true) {
+      /*排序 */
+      if (d.isSort === true) {
         this.initData();
       } else {
         console.log(d);

@@ -18,7 +18,7 @@ type IDbSystem interface {
 	Add(input *model.AddSystemInput) (err error)
 	ChangeStatus(sysID int, status int) (err error)
 	Edit(input *model.SystemEditInput) (err error)
-	Up(sysID int, sortrank int, levelID int, id int) (err error)
+	Sort(sysID, sortRank, levelID, id, parentId int, isUp bool) (err error)
 	GetUsers(systemName string) (user db.QueryRows, allUser db.QueryRows, err error)
 }
 
@@ -145,52 +145,66 @@ func (u *DbSystem) Edit(input *model.SystemEditInput) (err error) {
 	return nil
 }
 
-// Up 功能菜单上下调整
-func (u *DbSystem) Up(sysID int, sortrank int, levelID int, id int) (err error) {
-	db := u.c.GetRegularDB()
-
-	data, q, a, err := db.Query(sql.QuerySsoSystemMenu, map[string]interface{}{
+// Sort 功能菜单上下调整
+func (u *DbSystem) Sort(sysID, sortRank, levelID, id, parentId int, isUp bool) (err error) {
+	params := map[string]interface{}{
 		"sys_id":   sysID,
 		"level_id": levelID,
-	})
+		"parent":   parentId,
+	}
+
+	params["sortrank"] = fmt.Sprintf(" and t.sortrank > %d ", sortRank)
+	params["orderby"] = " order by t.sortrank asc "
+	if isUp {
+		params["sortrank"] = fmt.Sprintf(" and t.sortrank < %d", sortRank)
+		params["orderby"] = " order by t.sortrank desc "
+	}
+
+	db := u.c.GetRegularDB()
+	data, q, a, err := db.Query(sql.QuerySsoSystemMenu, params)
 
 	if err != nil {
 		return fmt.Errorf("查询系统列表错误(err:%v),sql:%s,输入参数:%v,", err, q, a)
 	}
 
-	var num int
-	var i int
-	for index, value := range data {
-		if sortrank == types.GetInt(value["sortrank"]) && index >= 1 {
-			num = data[index-1].GetInt("sortrank")
-			i = data[index-1].GetInt("id")
-		}
+	if len(data) <= 0 {
+		return fmt.Errorf("没有可以调换的菜单")
+	}
+	changeRow := data[0]
+
+	db2 := u.c.GetRegularDB()
+	trans, err := db2.Begin()
+	if err != nil {
+		return fmt.Errorf("调换的菜单时创建事务失败: %s", err.Error())
 	}
 
-	//以下没有用事务
-	fmt.Printf("传入编号:%d, 前一个编号:%d, 序号:%d, 排序号:%d", id, num, i, sortrank)
-	_, q, a, err = db.Execute(sql.UpSsoSystemMenu, map[string]interface{}{
-		"sys_id":   sysID,
-		"level_id": levelID,
-		"id":       id,
-		"num":      num,
-	})
+	_, q, a, err = trans.Execute(sql.UpSsoSystemMenu,
+		map[string]interface{}{
+			"sys_id":   sysID,
+			"level_id": levelID,
+			"id":       id,
+			"sortrank": changeRow.GetString("sortrank"),
+		})
 
 	if err != nil {
+		trans.Rollback()
 		return fmt.Errorf("更新系统管理排序发生错误(err:%v),sql:%s,输入参数:%v,", err, q, a)
 	}
 
-	_, q, a, err = db.Execute(sql.UpSsoSystemMenuList, map[string]interface{}{
-		"sys_id":   sysID,
-		"level_id": levelID,
-		"sortrank": sortrank,
-		"i":        i,
-	})
+	_, q, a, err = trans.Execute(sql.UpSsoSystemMenu,
+		map[string]interface{}{
+			"sys_id":   changeRow.GetString("sys_id"),
+			"level_id": changeRow.GetString("level_id"),
+			"id":       changeRow.GetString("id"),
+			"sortrank": sortRank,
+		})
 
 	if err != nil {
+		trans.Rollback()
 		return fmt.Errorf("更新系统管理排序发生错误(err:%v),sql:%s,输入参数:%v,", err, q, a)
 	}
 
+	trans.Commit()
 	return nil
 }
 

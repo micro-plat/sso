@@ -361,14 +361,10 @@
               title: '成功',
               message: '上移成功',
             });
-            console.log("sysid: ", nodeModel.sys_id);
             if (typeof this.callback == "function") {
-                //this.callback.call(null, m, list, this.trees);
-                nodeModel.isUp = true;
+                nodeModel.isSort = true;
                 this.callback.call(null,nodeModel);
             }
-
-            //this.$emit('updatetreelist',nodeModel.sys_id)
           })
         // if (this.parentNodeModel.hasOwnProperty("children")) {
         //   var index = this.parentNodeModel.children.indexOf(nodeModel);
@@ -393,7 +389,19 @@
         // }
       },
       downNode(nodeModel) {
-        console.log(nodeModel);
+        console.log(nodeModel,"所有参数")
+        this.$post("/sso/sys/manage/down",nodeModel).then(res =>{
+            this.$notify({
+              title: '成功',
+              message: '下移成功',
+            });
+            if (typeof this.callback == "function") {
+                nodeModel.isSort = true;
+                this.callback.call(null,nodeModel);
+            }
+          })
+
+        /*console.log(nodeModel);
         if (this.parentNodeModel.hasOwnProperty("children")) {
           var index = this.parentNodeModel.children.indexOf(nodeModel);
           if (index + 1 <= this.parentNodeModel.children.length) {
@@ -408,6 +416,7 @@
             this.parentNodeModel.splice(index + 1, 0, model[0]);
           }
         }
+        */
       },
 
       //获取系统下面的菜单数据
