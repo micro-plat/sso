@@ -362,7 +362,13 @@
               message: '上移成功',
             });
             console.log("sysid: ", nodeModel.sys_id);
-            this.$emit('update-tree-list',nodeModel.sys_id)
+            if (typeof this.callback == "function") {
+                //this.callback.call(null, m, list, this.trees);
+                nodeModel.isUp = true;
+                this.callback.call(null,nodeModel);
+            }
+
+            //this.$emit('updatetreelist',nodeModel.sys_id)
           })
         // if (this.parentNodeModel.hasOwnProperty("children")) {
         //   var index = this.parentNodeModel.children.indexOf(nodeModel);

@@ -746,46 +746,52 @@ export default {
     },
     // 点击节点
     nodeClick: function(d) {
-      console.log(d);
-      this.$set( d, "color", "");
-      this.$set( d, "iconTemp", "");
-      this.obj = d;
-      if (d.isNew == true) {  //添加
-        if (d.parentLevel == 3 || d.level_id == 4) {
-          this.currentData = d;
-          this.$refs.addModal4.open();
-        }
-        if (d.parentLevel == 2 || d.level_id == 3) {
-          this.currentData = d;
-          this.$refs.addModal3.open();
-        }
-        if (d.parentLevel == 1 || d.level_id == 2) {
-          this.currentData = d;
-          this.$refs.addModal2.open();
-        }
-        if (d.parentLevel == 0 || d.level_id == 1) {
-          this.currentData = d;
-          this.$refs.addModal1.open();
-        }
-      } else {  //编辑
+      /*向上排序 */
+      if (d.isUp === true) {
+        this.initData();
+      } else {
+        console.log(d);
+        this.$set( d, "color", "");
+        this.$set( d, "iconTemp", "");
+        this.obj = d;
+        if (d.isNew == true) {  //添加
+          if (d.parentLevel == 3 || d.level_id == 4) {
+            this.currentData = d;
+            this.$refs.addModal4.open();
+          }
+          if (d.parentLevel == 2 || d.level_id == 3) {
+            this.currentData = d;
+            this.$refs.addModal3.open();
+          }
+          if (d.parentLevel == 1 || d.level_id == 2) {
+            this.currentData = d;
+            this.$refs.addModal2.open();
+          }
+          if (d.parentLevel == 0 || d.level_id == 1) {
+            this.currentData = d;
+            this.$refs.addModal1.open();
+          }
+        } else {  //编辑
 
-        if (d.level_id == 4 || d.parentLevel == 3) {
-          this.currentData = d;
-          this.$refs.editModal4.open();
-        }
-        if (d.level_id == 3 || d.parentLevel == 2) {
-          this.currentData = d;
-          this.$refs.editModal3.open();
-        }
-        if (d.level_id == 2 || d.parentLevel == 1) {
-          this.currentData = d;
-          this.$refs.editModal2.open();
-        }
-        if (d.level_id == 1 || d.parentLevel == 0) {
-          this.currentData = d;
-          this.$refs.editModal1.open();
+          if (d.level_id == 4 || d.parentLevel == 3) {
+            this.currentData = d;
+            this.$refs.editModal4.open();
+          }
+          if (d.level_id == 3 || d.parentLevel == 2) {
+            this.currentData = d;
+            this.$refs.editModal3.open();
+          }
+          if (d.level_id == 2 || d.parentLevel == 1) {
+            this.currentData = d;
+            this.$refs.editModal2.open();
+          }
+          if (d.level_id == 1 || d.parentLevel == 0) {
+            this.currentData = d;
+            this.$refs.editModal1.open();
+          }
         }
       }
+      
     },
     //点击选中
     checkFunc(m) {
