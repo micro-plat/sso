@@ -1,4 +1,4 @@
-package sql
+package sqls
 
 //QuerySysFuncList .
 const QuerySysFuncList = `

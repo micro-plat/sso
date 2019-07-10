@@ -8,20 +8,8 @@ import (
 	"github.com/micro-plat/hydra/component"
 	"github.com/micro-plat/hydra/context"
 	"github.com/micro-plat/lib4go/types"
-	"github.com/micro-plat/sso/mgrapi/modules/const/sql"
+	"github.com/micro-plat/sso/mgrapi/modules/const/sqls"
 )
-
-/*
-//Get 获取全局imenu
-func Get(c component.IContainer) IMenu {
-	return c.Get("__imenu__").(IMenu)
-}
-
-//Set 保存全局imenu
-func Set(c component.IContainer) {
-	c.Set("__imenu__", NewMenu(c))
-}
-*/
 
 type IMenu interface {
 	Query(uid int64, sysid int) ([]map[string]interface{}, error)
@@ -41,7 +29,7 @@ func NewMenu(c component.IContainer) *Menu {
 //Query 获取用户指定系统的菜单信息
 func (l *Menu) Query(uid int64, sysid int) ([]map[string]interface{}, error) {
 	db := l.c.GetRegularDB()
-	data, _, _, err := db.Query(sql.QueryUserMenus, map[string]interface{}{
+	data, _, _, err := db.Query(sqls.QueryUserMenus, map[string]interface{}{
 		"user_id": uid,
 		"sys_id":  sysid,
 	})
@@ -78,7 +66,7 @@ func (l *Menu) Verify(uid int64, sysid int, menuURL string, method string) error
 	//根据用户名密码，查询用户信息
 
 	url, funcs, err := getFuncs(menuURL, method)
-	data, _, _, err := db.Scalar(sql.QueryUserMenu, map[string]interface{}{
+	data, _, _, err := db.Scalar(sqls.QueryUserMenu, map[string]interface{}{
 		"user_id": uid,
 		"sys_id":  sysid,
 		"path":    "'" + url + "'",
@@ -89,7 +77,7 @@ func (l *Menu) Verify(uid int64, sysid int, menuURL string, method string) error
 	if len(funcs) == 0 {
 		return nil
 	}
-	data, _, _, err = db.Scalar(sql.QueryUserMenu, map[string]interface{}{
+	data, _, _, err = db.Scalar(sqls.QueryUserMenu, map[string]interface{}{
 		"user_id": uid,
 		"sys_id":  sysid,
 		"path":    "'" + strings.Join(funcs, "','") + "'",

@@ -2,7 +2,6 @@ package main
 
 import (
 	"github.com/micro-plat/hydra/component"
-	//"github.com/micro-plat/sso-1/modules/app"
 	"github.com/micro-plat/sso/mgrapi/modules/logic"
 	"github.com/micro-plat/sso/mgrapi/modules/model"
 	"github.com/micro-plat/sso/mgrapi/services/base"
@@ -54,9 +53,4 @@ func (r *SSO) init() {
 	r.Micro("/sso/sys/manage", system.NewSystemHandler, "*")                                           //系统管理相关接口
 	r.Micro("/sso/sys/func", function.NewSystemFuncHandler, "/sys/index")                              //系统功能相关接口
 	r.Micro("/sso/img/upload", image.NewImageHandler("static/img", "http://sso.sinopecscsy.com"), "*") //图片上传
-
-	// r.Micro("/sso/notify/info", notify.NewNotifyHandler, "*") //获取报警消息列表
-	// r.Micro("/sso/notify/settings", notify.NewNotifySetHandler, "*") //报警消息设置
-	//r.CRON("/sso/notify/send", notify.NewNotifySendHandler, "*") // 发送消息
-
 }

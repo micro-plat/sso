@@ -4,7 +4,7 @@ import (
 	"fmt"
 
 	"github.com/micro-plat/hydra/component"
-	"github.com/micro-plat/sso/mgrapi/modules/const/sql"
+	"github.com/micro-plat/sso/mgrapi/modules/const/sqls"
 )
 
 type IPopular interface {
@@ -25,7 +25,7 @@ func NewPopular(c component.IContainer) *Popular {
 //Query 获取用户指定系统的菜单信息
 func (l *Popular) Query(uid int64, sysid int) ([]map[string]interface{}, error) {
 	db := l.c.GetRegularDB()
-	data, _, _, err := db.Query(sql.QueryUserPopularMenus, map[string]interface{}{
+	data, _, _, err := db.Query(sqls.QueryUserPopularMenus, map[string]interface{}{
 		"user_id": uid,
 		"sys_id":  sysid,
 	})
@@ -58,7 +58,7 @@ func (l *Popular) Save(uid int64, sysid int, pid []string, mid []string) error {
 		return err
 	}
 	for i, p := range pid {
-		d, _, _, err := trans.Scalar(sql.CheckUserPopularMenu, map[string]interface{}{
+		d, _, _, err := trans.Scalar(sqls.CheckUserPopularMenu, map[string]interface{}{
 			"user_id": uid,
 			"sys_id":  sysid,
 			"menu_id": mid[i],
@@ -68,7 +68,7 @@ func (l *Popular) Save(uid int64, sysid int, pid []string, mid []string) error {
 			return err
 		}
 		if fmt.Sprint(d) == "1" {
-			_, _, _, err := trans.Execute(sql.UpdateUserPopularMenu, map[string]interface{}{
+			_, _, _, err := trans.Execute(sqls.UpdateUserPopularMenu, map[string]interface{}{
 				"user_id": uid,
 				"sys_id":  sysid,
 				"menu_id": mid[i],
@@ -79,7 +79,7 @@ func (l *Popular) Save(uid int64, sysid int, pid []string, mid []string) error {
 			}
 			continue
 		}
-		_, _, _, err = trans.Execute(sql.SaveUserPopularMenu, map[string]interface{}{
+		_, _, _, err = trans.Execute(sqls.SaveUserPopularMenu, map[string]interface{}{
 			"user_id":   uid,
 			"sys_id":    sysid,
 			"parent_id": p,

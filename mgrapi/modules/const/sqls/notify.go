@@ -1,4 +1,4 @@
-package sql
+package sqls
 
 //QueryUserNotifyCount .
 const QueryUserNotifyCount = `

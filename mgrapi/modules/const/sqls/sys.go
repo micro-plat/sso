@@ -1,4 +1,4 @@
-package sql
+package sqls
 
 //QuerySystemInfo 获取系统信息
 const QuerySystemInfo = `

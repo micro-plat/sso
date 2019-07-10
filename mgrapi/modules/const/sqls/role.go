@@ -1,4 +1,4 @@
-package sql
+package sqls
 
 //QueryRoleInfoList 查询角色信息列表
 const QueryRoleInfoList = `

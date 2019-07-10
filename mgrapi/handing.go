@@ -8,7 +8,6 @@ import (
 	"github.com/micro-plat/hydra/context"
 	mem "github.com/micro-plat/sso/mgrapi/modules/access/member"
 
-	//xmenu "github.com/micro-plat/sso/mgrapi/modules/access/menu"
 	"github.com/micro-plat/sso/mgrapi/modules/logic"
 	"github.com/micro-plat/sso/mgrapi/modules/model"
 )

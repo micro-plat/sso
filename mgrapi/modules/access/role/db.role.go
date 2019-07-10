@@ -8,7 +8,7 @@ import (
 	"github.com/micro-plat/lib4go/db"
 	"github.com/micro-plat/lib4go/types"
 	"github.com/micro-plat/sso/mgrapi/modules/const/enum"
-	"github.com/micro-plat/sso/mgrapi/modules/const/sql"
+	"github.com/micro-plat/sso/mgrapi/modules/const/sqls"
 	"github.com/micro-plat/sso/mgrapi/modules/model"
 )
 
@@ -36,7 +36,7 @@ func NewDbRole(c component.IContainer) *DbRole {
 //获取页面授权信息
 func (r *DbRole) Get(sysID int, roleID int, path string) (data db.QueryRows, err error) {
 	db := r.c.GetRegularDB()
-	data, q, a, err := db.Query(sql.GetPageAuth, map[string]interface{}{
+	data, q, a, err := db.Query(sqls.GetPageAuth, map[string]interface{}{
 		"sys_id":  sysID,
 		"role_id": roleID,
 		"path":    path,
@@ -60,12 +60,12 @@ func (r *DbRole) Query(input *model.QueryRoleInput) (data db.QueryRows, count in
 		"ps":       input.PageSize,
 	}
 
-	c, q, a, err := db.Scalar(sql.QueryRoleInfoListCount, params)
+	c, q, a, err := db.Scalar(sqls.QueryRoleInfoListCount, params)
 	if err != nil {
 		return nil, 0, fmt.Errorf("获取角色信息列表条数发生错误(err:%v),sql:%s,输入参数:%v", err, q, a)
 	}
 
-	data, q, a, err = db.Query(sql.QueryRoleInfoList, params)
+	data, q, a, err = db.Query(sqls.QueryRoleInfoList, params)
 	if err != nil {
 		return nil, 0, fmt.Errorf("获取角色信息列表发生错误(err:%v),sql:%s,输入参数:%v", err, q, a)
 	}
@@ -84,7 +84,7 @@ func (r *DbRole) ChangeStatus(roleID string, status int) (err error) {
 	case enum.Normal:
 		input["status"] = enum.Normal
 	}
-	_, q, a, err := db.Execute(sql.UpdateRoleStatus, input)
+	_, q, a, err := db.Execute(sqls.UpdateRoleStatus, input)
 	if err != nil {
 		return fmt.Errorf("修改角色状态发生错误(err:%v),sql:%s,输入参数:%v", err, q, a)
 	}
@@ -94,14 +94,14 @@ func (r *DbRole) ChangeStatus(roleID string, status int) (err error) {
 //Delete 删除角色
 func (r *DbRole) Delete(roleID int) (err error) {
 	db := r.c.GetRegularDB()
-	_, q, a, err := db.Execute(sql.DeleteRole, map[string]interface{}{
+	_, q, a, err := db.Execute(sqls.DeleteRole, map[string]interface{}{
 		"role_id": roleID,
 	})
 	if err != nil {
 		return fmt.Errorf("删除角色发生错误(err:%v),sql:%s,输入参数:%v", err, q, a)
 	}
 
-	_, q, a, err = db.Execute(sql.DeleteRoleMenu, map[string]interface{}{
+	_, q, a, err = db.Execute(sqls.DeleteRoleMenu, map[string]interface{}{
 		"role_id": roleID,
 	})
 	if err != nil {
@@ -117,7 +117,7 @@ func (r *DbRole) Edit(input *model.RoleEditInput) (err error) {
 	if err != nil {
 		return fmt.Errorf("Struct2Map Error(err:%v)", err)
 	}
-	_, q, a, err := db.Execute(sql.EditRoleInfo, params)
+	_, q, a, err := db.Execute(sqls.EditRoleInfo, params)
 	if err != nil {
 		return fmt.Errorf("编辑角色信息发生错误(err:%v),sql:%s,输入参数:%v", err, q, a)
 	}
@@ -132,7 +132,7 @@ func (r *DbRole) Add(input *model.RoleEditInput) (err error) {
 		return fmt.Errorf("Struct2Map Error(err:%v)", err)
 	}
 
-	_, q, a, err := db.Execute(sql.AddRoleInfo, params)
+	_, q, a, err := db.Execute(sqls.AddRoleInfo, params)
 	if err != nil {
 		return fmt.Errorf("添加角色发生错误(err:%v),sql:%s,输入参数:%v", err, q, a)
 	}
@@ -148,7 +148,7 @@ func (r *DbRole) Auth(input *model.RoleAuthInput) (err error) {
 	}
 
 	//删除原权限
-	_, q, a, err := dbTrans.Execute(sql.DelRoleAuth, map[string]interface{}{
+	_, q, a, err := dbTrans.Execute(sqls.DelRoleAuth, map[string]interface{}{
 		"role_id": input.RoleID,
 		"sys_id":  input.SysID,
 	})
@@ -164,7 +164,7 @@ func (r *DbRole) Auth(input *model.RoleAuthInput) (err error) {
 	//添加新权限
 	s := strings.Split(input.SelectAuth, ",")
 	for i := 0; i < len(s); i++ {
-		_, q, a, err := dbTrans.Execute(sql.AddRoleAuth, map[string]interface{}{
+		_, q, a, err := dbTrans.Execute(sqls.AddRoleAuth, map[string]interface{}{
 			"role_id":  input.RoleID,
 			"sys_id":   input.SysID,
 			"menu_id":  s[i],
@@ -183,7 +183,7 @@ func (r *DbRole) Auth(input *model.RoleAuthInput) (err error) {
 //QueryAuthMenu 查询角色菜单
 func (r *DbRole) QueryAuthMenu(sysID int64, roleID int64) (results []map[string]interface{}, err error) {
 	db := r.c.GetRegularDB()
-	data, q, a, err := db.Query(sql.QuerySysMenucList, map[string]interface{}{
+	data, q, a, err := db.Query(sqls.QuerySysMenucList, map[string]interface{}{
 		"role_id": roleID,
 		"sys_id":  sysID,
 	})

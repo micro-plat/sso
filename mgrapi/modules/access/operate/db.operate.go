@@ -4,7 +4,7 @@ import (
 	"fmt"
 
 	"github.com/micro-plat/hydra/component"
-	"github.com/micro-plat/sso/mgrapi/modules/const/sql"
+	"github.com/micro-plat/sso/mgrapi/modules/const/sqls"
 	"github.com/micro-plat/sso/mgrapi/modules/model"
 )
 
@@ -40,7 +40,7 @@ func (d *DbOperate) LoginOperate(m *model.LoginState) (err error) {
 		"user_id": m.UserID,
 		"content": fmt.Sprintf("{\"desc\":%s,\"data\":%v}", "用户登录", m.UserName),
 	}
-	_, q, a, err := db.Execute(sql.AddOperate, params)
+	_, q, a, err := db.Execute(sqls.AddOperate, params)
 	if err != nil {
 		return fmt.Errorf("添加登录行为数据发生错误(err:%v),sql:%s,输入参数:%v,", err, q, a)
 	}
@@ -57,7 +57,7 @@ func (d *DbOperate) SysOperate(m *model.LoginState, method string, r ...interfac
 		"user_id": m.UserID,
 		"content": fmt.Sprintf("{\"desc\":%s,\"data\":%v}", method, r),
 	}
-	_, q, a, err := db.Execute(sql.AddOperate, params)
+	_, q, a, err := db.Execute(sqls.AddOperate, params)
 	if err != nil {
 		return fmt.Errorf("添加系统操作行为数据发生错误(err:%v),sql:%s,输入参数:%v,", err, q, a)
 	}
@@ -73,7 +73,7 @@ func (d *DbOperate) RoleOperate(m *model.LoginState, method string, r ...interfa
 		"user_id": m.UserID,
 		"content": fmt.Sprintf("{\"desc\":%s,\"data\":%v}", method, r),
 	}
-	_, q, a, err := db.Execute(sql.AddOperate, params)
+	_, q, a, err := db.Execute(sqls.AddOperate, params)
 	if err != nil {
 		return fmt.Errorf("添加角色操作行为数据发生错误(err:%v),sql:%s,输入参数:%v,", err, q, a)
 	}
@@ -89,7 +89,7 @@ func (d *DbOperate) MenuOperate(m *model.LoginState, method string, r ...interfa
 		"user_id": m.UserID,
 		"content": fmt.Sprintf("{\"desc\":%s,\"data\":%v}", method, r),
 	}
-	_, q, a, err := db.Execute(sql.AddOperate, params)
+	_, q, a, err := db.Execute(sqls.AddOperate, params)
 	if err != nil {
 		return fmt.Errorf("添加菜单操作行为数据发生错误(err:%v),sql:%s,输入参数:%v,", err, q, a)
 	}
@@ -105,7 +105,7 @@ func (d *DbOperate) UserOperate(m *model.LoginState, method string, r ...interfa
 		"user_id": m.UserID,
 		"content": fmt.Sprintf("{\"desc\":%s,\"data\":%v}", method, r),
 	}
-	_, q, a, err := db.Execute(sql.AddOperate, params)
+	_, q, a, err := db.Execute(sqls.AddOperate, params)
 	if err != nil {
 		return fmt.Errorf("添加用户操作行为数据发生错误(err:%v),sql:%s,输入参数:%v,", err, q, a)
 	}

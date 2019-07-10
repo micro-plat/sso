@@ -6,7 +6,7 @@ import (
 	"github.com/micro-plat/hydra/component"
 	"github.com/micro-plat/hydra/context"
 	"github.com/micro-plat/lib4go/db"
-	"github.com/micro-plat/sso/mgrapi/modules/const/sql"
+	"github.com/micro-plat/sso/mgrapi/modules/const/sqls"
 	"github.com/micro-plat/sso/mgrapi/modules/model"
 )
 
@@ -33,7 +33,7 @@ func NewDBMember(c component.IContainer) *DBMember {
 func (l *DBMember) QueryAuth(sysID, userID int64) (data db.QueryRows, err error) {
 	db := l.c.GetRegularDB()
 	//查询当前系统下是否有此用户
-	data, _, _, err = db.Query(sql.QuerySysAuth, map[string]interface{}{
+	data, _, _, err = db.Query(sqls.QuerySysAuth, map[string]interface{}{
 		"sys_id":  sysID,
 		"user_id": userID,
 	})
@@ -48,7 +48,7 @@ func (l *DBMember) QueryByOpenID(open_id string) (db.QueryRow, error) {
 	db := l.c.GetRegularDB()
 
 	//根据用户名密码，查询用户信息
-	data, _, _, err := db.Query(sql.QueryUserInfoByOpenID, map[string]interface{}{
+	data, _, _, err := db.Query(sqls.QueryUserInfoByOpenID, map[string]interface{}{
 		"open_id": open_id,
 	})
 	if err != nil {
@@ -63,7 +63,7 @@ func (l *DBMember) QueryByID(uid int64) (db.QueryRow, error) {
 	db := l.c.GetRegularDB()
 
 	//根据用户名密码，查询用户信息
-	data, _, _, err := db.Query(sql.QueryUserInfoByUID, map[string]interface{}{
+	data, _, _, err := db.Query(sqls.QueryUserInfoByUID, map[string]interface{}{
 		"user_id": uid,
 	})
 	if err != nil {
@@ -75,7 +75,7 @@ func (l *DBMember) QueryByID(uid int64) (db.QueryRow, error) {
 //GetUserInfo 根据用户名获取用户信息
 func (l *DBMember) GetUserInfo(u string) (db.QueryRow, error) {
 	db := l.c.GetRegularDB()
-	data, _, _, err := db.Query(sql.QueryUserByLogin, map[string]interface{}{
+	data, _, _, err := db.Query(sqls.QueryUserByLogin, map[string]interface{}{
 		"user_name": u,
 	})
 	if err != nil {
@@ -91,7 +91,7 @@ func (l *DBMember) GetUserInfo(u string) (db.QueryRow, error) {
 func (l *DBMember) Query(u string, p string, ident string) (s *model.MemberState, err error) {
 	//根据用户名密码，查询用户信息
 	db := l.c.GetRegularDB()
-	data, _, _, err := db.Query(sql.QueryUserByLogin, map[string]interface{}{
+	data, _, _, err := db.Query(sqls.QueryUserByLogin, map[string]interface{}{
 		"user_name": u,
 	})
 	if err != nil {
@@ -105,7 +105,7 @@ func (l *DBMember) Query(u string, p string, ident string) (s *model.MemberState
 	// 	return nil, err
 	// }
 	//查询用户所在系统的登录地址及角色编号
-	roles, _, _, err := db.Query(sql.QueryUserRole, map[string]interface{}{
+	roles, _, _, err := db.Query(sqls.QueryUserRole, map[string]interface{}{
 		"user_id": data.Get(0).GetInt64("user_id", -1),
 		"ident":   ident,
 	})
@@ -128,7 +128,7 @@ func (l *DBMember) Query(u string, p string, ident string) (s *model.MemberState
 func (l *DBMember) QueryByUserName(u string, ident string) (info db.QueryRow, err error) {
 	//根据用户名，查询用户信息
 	db := l.c.GetRegularDB()
-	data, _, _, err := db.Query(sql.QueryUserByUserName, map[string]interface{}{
+	data, _, _, err := db.Query(sqls.QueryUserByUserName, map[string]interface{}{
 		"user_name": u,
 	})
 	if err != nil {
@@ -138,7 +138,7 @@ func (l *DBMember) QueryByUserName(u string, ident string) (info db.QueryRow, er
 		return nil, context.NewError(context.ERR_FORBIDDEN, "用户不存在")
 	}
 	//查询用户所在系统的登录地址及角色编号
-	roles, _, _, err := db.Query(sql.QueryUserRole, map[string]interface{}{
+	roles, _, _, err := db.Query(sqls.QueryUserRole, map[string]interface{}{
 		"user_id": data.Get(0).GetInt64("user_id", -1),
 		"ident":   ident,
 	})

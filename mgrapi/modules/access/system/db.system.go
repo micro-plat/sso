@@ -6,7 +6,7 @@ import (
 	"github.com/micro-plat/hydra/component"
 	"github.com/micro-plat/lib4go/db"
 	"github.com/micro-plat/lib4go/types"
-	"github.com/micro-plat/sso/mgrapi/modules/const/sql"
+	"github.com/micro-plat/sso/mgrapi/modules/const/sqls"
 	"github.com/micro-plat/sso/mgrapi/modules/model"
 )
 
@@ -35,7 +35,7 @@ func NewDbSystem(c component.IContainer) *DbSystem {
 //Get 从数据库中获取系统信息
 func (l *DbSystem) Get(ident string) (s db.QueryRow, err error) {
 	db := l.c.GetRegularDB()
-	data, _, _, err := db.Query(sql.QuerySystemInfo, map[string]interface{}{
+	data, _, _, err := db.Query(sqls.QuerySystemInfo, map[string]interface{}{
 		"ident": ident,
 	})
 	return data.Get(0), err
@@ -43,7 +43,7 @@ func (l *DbSystem) Get(ident string) (s db.QueryRow, err error) {
 
 func (l *DbSystem) GetAll(userId int64) (s db.QueryRows, err error) {
 	db := l.c.GetRegularDB()
-	data, _, _, err := db.Query(sql.QueryAllSystemInfo, map[string]interface{}{
+	data, _, _, err := db.Query(sqls.QueryAllSystemInfo, map[string]interface{}{
 		"user_id": userId,
 	})
 	return data, err
@@ -53,7 +53,7 @@ func (l *DbSystem) GetAll(userId int64) (s db.QueryRows, err error) {
 //Query 获取用系统列表
 func (u *DbSystem) Query(name string, status string, pi int, ps int) (data db.QueryRows, count int, err error) {
 	db := u.c.GetRegularDB()
-	c, q, a, err := db.Scalar(sql.QuerySubSystemTotalCount, map[string]interface{}{
+	c, q, a, err := db.Scalar(sqls.QuerySubSystemTotalCount, map[string]interface{}{
 		"name":   " and name like '%" + name + "%'",
 		"enable": status,
 	})
@@ -61,7 +61,7 @@ func (u *DbSystem) Query(name string, status string, pi int, ps int) (data db.Qu
 	if err != nil {
 		return nil, 0, fmt.Errorf("获取系统管理列表条数发生错误(err:%v),sql:(%s),输入参数:%v,", err, q, a)
 	}
-	data, q, a, err = db.Query(sql.QuerySubSystemPageList, map[string]interface{}{
+	data, q, a, err = db.Query(sqls.QuerySubSystemPageList, map[string]interface{}{
 		"name":   " and t.name like '%" + name + "%'",
 		"enable": status,
 		"start":  (pi - 1) * ps,
@@ -77,7 +77,7 @@ func (u *DbSystem) Query(name string, status string, pi int, ps int) (data db.Qu
 
 func (u *DbSystem) Delete(id int) (err error) {
 	db := u.c.GetRegularDB()
-	_, q, a, err := db.Execute(sql.DeleteSubSystemById, map[string]interface{}{
+	_, q, a, err := db.Execute(sqls.DeleteSubSystemById, map[string]interface{}{
 		"id": id,
 	})
 	if err != nil {
@@ -104,7 +104,7 @@ func (u *DbSystem) Add(input *model.AddSystemInput) (err error) {
 		"login_url":     "http://member/login",
 		"secret":        input.Secret,
 	}
-	_, q, a, err := db.Execute(sql.AddSubSystem, params)
+	_, q, a, err := db.Execute(sqls.AddSubSystem, params)
 	if err != nil {
 		return fmt.Errorf("添加系统管理数据发生错误(err:%v),sql:%s,输入参数:%v,", err, q, a)
 	}
@@ -113,7 +113,7 @@ func (u *DbSystem) Add(input *model.AddSystemInput) (err error) {
 
 func (u *DbSystem) ChangeStatus(sysId int, status int) (err error) {
 	db := u.c.GetRegularDB()
-	_, q, a, err := db.Execute(sql.UpdateEnable, map[string]interface{}{
+	_, q, a, err := db.Execute(sqls.UpdateEnable, map[string]interface{}{
 		"id":     sysId,
 		"enable": status,
 	})
@@ -138,7 +138,7 @@ func (u *DbSystem) Edit(input *model.SystemEditInput) (err error) {
 		"wechat_status": input.Wechat_status,
 		"secret":        input.Secret,
 	}
-	_, q, a, err := db.Execute(sql.UpdateEdit, params)
+	_, q, a, err := db.Execute(sqls.UpdateEdit, params)
 	if err != nil {
 		return fmt.Errorf("更新系统管理数据发生错误(err:%v),sql:%s,输入参数:%v,", err, q, a)
 	}
@@ -161,7 +161,7 @@ func (u *DbSystem) Sort(sysID, sortRank, levelID, id, parentId int, isUp bool) (
 	}
 
 	db := u.c.GetRegularDB()
-	data, q, a, err := db.Query(sql.QuerySsoSystemMenu, params)
+	data, q, a, err := db.Query(sqls.QuerySsoSystemMenu, params)
 
 	if err != nil {
 		return fmt.Errorf("查询系统列表错误(err:%v),sql:%s,输入参数:%v,", err, q, a)
@@ -178,7 +178,7 @@ func (u *DbSystem) Sort(sysID, sortRank, levelID, id, parentId int, isUp bool) (
 		return fmt.Errorf("调换的菜单时创建事务失败: %s", err.Error())
 	}
 
-	_, q, a, err = trans.Execute(sql.UpSsoSystemMenu,
+	_, q, a, err = trans.Execute(sqls.UpSsoSystemMenu,
 		map[string]interface{}{
 			"sys_id":   sysID,
 			"level_id": levelID,
@@ -191,7 +191,7 @@ func (u *DbSystem) Sort(sysID, sortRank, levelID, id, parentId int, isUp bool) (
 		return fmt.Errorf("更新系统管理排序发生错误(err:%v),sql:%s,输入参数:%v,", err, q, a)
 	}
 
-	_, q, a, err = trans.Execute(sql.UpSsoSystemMenu,
+	_, q, a, err = trans.Execute(sqls.UpSsoSystemMenu,
 		map[string]interface{}{
 			"sys_id":   changeRow.GetString("sys_id"),
 			"level_id": changeRow.GetString("level_id"),
@@ -212,14 +212,14 @@ func (u *DbSystem) Sort(sysID, sortRank, levelID, id, parentId int, isUp bool) (
 func (u *DbSystem) GetUsers(systemName string) (user db.QueryRows, allUser db.QueryRows, err error) {
 
 	db := u.c.GetRegularDB()
-	data, q, a, err := db.Query(sql.GetUsers, map[string]interface{}{
+	data, q, a, err := db.Query(sqls.GetUsers, map[string]interface{}{
 		"system_name": systemName,
 	})
 	if err != nil {
 		return nil, nil, fmt.Errorf("获取系统下所有用户发生错误(err:%v),sql:%s,输入参数:%v,", err, q, a)
 	}
 
-	datas, q, a, err := db.Query(sql.GetAllUser, map[string]interface{}{})
+	datas, q, a, err := db.Query(sqls.GetAllUser, map[string]interface{}{})
 	if err != nil {
 		return nil, nil, fmt.Errorf("获取所有用户发生错误(err:%v),sql:%s,输入参数:%v,", err, q, a)
 	}

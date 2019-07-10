@@ -1,4 +1,4 @@
-package sql
+package sqls
 
 //QueryUserByLogin 获取用户登录信息
 const QueryUserByLogin = `

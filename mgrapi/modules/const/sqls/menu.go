@@ -1,4 +1,4 @@
-package sql
+package sqls
 
 //QueryUserMenus 获取用户菜单信息
 const QueryUserMenus = `

@@ -4,10 +4,12 @@ package main
 
 //bindConf 绑定启动配置， 启动时检查注册中心配置是否存在，不存在则引导用户输入配置参数并自动创建到注册中心
 func (s *SSO) install() {
+	s.IsDebug = true
+
 	s.Conf.API.SetMainConf(`{"address":":6688"}`)
 	s.Conf.API.SetSubConf("app", `
 			{
-				"web_host_name": "http://sso2.100bm.cn"
+				"pic_host": "http://sso2.100bm.cn"
 			}			
 			`)
 	s.Conf.API.SetSubConf("header", `

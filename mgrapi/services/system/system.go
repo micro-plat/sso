@@ -29,17 +29,12 @@ func NewSystemHandler(container component.IContainer) (u *SystemHandler) {
 
 //GetHandle 分页获取系统管理列表
 func (u *SystemHandler) GetHandle(ctx *context.Context) (r interface{}) {
+
 	ctx.Log.Info("--------查询系统管理数据--------")
-	ctx.Log.Info("1.从数据库查询数据--------")
 	pi := ctx.Request.GetInt("pi", 1)
 	ps := ctx.Request.GetInt("ps", 10)
 	name := ctx.Request.GetString("name")
 	status := ctx.Request.GetString("status")
-
-	ctx.Log.Info("pi", pi)
-	ctx.Log.Info("ps", ps)
-	ctx.Log.Info("name", name)
-	ctx.Log.Info("status", status)
 
 	rows, count, err := u.subLib.Query(name, status, pi, ps)
 	if err != nil {
