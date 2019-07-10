@@ -4,12 +4,9 @@ package main
 
 //bindConf 绑定启动配置， 启动时检查注册中心配置是否存在，不存在则引导用户输入配置参数并自动创建到注册中心
 func (s *SSO) install() {
+	s.IsDebug = true
+
 	s.Conf.API.SetMainConf(`{"address":":6689"}`)
-	s.Conf.API.SetSubConf("app", `
-			{
-				"web_host_name": "http://sso2.100bm.cn"
-			}			
-			`)
 	s.Conf.API.SetSubConf("header", `
 				{
 					"Access-Control-Allow-Origin": "*",
@@ -18,42 +15,6 @@ func (s *SSO) install() {
 					"Access-Control-Allow-Credentials": "true"
 				}
 			`)
-	/*
-		s.Conf.API.SetSubConf("auth", `
-			{
-				"jwt": {
-					"exclude": [
-					"/sso/login",
-					"/sso/sys/func/enable",
-					"/sso/sys/manage/edit",
-					"/sso/login/code",
-					"/subsys/info",
-					"/subsys/pwd",
-					"/subsys/user",
-					"/subsys/login",
-					"/subsys/menu",
-					"/sso/sys/get",
-					"/sso/ident",
-					"/sso/user/bind",
-					"/sso/notify/send",
-					"/sso/img/upload",
-					"/sso/user/getall",
-					"/sso/user/info",
-					"/sso/user/save",
-					"/sso/user/edit",
-					"/sso/user/delete",
-					"/sso/role/query",
-					"/sso/menu/get",
-					"/sso/sys/func/query",
-					"/sso/user/changepwd"],
-					"expireAt": 36000,
-					"mode": "HS512",
-					"name": "__jwt__",
-					"secret": "12345678"
-				}
-			}
-			`)
-	*/
 
 	s.Conf.Plat.SetVarConf("db", "db", `{			
 		"provider":"mysql",

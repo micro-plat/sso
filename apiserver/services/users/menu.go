@@ -11,18 +11,16 @@ import (
 
 //MenuHandler 菜单查询对象
 type MenuHandler struct {
-	c component.IContainer
-	m logic.IMenuLogic
-	//p   menu.IPopular
+	c   component.IContainer
+	m   logic.IMenuLogic
 	sys logic.ISystemLogic
 }
 
 //NewMenuHandler 创建菜单查询对象
 func NewMenuHandler(container component.IContainer) (u *MenuHandler) {
 	return &MenuHandler{
-		c: container,
-		m: logic.NewMenuLogic(container),
-		//p:   menu.NewPopular(container),
+		c:   container,
+		m:   logic.NewMenuLogic(container),
 		sys: logic.NewSystemLogic(container),
 	}
 }

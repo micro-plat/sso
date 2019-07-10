@@ -15,8 +15,6 @@ type LoginHandler struct {
 	code logic.ICodeMemberLogic
 	sys  logic.ISystemLogic
 	op   logic.IOperateLogic
-	//member member.IDBMember
-	//cache  member.ICacheMember
 }
 
 //NewLoginHandler 用户登录
@@ -27,8 +25,6 @@ func NewLoginHandler(container component.IContainer) (u *LoginHandler) {
 		code: logic.NewCodeMemberLogic(container),
 		sys:  logic.NewSystemLogic(container),
 		op:   logic.NewOperateLogic(container),
-		//member: member.NewDBMember(container),
-		//cache:  member.NewCacheMember(container),
 	}
 }
 

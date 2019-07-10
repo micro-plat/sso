@@ -8,9 +8,7 @@ import (
 
 //ICodeMemberLogic xx
 type ICodeMemberLogic interface {
-	Query(code string) (ls *model.LoginState, err error)
-	Save(s *model.LoginState) (string, error) //这个外 api在用
-	ExchangeCode(code string, s *model.LoginState) (newCode string, err error)
+	Save(s *model.LoginState) (string, error)
 }
 
 //CodeMemberLogic 控制用户登录
@@ -30,14 +28,4 @@ func NewCodeMemberLogic(c component.IContainer) *CodeMemberLogic {
 //Save 缓存用户信息
 func (c *CodeMemberLogic) Save(s *model.LoginState) (code string, err error) {
 	return c.code.Save(s)
-}
-
-//Query 用户登录
-func (c *CodeMemberLogic) Query(code string) (ls *model.LoginState, err error) {
-	return c.code.Query(code)
-}
-
-// ExchangeCode 删除旧code,生成新code
-func (c *CodeMemberLogic) ExchangeCode(code string, s *model.LoginState) (newCode string, err error) {
-	return c.code.ExchangeCode(code, s)
 }
