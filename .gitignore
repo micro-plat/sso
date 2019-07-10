@@ -16,3 +16,4 @@
 ./mgrserver/*.sln
 logs/
 *sso
+conf/

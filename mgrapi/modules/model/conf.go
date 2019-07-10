@@ -9,7 +9,7 @@ import (
 
 //Conf 应用程序配置
 type Conf struct {
-	WebHostName string `json:"web_host_name" valid:"required"`
+	PicHost string `json:"pic_host" valid:"required"`
 }
 
 //Valid 验证配置参数是否合法
@@ -22,7 +22,7 @@ func (c Conf) Valid() error {
 
 //GetWebHostName 获取前端域名,上传图片使用
 func (c *Conf) GetWebHostName() string {
-	return c.WebHostName
+	return c.PicHost
 }
 
 //SaveConf 保存当前应用程序配置
