@@ -47,10 +47,8 @@ func (ch *ImageHandler) PostHandle(ctx *context.Context) (r interface{}) {
 	if err := ctx.Request.Check("filename"); err != nil {
 		return err
 	}
-	f, err := ctx.Request.Http.Get()
-	if err != nil {
-		return
-	}
+	f, _ := ctx.Request.Http.Get()
+
 	ctx.Log.Info("2.检查图片格式")
 	extName := filepath.Ext(ctx.Request.GetString("filename"))
 	if !isImage(extName) {
@@ -58,16 +56,16 @@ func (ch *ImageHandler) PostHandle(ctx *context.Context) (r interface{}) {
 	}
 	uf, _, err := f.FormFile("file")
 	if err != nil {
-		err = fmt.Errorf("无法读取上传的文件:image(err:%v)", err)
-		return
+		return fmt.Errorf("无法读取上传的文件:image(err:%v)", err)
 	}
 	defer uf.Close()
+
 	name := fmt.Sprintf("%s%s", utility.GetGUID(), extName)
 	localPath := filepath.Join(ch.localDir, name)
 	nf, err := os.Create(localPath)
+
 	if err != nil {
-		err = fmt.Errorf("保存文件失败:%s(err:%v)", localPath, err)
-		return
+		return fmt.Errorf("保存文件失败:%s(err:%v)", localPath, err)
 	}
 	defer nf.Close()
 	_, err = io.Copy(nf, uf)

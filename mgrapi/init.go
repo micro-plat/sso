@@ -48,12 +48,12 @@ func (r *SSO) init() {
 	r.Micro("/sso/member", member.NewQueryHandler, "*")              //查询登录用户信息
 	r.Micro("/sso/user/changepwd", user.NewUserPasswordHandler, "*") // 修改密码
 	r.Micro("/sso/base", base.NewBaseUserHandler, "*")
-	r.Micro("/sso/user", user.NewUserHandler, "*")                                                              //用户相关接口
-	r.Micro("/sso/auth", role.NewRoleAuthHandler, "/user/role")                                                 //权限管理
-	r.Micro("/sso/role", role.NewRoleHandler, "/user/role")                                                     //角色管理相关接口
-	r.Micro("/sso/sys/manage", system.NewSystemHandler, "*")                                                    //系统管理相关接口
-	r.Micro("/sso/sys/func", function.NewSystemFuncHandler, "/sys/index")                                       //系统功能相关接口
-	r.Micro("/sso/img/upload", image.NewImageHandler("./static/static/img", "http://sso.sinopecscsy.com"), "*") //图片上传
+	r.Micro("/sso/user", user.NewUserHandler, "*")                                                     //用户相关接口
+	r.Micro("/sso/auth", role.NewRoleAuthHandler, "/user/role")                                        //权限管理
+	r.Micro("/sso/role", role.NewRoleHandler, "/user/role")                                            //角色管理相关接口
+	r.Micro("/sso/sys/manage", system.NewSystemHandler, "*")                                           //系统管理相关接口
+	r.Micro("/sso/sys/func", function.NewSystemFuncHandler, "/sys/index")                              //系统功能相关接口
+	r.Micro("/sso/img/upload", image.NewImageHandler("static/img", "http://sso.sinopecscsy.com"), "*") //图片上传
 
 	// r.Micro("/sso/notify/info", notify.NewNotifyHandler, "*") //获取报警消息列表
 	// r.Micro("/sso/notify/settings", notify.NewNotifySetHandler, "*") //报警消息设置

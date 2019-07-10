@@ -28,6 +28,5 @@ type AddSystemInput struct {
 	Ident string `form:"ident" json:"ident" vaild:"required"`
 	//Wechat_status string `form:"wechat_status" json:"wechat_status" valid:"required"`
 	Wechat_status string `form:"wechat_status" json:"wechat_status"`
-	//Secret        string `form:"secret" json:"secret" valid:"required"`
-	Secret string `form:"secret" json:"secret"`
+	Secret        string `form:"secret" json:"secret" valid:"required"`
 }
