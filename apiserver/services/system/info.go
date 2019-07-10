@@ -6,7 +6,6 @@ import (
 	"github.com/micro-plat/hydra/component"
 	"github.com/micro-plat/hydra/context"
 	"github.com/micro-plat/sso/apiserver/modules/logic"
-	"github.com/micro-plat/sso/apiserver/modules/util"
 )
 
 //InfoHandler 系统信息
@@ -35,36 +34,9 @@ func (u *InfoHandler) Handle(ctx *context.Context) (r interface{}) {
 		return fmt.Errorf("参数错误：%v", err)
 	}
 
-	secret, err := u.getSecret(ctx.Request.GetString("ident"))
-	if err != nil {
-		return err
-	}
-
-	d := map[string]interface{}{
-		"ident":     ctx.Request.GetString("ident"),
-		"timestamp": ctx.Request.GetString("timestamp"),
-	}
-	ctx.Log.Info("请求请求系统信息数据：", d)
-
-	if ok := util.VerifySign(ctx, d, secret, ctx.Request.GetString("sign")); ok != true {
-		return context.NewError(context.ERR_NOT_ACCEPTABLE, "sign签名错误")
-	}
-
 	data, err := u.sys.Get(ctx.Request.GetString("ident"))
 	if err != nil {
 		return err
 	}
 	return data
-}
-
-func (u *InfoHandler) getSecret(ident string) (string, error) {
-	if ident == "" {
-		return "", context.NewError(context.ERR_NOT_ACCEPTABLE, "ident not exists")
-	}
-	data, err := u.sys.Get(ident)
-	if err != nil {
-		return "", err
-	}
-
-	return data.GetString("secret"), nil
 }

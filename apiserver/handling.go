@@ -2,11 +2,39 @@ package main
 
 import (
 	"github.com/micro-plat/hydra/context"
+	"github.com/micro-plat/sso/apiserver/modules/logic"
+	"github.com/micro-plat/sso/apiserver/modules/util"
 )
 
-//bind 检查应用程序配置文件，并根据配置初始化服务
+//handling 验证api的参数
 func (r *SSO) handling() {
 	r.MicroApp.Handling(func(ctx *context.Context) (rt interface{}) {
+		secret, err := getSecret(ctx.Request.GetString("ident"))
+		if err != nil {
+			return err
+		}
+		data := ctx.Request.GetRequestMap("utf8")
+		ctx.Log.Info("请求原数据", data)
+		if _, flag := data["sign"]; !flag {
+			return context.NewError(context.ERR_NOT_ACCEPTABLE, "sign is empty")
+		}
+
+		delete(data, "sign")
+		if ok := util.VerifySign(ctx, data, secret, ctx.Request.GetString("sign")); ok != true {
+			return context.NewError(context.ERR_PAYMENT_REQUIRED, "sign签名错误(402)")
+		}
 		return nil
 	})
+}
+
+// getSecret 获取系统的secrect
+func getSecret(ident string) (string, error) {
+	if ident == "" {
+		return "", context.NewError(context.ERR_NOT_ACCEPTABLE, "ident is empty")
+	}
+	data, err := logic.NewSystemLogic(util.Container).Get(ident)
+	if err != nil {
+		return "", err
+	}
+	return data.GetString("secret"), nil
 }
