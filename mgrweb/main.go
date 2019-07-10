@@ -4,13 +4,13 @@ import (
 	"github.com/micro-plat/hydra/hydra"
 )
 
-type ums struct {
+type mgrweb struct {
 	*hydra.MicroApp
 }
 
 func main() {
 
-	app := &ums{
+	app := &mgrweb{
 		hydra.NewApp(
 			hydra.WithPlatName("sso"),
 			hydra.WithSystemName("mgrweb"),
