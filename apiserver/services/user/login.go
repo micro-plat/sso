@@ -42,23 +42,13 @@ func (u *LoginHandler) Handle(ctx *context.Context) (r interface{}) {
 		return context.NewError(context.ERR_REQUEST_URI_TOO_LONG, err)
 	}
 
-	//处理用户登录
 	member, err := u.m.Login(ctx.Request.GetString("username"),
 		md5.Encrypt(ctx.Request.GetString("password")),
 		ctx.Request.GetString("ident"))
 	if err != nil {
 		return err
 	}
-	//保存用户信息
-	_, err = u.code.Save(member)
-	if err != nil {
-		return err
-	}
 
-	//记录登录行为
-	if err := u.op.LoginOperate(member); err != nil {
-		return err
-	}
 	ctx.Log.Infof("%+v", member)
 	return member
 }

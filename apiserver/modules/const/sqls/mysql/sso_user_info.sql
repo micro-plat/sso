@@ -13,7 +13,7 @@
 		changepwd_times bigint  DEFAULT 0  comment '密码修改次数' ,
 		ext_params varchar(1024)      comment '扩展字段' 
 				
-  ) AUTO_INCREMENT = 11000 COMMENT='用户信息表';
+  ) COMMENT='用户信息表';
 
  alter table sso_user_info add index index_user_info_username(user_name);
 

@@ -10,7 +10,7 @@
 		status tinyint(1) DEFAULT 1 not null    comment '状态' ,
 		create_time datetime DEFAULT CURRENT_TIMESTAMP  not null    comment '创建时间' 
 				
-  ) AUTO_INCREMENT = 11000, COMMENT='报警消息表';
+  ) COMMENT='报警消息表';
 
  
 

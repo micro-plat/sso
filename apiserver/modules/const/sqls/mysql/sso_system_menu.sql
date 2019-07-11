@@ -14,7 +14,7 @@
 		sortrank bigint  not null    comment '排序编号' ,
 		is_open   tinyint(1) DEFAULT 0  comment '是否展开' 
 					
-  ) AUTO_INCREMENT = 14000, COMMENT='功能信息';
+  ) COMMENT='功能信息';
 
  
 alter table sso_system_menu add index index_system_menu_sysid(sys_id) 

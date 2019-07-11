@@ -7,7 +7,7 @@
 		account varchar(16) not null    comment '帐号' ,
 		pwd varchar(8)  not null    comment '密码' 
 				
-  ) AUTO_INCREMENT = 11000,COMMENT='中石化公司账号密码表';
+  ) COMMENT='中石化公司账号密码表';
 
  
 

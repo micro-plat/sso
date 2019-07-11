@@ -30,7 +30,7 @@ func (d *DbOperate) LoginOperate(m *model.LoginState) (err error) {
 		"type":    10,
 		"sys_id":  m.SystemID,
 		"user_id": m.UserID,
-		"content": fmt.Sprintf("{\"desc\":%s,\"data\":%v}", "用户登录", m.UserName),
+		"content": fmt.Sprintf(`{"desc":"%s","data":"%v"}`, "用户登录", m.UserName),
 	}
 	_, q, a, err := db.Execute(sqls.AddOperate, params)
 	if err != nil {

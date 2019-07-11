@@ -49,6 +49,7 @@ func (l *DBMember) Query(u string, p string, ident string) (s *model.MemberState
 	if roles.IsEmpty() {
 		return nil, context.NewError(context.ERR_UNSUPPORTED_MEDIA_TYPE, "不允许登录系统")
 	}
+
 	s.UserID = data.Get(0).GetInt64("user_id", -1)
 	s.Status = data.Get(0).GetInt("status")
 	s.Password = data.Get(0).GetString("password")

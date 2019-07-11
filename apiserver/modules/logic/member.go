@@ -9,6 +9,7 @@ import (
 	"github.com/micro-plat/lib4go/db"
 
 	"github.com/micro-plat/sso/apiserver/modules/access/member"
+	"github.com/micro-plat/sso/apiserver/modules/access/operate"
 	"github.com/micro-plat/sso/apiserver/modules/const/enum"
 	"github.com/micro-plat/sso/apiserver/modules/model"
 )
@@ -21,32 +22,29 @@ type IMemberLogic interface {
 
 //MemberLogic 用户登录管理
 type MemberLogic struct {
-	cache member.ICacheMember
-	db    member.IDBMember
+	cache  member.ICacheMember
+	db     member.IDBMember
+	dboper operate.IDbOperate
+	dbcode member.ICodeMember
 }
 
 //NewMemberLogic 创建登录对象
 func NewMemberLogic(c component.IContainer) *MemberLogic {
 	return &MemberLogic{
-		cache: member.NewCacheMember(c),
-		db:    member.NewDBMember(c),
+		cache:  member.NewCacheMember(c),
+		db:     member.NewDBMember(c),
+		dboper: operate.NewDbOperate(c),
+		dbcode: member.NewCodeMember(c),
 	}
 }
 
 //Login 登录系统
 func (m *MemberLogic) Login(u string, p string, ident string) (s *model.LoginState, err error) {
-	//从缓存中获取用户信息，不存在时从数据库中获取
-	// ls, err := m.cache.Query(u, p, sys)
-	// if ls == nil || err != nil {
 	var ls *model.MemberState
 	if ls, err = m.db.Query(u, p, ident); err != nil {
 		return nil, err
 	}
-	// }
-	//保存用户数据到缓存
-	if err = m.cache.Save(ls); err != nil {
-		return nil, err
-	}
+
 	//检查用户是否已锁定
 	if ls.Status == enum.UserLock {
 		return nil, context.NewError(context.ERR_LOCKED, "用户被锁定暂时无法登录(423)")
@@ -60,9 +58,28 @@ func (m *MemberLogic) Login(u string, p string, ident string) (s *model.LoginSta
 		v, _ := m.cache.SetLoginFail(u)
 		return nil, context.NewError(context.ERR_PRECONDITION_FAILED, fmt.Sprintf("用户名或密码错误(412):%d", v))
 	}
+
+	//保存用户数据到缓存
+	if err = m.cache.Save(ls); err != nil {
+		return nil, err
+	}
+
 	//设置登录成功
 	err = m.cache.SetLoginSuccess(u)
-	return (*model.LoginState)(ls), err
+	member := (*model.LoginState)(ls)
+
+	//保存用户信息
+	_, err = m.dbcode.Save(member)
+	if err != nil {
+		return nil, err
+	}
+
+	//记录登录行为
+	if err := m.dboper.LoginOperate(member); err != nil {
+		return nil, err
+	}
+
+	return member, err
 }
 
 // QueryUserInfo 返回用户信息

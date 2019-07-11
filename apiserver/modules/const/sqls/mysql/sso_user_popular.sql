@@ -10,7 +10,7 @@
 		used_cnt bigint DEFAULT 1 not null    comment '使用频率' ,
 		create_time datetime DEFAULT CURRENT_TIMESTAMP not null    comment '添加时间' 
 				
-  ) AUTO_INCREMENT = 1000, COMMENT='用户常用功能表';
+  ) COMMENT='用户常用功能表';
 
 alter table sso_user_popular add unique(user_id,menu_id);
 alter table sso_user_popular add index index_user_popular_sysid_user_id(sys_id, user_id);
