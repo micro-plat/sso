@@ -13,10 +13,10 @@ where
 const QueryUserInfoByUID = `
 select 
 	u.user_id,u.user_name,u.mobile,u.wx_openid,u.status,u.login_url 
-from 
-	sso_user_info u
-where 
-	u.user_id=@user_id `
+from sso_user_info u
+where u.user_id=@user_id 
+limit 1
+`
 
 //QueryUserInfoByOpenID 查询用户信息
 const QueryUserInfoByOpenID = `

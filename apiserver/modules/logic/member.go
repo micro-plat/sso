@@ -7,17 +7,20 @@ import (
 	"github.com/micro-plat/hydra/component"
 	"github.com/micro-plat/hydra/context"
 	"github.com/micro-plat/lib4go/db"
+	"github.com/micro-plat/lib4go/types"
 
 	"github.com/micro-plat/sso/apiserver/modules/access/member"
 	"github.com/micro-plat/sso/apiserver/modules/access/operate"
 	"github.com/micro-plat/sso/apiserver/modules/const/enum"
 	"github.com/micro-plat/sso/apiserver/modules/model"
+	"github.com/micro-plat/sso/apiserver/modules/model/user"
 )
 
 //IMember 用户登录
 type IMemberLogic interface {
 	Login(u string, p string, ident string) (*model.LoginState, error)
 	QueryUserInfo(u string, ident string) (info db.QueryRow, err error)
+	GetUserInfoByKey(key string) (res *user.UserKeyResp, err error)
 }
 
 //MemberLogic 用户登录管理
@@ -97,4 +100,33 @@ func (m *MemberLogic) QueryUserInfo(u string, ident string) (ls db.QueryRow, err
 		return nil, context.NewError(context.ERR_FORBIDDEN, "用户被禁用请联系管理员")
 	}
 	return ls, err
+}
+
+// GetUserInfoByKey 根据key查询登录的用户信息
+func (m *MemberLogic) GetUserInfoByKey(key string) (res *user.UserKeyResp, err error) {
+	userStr, err := m.cache.GetUserInfoByKey(key)
+
+	if err != nil || userStr == "" {
+		return nil, context.NewError(context.ERR_FORBIDDEN, fmt.Sprintf("没有登录记录,请先登录,err:%s", err))
+	}
+
+	userID := types.GetInt(userStr, -1)
+	if userID == -1 {
+		return nil, context.NewError(context.ERR_FORBIDDEN, "登录出错，请重新登录")
+	}
+
+	userTemp, err := m.db.QueryByID(userID)
+	if err != nil {
+		return nil, err
+	}
+
+	status := userTemp.GetInt("status")
+	if status == enum.UserLock || status == enum.UserDisable {
+		return nil, context.NewError(context.ERR_LOCKED, "用户被锁定或者被禁用")
+	}
+
+	return &user.UserKeyResp{
+		UserId:   userTemp.GetInt("user_id"),
+		UserName: userTemp.GetString("user_name"),
+	}, nil
 }

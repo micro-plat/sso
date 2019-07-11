@@ -22,7 +22,7 @@ func (r *SSO) init() {
 
 	r.Micro("/subsys/login", user.NewLoginHandler)   //子系统远程登录
 	r.Micro("/subsys/menu", user.NewMenuHandler)     //子系统获取菜单数据
-	r.Micro("/subsys/user", user.NewUserInfoHandler) //子系统,获取用户信息, login接口会返回用户的相关信息
+	r.Micro("/subsys/user", user.NewUserInfoHandler) //子系统,获取用户信息
 	r.Micro("/subsys/pwd", user.NewPwdHandler)       //子系统,修改密码
 	r.Micro("/subsys/info", system.NewInfoHandler)   //子系统,获取系统信息
 }

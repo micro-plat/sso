@@ -11,6 +11,7 @@ import (
 type IDBMember interface {
 	Query(u string, p string, ident string) (s *model.MemberState, err error)
 	QueryByUserName(u string, ident string) (info db.QueryRow, err error)
+	QueryByID(uid int) (db.QueryRow, error)
 }
 
 //DBMember 控制用户登录
@@ -90,4 +91,18 @@ func (l *DBMember) QueryByUserName(u string, ident string) (info db.QueryRow, er
 	userData["ident"] = ident
 
 	return userData, err
+}
+
+// QueryByID 根据userid查询用户信息
+func (l *DBMember) QueryByID(uid int) (db.QueryRow, error) {
+	db := l.c.GetRegularDB()
+	data, _, _, err := db.Query(
+		sqls.QueryUserInfoByUID, map[string]interface{}{
+			"user_id": uid,
+		})
+	if err != nil {
+		return nil, err
+	}
+
+	return data.Get(0), nil
 }

@@ -14,6 +14,7 @@ type ICacheMember interface {
 	Save(s *model.MemberState) error
 	SetLoginSuccess(u string) error
 	SetLoginFail(u string) (int, error)
+	GetUserInfoByKey(key string) (string, error)
 }
 
 //CacheMember 控制用户登录
@@ -27,6 +28,7 @@ const (
 	cacheFormat     = "{sso}:login:state-info:{@userName}-{@ident}"
 	cacheCodeFormat = "{sso}:login:state-code:{@userName}-{@ident}"
 	lockFormat      = "{sso}:login:state-locker:{@userName}"
+	cacheLoginUser  = "{sso}:login:state-user:{@key}"
 
 	cacheSysAuth = "{sso}:sys:auth:{@sysID}-{@userID}"
 )
@@ -69,6 +71,15 @@ func (l *CacheMember) SetLoginFail(u string) (int, error) {
 	}
 	return int(v), nil
 }
+
+// GetUserInfoByKey 通过key取缓存的登录用户
+func (l *CacheMember) GetUserInfoByKey(key string) (info string, err error) {
+	cache := l.c.GetRegularCache()
+	cachekey := transform.Translate(cacheLoginUser, "key", key)
+	info, err = cache.Get(cachekey)
+	return
+}
+
 func (l *CacheMember) getLoginFailCnt(u string) (int, error) {
 	cache := l.c.GetRegularCache()
 	key := transform.Translate(lockFormat, "userName", u)
