@@ -32,7 +32,7 @@ func NewUserInfoHandler(container component.IContainer) (u *UserInfoHandler) {
 func (u *UserInfoHandler) InfoHandle(ctx *context.Context) (r interface{}) {
 	ctx.Log.Info("-------子系统用户远程登录---------")
 
-	if err := ctx.Request.Check("username", "ident", "timestamp", "sign"); err != nil {
+	if err := ctx.Request.Check("username"); err != nil {
 		return context.NewError(context.ERR_NOT_ACCEPTABLE, err)
 	}
 

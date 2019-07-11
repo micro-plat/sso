@@ -37,7 +37,7 @@ func (u *PwdHandler) Handle(ctx *context.Context) (r interface{}) {
 
 	ctx.Log.Info("-------子系统修改密码------")
 
-	if err := ctx.Request.Check("ident", "user_id", "password", "password_old", "timestamp", "sign"); err != nil {
+	if err := ctx.Request.Check("user_id", "password", "password_old"); err != nil {
 		return fmt.Errorf("参数错误：%v", err)
 	}
 

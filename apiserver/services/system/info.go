@@ -1,8 +1,6 @@
 package system
 
 import (
-	"fmt"
-
 	"github.com/micro-plat/hydra/component"
 	"github.com/micro-plat/hydra/context"
 	"github.com/micro-plat/sso/apiserver/modules/logic"
@@ -30,9 +28,6 @@ func NewInfoHandler(container component.IContainer) (u *InfoHandler) {
  */
 func (u *InfoHandler) Handle(ctx *context.Context) (r interface{}) {
 	ctx.Log.Info("-------子系统调用，获取系统信息------")
-	if err := ctx.Request.Check("ident", "timestamp", "sign"); err != nil {
-		return fmt.Errorf("参数错误：%v", err)
-	}
 
 	data, err := u.sys.Get(ctx.Request.GetString("ident"))
 	if err != nil {

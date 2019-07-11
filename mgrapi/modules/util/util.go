@@ -10,6 +10,8 @@ import (
 	"github.com/micro-plat/hydra/context"
 )
 
+var ImageExts = []string{".jpg", ".jpeg", ".gif", ".png"}
+
 //wxpayVerifySign 微信支付签名验证函数
 func VerifySign(ctx *context.Context, needVerifyM map[string]interface{}, secret, sign string) bool {
 
@@ -56,4 +58,14 @@ func makeSign(mReq map[string]interface{}, secret string) (raw string, sign stri
 	cipherStr := md5Ctx.Sum(nil)
 	upperSign := strings.ToUpper(hex.EncodeToString(cipherStr))
 	return signStrings, upperSign
+}
+
+// IsImage 判断是否是图片
+func IsImage(f string) bool {
+	for _, i := range imageExts {
+		if f == i {
+			return true
+		}
+	}
+	return false
 }

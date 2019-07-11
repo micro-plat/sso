@@ -35,7 +35,7 @@ func NewMenuHandler(container component.IContainer) (u *MenuHandler) {
 func (u *MenuHandler) Handle(ctx *context.Context) (r interface{}) {
 	ctx.Log.Info("-------子系统调用，查询指定用户在指定系统的菜单列表------")
 
-	if err := ctx.Request.Check("user_id", "system_id", "ident", "timestamp", "sign"); err != nil {
+	if err := ctx.Request.Check("user_id", "system_id"); err != nil {
 		return fmt.Errorf("参数错误：%v", err)
 	}
 

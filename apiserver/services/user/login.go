@@ -38,7 +38,7 @@ func NewLoginHandler(container component.IContainer) (u *LoginHandler) {
 func (u *LoginHandler) Handle(ctx *context.Context) (r interface{}) {
 	ctx.Log.Info("-------子系统用户远程登录---------")
 
-	if err := ctx.Request.Check("username", "password", "ident", "timestamp", "sign"); err != nil {
+	if err := ctx.Request.Check("username", "password"); err != nil {
 		return context.NewError(context.ERR_REQUEST_URI_TOO_LONG, err)
 	}
 

@@ -10,34 +10,23 @@ import (
 	"github.com/micro-plat/hydra/context"
 	"github.com/micro-plat/lib4go/utility"
 	"github.com/micro-plat/sso/mgrapi/modules/model"
+	"github.com/micro-plat/sso/mgrapi/modules/util"
 )
-
-var imageExts = []string{".jpg", ".jpeg", ".gif", ".png"}
 
 //ImageHandler 处理组件
 type ImageHandler struct {
 	container component.IContainer
 	localDir  string
-	baseURL   string
 }
 
 //NewImageHandler  创建处理组件
-func NewImageHandler(dir string, url string) func(container component.IContainer) (c *ImageHandler) {
+func NewImageHandler(dir string) func(container component.IContainer) (c *ImageHandler) {
 	return func(container component.IContainer) (c *ImageHandler) {
 		return &ImageHandler{
 			container: container,
 			localDir:  dir,
-			baseURL:   url,
 		}
 	}
-}
-func isImage(f string) bool {
-	for _, i := range imageExts {
-		if f == i {
-			return true
-		}
-	}
-	return false
 }
 
 //PostHandle 处理图片上传
@@ -51,8 +40,8 @@ func (ch *ImageHandler) PostHandle(ctx *context.Context) (r interface{}) {
 
 	ctx.Log.Info("2.检查图片格式")
 	extName := filepath.Ext(ctx.Request.GetString("filename"))
-	if !isImage(extName) {
-		return fmt.Errorf("不是有效的图片格式：%v", imageExts)
+	if !util.IsImage(extName) {
+		return fmt.Errorf("不是有效的图片格式：%v", util.ImageExts)
 	}
 	uf, _, err := f.FormFile("file")
 	if err != nil {
