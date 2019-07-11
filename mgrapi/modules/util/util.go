@@ -62,7 +62,7 @@ func makeSign(mReq map[string]interface{}, secret string) (raw string, sign stri
 
 // IsImage 判断是否是图片
 func IsImage(f string) bool {
-	for _, i := range imageExts {
+	for _, i := range ImageExts {
 		if f == i {
 			return true
 		}

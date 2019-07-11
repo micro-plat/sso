@@ -10,13 +10,6 @@ const (
 )
 
 const (
-	From     = "qxuseradmin@163.com"
-	Password = "abc123"
-	Host     = "smtp.163.com"
-	Port     = "25"
-)
-
-const (
 	UserNormal int = iota
 	UserLock
 	UserDisable

@@ -45,18 +45,15 @@ where
 
 //QueryUserByUserName 根据用户名获取用户信息
 const QueryUserByUserName = `
-	select 
-		user_id,
-		user_name,
-		status,
-		wx_openid,
-		ext_params 
-	from 
-		sso_user_info
-	where 
-		user_name=@user_name 
-	and 
-		rownum<=1
+select 
+	user_id,
+	user_name,
+	status,
+	wx_openid,
+	ext_params 
+from sso_user_info
+where user_name=@user_name 
+limit 1
 `
 
 //QuerySysAuth .
