@@ -104,8 +104,9 @@ func (m *MemberLogic) QueryUserInfo(u string, ident string) (ls db.QueryRow, err
 
 // GetUserInfoByKey 根据key查询登录的用户信息
 func (m *MemberLogic) GetUserInfoByKey(key string) (res *user.UserKeyResp, err error) {
-	userStr, err := m.cache.GetUserInfoByKey(key)
 
+	//1:缓存取信息
+	userStr, err := m.cache.GetUserInfoByKey(key)
 	if err != nil || userStr == "" {
 		return nil, context.NewError(context.ERR_FORBIDDEN, fmt.Sprintf("没有登录记录,请先登录,err:%s", err))
 	}
@@ -115,11 +116,16 @@ func (m *MemberLogic) GetUserInfoByKey(key string) (res *user.UserKeyResp, err e
 		return nil, context.NewError(context.ERR_FORBIDDEN, "登录出错，请重新登录")
 	}
 
+	//2. 清楚key的缓存
+	m.cache.DeleteInfoByKey(key)
+
+	//3.去数据库查询(user)信息
 	userTemp, err := m.db.QueryByID(userID)
 	if err != nil {
 		return nil, err
 	}
 
+	//4. 验证用户状态
 	status := userTemp.GetInt("status")
 	if status == enum.UserLock || status == enum.UserDisable {
 		return nil, context.NewError(context.ERR_LOCKED, "用户被锁定或者被禁用")

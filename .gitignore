@@ -19,3 +19,7 @@ logs/
 conf/
 
 ./mgrapi/static/
+
+apiserver
+mgrapi
+mgrweb

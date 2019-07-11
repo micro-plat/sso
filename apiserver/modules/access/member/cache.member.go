@@ -15,6 +15,7 @@ type ICacheMember interface {
 	SetLoginSuccess(u string) error
 	SetLoginFail(u string) (int, error)
 	GetUserInfoByKey(key string) (string, error)
+	DeleteInfoByKey(key string)
 }
 
 //CacheMember 控制用户登录
@@ -78,6 +79,13 @@ func (l *CacheMember) GetUserInfoByKey(key string) (info string, err error) {
 	cachekey := transform.Translate(cacheLoginUser, "key", key)
 	info, err = cache.Get(cachekey)
 	return
+}
+
+// DeleteInfoByKey key
+func (l *CacheMember) DeleteInfoByKey(key string) {
+	cache := l.c.GetRegularCache()
+	cachekey := transform.Translate(cacheLoginUser, "key", key)
+	cache.Delete(cachekey)
 }
 
 func (l *CacheMember) getLoginFailCnt(u string) (int, error) {
