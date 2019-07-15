@@ -14,18 +14,8 @@ import (
 
 //IMember 用户登录
 type IMemberLogic interface {
-	/*
-		QueryUserInfo(u string, ident string) (info db.QueryRow, err error) //在用
-		Query(uid int64) (db.QueryRow, error)
-		CacheQuery(u string, ident string) (ls *model.MemberState, err error)
-		LoginByOpenID(string, string) (*model.LoginState, error)
-		SendCheckMail(from string, password string, host string, port string, to string, link string) error
-		QueryAuth(sysID, userID int64) (err error)
-		QueryRoleByNameAndIdent(name, password, ident string) (s *model.MemberState, err error)
-		SaveLoginStateToCache(s *model.MemberState) error
-	*/
 	//验证用户是否已登录
-	SetLoginUserKey(user_id int64) (key string, err error)
+	SetLoginUserCode(user_id int64) (key string, err error)
 	Login(u string, p string) (*model.LoginState, error)
 }
 
@@ -43,10 +33,10 @@ func NewMemberLogic(c component.IContainer) *MemberLogic {
 	}
 }
 
-//SetLoginUserKey 验证用户是否已登录
-func (m *MemberLogic) SetLoginUserKey(user_id int64) (key string, err error) {
+//SetLoginUserCode 验证用户是否已登录
+func (m *MemberLogic) SetLoginUserCode(user_id int64) (key string, err error) {
 	guid := utility.GetGUID()
-	if err = m.cache.SetUserInfoByKey(guid, user_id); err != nil {
+	if err = m.cache.SetUserInfoByCode(guid, user_id); err != nil {
 		return "", err
 	}
 	return guid, nil
@@ -72,7 +62,6 @@ func (m *MemberLogic) Login(u string, p string) (s *model.LoginState, err error)
 }
 
 ////////////////////////////////////////////////
-
 /*
 //Query 查询用户信息
 func (m *MemberLogic) Query(uid int64) (db.QueryRow, error) {

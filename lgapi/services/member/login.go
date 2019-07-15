@@ -37,7 +37,7 @@ func (u *LoginHandler) CheckHandle(ctx *context.Context) (r interface{}) {
 	m.Password = ""
 
 	//2:已登录返回key
-	key, err := u.m.SetLoginUserKey(m.UserID)
+	code, err := u.m.SetLoginUserCode(m.UserID)
 	if err != nil {
 		return context.NewError(context.ERR_BAD_REQUEST, "请重新登录")
 	}
@@ -49,7 +49,7 @@ func (u *LoginHandler) CheckHandle(ctx *context.Context) (r interface{}) {
 	m.SystemID = ctx.Request.GetInt("sysid")
 	u.op.LoginOperate(m)
 
-	return key
+	return code
 }
 
 //PostHandle sso用户登录
@@ -71,7 +71,7 @@ func (u *LoginHandler) PostHandle(ctx *context.Context) (r interface{}) {
 	member.Password = ""
 
 	//3: 设置已登录key
-	key, err := u.m.SetLoginUserKey(member.UserID)
+	code, err := u.m.SetLoginUserCode(member.UserID)
 	if err != nil {
 		return context.NewError(context.ERR_BAD_REQUEST, "请重新登录")
 	}
@@ -83,22 +83,12 @@ func (u *LoginHandler) PostHandle(ctx *context.Context) (r interface{}) {
 	member.SystemID = ctx.Request.GetInt("sysid")
 	u.op.LoginOperate(member)
 
-	return key
+	return code
 }
 
 //RefreshHandle 刷新token
 func (u *LoginHandler) RefreshHandle(ctx *context.Context) (r interface{}) {
 	ctx.Log.Info("-------lgapi 刷新token---------")
-
-	//1: 获取用户信息
-	m := member.Get(ctx)
-	if m == nil {
-		return context.NewError(context.ERR_BAD_REQUEST, "请重新登录")
-	}
-
-	//2: 设置jwt数据
-	ctx.Response.SetJWT(m)
-
 	return "success"
 }
 

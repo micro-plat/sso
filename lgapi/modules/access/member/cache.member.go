@@ -10,7 +10,7 @@ import (
 
 type ICacheMember interface {
 	SetLoginFail(u string) (int, error)
-	SetUserInfoByKey(key string, userId int64) error
+	SetUserInfoByCode(code string, userId int64) error
 }
 
 //CacheMember 控制用户登录
@@ -29,10 +29,10 @@ func NewCacheMember(c component.IContainer) *CacheMember {
 	}
 }
 
-// SetUserInfoByKey 通过key取缓存的登录用户
-func (l *CacheMember) SetUserInfoByKey(key string, userId int64) error {
+// SetUserInfoByCode 通过key取缓存的登录用户
+func (l *CacheMember) SetUserInfoByCode(code string, userId int64) error {
 	cache := l.c.GetRegularCache()
-	cachekey := transform.Translate(cachekey.CacheLoginUser, "key", key)
+	cachekey := transform.Translate(cachekey.CacheLoginUser, "key", code)
 	return cache.Set(cachekey, types.GetString(userId), 60)
 }
 

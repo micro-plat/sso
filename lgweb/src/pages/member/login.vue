@@ -30,7 +30,6 @@
     },
 
     mounted(){
-      //encodeURIComponent decodeURIComponent
       document.title = "用户登录";
       this.callback = this.$route.query.callback;
       this.sysid = this.$route.query.sysid;
@@ -44,12 +43,12 @@
         this.$post("lg/login/post", e)
           .then(res => {
             this.$refs.loginItem.showMsg("登录中.....");
-
-            console.log(res.data);
-
             setTimeout(() => {
-              window.location.href = 
-                JoinUrlParams(decodeURIComponent(this.callback),{key : res.data});
+              if (this.callback) {
+                window.location.href = JoinUrlParams(decodeURIComponent(this.callback),{code:res.data})
+                return;
+              }
+              this.$router.push({ path: '/chose',query: { code: res.data }});   
             }, 300);
           })
           .catch(err => {

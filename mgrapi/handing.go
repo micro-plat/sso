@@ -43,6 +43,7 @@ func (r *SSO) handing() {
 			if tag == "*" {
 				return nil
 			}
+			ctx.Log.Info("userId: %d, systemId:%d, tag:%s, method:%s", m.UserID, m.SystemID, tag, ctx.Request.GetMethod())
 			if err = menu.Verify(m.UserID, m.SystemID, tag, ctx.Request.GetMethod()); err == nil {
 				return nil
 			}
