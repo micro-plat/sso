@@ -46,20 +46,20 @@ func (u *UserInfoHandler) InfoHandle(ctx *context.Context) (r interface{}) {
 }
 
 /*
-* Handle: 根据登录后给子系统的key还回用户信息
-* key:guid
+* Handle: 根据登录后给子系统的code还回用户信息
+* code:guid
 * ident:子系统标识
 * timestamp:时间戳
 * sign:签名
  */
-func (u *UserInfoHandler) KeyHandle(ctx *context.Context) (r interface{}) {
+func (u *UserInfoHandler) CodeHandle(ctx *context.Context) (r interface{}) {
 	ctx.Log.Info("-------子系统远程通过key来拿取用户user_id,user_name---------")
 
-	if err := ctx.Request.Check("key"); err != nil {
+	if err := ctx.Request.Check("code"); err != nil {
 		return context.NewError(context.ERR_NOT_ACCEPTABLE, err)
 	}
 
-	info, err := u.m.GetUserInfoByKey(ctx.Request.GetString("key"))
+	info, err := u.m.GetUserInfoByCode(ctx.Request.GetString("code"))
 	if err != nil {
 		return err
 	}

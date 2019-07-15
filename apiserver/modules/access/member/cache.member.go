@@ -14,8 +14,8 @@ type ICacheMember interface {
 	Save(s *model.MemberState) error
 	SetLoginSuccess(u string) error
 	SetLoginFail(u string) (int, error)
-	GetUserInfoByKey(key string) (string, error)
-	DeleteInfoByKey(key string)
+	GetUserInfoByCode(code string) (string, error)
+	DeleteInfoByCode(code string)
 }
 
 //CacheMember 控制用户登录
@@ -29,7 +29,7 @@ const (
 	cacheFormat     = "{sso}:login:state-info:{@userName}-{@ident}"
 	cacheCodeFormat = "{sso}:login:state-code:{@userName}-{@ident}"
 	lockFormat      = "{sso}:login:state-locker:{@userName}"
-	cacheLoginUser  = "{sso}:login:state-user:{@key}"
+	cacheLoginUser  = "{sso}:login:state-user:{@code}"
 
 	cacheSysAuth = "{sso}:sys:auth:{@sysID}-{@userID}"
 )
@@ -73,18 +73,18 @@ func (l *CacheMember) SetLoginFail(u string) (int, error) {
 	return int(v), nil
 }
 
-// GetUserInfoByKey 通过key取缓存的登录用户
-func (l *CacheMember) GetUserInfoByKey(key string) (info string, err error) {
+// GetUserInfoByCode 通过key取缓存的登录用户
+func (l *CacheMember) GetUserInfoByCode(code string) (info string, err error) {
 	cache := l.c.GetRegularCache()
-	cachekey := transform.Translate(cacheLoginUser, "key", key)
+	cachekey := transform.Translate(cacheLoginUser, "code", code)
 	info, err = cache.Get(cachekey)
 	return
 }
 
-// DeleteInfoByKey key
-func (l *CacheMember) DeleteInfoByKey(key string) {
+// DeleteInfoByCode code
+func (l *CacheMember) DeleteInfoByCode(code string) {
 	cache := l.c.GetRegularCache()
-	cachekey := transform.Translate(cacheLoginUser, "key", key)
+	cachekey := transform.Translate(cacheLoginUser, "code", code)
 	cache.Delete(cachekey)
 }
 
