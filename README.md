@@ -18,7 +18,7 @@
 对外子系统提供api接口  
 
 #### 3.1 子系统远程登录
-`
+```
 url /subsys/login
 reqBody: 
      username #用户名 
@@ -30,10 +30,10 @@ response:
      成功: 用户信息
      失败: 错误信息
      
-` 
+``` 
 
 #### 3.2 子系统获取用户菜单数据
-`
+```
 url /subsys/menu
 reqBody: 
     system_id:子系统id标识
@@ -44,10 +44,10 @@ reqBody:
 response:
      成功: 用户的菜单信息
      失败: 错误信息
-` 
+```
 
 ### 3.3 子系统,获取用户信息
-`
+```
 url /subsys/user/info
 reqBody: 
     username:用户名称
@@ -57,10 +57,10 @@ reqBody:
 response:
      成功: 用户信息
      失败: 错误信息
-`
+```
 
 ### 3.4 子系统用户修改密码
-`
+```
 url /subsys/pwd
 reqBody: 
     user_id:用户标识
@@ -73,10 +73,10 @@ response:
      成功: success
      失败: 错误信息
 
-`
+```
 
 ### 3.5 子系统获取系统信息
-`
+```
 url /subsys/info
 reqBody: 
     ident:子系统标识
@@ -85,10 +85,10 @@ reqBody:
 response:
      成功: 系统信息
      失败: 错误信息
-`
+```
 
 ### 3.6 子系统通过code来拿取登录的用户标识
-`
+```
 url /subsys/user/code
 reqBody: 
     ident:子系统标识
@@ -98,7 +98,7 @@ reqBody:
 response:
      成功: 还回用户id,用户名
      失败: 错误信息
-`
+```
 
 
 ### 4 lgapi
@@ -125,7 +125,7 @@ sysid子系统标识(为了记录登录日志)
 
 3: 子系统退出登录
 子系统自己先退出，然后调用sso地址
-/login?callback="http%3A%2F%2F192.168.5.79%2F  
+/login?callback="http%3A%2F%2F192.168.5.79%2F&sysid=12  
 callback是用户再次登录可跳转地址
 
 ```
@@ -144,5 +144,3 @@ callback是用户再次登录可跳转地址
 ### 7 误区
 现在系统分的有点多，对子系统调用的有三个(apiserver纯api, lgapi是页面跳转登陆的后台,以及页面跳转登陆的前台lgweb)
 如果不用页面跳转登陆方式就直接用apiserver接口, 否则就用lgweb中的 三个url(上面已提到)
-
-
