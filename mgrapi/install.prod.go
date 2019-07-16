@@ -9,7 +9,7 @@ func (s *SSO) install() {
 	s.Conf.API.SetMainConf(`{"address":":6688"}`)
 	s.Conf.API.SetSubConf("app", `
 			{
-				"pic_host": "#web_host_name"
+				"pic_host": "#pic_host"
 			}			
 			`)
 	s.Conf.API.SetSubConf("header", `

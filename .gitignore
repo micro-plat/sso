@@ -34,6 +34,7 @@ conf/
 ./mgrapi/static/
 ./lgapi/static/
 
-apiserver
-mgrapi
-mgrweb
+apiserver/apiserver
+mgrapi/mgrapi
+mgrweb/mgrweb
+lgapi/lgapi
