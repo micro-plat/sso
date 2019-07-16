@@ -30,6 +30,40 @@ func NewLoginHandler(container component.IContainer) (u *LoginHandler) {
 	}
 }
 
+// UserHandle sso登录后验证用户信息(通过code取登录用户)
+func (u *LoginHandler) UserHandle(ctx *context.Context) (r interface{}) {
+	ctx.Log.Info("-------sso中心登录后去取登录用户---------")
+
+	if err := ctx.Request.Check("code"); err != nil {
+		return context.NewError(context.ERR_NOT_ACCEPTABLE, fmt.Errorf("code不能为空"))
+	}
+	code := ctx.Request.GetString("code")
+
+	ctx.Log.Info("调用sso api 用code取用户信息")
+	data, err := u.m.LoginNew(code)
+	if err != nil {
+		return context.NewError(context.ERR_FORBIDDEN, err)
+	}
+	ctx.Log.Info("data: %v", data)
+	ctx.Response.SetJWT(data)
+	return nil
+}
+
+//PostHandle 根据登录get获取用户信息，jwt信息获取用户信息
+func (u *LoginHandler) PostHandle(ctx *context.Context) (r interface{}) {
+	ctx.Log.Info("-------根据登录get获取用户信息，jwt信息获取用户信息---------")
+	if err := ctx.Request.Check("code"); err != nil {
+		return context.NewError(context.ERR_NOT_ACCEPTABLE, fmt.Errorf("code不能为空"))
+	}
+	code := ctx.Request.GetString("code")
+	state, err := u.code.Query(code)
+	if err != nil {
+		return err
+	}
+	ctx.Response.SetJWT(state)
+	return state
+}
+
 //GetHandle 处理用户登录，登录成功后转跳到指定的系统
 func (u *LoginHandler) GetHandle(ctx *context.Context) (r interface{}) {
 
@@ -65,21 +99,6 @@ func (u *LoginHandler) GetHandle(ctx *context.Context) (r interface{}) {
 		"code":  code,
 		"ident": ctx.Request.GetString("ident"),
 	}
-}
-
-//PostHandle 根据登录get获取用户信息，jwt信息获取用户信息
-func (u *LoginHandler) PostHandle(ctx *context.Context) (r interface{}) {
-	ctx.Log.Info("-------根据登录get获取用户信息，jwt信息获取用户信息---------")
-	if err := ctx.Request.Check("code"); err != nil {
-		return context.NewError(context.ERR_NOT_ACCEPTABLE, fmt.Errorf("code不能为空"))
-	}
-	code := ctx.Request.GetString("code")
-	state, err := u.code.Query(code)
-	if err != nil {
-		return err
-	}
-	ctx.Response.SetJWT(state)
-	return state
 }
 
 //CodeHandle  切换系统，用旧code换取新code

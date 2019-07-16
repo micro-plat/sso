@@ -28,24 +28,25 @@ func NewLoginHandler(container component.IContainer) (u *LoginHandler) {
 
 //CheckHandle 验证用户是否已经登录
 func (u *LoginHandler) CheckHandle(ctx *context.Context) (r interface{}) {
+	ctx.Log.Info("-------lgapi 用户跳转登录---------")
 
-	//1: 获取登录用户信息
+	ctx.Log.Info("1: 获取登录用户信息")
 	m := member.Get(ctx)
 	if m == nil {
 		return context.NewError(context.ERR_BAD_REQUEST, "请重新登录")
 	}
-	m.Password = ""
+	ctx.Log.Infof("用户信息:%v", m)
 
-	//2:已登录返回key
-	code, err := u.m.SetLoginUserCode(m.UserID)
+	ctx.Log.Info("2:已登录返回code")
+	code, err := u.m.CreateLoginUserCode(m.UserID)
 	if err != nil {
 		return context.NewError(context.ERR_BAD_REQUEST, "请重新登录")
 	}
 
-	//3: 设置jwt数据
+	ctx.Log.Info("3: 设置jwt数据")
 	ctx.Response.SetJWT(m)
 
-	//4:记录登录行为
+	ctx.Log.Info("4:记录登录行为")
 	m.SystemID = ctx.Request.GetInt("sysid")
 	u.op.LoginOperate(m)
 
@@ -56,38 +57,38 @@ func (u *LoginHandler) CheckHandle(ctx *context.Context) (r interface{}) {
 func (u *LoginHandler) PostHandle(ctx *context.Context) (r interface{}) {
 	ctx.Log.Info("-------lgapi 用户登录---------")
 
-	//1:参数验证
+	ctx.Log.Info("1:参数验证")
 	if err := ctx.Request.Check("username", "password"); err != nil {
 		return context.NewError(context.ERR_NOT_ACCEPTABLE, fmt.Errorf("用户名和密码不能为空"))
 	}
 
-	//2:处理用户登录
+	ctx.Log.Info("2:处理用户登录")
 	member, err := u.m.Login(
 		ctx.Request.GetString("username"),
 		md5.Encrypt(ctx.Request.GetString("password")))
 	if err != nil {
 		return err
 	}
-	member.Password = ""
 
-	//3: 设置已登录key
-	code, err := u.m.SetLoginUserCode(member.UserID)
+	ctx.Log.Info("3: 设置已登录code")
+	code, err := u.m.CreateLoginUserCode(member.UserID)
 	if err != nil {
 		return context.NewError(context.ERR_BAD_REQUEST, "请重新登录")
 	}
 
-	//3: 设置jwt数据
+	ctx.Log.Info("4: 设置jwt数据")
 	ctx.Response.SetJWT(member)
 
-	//4:记录登录行为
+	ctx.Log.Info("5:记录登录行为")
 	member.SystemID = ctx.Request.GetInt("sysid")
 	u.op.LoginOperate(member)
 
 	return code
 }
 
-//RefreshHandle 刷新token
+//RefreshHandle 刷新token 这个接口只是为了刷新sso登录用户的jwt, jwt刷新在框架就做了
 func (u *LoginHandler) RefreshHandle(ctx *context.Context) (r interface{}) {
 	ctx.Log.Info("-------lgapi 刷新token---------")
+
 	return "success"
 }

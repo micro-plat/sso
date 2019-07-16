@@ -1,9 +1,13 @@
 package logic
 
 import (
+	"encoding/json"
 	"fmt"
+	"io/ioutil"
+	"net/http"
 	"net/smtp"
 	"strings"
+	"time"
 
 	"github.com/jordan-wright/email"
 	"github.com/micro-plat/hydra/component"
@@ -13,11 +17,13 @@ import (
 	"github.com/micro-plat/sso/mgrapi/modules/access/member"
 	"github.com/micro-plat/sso/mgrapi/modules/const/enum"
 	"github.com/micro-plat/sso/mgrapi/modules/model"
+	"github.com/micro-plat/sso/mgrapi/modules/util"
 )
 
 //IMember 用户登录
 type IMemberLogic interface {
-	Login(u string, p string, ident string) (*model.LoginState, error)  //在用
+	Login(u string, p string, ident string) (*model.LoginState, error) //在用
+	LoginNew(code string) (*model.LoginState, error)
 	QueryUserInfo(u string, ident string) (info db.QueryRow, err error) //在用
 	Query(uid int64) (db.QueryRow, error)
 	CacheQuery(u string, ident string) (ls *model.MemberState, err error)
@@ -28,17 +34,21 @@ type IMemberLogic interface {
 	SaveLoginStateToCache(s *model.MemberState) error
 }
 
-//Member 用户登录管理
+//MemberLogic 用户登录管理
 type MemberLogic struct {
+	c     component.IContainer
 	cache member.ICacheMember
 	db    member.IDBMember
+	http  *http.Client
 }
 
-//NewMember 创建登录对象
+//NewMemberLogic 创建登录对象
 func NewMemberLogic(c component.IContainer) *MemberLogic {
 	return &MemberLogic{
+		c:     c,
 		cache: member.NewCacheMember(c),
 		db:    member.NewDBMember(c),
+		http:  &http.Client{},
 	}
 }
 
@@ -47,10 +57,12 @@ func (m *MemberLogic) Query(uid int64) (db.QueryRow, error) {
 	return m.db.QueryByID(uid)
 }
 
+// CacheQuery xx
 func (m *MemberLogic) CacheQuery(userName string, ident string) (ls *model.MemberState, err error) {
 	return m.cache.Query(userName, ident)
 }
 
+// SaveLoginStateToCache xx
 func (m *MemberLogic) SaveLoginStateToCache(s *model.MemberState) error {
 	return m.cache.Save(s)
 }
@@ -60,6 +72,7 @@ func (m *MemberLogic) QueryRoleByNameAndIdent(name, password, ident string) (s *
 	return m.db.Query(name, password, ident)
 }
 
+// QueryAuth xx
 func (m *MemberLogic) QueryAuth(sysID, userID int64) (err error) {
 	err = m.cache.QueryAuth(sysID, userID)
 	if err != nil {
@@ -125,6 +138,53 @@ func (m *MemberLogic) Login(u string, p string, ident string) (s *model.LoginSta
 	//设置登录成功
 	err = m.cache.SetLoginSuccess(u)
 	return (*model.LoginState)(ls), err
+}
+
+//LoginNew 跳转登录
+func (m *MemberLogic) LoginNew(code string) (*model.LoginState, error) {
+	config := model.GetConf(m.c)
+
+	pars := map[string]interface{}{
+		"ident":     config.Ident,
+		"timestamp": time.Now().Unix(),
+		"code":      code,
+	}
+	_, sign := util.MakeSign(pars, config.Secret)
+	pars["sign"] = sign
+
+	return m.remoteLogin(config, pars)
+}
+
+func (m *MemberLogic) remoteLogin(config *model.Conf, pars map[string]interface{}) (*model.LoginState, error) {
+
+	url := fmt.Sprintf(
+		"%s?ident=%s&timestamp=%s&code=%s&sign=%s",
+		config.GetUserInfoCode,
+		pars["ident"],
+		pars["timestamp"],
+		pars["code"],
+		pars["sign"])
+
+	resp, err := m.http.Get(url)
+	if err != nil {
+		return nil, fmt.Errorf("请求:%v失败(%v)", url, err)
+	}
+	defer resp.Body.Close()
+	if resp.StatusCode != 200 {
+		return nil, fmt.Errorf("登录失败,HttpStatus:%d", resp.StatusCode)
+	}
+	body, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		return nil, fmt.Errorf("读取远程数据失败 %s %v", url, err)
+	}
+
+	var state model.LoginState
+	err = json.Unmarshal(body, &state)
+	if err != nil {
+		return nil, fmt.Errorf("解析返回结果失败 %s：%v(%s)", url, err, string(body))
+	}
+
+	return &state, nil
 }
 
 // QueryUserInfo 返回用户信息

@@ -13,14 +13,13 @@ import (
 	"github.com/micro-plat/sso/apiserver/modules/access/operate"
 	"github.com/micro-plat/sso/apiserver/modules/const/enum"
 	"github.com/micro-plat/sso/apiserver/modules/model"
-	"github.com/micro-plat/sso/apiserver/modules/model/user"
 )
 
-//IMember 用户登录
+//IMemberLogic 用户登录
 type IMemberLogic interface {
 	Login(u string, p string, ident string) (*model.LoginState, error)
 	QueryUserInfo(u string, ident string) (info db.QueryRow, err error)
-	GetUserInfoByCode(code string) (res *user.UserKeyResp, err error)
+	GetUserInfoByCode(code, ident string) (res *model.LoginState, err error)
 }
 
 //MemberLogic 用户登录管理
@@ -103,7 +102,7 @@ func (m *MemberLogic) QueryUserInfo(u string, ident string) (ls db.QueryRow, err
 }
 
 // GetUserInfoByCode 根据Code查询登录的用户信息
-func (m *MemberLogic) GetUserInfoByCode(code string) (res *user.UserKeyResp, err error) {
+func (m *MemberLogic) GetUserInfoByCode(code, ident string) (res *model.LoginState, err error) {
 
 	//1:缓存取信息
 	userStr, err := m.cache.GetUserInfoByCode(code)
@@ -120,19 +119,16 @@ func (m *MemberLogic) GetUserInfoByCode(code string) (res *user.UserKeyResp, err
 	m.cache.DeleteInfoByCode(code)
 
 	//3.去数据库查询(user)信息
-	userTemp, err := m.db.QueryByID(userID)
+	userTemp, err := m.db.QueryByID(userID, ident)
 	if err != nil {
 		return nil, err
 	}
 
 	//4. 验证用户状态
-	status := userTemp.GetInt("status")
+	status := userTemp.Status
 	if status == enum.UserLock || status == enum.UserDisable {
 		return nil, context.NewError(context.ERR_LOCKED, "用户被锁定或者被禁用")
 	}
 
-	return &user.UserKeyResp{
-		UserId:   userTemp.GetInt("user_id"),
-		UserName: userTemp.GetString("user_name"),
-	}, nil
+	return (*model.LoginState)(userTemp), nil
 }

@@ -38,7 +38,7 @@ func (s *SSO) install() {
 			"maxIdle":10,
 			"lifeTime":600	
 	}`)
-	//sso/123456@orcl136
+
 	s.Conf.Plat.SetVarConf("cache", "cache", `
 		{
 			"proto":"redis",

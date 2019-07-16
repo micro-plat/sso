@@ -59,10 +59,10 @@ func (u *UserInfoHandler) CodeHandle(ctx *context.Context) (r interface{}) {
 		return context.NewError(context.ERR_NOT_ACCEPTABLE, err)
 	}
 
-	info, err := u.m.GetUserInfoByCode(ctx.Request.GetString("code"))
+	info, err := u.m.GetUserInfoByCode(
+		ctx.Request.GetString("code"), ctx.Request.GetString("ident"))
 	if err != nil {
 		return err
 	}
-
 	return info
 }

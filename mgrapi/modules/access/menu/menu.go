@@ -1,28 +1,38 @@
 package menu
 
 import (
+	"encoding/json"
 	"fmt"
+	"io/ioutil"
+	"net/http"
 	"regexp"
 	"strings"
+	"time"
 
 	"github.com/micro-plat/hydra/component"
 	"github.com/micro-plat/hydra/context"
+	"github.com/micro-plat/lib4go/db"
 	"github.com/micro-plat/lib4go/types"
 	"github.com/micro-plat/sso/mgrapi/modules/const/sqls"
+	"github.com/micro-plat/sso/mgrapi/modules/model"
+	"github.com/micro-plat/sso/mgrapi/modules/util"
 )
 
 type IMenu interface {
 	Query(uid int64, sysid int) ([]map[string]interface{}, error)
 	Verify(uid int64, sysid int, menuURL string, method string) error
+	QueryMenuFromSso(uid int64, sysid int) ([]*model.Menu, error)
 }
 
 type Menu struct {
-	c component.IContainer
+	c    component.IContainer
+	http *http.Client
 }
 
 func NewMenu(c component.IContainer) *Menu {
 	return &Menu{
-		c: c,
+		c:    c,
+		http: &http.Client{},
 	}
 }
 
@@ -58,6 +68,21 @@ func (l *Menu) Query(uid int64, sysid int) ([]map[string]interface{}, error) {
 	}
 
 	return result, nil
+}
+
+// QueryMenuFromSso xx
+func (l *Menu) QueryMenuFromSso(uid int64, sysid int) ([]*model.Menu, error) {
+	config := model.GetConf(l.c)
+	m := map[string]interface{}{
+		"user_id":   uid,
+		"system_id": sysid,
+		"ident":     "sso",
+		"timestamp": time.Now().Unix(),
+	}
+	_, sign := util.MakeSign(m, config.Secret)
+	m["sign"] = sign
+
+	return l.remoteMenuQuery(config, m)
 }
 
 //Verify 获取用户指定系统的菜单信息
@@ -112,4 +137,37 @@ func getFuncs(urlParams string, method string) (string, []string, error) {
 	}
 	funcs = append(funcs, items[0])
 	return url, funcs, nil
+}
+
+func (l *Menu) remoteMenuQuery(config *model.Conf, m db.QueryRow) ([]*model.Menu, error) {
+	url := fmt.Sprintf(
+		"%s?user_id=%s&system_id=%s&ident=%s&timestamp=%s&sign=%s",
+		config.GetMenuURL(),
+		m.GetString("user_id"),
+		m.GetString("system_id"),
+		m.GetString("ident"),
+		m.GetString("timestamp"),
+		m.GetString("sign"))
+
+	request, err := http.NewRequest("GET", url, nil)
+	if err != nil {
+		return nil, err
+	}
+
+	resp, err := l.http.Do(request)
+	if err != nil {
+		return nil, fmt.Errorf("请求:%v失败(%v)", url, err)
+	}
+
+	defer resp.Body.Close()
+	body, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		return nil, fmt.Errorf("读取远程数据失败 %s %v", url, err)
+	}
+	var menus []*model.Menu
+	err = json.Unmarshal(body, &menus)
+	if err != nil {
+		return nil, fmt.Errorf("解析返回结果失败 %s：%v(%s)", url, err, string(body))
+	}
+	return menus, nil
 }

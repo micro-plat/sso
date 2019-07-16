@@ -9,7 +9,10 @@ func (s *SSO) install() {
 	s.Conf.API.SetMainConf(`{"address":":6688"}`)
 	s.Conf.API.SetSubConf("app", `
 			{
-				"pic_host": "#pic_host"
+				"pic_host": "#pic_host",
+				"secret":"#secret",
+				"sso_jump_host":"#sso_jump_host",
+				"ident":"sso"
 			}			
 			`)
 	s.Conf.API.SetSubConf("header", `
@@ -26,6 +29,7 @@ func (s *SSO) install() {
 			"jwt": {
 				"exclude": [
 					"/sso/login",
+					"/sso/login/user",
 					"/sso/sys/func/enable",
 					"/sso/sys/manage/edit",
 					"/sso/login/code",

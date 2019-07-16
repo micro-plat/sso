@@ -1,7 +1,9 @@
 import Vue from 'vue';
 import Router from 'vue-router';
 import menu from '@/pages/member/menu';
-import login from '@/pages/member/login';
+//import login from '@/pages/member/login';
+import login from '@/pages/member/login.jump.vue';
+import ssocallback from '@/pages/member/sso.callback.vue';
 import check from '@/pages/member/check';
 import sysindex from '@/pages/system/sys.index.new.vue'
 import sysfunc from '@/pages/system/func.index.vue'
@@ -79,6 +81,11 @@ export default new Router({
       path: '/login',
       name: 'login',
       component: login
+    },
+    {
+      path: '/ssocallback',
+      name: 'ssocallback',
+      component: ssocallback
     },
     {
       path: '/member/check',

@@ -26,17 +26,14 @@ func NewMenuHandler(container component.IContainer) (u *MenuHandler) {
 	}
 }
 
-//GetHandle 查询指定用户在指定系统的菜单列表
+//GetHandle 调用远程api得到用户的菜单数据
 func (u *MenuHandler) GetHandle(ctx *context.Context) (r interface{}) {
-	l := member.Query(ctx, u.c)
-	if l == nil {
-		return context.NewError(context.ERR_FORBIDDEN, "code not be null")
-	}
-	data, err := u.m.Query(l.UserID, l.SystemID)
+	user := member.Get(ctx)
+	menus, err := u.m.QueryMenuFromSso(user.UserID, user.SystemID)
 	if err != nil {
 		return err
 	}
-	return data
+	return menus
 }
 
 //PostHandle 查询常用菜单
@@ -82,3 +79,18 @@ func (u *MenuHandler) VerifyHandle(ctx *context.Context) (r interface{}) {
 	}
 	return ""
 }
+
+/*
+//GetHandle 查询指定用户在指定系统的菜单列表
+func (u *MenuHandler) GetHandle(ctx *context.Context) (r interface{}) {
+	l := member.Query(ctx, u.c)
+	if l == nil {
+		return context.NewError(context.ERR_FORBIDDEN, "code not be null")
+	}
+	data, err := u.m.Query(l.UserID, l.SystemID)
+	if err != nil {
+		return err
+	}
+	return data
+}
+*/

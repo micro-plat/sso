@@ -12,10 +12,10 @@ import (
 
 var ImageExts = []string{".jpg", ".jpeg", ".gif", ".png"}
 
-//wxpayVerifySign 微信支付签名验证函数
+//VerifySign 微信支付签名验证函数
 func VerifySign(ctx *context.Context, needVerifyM map[string]interface{}, secret, sign string) bool {
 
-	raw, signCalc := makeSign(needVerifyM, secret)
+	raw, signCalc := MakeSign(needVerifyM, secret)
 	ctx.Log.Infof("计算出来的sign: %v\n", signCalc)
 	ctx.Log.Infof("请求sign: %v\n", sign)
 	if sign == signCalc {
@@ -27,7 +27,8 @@ func VerifySign(ctx *context.Context, needVerifyM map[string]interface{}, secret
 	return false
 }
 
-func makeSign(mReq map[string]interface{}, secret string) (raw string, sign string) {
+// MakeSign xx
+func MakeSign(mReq map[string]interface{}, secret string) (raw string, sign string) {
 	fmt.Println("签名计算, API KEY:", secret)
 	//1, 对key进行升序排序.
 	sortedKeys := make([]string, 0)
