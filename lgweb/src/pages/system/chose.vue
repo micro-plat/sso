@@ -1,17 +1,15 @@
 <template>
   <div class="main">
       <div class="center">请选择要登入的系统</div>
-      <div>
-          <ul>
-            <li class="syslogo" v-for="(item, index) in systems" :key="index">
-                <a :href="item.indexurl">
-                    <img v-if="item.logo !=''" :src="item.logo" :title="item.name" />
-                    <img v-if="item.logo==''" src="../../assets/logo.png" :title="item.name" />
-                </a>
-            </li>
-        </ul>
-      </div>
-      
+      <div class="everyone" v-for="(item, index) in systems" :key="index">
+          <span class="syslogo">
+              <a :href="item.callbackurl">
+                <img v-if="item.logo !=''" :src="item.logo" />
+                <img v-if="item.logo==''" src="../../assets/logo.png" />
+             </a>
+          </span>
+          <span class="note">{{item.name}}</span>
+      </div>    
   </div>
 </template>
 
@@ -39,8 +37,11 @@
             .then(res =>{
                 if (res != undefined && res.length > 0) {
                     res.forEach((current, index) =>{
-                        current.indexurl = JoinUrlParams(current.indexurl, {code:this.code});
-                        current.logo = '';
+                        if (current.callbackurl) {
+                            current.callbackurl = JoinUrlParams(current.callbackurl, {code:this.code});
+                        } else {
+                            current.callbackurl = "javascript:return false";
+                        }
                     })
                 }
                 this.systems = res;
@@ -54,11 +55,15 @@
 </script>
 
 <style>
+    .everyone {
+        border-top: 1px solid green;
+        padding-top: 20px;
+    }
     .main {
         padding-bottom: 20px;   
         display:grid;
         margin:0 auto;
-        width: 1500px;
+        width: 900px;
         border: 1px solid black;
     }
     .center {
@@ -66,13 +71,7 @@
         font-size: 16px;
         margin-bottom: 20px;
     }
-    ul,li {
-        list-style: none;
-        padding: 0px;
-        margin: 0px;
-    }
     .syslogo {
-        float: left;
         width: 100px;
         height: 100px;
         margin: 10px 20px;
@@ -81,6 +80,11 @@
     .syslogo img {
         width: 100px;
         height: 100px;
+    }
+
+    .note {
+        margin-left: 50px;
+        line-height: 100px;
     }
 
 </style>

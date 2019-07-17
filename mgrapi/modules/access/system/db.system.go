@@ -103,6 +103,7 @@ func (u *DbSystem) Add(input *model.AddSystemInput) (err error) {
 		"wechat_status": input.Wechat_status,
 		"login_url":     "http://member/login",
 		"secret":        input.Secret,
+		"callbackurl":   input.CallBackUrl,
 	}
 	_, q, a, err := db.Execute(sqls.AddSubSystem, params)
 	if err != nil {
@@ -137,6 +138,7 @@ func (u *DbSystem) Edit(input *model.SystemEditInput) (err error) {
 		"ident":         input.Ident,
 		"wechat_status": input.Wechat_status,
 		"secret":        input.Secret,
+		"callbackurl":   input.CallBackUrl,
 	}
 	_, q, a, err := db.Execute(sqls.UpdateEdit, params)
 	if err != nil {

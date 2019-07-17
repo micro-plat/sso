@@ -11,6 +11,7 @@ type UserInfoHandler struct {
 	container component.IContainer
 	sys       logic.ISystemLogic
 	m         logic.IMemberLogic
+	op        logic.IOperateLogic
 }
 
 //NewUserInfoHandler is
@@ -19,6 +20,7 @@ func NewUserInfoHandler(container component.IContainer) (u *UserInfoHandler) {
 		container: container,
 		sys:       logic.NewSystemLogic(container),
 		m:         logic.NewMemberLogic(container),
+		op:        logic.NewOperateLogic(container),
 	}
 }
 
@@ -55,14 +57,20 @@ func (u *UserInfoHandler) InfoHandle(ctx *context.Context) (r interface{}) {
 func (u *UserInfoHandler) CodeHandle(ctx *context.Context) (r interface{}) {
 	ctx.Log.Info("-------子系统远程通过key来拿取用户user_id,user_name---------")
 
-	if err := ctx.Request.Check("code"); err != nil {
+	if err := ctx.Request.Check("code", "sysid"); err != nil {
 		return context.NewError(context.ERR_NOT_ACCEPTABLE, err)
 	}
 
+	ctx.Log.Info("code去取用户信息")
 	info, err := u.m.GetUserInfoByCode(
 		ctx.Request.GetString("code"), ctx.Request.GetString("ident"))
 	if err != nil {
 		return err
 	}
+
+	ctx.Log.Info("记录登录信息")
+	info.SystemID = ctx.Request.GetInt("sysid")
+	u.op.LoginOperate(info)
+
 	return info
 }

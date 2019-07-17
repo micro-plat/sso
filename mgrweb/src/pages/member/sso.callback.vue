@@ -1,4 +1,5 @@
 <template>
+  <div class="main">{{msg}}</div>
 </template>
 
 <script>
@@ -7,7 +8,8 @@
     name: 'callback',
     data () {
       return {
-        code : ""
+        code : "",
+        msg: ""
       }
     },
     mounted(){
@@ -20,10 +22,15 @@
             .then(res =>{
                 this.$router.push("/");
             }).catch(err => {
-            window.location.href = 
-              "http://192.168.5.78:8081" + "/jump" + "?callback=" + encodeURIComponent("http://192.168.5.78:8080/ssocallback") + "&sysid=0";
+              this.msg = "登录出错";
             });
       }
     }
   }
 </script>
+
+<style>
+  .main{
+    text-align: center;
+  }
+</style>

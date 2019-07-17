@@ -8,7 +8,7 @@
     name: 'app',
     data () {
       return {
-        //config : process.env.service
+        config : process.env.service
       }
     },
     mounted(){
@@ -17,12 +17,8 @@
     },
     methods:{
       jumpToSso(){
-        //console.log(this.config);
-        /*window.location.href = 
-            service.ssoHost + service.jumpUrl + "?callback=" + service.callbackUrl + "&sysid=0";
-        */
         window.location.href = 
-            "http://192.168.5.78:8081" + "/jump" + "?callback=" + encodeURIComponent("http://192.168.5.78:8080/ssocallback") + "&sysid=0";
+            this.config.ssoHost + this.config.jumpUrl + "?callback=" + encodeURIComponent(this.config.callbackUrl);
       }
     }
   }

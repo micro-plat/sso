@@ -148,6 +148,7 @@ func (m *MemberLogic) LoginNew(code string) (*model.LoginState, error) {
 		"ident":     config.Ident,
 		"timestamp": time.Now().Unix(),
 		"code":      code,
+		"sysid":     0,
 	}
 	_, sign := util.MakeSign(pars, config.Secret)
 	pars["sign"] = sign
@@ -158,12 +159,13 @@ func (m *MemberLogic) LoginNew(code string) (*model.LoginState, error) {
 func (m *MemberLogic) remoteLogin(config *model.Conf, pars map[string]interface{}) (*model.LoginState, error) {
 
 	url := fmt.Sprintf(
-		"%s?ident=%s&timestamp=%s&code=%s&sign=%s",
-		config.GetUserInfoCode,
+		"%s?ident=%s&timestamp=%d&code=%s&sign=%s&sysid=%d",
+		config.GetUserInfoCode(),
 		pars["ident"],
 		pars["timestamp"],
 		pars["code"],
-		pars["sign"])
+		pars["sign"],
+		pars["sysid"])
 
 	resp, err := m.http.Get(url)
 	if err != nil {

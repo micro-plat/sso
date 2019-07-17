@@ -13,7 +13,6 @@
 </template>
 
 <script>
-
   import VueCookies from 'vue-cookies'
   import loginWithUp from 'login-with-up'; // 引入
   export default {

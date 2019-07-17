@@ -32,14 +32,14 @@
     mounted(){
       document.title = "用户登录";
       this.callback = this.$route.query.callback;
-      this.sysid = this.$route.query.sysid;
-
+      //this.sysid = this.$route.query.sysid;
+      
       VueCookies.remove("__jwt__")
     },
 
     methods:{
       loginsubmit(e){
-        e.sysid = this.sysid;
+        //e.sysid = this.sysid;
         this.$post("lg/login/post", e)
           .then(res => {
             this.$refs.loginItem.showMsg("登录中.....");

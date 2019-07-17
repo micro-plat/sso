@@ -141,6 +141,10 @@
                 <div class="form-height text-danger"><span v-show="errors.first('secret')">secret不能为空</span> </div>
               </div>
               <div class="form-group">
+                <label>sso登录后回调子系统的地址(如:http://www.123.com/abc)</label>
+                <input class="form-control" placeholder="请输入回调地址"  v-model="addData.callbackurl" name="callbackurl"  type="text">
+              </div>
+              <div class="form-group">
                 <!--<label>logo</label>-->
                 <input class="form-control" placeholder="logo地址" v-validate="'required'" name="logo" v-model="addData.logo"  readonly>
                 <!--<div class="form-height text-danger"> <span v-show="errors.first('logo')">logo地址不能为空</span> </div>-->
@@ -505,6 +509,10 @@
                 <label>secret</label>
                 <input class="form-control" placeholder="请输系统签名所需的secret" v-validate="'required'" v-model="editData.secret" name="secret"  type="text">
                 <div class="form-height text-danger"><span v-show="errors.first('secret')">secret不能为空</span> </div>
+              </div>
+              <div class="form-group">
+                <label>sso登录后回调子系统的地址(如:http://www.123.com/abc)</label>
+                <input class="form-control" placeholder="请输入回调地址"  v-model="editData.callbackurl" name="callbackurl"  type="text">
               </div>
               <div class="form-group">
                 <label>{{editData.logo}}</label>
@@ -926,7 +934,8 @@ export default {
         style: [],
         ident: "",
         secret:"",
-        wechat_status:"1"
+        wechat_status:"1",
+        callbackurl:""
       },
       editData: {},
       enableData: { id: null, status: null },
@@ -1112,6 +1121,7 @@ export default {
         ident: this.addData.ident,
         secret:this.addData.secret,
         wechat_status: this.addData.wechat_status,
+        callbackurl: this.addData.callbackurl
       })
         .then(res => {
           this.$refs.addModal.close();
@@ -1235,6 +1245,7 @@ export default {
           if (a == "string") {
             item.layout = item.layout.split(" ");
           }
+          console.log(item);
           this.editData = item;
           this.$refs.editModal.open();
         }

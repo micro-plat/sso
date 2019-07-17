@@ -24,7 +24,7 @@ where
 //QuerySubSystemPageList .
 const QuerySubSystemPageList = `
 select 
-  t.*
+  t.*, callback_url as callbackurl 
 from 
   sso_system_info t 
 where 1 = 1 
@@ -54,7 +54,8 @@ insert into
     ident,
     wechat_status,
     login_url,
-    secret
+    secret,
+    callback_url,
   ) 
 values
   (
@@ -67,7 +68,8 @@ values
     @ident,
     @wechat_status,
     @login_url,
-    @secret
+    @secret,
+    @callbackurl
   )`
 
 //UpdateEnable .
@@ -94,7 +96,8 @@ set
   t.layout = @layout,
   t.ident = @ident,
   t.wechat_status = @wechat_status,
-  t.secret = @secret 
+  t.secret = @secret,
+  t.callback_url = @callbackurl 
 where 
   t.id = @id
 `

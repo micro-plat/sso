@@ -13,6 +13,7 @@ type SystemEditInput struct {
 	//Wechat_status string `form:"wechat_status" json:"wechat_status" valid:"required"`
 	Wechat_status string `form:"wechat_status" json:"wechat_status"`
 	Secret        string `form:"secret" json:"secret" valid:"required"`
+	CallBackUrl   string `form:"callbackurl" json:"callbackurl"`
 }
 
 type AddSystemInput struct {
@@ -26,4 +27,5 @@ type AddSystemInput struct {
 	//Wechat_status string `form:"wechat_status" json:"wechat_status" valid:"required"`
 	Wechat_status string `form:"wechat_status" json:"wechat_status"`
 	Secret        string `form:"secret" json:"secret" valid:"required"`
+	CallBackUrl   string `form:"callbackurl" json:"callbackurl"`
 }

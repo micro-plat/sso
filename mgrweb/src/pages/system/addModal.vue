@@ -37,6 +37,11 @@
                     </el-row>
               
               <div class="form-group">
+                <label>sso登录后回调子系统的地址(如:http://www.123.com/abc)</label>
+                <input class="form-control" placeholder="请输入回调地址" v-model="addData.callbackurl" name="callbackurl"  type="text">
+              </div>
+
+              <div class="form-group">
                 <label>secret</label>
                 <input class="form-control" placeholder="请输系统签名所需的secret" v-validate="'required'" v-model="addData.secret" name="secret"  type="text">
                 <div class="form-height text-danger"><span v-show="errors.first('secret')">secret不能为空</span> </div>
@@ -409,7 +414,8 @@ export default {
                 style: [],
                 ident: "",
                 secret:"",
-                wechat_status:"1"
+                wechat_status:"1",
+                callbackurl:""
             },
             isOpen: false,
             isShow: false,
@@ -473,6 +479,7 @@ export default {
             ident: this.addData.ident,
             secret:this.addData.secret,
             wechat_status: this.addData.wechat_status,
+            callbackurl: this.addData.callbackurl
         })
             .then(res => {
             this.resetForm()

@@ -2,7 +2,7 @@
 module.exports = {
     NODE_ENV: '"production"',
     service: {
-        url: '"http://api.sso.sinopecscsy.com:6688"',   //线上
+        url: '"http://192.168.106.226:6687"',   //线上
         ws: `"ws://api.sso.sinopecscsy.com:6689/ws"`,
         webHost:'"http://web.coupon.sinopecscsy.com"',
         // url: '"http://192.168.106.152:6688"',     //线下

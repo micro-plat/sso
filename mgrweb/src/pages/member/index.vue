@@ -99,12 +99,7 @@
                 </a>
               </li>
               <li class="divider"></li>
-              <li>
-                <a ui-sref="access.signin" @click="goto(loginPage)">
-                  <i class="fa fa-reply fa-fw fa-lg text-primary"></i>
-                  退出
-                </a>
-              </li>
+
               <li class="divider"></li>
               <!--系统-->
               <li v-for="(v,k) in sysList" :key="k" v-if="v.ident != ''">
@@ -391,6 +386,7 @@
   import {loadNavbar, resizeIframe} from "@/services/nav";
   import {changeTheme} from "@/services/bg";
   import {Messenger} from "@/services/messenger";
+  import VueCookies from 'vue-cookies';
 
   loadNavbar();
 
@@ -844,6 +840,12 @@
         }
         // console.log(url.substr(oldIndex));
         return url.substr(oldIndex);
+      },
+      //退出登录,要跳转到sso登录页面(两边的jwt cookie都要清理)
+      signOut() {
+        console.log("ddddd");
+        //VueCookies.remove("__jwt__");
+        //window.location.href =  process.env.service.ssoHost + process.env.service.loginUrl;
       }
     },
     destroyed: function () {

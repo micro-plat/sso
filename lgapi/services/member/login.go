@@ -12,17 +12,15 @@ import (
 
 //LoginHandler 用户登录对象
 type LoginHandler struct {
-	c  component.IContainer
-	m  logic.IMemberLogic
-	op logic.IOperateLogic
+	c component.IContainer
+	m logic.IMemberLogic
 }
 
 //NewLoginHandler 创建登录对象
 func NewLoginHandler(container component.IContainer) (u *LoginHandler) {
 	return &LoginHandler{
-		c:  container,
-		m:  logic.NewMemberLogic(container),
-		op: logic.NewOperateLogic(container),
+		c: container,
+		m: logic.NewMemberLogic(container),
 	}
 }
 
@@ -45,10 +43,6 @@ func (u *LoginHandler) CheckHandle(ctx *context.Context) (r interface{}) {
 
 	ctx.Log.Info("3: 设置jwt数据")
 	ctx.Response.SetJWT(m)
-
-	ctx.Log.Info("4:记录登录行为")
-	m.SystemID = ctx.Request.GetInt("sysid")
-	u.op.LoginOperate(m)
 
 	return code
 }
@@ -78,10 +72,6 @@ func (u *LoginHandler) PostHandle(ctx *context.Context) (r interface{}) {
 
 	ctx.Log.Info("4: 设置jwt数据")
 	ctx.Response.SetJWT(member)
-
-	ctx.Log.Info("5:记录登录行为")
-	member.SystemID = ctx.Request.GetInt("sysid")
-	u.op.LoginOperate(member)
 
 	return code
 }

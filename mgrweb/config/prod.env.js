@@ -2,6 +2,10 @@
 module.exports = {
     NODE_ENV: '"production"',
     service: {
+        jumpUrl:`"/jump"`,
+        callbackUrl:`"http://192.168.5.78:8081/ssocallback"`,
+        ssoHost:`"http://192.168.5.78:8091"`,
+
         url: '"http://api.sso.sinopecscsy.com:6688"',   //线上
         ws: `"ws://api.sso.sinopecscsy.com:6689/ws"`,
         webHost:'"http://web.coupon.sinopecscsy.com"',

@@ -19,14 +19,12 @@
     mounted(){
       document.title = "用户登录";
       this.callback = this.$route.query.callback;
-      this.sysid = this.$route.query.sysid;
-
       this.checkAndJumpLogin();
     },
 
     methods:{
         checkAndJumpLogin() {
-            this.$post("lg/login/check",{sysid: this.sysid})
+            this.$post("lg/login/check",{})
             .then(res =>{
                 console.log(res.data);
                 this.notice = "已登录,跳转中...";
@@ -39,7 +37,7 @@
                   this.$router.push({ path: '/chose',query: { code: res.data }});   
                 }, 1000);
             }).catch(err => {
-                this.$router.push({ path: '/login', query: { callback: this.callback, sysid: this.sysid }});
+                this.$router.push({ path: '/login', query: { callback: this.callback }});
             });
         }
     }
