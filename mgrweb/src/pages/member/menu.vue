@@ -9,6 +9,7 @@
       :headpic="headpic"
       :userinfo="userinfo"
       :pwd="pwd"
+      :signOut="signOut"
       ref="NewTap"
     >
       <keep-alive>
@@ -46,6 +47,7 @@
 
 <script>
   import navMenu from 'nav-menu'; // 引入
+  import VueCookies from 'vue-cookies';
   export default {
     name: 'app',
     data () {
@@ -130,6 +132,12 @@
       pwd(val){
 
         this.dialogAddVisible = val;
+      },
+      signOut() {
+        VueCookies.remove("__jwt__");
+        var config = process.env.service;
+        window.location.href = 
+            config.ssoHost + config.loginUrl + "?callback=" + encodeURIComponent(config.callbackUrl);
       },
       resetForm(formName) {
         this.dialogAddVisible = false;
