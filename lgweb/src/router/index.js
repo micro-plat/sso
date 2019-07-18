@@ -3,6 +3,7 @@ import Router from 'vue-router';
 import login from '@/pages/member/login';
 import jump from '@/pages/member/jump.vue';
 import reflesh from '@/pages/member/reflesh.vue';
+import changepwd from '@/pages/member/changepwd.vue';
 import chose from '@/pages/system/chose.vue';
 
 Vue.use(Router);
@@ -31,6 +32,12 @@ export default new Router({
       path: '/chose',
       name: 'chose',
       component: chose
+    },
+    {
+
+      path: '/changepwd',
+      name: 'changepwd',
+      component: changepwd
     }
   ]
 })
