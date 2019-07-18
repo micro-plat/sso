@@ -14,8 +14,9 @@ import (
 
 //IMemberLogic 用户登录
 type IMemberLogic interface {
-	CreateLoginUserCode(user_id int64) (code string, err error)
+	CreateLoginUserCode(userID int64) (code string, err error)
 	Login(u string, p string) (*model.LoginState, error)
+	ChangePwd(userID int, expassword string, newpassword string) (err error)
 }
 
 //MemberLogic 用户登录管理
@@ -33,9 +34,9 @@ func NewMemberLogic(c component.IContainer) *MemberLogic {
 }
 
 //CreateLoginUserCode 验证用户是否已登录
-func (m *MemberLogic) CreateLoginUserCode(user_id int64) (code string, err error) {
+func (m *MemberLogic) CreateLoginUserCode(userID int64) (code string, err error) {
 	guid := utility.GetGUID()
-	if err = m.cache.CreateUserInfoByCode(guid, user_id); err != nil {
+	if err = m.cache.CreateUserInfoByCode(guid, userID); err != nil {
 		return "", err
 	}
 	return guid, nil
@@ -49,13 +50,18 @@ func (m *MemberLogic) Login(u string, p string) (s *model.LoginState, err error)
 	}
 
 	if strings.ToLower(ls.Password) != strings.ToLower(p) {
-		return nil, context.NewError(context.ERR_UNAUTHORIZED, "用户名或密码错误")
+		return nil, context.NewError(context.ERR_FORBIDDEN, "用户名或密码错误")
 	}
 
 	//检查用户是否已锁定
 	if ls.Status == enum.UserLock || ls.Status == enum.UserDisable {
-		return nil, context.NewError(context.ERR_LOCKED, "用户被锁定或被禁用，暂时无法登录")
+		return nil, context.NewError(context.ERR_FORBIDDEN, "用户被锁定或被禁用，暂时无法登录")
 	}
 
 	return (*model.LoginState)(ls), err
+}
+
+// ChangePwd 修改密码
+func (m *MemberLogic) ChangePwd(userID int, expassword string, newpassword string) (err error) {
+	return m.db.ChangePwd(userID, expassword, newpassword)
 }

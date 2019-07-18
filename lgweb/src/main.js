@@ -14,9 +14,7 @@ import store from './store'
 //import VTree from 'vue-tree-halower'
 //import uploader from 'vue-simple-uploader'
 //Vue.use(uploader);
-//import ElementUI from 'element-ui';
-//import 'element-ui/lib/theme-chalk/index.css';
-//Vue.use(ElementUI);
+
 import {
     post,
     fetch,
@@ -24,18 +22,13 @@ import {
     put,
     del
 } from './services/http'
-
-/*
-const config = {
-    fieldsBagName: 'vee-fields'
-    }
-*/
 import VueCookies from 'vue-cookies'
-
 Vue.use(VueCookies);
 
-//Vue.use(VTree);
-//Vue.use(VeeValidate,config);
+import ElementUI from 'element-ui';
+import 'element-ui/lib/theme-chalk/index.css';
+Vue.use(ElementUI);
+
 
 
 //定义全局变量

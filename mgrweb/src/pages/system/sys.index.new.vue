@@ -32,8 +32,8 @@
         <el-table :data="datalist" stripe  style="width: 100%">
 
           <el-table-column width="100" prop="id" label="编号" ></el-table-column>
-          <el-table-column width="200" prop="name" label="系统名称" ></el-table-column>
-          <el-table-column width="200" prop="index_url" label="首页地址" ></el-table-column>
+          <el-table-column width="250" prop="name" label="系统名称" ></el-table-column>
+          <el-table-column width="320" prop="index_url" label="首页地址" ></el-table-column>
 
           <el-table-column  width="150" prop="enable" label="状态" >
             <template slot-scope="scope">
@@ -52,7 +52,7 @@
             </template>
           </el-table-column>
 
-          <el-table-column width="300" prop="secret" label="secret" ></el-table-column>
+          <!--<el-table-column width="300" prop="secret" label="secret" ></el-table-column>-->
 
           <el-table-column  label="操作">
             <template slot-scope="scope">

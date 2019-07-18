@@ -5,6 +5,7 @@ import jump from '@/pages/member/jump.vue';
 import reflesh from '@/pages/member/reflesh.vue';
 import changepwd from '@/pages/member/changepwd.vue';
 import chose from '@/pages/system/chose.vue';
+import errpage from '@/pages/system/errpage.vue';
 
 Vue.use(Router);
 
@@ -34,10 +35,14 @@ export default new Router({
       component: chose
     },
     {
-
       path: '/changepwd',
       name: 'changepwd',
       component: changepwd
+    },
+    {
+      path: '/errpage',
+      name: 'errpage',
+      component: errpage
     }
   ]
 })

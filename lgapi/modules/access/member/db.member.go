@@ -2,16 +2,19 @@ package member
 
 import (
 	"fmt"
+	"strings"
 
 	"github.com/micro-plat/hydra/component"
 	"github.com/micro-plat/hydra/context"
 	"github.com/micro-plat/lib4go/db"
+	"github.com/micro-plat/lib4go/security/md5"
 	"github.com/micro-plat/sso/lgapi/modules/const/sqls"
 	"github.com/micro-plat/sso/lgapi/modules/model"
 )
 
 type IDBMember interface {
 	Query(u string, p string) (s *model.MemberState, err error)
+	ChangePwd(userID int, expassword string, newpassword string) (err error)
 
 	QueryByID(uid int64) (db.QueryRow, error)
 	QueryByUserName(u string, ident string) (info db.QueryRow, err error)
@@ -56,8 +59,33 @@ func (l *DBMember) Query(u string, p string) (s *model.MemberState, err error) {
 	return s, err
 }
 
-/////////////////////////////////////////////////
+// ChangePwd 修改密码
+func (l *DBMember) ChangePwd(userID int, expassword string, newpassword string) (err error) {
+	db := l.c.GetRegularDB()
 
+	data, _, _, err := db.Query(sqls.QueryOldPwd, map[string]interface{}{
+		"user_id": userID,
+	})
+
+	//data.Get(0).GetInt("changepwd_times") >= 3
+	if err != nil {
+		return context.NewError(context.ERR_BAD_REQUEST, "用户不存在, 修改失败")
+	}
+
+	if strings.ToLower(md5.Encrypt(expassword)) != strings.ToLower(data.Get(0).GetString("password")) {
+		return context.NewError(context.ERR_BAD_REQUEST, "原密码错误")
+	}
+	_, _, _, err = db.Execute(sqls.SetNewPwd, map[string]interface{}{
+		"user_id":  userID,
+		"password": md5.Encrypt(newpassword),
+	})
+	if err != nil {
+		context.NewError(context.ERR_SERVER_ERROR, err)
+	}
+	return nil
+}
+
+/////////////////////////////////////////////////
 func (l *DBMember) QueryAuth(sysID, userID int64) (data db.QueryRows, err error) {
 	db := l.c.GetRegularDB()
 	//查询当前系统下是否有此用户

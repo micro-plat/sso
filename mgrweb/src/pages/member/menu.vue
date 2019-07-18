@@ -130,8 +130,10 @@
     },
     methods:{
       pwd(val){
-
-        this.dialogAddVisible = val;
+        VueCookies.remove("__jwt__");
+        var config = process.env.service;
+        window.location.href = 
+            config.ssoHost + config.loginUrl + config.changePwd;
       },
       signOut() {
         VueCookies.remove("__jwt__");

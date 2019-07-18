@@ -18,11 +18,11 @@
     name: 'app',
     data () {
       return {
-        systemName: "单点登录系统",
+        systemName: "能源业务中心运营管理系统",
         copyright:"四川千行你我科技有限公司Copyright© 2018 版权所有",
         conf:{loginNameType:"输入用户名",pwd:"输入密码"},
         callback:"",
-        sysid:0
+        changepwd:0
       }
     },
     components:{ 
@@ -30,22 +30,25 @@
     },
 
     mounted(){
-      document.title = "用户登录";
+      document.title = "登录-能源业务中心运营管理系统";
       this.callback = this.$route.query.callback;
-      //this.sysid = this.$route.query.sysid;
+      this.changepwd = this.$route.query.changepwd;
       
       VueCookies.remove("__jwt__")
     },
 
     methods:{
       loginsubmit(e){
-        //e.sysid = this.sysid;
         this.$post("lg/login/post", e)
           .then(res => {
             this.$refs.loginItem.showMsg("登录中.....");
             setTimeout(() => {
               if (this.callback) {
                 window.location.href = JoinUrlParams(decodeURIComponent(this.callback),{code:res.data})
+                return;
+              }
+              if (this.changepwd === 1) {
+                this.$router.push({ path: '/changepwd'});   
                 return;
               }
               this.$router.push({ path: '/chose',query: { code: res.data }});   
@@ -56,6 +59,7 @@
               switch (err.response.status) {
                 case 401:
                 case 423:
+                case 403:
                   this.$refs.loginItem.showMsg(err.response.data.data);
                   break;
                 case 415:

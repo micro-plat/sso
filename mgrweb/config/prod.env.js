@@ -2,6 +2,8 @@
 module.exports = {
     NODE_ENV: '"production"',
     service: {
+        freshJwt:`"/reflesh"`,
+        changePwd:`"/changepwd"`,
         jumpUrl:`"/jump"`,
         callbackUrl:`"http://192.168.5.78:8081/ssocallback"`,
         ssoHost:`"http://192.168.5.78:8091"`,

@@ -5,6 +5,8 @@ const prodEnv = require('./prod.env')
 module.exports = merge(prodEnv, {
     NODE_ENV: '"development"',
     service: {
+        freshJwt:`"/reflesh"`,
+        changePwd:`"/changepwd"`,
         jumpUrl:`"/jump"`,
         loginUrl:`"/login"`,
         callbackUrl:`"http://192.168.5.78:8081/ssocallback"`,

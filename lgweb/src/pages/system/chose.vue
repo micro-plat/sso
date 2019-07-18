@@ -1,16 +1,27 @@
 <template>
-  <div class="main">
-      <div class="center">请选择要登入的系统</div>
-      <div class="everyone" v-for="(item, index) in systems" :key="index">
-          <span class="syslogo">
-              <a :href="item.callbackurl">
-                <img v-if="item.logo !=''" :src="item.logo" />
-                <img v-if="item.logo==''" src="../../assets/logo.png" />
-             </a>
-          </span>
-          <span class="note">{{item.name}}</span>
-      </div>    
-  </div>
+  <div class="swipercontiner">
+    <div data-v-21e0ac8e="" id="bg" style="background: rgb(33, 150, 243);">
+        <canvas data-v-21e0ac8e="" width="1840" height="454"></canvas>
+        <canvas data-v-21e0ac8e="" width="1840" height="454"></canvas> 
+        <canvas data-v-21e0ac8e="" width="1840" height="454"></canvas>
+    </div>
+    <div class="title">
+        请选择要登入的系统
+    </div>
+    <div class="list">
+        <ul v-for="(item, index) in systems" :key="index">
+            <li class="everyone">
+                <span class="icon">
+                    <img v-if="item.logo !=''" :src="item.logo" />
+                    <img v-if="item.logo==''" src="../../img/iocn_yh.png" >
+                </span>
+                <span class="text">
+                    {{item.name}}
+                </span>
+            </li>
+        </ul>
+    </div>
+</div>
 </template>
 
 <script>
@@ -42,6 +53,9 @@
                         } else {
                             current.callbackurl = "javascript:return false";
                         }
+                        if (current.name.length >= 9) {
+                            current.name = current.name.substr(0,9);
+                        }
                     })
                 }
                 this.systems = res;
@@ -55,36 +69,65 @@
 </script>
 
 <style>
-    .everyone {
-        border-top: 1px solid green;
-        padding-top: 20px;
-    }
-    .main {
-        padding-bottom: 20px;   
-        display:grid;
-        margin:0 auto;
-        width: 900px;
-        border: 1px solid black;
-    }
-    .center {
-        text-align: center;
-        font-size: 16px;
-        margin-bottom: 20px;
-    }
-    .syslogo {
-        width: 100px;
-        height: 100px;
-        margin: 10px 20px;
-    }
+.swipercontiner{ height:100%;}
 
-    .syslogo img {
-        width: 100px;
-        height: 100px;
-    }
+body{font-family:"黑体";	background:#f5f5f5; font-size:12px; margin:0;padding:0;}
 
-    .note {
-        margin-left: 50px;
-        line-height: 100px;
-    }
+li{	list-style:none;}
+
+.title{
+	font-size: 60px;
+    padding: 80px 0;
+    text-align: center;
+    font-weight: bold;
+}
+.list{
+	width: 900px;
+    margin: 0 auto;
+}
+.everyone{
+    width: 45%;
+    text-align: center;
+    display: inline-grid;
+    margin: 20px;
+    float: left;
+}
+.list .icon{
+	background-color: #fff;
+	padding: 60px 0;
+	border-top-left-radius: 10px;
+    border-top-right-radius: 10px
+}
+
+.list .icon img {
+    height: 90px;
+    width:90px;
+}
+
+.list .text{
+	font-size: 30px;
+	color: #fff;
+    padding: 30px 0;
+     background-color: rgba(0,14,13,0.5);
+    border-bottom-left-radius: 10px;
+    border-bottom-right-radius: 10px
+}
+
+#bg {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: -1;
+}
+
+#bg canvas {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+}
 
 </style>

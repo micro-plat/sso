@@ -56,6 +56,26 @@ where user_name=@user_name
 limit 1
 `
 
+//QueryOldPwd .
+const QueryOldPwd = `
+select 
+	t.password,
+	t.changepwd_times 
+from 
+	sso_user_info t 
+where 
+	t.user_id=@user_id`
+
+//SetNewPwd .
+const SetNewPwd = `
+update 
+	sso_user_info t
+set 
+	t.password = @password,
+	t.changepwd_times = t.changepwd_times + 1
+where 
+	t.user_id = @user_id`
+
 //QuerySysAuth .
 const QuerySysAuth = `
 select 
