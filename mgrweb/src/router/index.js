@@ -65,7 +65,8 @@ export default new Router({
       path: '/notify_settings',
       name: 'notify_settings',
       component: notifySettings
-    }]
+    }
+  ]
   },
     {
       path: '/member/login',

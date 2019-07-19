@@ -133,13 +133,13 @@
         VueCookies.remove("__jwt__");
         var config = process.env.service;
         window.location.href = 
-            config.ssoHost + config.loginUrl + config.changePwd;
+            config.ssoWebHost + config.changePwd;
       },
       signOut() {
         VueCookies.remove("__jwt__");
         var config = process.env.service;
         window.location.href = 
-            config.ssoHost + config.loginUrl + "?callback=" + encodeURIComponent(config.callbackUrl);
+            config.ssoWebHost + config.loginUrl + "?callback=" + encodeURIComponent(config.callbackUrl);
       },
       resetForm(formName) {
         this.dialogAddVisible = false;

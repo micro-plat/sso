@@ -22,7 +22,8 @@
             .then(res =>{
                 this.$router.push("/");
             }).catch(err => {
-              this.msg = "登录出错";
+              var config  = process.env.service;
+              window.location.href = config.ssoWebHost + config.errPage;
             });
       }
     }

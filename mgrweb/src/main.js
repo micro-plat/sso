@@ -17,6 +17,7 @@ Vue.use(uploader);
 import ElementUI from 'element-ui';
 import 'element-ui/lib/theme-chalk/index.css';
 Vue.use(ElementUI);
+
 import {
     post,
     fetch,
@@ -24,6 +25,11 @@ import {
     put,
     del
 } from './services/http'
+
+import {
+    init
+} from './services/httpaop'
+
 
 const config = {
     fieldsBagName: 'vee-fields'
@@ -38,13 +44,14 @@ Vue.use(VeeValidate,config);
 
 
 //定义全局变量
+/*
 Vue.prototype.$post = post;
 Vue.prototype.$fetch = fetch;
 Vue.prototype.$patch = patch;
 Vue.prototype.$put = put;
 Vue.prototype.$del = del;
-
-
+*/
+init(Vue);
 Vue.config.productionTip = false;
 
   /* eslint-disable no-new */
@@ -57,3 +64,7 @@ new Vue({
     },
     template: '<App/>'
 });
+
+var serviceConfig = process.env.service;
+var refleshHtml = '<iframe id="ssoreflesh" src="'+  serviceConfig.ssoApiHost + serviceConfig.freshJwt + '" style="display:none"></iframe>';
+$('body').append(refleshHtml);

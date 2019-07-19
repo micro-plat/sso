@@ -2,11 +2,13 @@
 module.exports = {
     NODE_ENV: '"production"',
     service: {
-        freshJwt:`"/reflesh"`,
+        freshJwt:`"/refresh"`,
         changePwd:`"/changepwd"`,
         jumpUrl:`"/jump"`,
+        loginUrl:`"/login"`,
         callbackUrl:`"http://192.168.5.78:8081/ssocallback"`,
-        ssoHost:`"http://192.168.5.78:8091"`,
+        ssoWebHost:`"http://192.168.5.78:8091"`,
+        ssoApiHost:`"http://192.168.106.226:6687"`,
 
         url: '"http://api.sso.sinopecscsy.com:6688"',   //线上
         ws: `"ws://api.sso.sinopecscsy.com:6689/ws"`,

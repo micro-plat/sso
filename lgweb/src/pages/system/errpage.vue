@@ -1,7 +1,10 @@
 <template>
   <div class="main">
-    <div>{{msg}}</div>
-    <div><button class="btn btn-sm btn-primary" @click="signOut">登录</button></div>
+    <div class="content">
+      <i><img src="../../img/wrong.png"></i>
+      <div class="message">{{msg}}</div>
+      <div class="btn"><button @click="signOut">登录</button></div>
+    </div>
   </div>
 </template>
 
@@ -43,5 +46,33 @@
 </script>
 
 <style>
-
+.main {
+  margin-top:200px;
+}
+.content {
+    width: 300px;
+    margin: 0 auto;
+}
+.message {
+  font-size:30px;
+  text-align: center;
+  margin-top: 30px;
+  color :#AAAAAA;
+  font-weight: bold;
+}
+.btn {
+  width:300px;
+  margin:0 auto;
+  text-align: center;
+}
+.btn button{
+	  width: 140px;
+    padding: 14px 0;
+    font-size: 20px;
+    color: #fff;
+    background-color: #f4286e;
+    border-radius: 10px;
+    border: 0;
+    margin-top: 40px;
+}
 </style>

@@ -845,7 +845,7 @@
       signOut() {
         console.log("ddddd");
         //VueCookies.remove("__jwt__");
-        //window.location.href =  process.env.service.ssoHost + process.env.service.loginUrl;
+        //window.location.href =  process.env.service.ssoWebHost + process.env.service.loginUrl;
       }
     },
     destroyed: function () {

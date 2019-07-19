@@ -1,10 +1,10 @@
 <template>
   <div class="swipercontiner">
-    <div data-v-21e0ac8e="" id="bg" style="background: rgb(33, 150, 243);">
+    <!-- <div data-v-21e0ac8e="" id="bg" style="background: rgb(33, 150, 243);">
         <canvas data-v-21e0ac8e="" width="1840" height="454"></canvas>
         <canvas data-v-21e0ac8e="" width="1840" height="454"></canvas> 
         <canvas data-v-21e0ac8e="" width="1840" height="454"></canvas>
-    </div>
+    </div> -->
     <div class="title">
         请选择要登入的系统
     </div>
@@ -15,9 +15,7 @@
                     <img v-if="item.logo !=''" :src="item.logo" />
                     <img v-if="item.logo==''" src="../../img/iocn_yh.png" >
                 </span>
-                <span class="text">
-                    {{item.name}}
-                </span>
+                <span @click="goto(item.callbackurl)" class="text">{{item.name}}</span>
             </li>
         </ul>
     </div>
@@ -43,6 +41,9 @@
     },
 
     methods:{
+        goto(url) {
+            window.location.href = url;
+        },
         searchSystemInfo() {
             this.$post("lg/user/system")
             .then(res =>{
@@ -76,10 +77,11 @@ body{font-family:"黑体";	background:#f5f5f5; font-size:12px; margin:0;padding:
 li{	list-style:none;}
 
 .title{
-	font-size: 60px;
+	font-size: 40px;
     padding: 80px 0;
     text-align: center;
     font-weight: bold;
+    color:blanchedalmond;
 }
 .list{
 	width: 900px;
@@ -108,12 +110,19 @@ li{	list-style:none;}
 	font-size: 30px;
 	color: #fff;
     padding: 30px 0;
-     background-color: rgba(0,14,13,0.5);
+    background-color: rgba(0,14,13,0.5);
     border-bottom-left-radius: 10px;
-    border-bottom-right-radius: 10px
+    border-bottom-right-radius: 10px;
 }
+.list .text:hover {
+    cursor: pointer;
+}
+ body{
+    background: url(../../img/background.png) ;
+     background-size: 100% 100%;
+} 
 
-#bg {
+/* #bg {
     position: fixed;
     top: 0;
     left: 0;
@@ -128,6 +137,10 @@ li{	list-style:none;}
     left: 0;
     width: 100%;
     height: 100%;
+} */
+
+.body {
+    
 }
 
 </style>

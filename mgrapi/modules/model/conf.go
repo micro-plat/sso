@@ -9,11 +9,10 @@ import (
 
 //Conf 应用程序配置
 type Conf struct {
-	PicHost     string `json:"pic_host" valid:"required"`
-	Secret      string `json:"secret" valid:"ascii,required"`
-	SsoApiHost  string `json:"sso_api_host" valid:"ascii,required"`
-	SsoJumpHost string `json:"sso_jump_host" valid:"ascii,required"`
-	Ident       string `json:"ident"`
+	PicHost    string `json:"pic_host" valid:"required"`
+	Secret     string `json:"secret" valid:"ascii,required"`
+	SsoApiHost string `json:"sso_api_host" valid:"ascii,required"`
+	Ident      string `json:"ident"`
 }
 
 //Valid 验证配置参数是否合法

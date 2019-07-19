@@ -57,7 +57,7 @@ func (u *UserInfoHandler) InfoHandle(ctx *context.Context) (r interface{}) {
 func (u *UserInfoHandler) CodeHandle(ctx *context.Context) (r interface{}) {
 	ctx.Log.Info("-------子系统远程通过key来拿取用户user_id,user_name---------")
 
-	if err := ctx.Request.Check("code", "sysid"); err != nil {
+	if err := ctx.Request.Check("code"); err != nil {
 		return context.NewError(context.ERR_NOT_ACCEPTABLE, err)
 	}
 
@@ -69,7 +69,6 @@ func (u *UserInfoHandler) CodeHandle(ctx *context.Context) (r interface{}) {
 	}
 
 	ctx.Log.Info("记录登录信息")
-	info.SystemID = ctx.Request.GetInt("sysid")
 	u.op.LoginOperate(info)
 
 	return info

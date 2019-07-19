@@ -1,20 +1,26 @@
 <template>
-    <div class="main">
-        <div class="form-group">
-            <label>请输入原密码</label>
-            <input type="password" class="form-control" name="expassword" v-model="expassword" >
-        </div>
-        <div class="form-group">
-            <label>请输入新密码</label>
-            <input type="password" name="password1" class="form-control" v-model="password1" >
-        </div>
-        <div class="form-group">
-            <label>请再次输入新密码</label>
-            <input type="password" name="password2" class="form-control" v-model="password2" >
-        </div>
-        <div>
-            <button class="btn btn-sm btn-primary" @click="signOut">取 消</button>
-            <button class="btn btn-sm btn-danger"  @click="changePwd">确 定</button>
+    <div class="swipercontiner">
+        <div class="sing">
+            <div class="title_text">修改密码</div>
+            <div class="tips_text">
+                <i><img src="../../img/password.png"></i>
+                <span>原密码</span>
+            </div>
+            <input type="password" v-model="expassword"  placeholder="请输入原密码">
+            <div class="tips_text">
+                <i><img src="../../img/password.png"></i>
+                <span>新密码</span>
+            </div>
+            <input  type="password" v-model="password1" placeholder="请输入新密码">
+            <div class="tips_text">
+                <i><img src="../../img/password.png"></i>
+                <span>确认新密码</span>
+            </div>
+            <input type="password" v-model="password2" placeholder="请再次输入新密码">
+            <div class="but">
+                <span><button type="button" @click="changePwd"  class="btn blue-btn">确定</button></span>
+                <span><button type="button" @click="signOut" class="btn blue-btn">取消</button></span>
+            </div>
         </div>
     </div>
 </template>
@@ -99,8 +105,94 @@
 </script>
 
 <style>
-    .main {
-        width: 1000px;
-        margin:0 auto;
-    }
+
+.swipercontiner{ height:100%;}
+body{font-family:"黑体";background:#f5f5f5; font-size:12px; margin:0;padding:0;}
+li{	list-style:none;}
+.input{ border:none;}
+.input{ border:none;font-family:"黑体"; width:100%;	}
+
+.title{
+	font-size: 60px;
+    padding: 80px 0;
+    text-align: center;
+    font-weight: bold;
+}
+.list{
+	width: 900px;
+    margin: 0 auto;
+}
+.everyone{
+    width: 45%;
+    text-align: center;
+    display: inline-grid;
+    margin: 20px;
+    float: left;
+}
+.list .icon{
+	background-color: #fff;
+	padding: 60px 0;
+	border-top-left-radius: 10px;
+    border-top-right-radius: 10px
+}
+
+.list .text{
+	font-size: 30px;
+	color: #fff;
+    padding: 30px 0;
+     background-color: rgba(0,14,13,0.5);
+    border-bottom-left-radius: 10px;
+    border-bottom-right-radius: 10px
+}
+
+.sing{
+    width: 440px;
+    position: absolute;
+    top: 20%;
+    left: 50%;
+    background-color: rgba(0,29,59,0.7);
+    border-radius: 40px;
+    padding: 60px 100px;
+    
+}
+.title_text{
+	font-size: 40px;
+	font-weight: bold;
+    text-align: center;
+    color: #fff;
+    padding-bottom: 40px;
+}
+.tips_text{
+	font-size: 22px;
+	color: #FFFFFF;
+	padding-bottom: 10px;
+}
+.sing input{
+	width: 92%;
+    padding: 15px 20px;
+    font-size: 20px;
+    color: #333;
+    margin-bottom: 24px;
+    border:0
+}
+.but button{
+	width: 140px;
+    padding: 14px 0;
+    font-size: 20px;
+    color: #fff;
+    background-color: #f4286e;
+    border-radius: 10px;
+    border: 0;
+    margin: 0 10px;
+}
+.but{
+	text-align: center;
+	margin-top: 16px;
+}
+
+body {
+    background: url(../../img/background.png) ;
+    /* background-size: 100% 100%; */
+}
+
 </style>
