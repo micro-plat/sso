@@ -9,7 +9,7 @@ type UserInputNew struct {
 	Status    int    `form:"status" json:"status"`
 	ExtParams string `form:"ext_params" json:"ext_params"`
 	Auth      string `form:"auth" json:"auth" valid:"required"`
-	Email     string `form:"email" json:"email" valid:"email,required"`
+	Email     string `form:"email" json:"email"`
 }
 
 //QueryUserInput 查询用户列表输入参数

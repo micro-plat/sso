@@ -47,7 +47,7 @@
                 window.location.href = JoinUrlParams(decodeURIComponent(this.callback),{code:res.data})
                 return;
               }
-              if (this.changepwd === 1) {
+              if (this.changepwd == 1) {
                 this.$router.push({ path: '/changepwd'});   
                 return;
               }

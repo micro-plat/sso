@@ -1,25 +1,27 @@
 <template>
     <div class="swipercontiner">
-        <div class="sing">
-            <div class="title_text">修改密码</div>
-            <div class="tips_text">
-                <i><img src="../../img/password.png"></i>
-                <span>原密码</span>
-            </div>
-            <input type="password" v-model="expassword"  placeholder="请输入原密码">
-            <div class="tips_text">
-                <i><img src="../../img/password.png"></i>
-                <span>新密码</span>
-            </div>
-            <input  type="password" v-model="password1" placeholder="请输入新密码">
-            <div class="tips_text">
-                <i><img src="../../img/password.png"></i>
-                <span>确认新密码</span>
-            </div>
-            <input type="password" v-model="password2" placeholder="请再次输入新密码">
-            <div class="but">
-                <span><button type="button" @click="changePwd"  class="btn blue-btn">确定</button></span>
-                <span><button type="button" @click="signOut" class="btn blue-btn">取消</button></span>
+        <div>
+            <div class="sing">
+                <div class="title_text">修改密码</div>
+                <div class="tips_text">
+                    <i><img src="../../img/password.png"></i>
+                    <span>原密码</span>
+                </div>
+                <input type="password" v-model="expassword"  placeholder="请输入原密码">
+                <div class="tips_text">
+                    <i><img src="../../img/password.png"></i>
+                    <span>新密码</span>
+                </div>
+                <input  type="password" v-model="password1" placeholder="请输入新密码">
+                <div class="tips_text">
+                    <i><img src="../../img/password.png"></i>
+                    <span>确认新密码</span>
+                </div>
+                <input type="password" v-model="password2" placeholder="请再次输入新密码">
+                <div class="but">
+                    <span><button type="button" @click="changePwd"  class="btn blue-btn">确定</button></span>
+                    <span><button type="button" @click="signOut" class="btn blue-btn">取消</button></span>
+                </div>
             </div>
         </div>
     </div>
@@ -108,7 +110,7 @@
 <style>
 
 .swipercontiner{ height:100%;}
-body{font-family:"黑体";background:#f5f5f5; font-size:12px; margin:0;padding:0;}
+body{font-family:"黑体";background:url(../../img/background.png); font-size:12px; margin:0;padding:0;}
 li{	list-style:none;}
 .input{ border:none;}
 .input{ border:none;font-family:"黑体"; width:100%;	}
@@ -148,9 +150,13 @@ li{	list-style:none;}
 
 .sing{
     width: 440px;
+    /*
     position: absolute;
     top: 20%;
     left: 50%;
+    */
+    margin:0 auto;
+	margin-top:10%;
     background-color: rgba(0,29,59,0.7);
     border-radius: 40px;
     padding: 60px 100px;
@@ -189,11 +195,6 @@ li{	list-style:none;}
 .but{
 	text-align: center;
 	margin-top: 16px;
-}
-
-body {
-    background: url(../../img/background.png) ;
-    /* background-size: 100% 100%; */
 }
 
 </style>
