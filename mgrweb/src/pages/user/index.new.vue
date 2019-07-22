@@ -75,7 +75,7 @@
                     name="email1"
                     type="text"
                     class="form-control"
-                    v-validate="'email'"
+                    v-validate="'required|email'"
                     v-model="userInfo.email"
                     placeholder="请输入邮箱"
                     required
