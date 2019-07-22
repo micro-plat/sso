@@ -62,6 +62,8 @@ func (u *UserInfoHandler) CodeHandle(ctx *context.Context) (r interface{}) {
 	}
 
 	ctx.Log.Info("code去取用户信息")
+	ctx.Log.Infof("用户信息,code:%s, ident:%s")
+
 	info, err := u.m.GetUserInfoByCode(
 		ctx.Request.GetString("code"), ctx.Request.GetString("ident"))
 	if err != nil {

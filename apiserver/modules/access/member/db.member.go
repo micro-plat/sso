@@ -114,19 +114,19 @@ func (l *DBMember) QueryByID(uid int, ident string) (s *model.MemberState, err e
 		"user_id": data.Get(0).GetInt64("user_id", -1),
 		"ident":   ident,
 	})
-	if roles.IsEmpty() {
-		return nil, context.NewError(context.ERR_UNSUPPORTED_MEDIA_TYPE, "不允许登录系统")
+	if !roles.IsEmpty() {
+		s.RoleID = roles.Get(0).GetInt("role_id")
+		s.RoleName = roles.Get(0).GetString("role_name")
+		s.IndexURL = roles.Get(0).GetString("index_url")
+		s.LoginURL = roles.Get(0).GetString("login_url")
+		s.SystemID = roles.Get(0).GetInt("sys_id")
+		//return nil, context.NewError(context.ERR_UNSUPPORTED_MEDIA_TYPE, "不允许登录系统")
 	}
 
 	s.UserID = data.Get(0).GetInt64("user_id", -1)
 	s.Status = data.Get(0).GetInt("status")
 	s.Password = data.Get(0).GetString("password")
 	s.UserName = data.Get(0).GetString("user_name")
-	s.RoleID = roles.Get(0).GetInt("role_id")
-	s.RoleName = roles.Get(0).GetString("role_name")
-	s.IndexURL = roles.Get(0).GetString("index_url")
-	s.LoginURL = roles.Get(0).GetString("login_url")
-	s.SystemID = roles.Get(0).GetInt("sys_id")
 	s.ExtParams = data.Get(0).GetString("ext_params")
 	s.SysIdent = ident
 

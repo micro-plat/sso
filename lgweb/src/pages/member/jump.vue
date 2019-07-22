@@ -35,7 +35,7 @@
                     return;
                   }
                   this.$router.push({ path: '/chose',query: { code: res.data }});   
-                }, 1000);
+                }, 300);
             }).catch(err => {
                 this.$router.push({ path: '/login', query: { callback: this.callback }});
             });
