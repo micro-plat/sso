@@ -53,6 +53,6 @@ function changeUrl() {
         } else {
             url += "?"
         }
-        $("#ssoreflesh").attr("src", url + "random=" + Date.now);
+        $("#ssoreflesh").attr("src", url + "random=" + Date.now());
     }
 }
