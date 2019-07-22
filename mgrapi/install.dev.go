@@ -6,7 +6,7 @@ package main
 func (s *SSO) install() {
 	s.IsDebug = true
 
-	s.Conf.API.SetMainConf(`{"address":":6688"}`)
+	s.Conf.API.SetMainConf(`{"address":":6677"}`)
 	s.Conf.API.SetSubConf("app", `
 			{
 				"pic_host": "http://sso2.100bm.cn",
