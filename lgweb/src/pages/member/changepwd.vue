@@ -55,15 +55,16 @@
       },
 
       check() {
-            if (this.expassword == '') {
+            if (!this.expassword) {
                 this.errorMsg = '旧密码不能为空';
                 return;
             }
-            if (this.password1 == '') {
+            if (!this.password1 || !this.password2) {
                 this.errorMsg = '新密码不能为空';
                 return;
             }
-            if (this.password1 != this.password2) {
+
+            if (this.password1.trim() != this.password2.trim()) {
                 this.errorMsg = '两个新密码不一致';
                 return;
             }
@@ -80,7 +81,7 @@
                 });
                 return;
             }
-            this.$post("lg/user/changepwd", {expassword:this.expassword, newpassword:this.password1})
+            this.$post("lg/user/changepwd", {expassword:this.expassword.trim(), newpassword:this.password1.trim()})
                 .then(res => {
                     this.$alert("密码修改成功", '提示', {confirmButtonText: '确定'});
                     this.$router.push("/login");
