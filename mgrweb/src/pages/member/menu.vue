@@ -125,7 +125,7 @@
       // });
       this.$refs.NewTap.add("首页", this.indexUrl ,{});
 
-      //this.userinfo = JSON.parse(sessionStorage.getItem("userinfo"));
+      this.userinfo = JSON.parse(sessionStorage.getItem("userinfo"));
       document.title = "用户权限系统";
     },
     methods:{

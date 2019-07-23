@@ -42,11 +42,11 @@ func (u *LoginHandler) UserHandle(ctx *context.Context) (r interface{}) {
 	ctx.Log.Info("调用sso api 用code取用户信息")
 	data, err := u.m.LoginNew(code)
 	if err != nil {
-		return context.NewError(context.ERR_FORBIDDEN, err)
+		return context.NewError(context.ERR_NOT_ACCEPTABLE, err)
 	}
-	ctx.Log.Info("data: %v", data)
+	ctx.Log.Infof("data: %v", data)
 	ctx.Response.SetJWT(data)
-	return nil
+	return data
 }
 
 //PostHandle 根据登录get获取用户信息，jwt信息获取用户信息

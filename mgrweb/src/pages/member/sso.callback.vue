@@ -9,7 +9,6 @@
     data () {
       return {
         code : "",
-        msg: ""
       }
     },
     mounted(){
@@ -20,6 +19,8 @@
       validSsoLogin(){
           this.$post("sso/login/user",{code: this.code})
             .then(res =>{
+                console.log(res);
+                sessionStorage.setItem("userinfo", JSON.stringify({name:res.user_name, role:res.role_name}))
                 this.$router.push("/");
             }).catch(err => {
               var config  = process.env.service;
