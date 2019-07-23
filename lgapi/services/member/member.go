@@ -5,7 +5,6 @@ import (
 
 	"github.com/micro-plat/hydra/component"
 	"github.com/micro-plat/hydra/context"
-	"github.com/micro-plat/lib4go/security/md5"
 	"github.com/micro-plat/sso/lgapi/modules/access/member"
 	"github.com/micro-plat/sso/lgapi/modules/logic"
 )
@@ -31,7 +30,7 @@ func (u *LoginHandler) CheckHandle(ctx *context.Context) (r interface{}) {
 	ctx.Log.Info("1: 获取登录用户信息")
 	m := member.Get(ctx)
 	if m == nil {
-		return context.NewError(context.ERR_BAD_REQUEST, "请重新登录")
+		return context.NewError(context.ERR_FORBIDDEN, "请重新登录")
 	}
 	ctx.Log.Infof("用户信息:%v", m)
 
@@ -70,7 +69,7 @@ func (u *LoginHandler) PostHandle(ctx *context.Context) (r interface{}) {
 	ctx.Log.Info("2:处理用户登录")
 	member, err := u.m.Login(
 		ctx.Request.GetString("username"),
-		md5.Encrypt(ctx.Request.GetString("password")),
+		ctx.Request.GetString("password"),
 		ctx.Request.GetString("ident"))
 	if err != nil {
 		return err

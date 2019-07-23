@@ -14,6 +14,7 @@
   import VueCookies from 'vue-cookies'
   import loginWithUp from 'login-with-up';
   import {JoinUrlParams} from '@/services/common.js'
+  import "@/services/md5.js"
   export default {
     name: 'app',
     data () {
@@ -41,15 +42,19 @@
 
     methods:{
       loginsubmit(e){
-        e.containkey = 0;
-        e.ident = this.ident;
+        var req = {
+          containkey: 0,
+          ident: this.ident,
+          password: $.md5(e.password),
+          username:e.username
+        }
 
         if (this.callback && this.ident) {
-          e.containkey = 1
+          req.containkey = 1
         }
-        this.$post("lg/login/post", e)
+
+        this.$post("lg/login/post", req)
           .then(res => {
-            this.$refs.loginItem.showMsg("登录中.....");
             setTimeout(() => {
 
               if (this.changepwd == 1) {
@@ -65,18 +70,17 @@
             }, 300);
           })
           .catch(err => {
-            if (err.response) {
               switch (err.response.status) {
+                case 400:
                 case 401:
                 case 423:
                 case 405:
                 case 415:
                   this.$refs.loginItem.showMsg(err.response.data.data);
                   break;
+                default:
+                  this.$refs.loginItem.showMsg("登录失败");
               }
-            }else{
-              this.$refs.loginItem.showMsg("不允许登录系统");
-            }
           });
       }
     }

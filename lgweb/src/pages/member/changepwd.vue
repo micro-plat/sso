@@ -86,20 +86,20 @@
             this.$post("lg/user/changepwd", {expassword:this.expassword.trim(), newpassword:this.password1.trim()})
                 .then(res => {
                     this.$alert("密码修改成功", '提示', {confirmButtonText: '确定'});
-                    this.$router.push("/login");
+                     setTimeout(() => {
+                         this.$router.push("/login");
+                     }, 400);
                 }).catch(err => {
-                    if (err.response) {
-                        switch (err.response.status) {
-                            case 403:
-                                this.$router.push({path:"/login", query :{ changepwd: 1 }});
-                                break;
-                            case 406,400:
-                                console.log(err.response.data.data);
-                                this.$alert(err.response.data.data, '提示', {confirmButtonText: '确定'});
-                                break;
-                        }
-                    } else{
-                        this.$alert("网络错误,请稍后再试", '提示', {confirmButtonText: '确定'});
+                    switch (err.response.status) {
+                        case 403:
+                            this.$router.push({path:"/login", query :{ changepwd: 1 }});
+                            break;
+                        case 406:
+                        case 400:
+                            this.$alert(err.response.data.data, '提示', {confirmButtonText: '确定'});
+                            break;
+                        default:
+                            this.$alert("网络错误,请稍后再试", '提示', {confirmButtonText: '确定'});
                     }
                 })
         }

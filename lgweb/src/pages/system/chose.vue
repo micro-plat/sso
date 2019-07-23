@@ -64,7 +64,6 @@
                     })
                 }
                 this.systems = res;
-                console.log(this.systems);
             }).catch(err => {
                 this.$router.push({ path: '/login', query: { callback: "", sysid: 0 }});
             });

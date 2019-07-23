@@ -42,16 +42,15 @@
                   this.$router.push({ path: '/chose'});   
                 }, 300);
             }).catch(err => {
-                if (err.response) {
-                  switch (err.response.status) {
+                switch (err.response.status) {
                     case 423:
                       this.$router.push({ path: '/errpage', query: {type: 2}});
                       break;
                     case 415:
                       this.$router.push({ path: '/errpage', query: {type: 1}});
-                  }
+                    default:
+                      this.$router.push({ path: '/login', query: { callback: this.callback, ident:this.ident }});
                 }
-                this.$router.push({ path: '/login', query: { callback: this.callback, ident:this.ident }});
             });
         }
     }

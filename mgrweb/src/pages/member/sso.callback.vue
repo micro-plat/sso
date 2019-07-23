@@ -18,7 +18,6 @@
       validSsoLogin(){
           this.$post("sso/login/user",{code: this.code})
             .then(res =>{
-                console.log(res);
                 localStorage.setItem("userinfo", JSON.stringify({name:res.user_name, role:res.role_name}));
                 this.$router.push("/");
             }).catch(err => {
