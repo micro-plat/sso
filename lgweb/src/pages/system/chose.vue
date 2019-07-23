@@ -28,21 +28,25 @@
     name: 'chose',
     data () {
       return {
-          systems:[],
-          code:""
+          systems:[]
       }
     },
 
     mounted(){
       document.title = "选择系统";
-      this.code = this.$route.query.code;
-
       this.searchSystemInfo();
     },
 
     methods:{
         goto(url) {
-            window.location.href = url;
+            this.$post("lg/user/code")
+            .then(res => {
+                console.log(JoinUrlParams(url,{code:res.data}));
+                window.location.href = JoinUrlParams(url,{code:res.data});
+                })
+            .catch(err =>{
+                this.$router.push({ path: '/login', query: { callback: ""}});
+            });
         },
         searchSystemInfo() {
             this.$post("lg/user/system")
@@ -50,7 +54,7 @@
                 if (res != undefined && res.length > 0) {
                     res.forEach((current, index) =>{
                         if (current.callbackurl) {
-                            current.callbackurl = JoinUrlParams(current.callbackurl, {code:this.code});
+                            current.callbackurl = current.callbackurl;
                         } else {
                             current.callbackurl = "javascript:return false";
                         }

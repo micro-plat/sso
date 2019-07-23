@@ -62,3 +62,19 @@ func (u *UserHandler) ChangePwdHandle(ctx *context.Context) (r interface{}) {
 	}
 	return "success"
 }
+
+//CodeHandle 返回用户的身份code
+func (u *UserHandler) CodeHandle(ctx *context.Context) (r interface{}) {
+	user := member.Get(ctx)
+	if user == nil {
+		return context.NewError(context.ERR_FORBIDDEN, "登录信息出错,请重新登录")
+	}
+
+	ctx.Log.Info("1: 设置已登录code")
+	code, err := u.mem.CreateLoginUserCode(user.UserID)
+	if err != nil {
+		return context.NewError(context.ERR_BAD_REQUEST, err.Error)
+	}
+
+	return code
+}

@@ -1,6 +1,6 @@
 <template>
-  <div>
-      <span style="text-align:center">{{notice}}</span>
+  <div style="text-align:center">
+      <span>{{notice}}</span>
   </div>
 </template>
 
@@ -24,7 +24,11 @@
 
     methods:{
         checkAndJumpLogin() {
-            this.$post("lg/login/check",{})
+            var containkey = 0;
+            if (this.callback) {
+              containkey = 1;
+            }
+            this.$post("lg/login/check",{containkey:containkey})
             .then(res =>{
                 console.log(res.data);
                 this.notice = "已登录,跳转中...";
@@ -34,7 +38,7 @@
                     window.location.href = JoinUrlParams(decodeURIComponent(this.callback),{code:res.data})
                     return;
                   }
-                  this.$router.push({ path: '/chose',query: { code: res.data }});   
+                  this.$router.push({ path: '/chose'});   
                 }, 300);
             }).catch(err => {
                 this.$router.push({ path: '/login', query: { callback: this.callback }});

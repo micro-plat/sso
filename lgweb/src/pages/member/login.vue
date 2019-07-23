@@ -39,6 +39,10 @@
 
     methods:{
       loginsubmit(e){
+        e.containkey = 0
+        if (this.callback) {
+          e.containkey = 1
+        }
         this.$post("lg/login/post", e)
           .then(res => {
             this.$refs.loginItem.showMsg("登录中.....");
@@ -51,7 +55,7 @@
                 this.$router.push({ path: '/changepwd'});   
                 return;
               }
-              this.$router.push({ path: '/chose',query: { code: res.data }});   
+              this.$router.push({ path: '/chose'});   
             }, 300);
           })
           .catch(err => {

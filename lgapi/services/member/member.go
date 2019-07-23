@@ -35,10 +35,14 @@ func (u *LoginHandler) CheckHandle(ctx *context.Context) (r interface{}) {
 	}
 	ctx.Log.Infof("用户信息:%v", m)
 
-	ctx.Log.Info("2:已登录返回code")
-	code, err := u.m.CreateLoginUserCode(m.UserID)
-	if err != nil {
-		return context.NewError(context.ERR_BAD_REQUEST, "请重新登录")
+	var code = ""
+	var err error
+	if ctx.Request.GetInt("containkey", 1) == 1 {
+		ctx.Log.Info("2:已登录返回code")
+		code, err = u.m.CreateLoginUserCode(m.UserID)
+		if err != nil {
+			return context.NewError(context.ERR_BAD_REQUEST, "请重新登录")
+		}
 	}
 
 	ctx.Log.Info("3: 设置jwt数据")
@@ -64,12 +68,14 @@ func (u *LoginHandler) PostHandle(ctx *context.Context) (r interface{}) {
 		return err
 	}
 
-	ctx.Log.Info("3: 设置已登录code")
-	code, err := u.m.CreateLoginUserCode(member.UserID)
-	if err != nil {
-		return context.NewError(context.ERR_BAD_REQUEST, "请重新登录")
+	var code = ""
+	if ctx.Request.GetInt("containkey", 1) == 1 {
+		ctx.Log.Info("3: 设置已登录code")
+		code, err = u.m.CreateLoginUserCode(member.UserID)
+		if err != nil {
+			return context.NewError(context.ERR_BAD_REQUEST, "请重新登录")
+		}
 	}
-
 	ctx.Log.Info("4: 设置jwt数据")
 	ctx.Response.SetJWT(member)
 
