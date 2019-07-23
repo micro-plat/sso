@@ -8,15 +8,17 @@ import (
 	"github.com/micro-plat/hydra/context"
 	"github.com/micro-plat/lib4go/db"
 	"github.com/micro-plat/lib4go/security/md5"
+	"github.com/micro-plat/lib4go/types"
 	"github.com/micro-plat/sso/lgapi/modules/const/sqls"
 	"github.com/micro-plat/sso/lgapi/modules/model"
 )
 
 type IDBMember interface {
-	Query(u string, p string) (s *model.MemberState, err error)
+	Query(u, p, ident string) (s *model.MemberState, err error)
 	ChangePwd(userID int, expassword string, newpassword string) (err error)
-
 	QueryByID(uid int64) (db.QueryRow, error)
+	CheckUserHasAuth(ident string, userID int64) error
+
 	QueryByUserName(u string, ident string) (info db.QueryRow, err error)
 	GetUserInfo(u string) (db.QueryRow, error)
 	QueryByOpenID(string) (db.QueryRow, error)
@@ -36,19 +38,19 @@ func NewDBMember(c component.IContainer) *DBMember {
 }
 
 //Query 用户登录时从数据库获取信息
-func (l *DBMember) Query(u string, p string) (s *model.MemberState, err error) {
+func (l *DBMember) Query(u, p, ident string) (s *model.MemberState, err error) {
 	db := l.c.GetRegularDB()
-	data, _, _, err := db.Query(sqls.QueryUserByLogin, map[string]interface{}{
+	data, _, _, errt := db.Query(sqls.QueryUserByLogin, map[string]interface{}{
 		"user_name": u,
 	})
-	if err != nil {
+	if errt != nil {
 		return nil, context.NewError(context.ERR_SERVICE_UNAVAILABLE, "暂时无法登录系统")
 	}
 	if data.IsEmpty() {
-		return nil, context.NewError(context.ERR_FORBIDDEN, "用户名或密码错误")
+		return nil, context.NewError(context.ERR_BAD_REQUEST, "用户名或密码错误")
 	}
-	row := data.Get(0)
 
+	row := data.Get(0)
 	s = &model.MemberState{
 		UserID:    row.GetInt64("user_id", -1),
 		Password:  row.GetString("password"),
@@ -56,6 +58,23 @@ func (l *DBMember) Query(u string, p string) (s *model.MemberState, err error) {
 		ExtParams: row.GetString("ext_params"),
 		Status:    row.GetInt("status"),
 	}
+
+	//处理如果是子系统传系统编号登录就要判断权限
+	if ident != "" {
+		roles, _, _, erro := db.Query(sqls.QueryUserRole, map[string]interface{}{
+			"user_id": data.Get(0).GetInt64("user_id", -1),
+			"ident":   ident,
+		})
+		if erro != nil || roles.IsEmpty() {
+			return nil, context.NewError(context.ERR_UNSUPPORTED_MEDIA_TYPE, "用户没有相关系统权限,请联系管理员")
+		}
+		s.SysIdent = ident
+		s.SystemID = roles.Get(0).GetInt("sys_id")
+		s.RoleName = roles.Get(0).GetString("role_name")
+		s.IndexURL = roles.Get(0).GetString("index_url")
+		s.LoginURL = roles.Get(0).GetString("login_url")
+	}
+
 	return s, err
 }
 
@@ -81,6 +100,25 @@ func (l *DBMember) ChangePwd(userID int, expassword string, newpassword string) 
 	})
 	if err != nil {
 		context.NewError(context.ERR_SERVER_ERROR, err)
+	}
+	return nil
+}
+
+// CheckUserHasAuth xx
+func (l *DBMember) CheckUserHasAuth(ident string, userID int64) error {
+	params := map[string]interface{}{"user_id": userID, "ident": " and 1=1 "}
+	if ident != "" {
+		params["ident"] = " and s.ident='" + ident + "' "
+	}
+	fmt.Println(params)
+
+	db := l.c.GetRegularDB()
+	count, q, arg, err := db.Scalar(sqls.QueryUserRoleCount, params)
+	if err != nil {
+		return context.NewError(context.ERR_UNSUPPORTED_MEDIA_TYPE, fmt.Sprintf("出现错误，等会在登录: sql:%s, arg:%+v %s", q, arg, err))
+	}
+	if types.GetInt(count, 0) <= 0 {
+		return context.NewError(context.ERR_UNSUPPORTED_MEDIA_TYPE, "没有相应权限，请联系管理员")
 	}
 	return nil
 }

@@ -1,5 +1,4 @@
 <template>
-  <div class="main">{{msg}}</div>
 </template>
 
 <script>
@@ -8,7 +7,7 @@
     name: 'callback',
     data () {
       return {
-        code : "",
+        code : ""
       }
     },
     mounted(){
@@ -20,7 +19,7 @@
           this.$post("sso/login/user",{code: this.code})
             .then(res =>{
                 console.log(res);
-                sessionStorage.setItem("userinfo", JSON.stringify({name:res.user_name, role:res.role_name}))
+                localStorage.setItem("userinfo", JSON.stringify({name:res.user_name, role:res.role_name}));
                 this.$router.push("/");
             }).catch(err => {
               var config  = process.env.service;

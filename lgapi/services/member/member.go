@@ -35,17 +35,23 @@ func (u *LoginHandler) CheckHandle(ctx *context.Context) (r interface{}) {
 	}
 	ctx.Log.Infof("用户信息:%v", m)
 
+	ctx.Log.Info("2:判断当前用户是否有这个子系统的权限")
 	var code = ""
 	var err error
+	if err = u.m.CheckHasRoles(m.UserID, ctx.Request.GetString("ident")); err != nil {
+		ctx.Log.Errorf("验证权限出错: %v", err)
+		return err
+	}
+
 	if ctx.Request.GetInt("containkey", 1) == 1 {
-		ctx.Log.Info("2:已登录返回code")
+		ctx.Log.Info("3:已登录返回code")
 		code, err = u.m.CreateLoginUserCode(m.UserID)
 		if err != nil {
 			return context.NewError(context.ERR_BAD_REQUEST, "请重新登录")
 		}
 	}
 
-	ctx.Log.Info("3: 设置jwt数据")
+	ctx.Log.Info("4: 设置jwt数据")
 	ctx.Response.SetJWT(m)
 
 	return code
@@ -60,10 +66,12 @@ func (u *LoginHandler) PostHandle(ctx *context.Context) (r interface{}) {
 		return context.NewError(context.ERR_NOT_ACCEPTABLE, fmt.Errorf("用户名和密码不能为空"))
 	}
 
+	//当有ident时没有权限就跳转错误页面
 	ctx.Log.Info("2:处理用户登录")
 	member, err := u.m.Login(
 		ctx.Request.GetString("username"),
-		md5.Encrypt(ctx.Request.GetString("password")))
+		md5.Encrypt(ctx.Request.GetString("password")),
+		ctx.Request.GetString("ident"))
 	if err != nil {
 		return err
 	}

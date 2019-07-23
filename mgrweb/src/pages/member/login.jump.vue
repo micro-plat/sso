@@ -18,7 +18,7 @@
     methods:{
       jumpToSso(){
         window.location.href = 
-            this.config.ssoWebHost + this.config.jumpUrl + "?callback=" + encodeURIComponent(this.config.callbackUrl);
+            this.config.ssoWebHost + this.config.jumpUrl + "?ident=sso&callback=" + encodeURIComponent(this.config.callbackUrl);
       }
     }
   }

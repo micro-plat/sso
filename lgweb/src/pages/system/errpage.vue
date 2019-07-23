@@ -36,6 +36,9 @@
                 case 1:
                     this.msg = '没有相关的权限,请联系管理员';
                     break;
+                case 2:
+                    this.msg = '用户被禁用或者被锁,请联系管理员';
+                    break;
            }
         },
         signOut() {

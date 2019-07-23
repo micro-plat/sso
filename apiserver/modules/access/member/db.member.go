@@ -104,7 +104,7 @@ func (l *DBMember) QueryByID(uid int, ident string) (s *model.MemberState, err e
 		return nil, context.NewError(context.ERR_SERVICE_UNAVAILABLE, "暂时无法登录系统")
 	}
 	if data.IsEmpty() {
-		return nil, context.NewError(context.ERR_FORBIDDEN, "用户不存在")
+		return nil, context.NewError(context.ERR_SERVICE_UNAVAILABLE, "用户不存在")
 	}
 
 	s = &model.MemberState{}
@@ -120,7 +120,6 @@ func (l *DBMember) QueryByID(uid int, ident string) (s *model.MemberState, err e
 		s.IndexURL = roles.Get(0).GetString("index_url")
 		s.LoginURL = roles.Get(0).GetString("login_url")
 		s.SystemID = roles.Get(0).GetInt("sys_id")
-		//return nil, context.NewError(context.ERR_UNSUPPORTED_MEDIA_TYPE, "不允许登录系统")
 	}
 
 	s.UserID = data.Get(0).GetInt64("user_id", -1)

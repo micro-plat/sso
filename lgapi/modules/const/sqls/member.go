@@ -12,7 +12,7 @@ where
 //QueryUserInfoByUID 查询用户信息
 const QueryUserInfoByUID = `
 select 
-	u.user_id,u.user_name,u.mobile,u.wx_openid,u.status,u.login_url 
+	u.user_id,u.user_name,u.mobile,u.wx_openid,u.status 
 from 
 	sso_user_info u
 where 
@@ -26,6 +26,20 @@ from
 	sso_user_info u
 where 
 	u.wx_openid=@open_id `
+
+//QueryUserRoleCount 查询yonghu角色count
+const QueryUserRoleCount = `
+select 
+	count(1)
+from sso_user_role r
+inner join sso_system_info s on r.sys_id=s.id
+inner join sso_role_info i on i.role_id=r.role_id 
+where 
+	r.user_id=@user_id 
+	#ident 
+	and r.enable=1 
+	and s.enable=1
+	and i.status=0`
 
 //QueryUserRole 查询系统角色列表
 const QueryUserRole = `
@@ -41,7 +55,8 @@ where
 	r.user_id=@user_id 
 	and s.ident=@ident 
 	and r.enable=1 
-	and s.enable=1`
+	and s.enable=1
+	and i.status=0`
 
 //QueryUserByUserName 根据用户名获取用户信息
 const QueryUserByUserName = `

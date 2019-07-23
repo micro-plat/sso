@@ -15,8 +15,9 @@ import (
 //IMemberLogic 用户登录
 type IMemberLogic interface {
 	CreateLoginUserCode(userID int64) (code string, err error)
-	Login(u string, p string) (*model.LoginState, error)
+	Login(u, p, ident string) (*model.LoginState, error)
 	ChangePwd(userID int, expassword string, newpassword string) (err error)
+	CheckHasRoles(userID int64, ident string) error
 }
 
 //MemberLogic 用户登录管理
@@ -43,19 +44,19 @@ func (m *MemberLogic) CreateLoginUserCode(userID int64) (code string, err error)
 }
 
 //Login 登录系统
-func (m *MemberLogic) Login(u string, p string) (s *model.LoginState, err error) {
+func (m *MemberLogic) Login(u, p, ident string) (s *model.LoginState, err error) {
 	var ls *model.MemberState
-	if ls, err = m.db.Query(u, p); err != nil {
+	if ls, err = m.db.Query(u, p, ident); err != nil {
 		return nil, err
 	}
 
 	if strings.ToLower(ls.Password) != strings.ToLower(p) {
-		return nil, context.NewError(context.ERR_FORBIDDEN, "用户名或密码错误")
+		return nil, context.NewError(context.ERR_BAD_REQUEST, "用户名或密码错误")
 	}
 
 	//检查用户是否已锁定
 	if ls.Status == enum.UserLock || ls.Status == enum.UserDisable {
-		return nil, context.NewError(context.ERR_FORBIDDEN, "用户被锁定或被禁用，暂时无法登录")
+		return nil, context.NewError(context.ERR_BAD_REQUEST, "用户被锁定或被禁用，暂时无法登录")
 	}
 
 	return (*model.LoginState)(ls), err
@@ -64,4 +65,19 @@ func (m *MemberLogic) Login(u string, p string) (s *model.LoginState, err error)
 // ChangePwd 修改密码
 func (m *MemberLogic) ChangePwd(userID int, expassword string, newpassword string) (err error) {
 	return m.db.ChangePwd(userID, expassword, newpassword)
+}
+
+//CheckHasRoles jiancha daqian yong hu jiaoshe
+func (m *MemberLogic) CheckHasRoles(userID int64, ident string) error {
+	user, err := m.db.QueryByID(userID)
+	if err != nil {
+		return err
+	}
+
+	status := user.GetInt("status")
+	if status == enum.UserLock || status == enum.UserDisable {
+		return context.NewError(context.ERR_LOCKED, "用户被锁定或被禁用，暂时无法登录")
+	}
+
+	return m.db.CheckUserHasAuth(ident, userID)
 }
