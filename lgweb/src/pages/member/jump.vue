@@ -31,16 +31,12 @@
             }
             this.$post("lg/login/check",{containkey:containkey, ident:this.ident})
             .then(res =>{
-                console.log(res.data);
                 this.notice = "已登录,跳转中...";
-
-                setTimeout(() => {
-                  if (this.callback && this.ident) {
+                if (this.callback && this.ident) {
                     window.location.href = JoinUrlParams(decodeURIComponent(this.callback),{code:res.data})
                     return;
-                  }
-                  this.$router.push({ path: '/chose'});   
-                }, 300);
+                }
+                this.$router.push({ path: '/chose'});   
             }).catch(err => {
                 switch (err.response.status) {
                     case 423:
