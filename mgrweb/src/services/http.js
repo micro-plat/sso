@@ -1,4 +1,7 @@
 import axios from 'axios';
+import VueCookies from 'vue-cookies'
+import router from '../router'
+
 const Qs = require('qs');
 axios.defaults.timeout = 5000;
 axios.defaults.withCredentials = true;
@@ -23,17 +26,15 @@ axios.interceptors.request.use(
 //http response 拦截器
 axios.interceptors.response.use(
     response => {
-        if (response.status == 403) {
-            router.push({
-                path: "/login",
-                querry: {
-                    redirect: router.currentRoute.fullPath
-                } //从哪个页面跳转
-            })
-        }
         return response;
     },
     error => {
+        if (error.response.status == 403) {
+            VueCookies.remove("__jwt__");
+            window.localStorage.setItem("beforeLoginUrl", router.currentRoute.path);
+            var config = process.env.service;
+            window.location.href=config.ssoWebHost + config.jumpUrl + "?ident=sso&callback=" + encodeURIComponent(config.callbackUrl);
+        }
         return Promise.reject(error)
     }
 )
