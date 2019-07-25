@@ -45,7 +45,7 @@
                     case 415:
                       this.$router.push({ path: '/errpage', query: {type: 1}});
                     default:
-                      this.$router.push({ path: '/login', query: { callback: this.callback, ident:this.ident }});
+                      this.$router.push({ path: '/login', query: { ident:this.ident, callback: this.callback }});
                 }
             });
         }

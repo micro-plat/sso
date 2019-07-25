@@ -9,13 +9,13 @@
         请选择要登入的系统
     </div>
     <div class="list">
-        <ul v-for="(item, index) in systems" :key="index">
+        <ul v-for="(item, index) in systems" :key="index" @click="goto(item.callbackurl)">
             <li class="everyone">
                 <span class="icon">
                     <img v-if="item.logo !=''" :src="item.logo" />
                     <img v-if="item.logo==''" src="../../img/iocn_yh.png" >
                 </span>
-                <span @click="goto(item.callbackurl)" class="text">{{item.name}}</span>
+                <span  class="text">{{item.name}}</span>
             </li>
         </ul>
     </div>
@@ -39,25 +39,21 @@
 
     methods:{
         goto(url) {
-            this.$post("lg/user/code")
-            .then(res => {
-                console.log(JoinUrlParams(url,{code:res.data}));
-                window.location.href = JoinUrlParams(url,{code:res.data});
-                })
-            .catch(err =>{
-                this.$router.push({ path: '/login', query: { callback: ""}});
-            });
+            if (url) {
+                this.$post("lg/user/code")
+                .then(res => {
+                    window.location.href = JoinUrlParams(url,{code:res.data});
+                    })
+                .catch(err =>{
+                    this.$router.push({ path: '/login'});
+                });
+            } 
         },
         searchSystemInfo() {
             this.$post("lg/user/system")
             .then(res =>{
                 if (res != undefined && res.length > 0) {
                     res.forEach((current, index) =>{
-                        if (current.callbackurl) {
-                            current.callbackurl = current.callbackurl;
-                        } else {
-                            current.callbackurl = "javascript:return false";
-                        }
                         if (current.name.length >= 9) {
                             current.name = current.name.substr(0,9);
                         }
@@ -117,7 +113,7 @@ li{	list-style:none;}
     border-bottom-left-radius: 10px;
     border-bottom-right-radius: 10px;
 }
-.list .text:hover {
+.list:hover {
     cursor: pointer;
 }
  body{

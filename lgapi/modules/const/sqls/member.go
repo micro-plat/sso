@@ -53,7 +53,7 @@ inner join
 	sso_role_info i on i.role_id=r.role_id 
 where 
 	r.user_id=@user_id 
-	and s.ident=@ident 
+	#ident  
 	and r.enable=1 
 	and s.enable=1
 	and i.status=0`

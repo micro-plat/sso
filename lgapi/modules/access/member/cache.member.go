@@ -11,6 +11,8 @@ import (
 type ICacheMember interface {
 	SetLoginFail(u string) (int, error)
 	CreateUserInfoByCode(code string, userId int64) error
+	SaveWxLoginStateCode(code string) error
+	ExistsWxLoginStateCode(code string) (bool, error)
 }
 
 //CacheMember 控制用户登录
@@ -57,4 +59,18 @@ func (l *CacheMember) getLoginFailCnt(u string) (int, error) {
 		return 0, nil
 	}
 	return types.GetInt(s, 0), nil
+}
+
+// SaveWxLoginStateCode xx
+func (l *CacheMember) SaveWxLoginStateCode(code string) error {
+	cache := l.c.GetRegularCache()
+	cachekey := transform.Translate(cachekey.WxLoginStateCode, "code", code)
+	return cache.Set(cachekey, "1", 60*5)
+}
+
+// ExistsWxLoginStateCode xx
+func (l *CacheMember) ExistsWxLoginStateCode(code string) (bool, error) {
+	cache := l.c.GetRegularCache()
+	cachekey := transform.Translate(cachekey.WxLoginStateCode, "code", code)
+	return cache.Exists(cachekey), nil
 }

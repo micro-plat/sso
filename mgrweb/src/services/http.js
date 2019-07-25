@@ -31,9 +31,13 @@ axios.interceptors.response.use(
     error => {
         if (error.response.status == 403) {
             VueCookies.remove("__jwt__");
-            window.localStorage.setItem("beforeLoginUrl", router.currentRoute.path);
+            if (router.currentRoute.fullPath != "/" && router.currentRoute.fullPath != "/login") {
+                window.localStorage.setItem("beforeLoginUrl", router.currentRoute.fullPath);
+            }
+            
             var config = process.env.service;
-            window.location.href=config.ssoWebHost + config.jumpUrl + "?ident=sso&callback=" + encodeURIComponent(config.callbackUrl);
+            window.location.href=config.ssoWebHost + config.jumpUrl 
+                + "?ident=sso&callback=" + encodeURIComponent(window.location.protocol + "//" + window.location.host + config.callbackUrl);
         }
         return Promise.reject(error)
     }

@@ -7,8 +7,8 @@ module.exports = {
         jumpUrl:`"/jump"`,
         loginUrl:`"/login"`,
         errPage: `"/errpage"`,
-        //callbackUrl:`"http://192.168.5.78:8081/ssocallback"`, //本地
-        callbackUrl:`"http://192.168.106.152:8081/ssocallback"`,
+        callbackUrl:`"/ssocallback"`, //本地
+        //callbackUrl:`"http://192.168.106.152:8081/ssocallback"`,
 
         ssoApiHost:`"http://192.168.106.226:6687"`,
         ssoWebHost:`"http://192.168.106.226:8091"`,

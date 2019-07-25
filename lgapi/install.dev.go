@@ -8,19 +8,29 @@ func (s *SSO) install() {
 
 	s.Conf.API.SetMainConf(`{"address":":6687"}`)
 	s.Conf.API.SetSubConf("header", `
-				{
-					"Access-Control-Allow-Origin": "*",
-					"Access-Control-Allow-Methods": "GET,POST,PUT,DELETE,PATCH,OPTIONS",
-					"Access-Control-Allow-Headers": "X-Requested-With,Content-Type",
-					"Access-Control-Allow-Credentials": "true"
-				}
-			`)
+		{
+			"Access-Control-Allow-Origin": "*",
+			"Access-Control-Allow-Methods": "GET,POST,PUT,DELETE,PATCH,OPTIONS",
+			"Access-Control-Allow-Headers": "X-Requested-With,Content-Type",
+			"Access-Control-Allow-Credentials": "true"
+		}
+	`)
+	s.Conf.API.SetSubConf("app", `
+		{
+			"wxlogin_url": "https://open.weixin.qq.com/connect/qrconnect",
+			"wxgettoken_url":"https: //api.weixin.qq.com/sns/oauth2/access_token",
+			"appid":"wxbdc5610cc59c1631",
+			"secret":"123456"
+		}			
+	`)
 
 	s.Conf.API.SetSubConf("auth", `
 		{
 			"jwt": {
 				"exclude": [
-					"/lg/login/post"
+					"/lg/login/post",
+					"/lg/login/wxconf",
+					"/lg/login/wxcheck"
 				],
 				"expireAt": 36000,
 				"mode": "HS512",

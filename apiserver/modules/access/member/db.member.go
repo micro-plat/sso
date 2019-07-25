@@ -114,6 +114,15 @@ func (l *DBMember) QueryByID(uid int, ident string) (s *model.MemberState, err e
 		"user_id": data.Get(0).GetInt64("user_id", -1),
 		"ident":   ident,
 	})
+
+	if err != nil {
+		return nil, context.NewError(context.ERR_UNSUPPORTED_MEDIA_TYPE, "查询权限出错")
+	}
+
+	if roles.IsEmpty() {
+		return nil, context.NewError(context.ERR_UNSUPPORTED_MEDIA_TYPE, "用户没有相关系统权限")
+	}
+
 	if !roles.IsEmpty() {
 		s.RoleID = roles.Get(0).GetInt("role_id")
 		s.RoleName = roles.Get(0).GetString("role_name")

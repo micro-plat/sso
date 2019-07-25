@@ -4,7 +4,9 @@
       :copyright="copyright"
       :systemName="systemName"
       :conf="conf"
-      @loginCall="loginsubmit"
+      :wxlg="wxLogin"
+      :call="loginsubmit"
+      :err-msg.sync="errMsg"
       ref="loginItem">
     </login-with-up>
   </div>
@@ -24,7 +26,8 @@
         conf:{loginNameType:"输入用户名",pwd:"输入密码"},
         callback:"",
         changepwd:0,
-        ident: ""
+        ident: "",
+        errMsg:{message:""}
       }
     },
     components:{ 
@@ -41,6 +44,20 @@
     },
 
     methods:{
+      
+      wxLogin(){
+        this.$post("lg/login/wxconf", {})
+        .then(res => {
+            var url = res.wxlogin_url + "?" + "appid=" + res.appid + "&state=" + res.state + "&redirect_uri=" + "https%3A%2F%2Fpassport.yhd.com%2Fwechat%2Fcallback.do" + "&response_type=code&scope=snsapi_login#wechat_redirect"
+            console.log(url);
+            sessionStorage.setItem("sso-bssyscallbackinfo", JSON.stringify({callback: this.callback, changepwd: this.changepwd, ident:this.ident}));
+            window.location.href = url;
+        })
+        .catch(err => {
+          this.errMsg = {message: "系统繁忙,请稍后在试"};
+        });
+      },
+
       loginsubmit(e){
         var req = {
           containkey: 0,
@@ -70,16 +87,20 @@
             }, 300);
           })
           .catch(err => {
+              var message = err.response.data.data; 
+              if (message && message.length > 6 && message.indexOf("error:",0) == 0) {
+                message = message.substr(6); //error:用户名或密码错误 //框架多还回一些东西
+              }
               switch (err.response.status) {
                 case 400:
                 case 401:
                 case 423:
                 case 405:
                 case 415:
-                  this.$refs.loginItem.showMsg(err.response.data.data);
+                  this.errMsg = {message: message}; 
                   break;
                 default:
-                  this.$refs.loginItem.showMsg("登录失败");
+                  this.errMsg = {message: "登录失败"};
               }
           });
       }

@@ -16,12 +16,23 @@ func (s *SSO) install() {
 				}
 			`)
 
+	s.Conf.API.SetSubConf("app", `
+			{
+				"wxlogin_url": "https://open.weixin.qq.com/connect/qrconnect",
+				"wxgettoken_url":"https: //api.weixin.qq.com/sns/oauth2/access_token",
+				"appid":"#wx_appid",
+				"secret":"#wx_secret"
+			}			
+		`)
+
 	s.Conf.API.SetSubConf("auth", `
 		{
 			"jwt": {
 				"exclude": [
-					"/lg/login/post"
-					],
+					"/lg/login/post",
+					"/lg/login/wxconf",
+					"/lg/login/wxcheck"
+					],																																																																														
 				"expireAt": 36000,
 				"mode": "HS512",
 				"name": "__jwt__",
@@ -30,11 +41,11 @@ func (s *SSO) install() {
 		}
 		`)
 
-	s.Conf.Plat.SetVarConf("db", "db", `{			
+	s.Conf.Plat.SetVarConf("db", "db", `{																																																																								
 			"provider":"mysql",
 			"connString":"#db_string",
 			"max":8,
-			"maxOpen":20,
+			"maxOpen":20,																																																																																																																																																																											
 			"maxIdle":10,
 			"lifeTime":600	
 	}`)

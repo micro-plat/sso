@@ -20,6 +20,7 @@ const (
 	CacheEmail               = "{sso}:email:{@guid}"
 	CacheEamilOutTime        = 60 * 5
 
-	LockFormat     = "{sso}:login:state-locker:{@userName}"
-	CacheLoginUser = "{sso}:login:state-user:{@key}"
+	LockFormat       = "{sso}:login:state-locker:{@userName}"
+	CacheLoginUser   = "{sso}:login:state-user:{@key}"
+	WxLoginStateCode = "{sso}:wxlogin:state-code:{@code}"
 )
