@@ -99,14 +99,22 @@
         this.$fetch("/sso/menu")
           .then(res => {
             this.menus = res;
-            console.log(res);
+
+            //这是处理登录后的回调
             var oldPath = localStorage.getItem("beforeLoginUrl");
+            localStorage.removeItem("beforeLoginUrl");
+
+            //如果登录过的(不会跳转到sso登录,直接就会加载了)就要在当前地址中找
+            var loginedPath = window.location.pathname;
+            if (!oldPath) {
+              oldPath = loginedPath;
+            }
+
             if (oldPath ) {    
               var name = this.getOneMenuName(oldPath, res);
               if (name == "") {
                 name = "未知";
               }
-              console.log(name);
               this.$refs.NewTap.add(name, oldPath ,{});
             } else {
               this.$refs.NewTap.add("首页", this.indexUrl ,{});
