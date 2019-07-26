@@ -125,6 +125,12 @@ func (m *MemberLogic) GetWxUserOpID(url string) (string, error) {
 	if err != nil {
 		return "", context.NewError(context.ERR_NOT_EXTENDED, fmt.Errorf("解析返回结果失败 %s：%v(%s)", url, err, string(body)))
 	}
+
+	//wx返回全是200,只有通过errcode去判断
+	if errcode, ok := token["errcode"]; ok && errcode != 0 {
+		return "", context.NewError(context.ERR_NOT_EXTENDED, fmt.Errorf("微信返回错误：%s", token["errmsg"].(string)))
+	}
+
 	return token["openid"].(string), nil
 }
 

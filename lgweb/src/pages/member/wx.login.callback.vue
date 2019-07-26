@@ -17,7 +17,7 @@
         document.title = "微信登录";
         this.code = this.$route.query.code;
         this.state = this.$route.query.state;
-        checkAndJumpLogin()
+        this.checkAndJumpLogin()
     },
 
     methods:{
@@ -30,7 +30,7 @@
 
             this.$post("lg/login/wxcheck",{
                     containkey:containkey, 
-                    ident:callbackinfo.ident ? callbackinfo.ident : "", 
+                    ident:(callbackinfo && callbackinfo.ident) ? callbackinfo.ident : "", 
                     code:this.code,
                     state: this.state})
             .then(res =>{

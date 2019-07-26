@@ -6,6 +6,7 @@ import reflesh from '@/pages/member/reflesh.vue';
 import changepwd from '@/pages/member/changepwd.vue';
 import chose from '@/pages/system/chose.vue';
 import errpage from '@/pages/system/errpage.vue';
+import wxlgcallback from '@/pages/member/wx.login.callback.vue';
 
 Vue.use(Router);
 
@@ -49,6 +50,11 @@ export default new Router({
       path: '/errpage',
       name: 'errpage',
       component: errpage
+    },
+    {
+      path: '/wxlgcallback',
+      name: 'wxlgcallback',
+      component: wxlgcallback
     }
   ]
 })

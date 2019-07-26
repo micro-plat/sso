@@ -139,7 +139,7 @@ func (u *LoginHandler) WxCheckHandle(ctx *context.Context) (r interface{}) {
 	ctx.Log.Info("3:调用wx接口,获取用户openid")
 	config := model.GetConf(u.c)
 	url := config.WxTokenUrl + "?appid=" + config.Appid + "&secret=" + config.Secret + "&code=" + ctx.Request.GetString("code") + "&grant_type=authorization_code"
-	ctx.Log.Info("获取用户openid的url: %s", url)
+	ctx.Log.Infof("获取用户openid的url: %s", url)
 
 	opID, err := u.m.GetWxUserOpID(url)
 	if err != nil {
