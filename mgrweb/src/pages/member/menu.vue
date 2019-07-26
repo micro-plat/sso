@@ -64,36 +64,6 @@
         this.dialogAddVisible = false;
         this.$refs[formName].resetFields();
       },
-      /*
-      add(formName){
-        this.$refs[formName].validate((valid) => {
-          if (valid) {
-            this.$fetch("/sso/user/changepwd",{
-              expassword : this.updateInfo.password_old,
-              newpassword : this.updateInfo.password,
-            }).then(res=>{
-              this.$notify({
-                title:'成功',
-                message:'修改操作完成',
-                type:'success'
-              });
-              this.dialogAddVisible = false;
-              this.$refs[formName].resetFields();
-            }).catch(errro=>{
-              this.$notify({
-                title:'失败',
-                message:"原密码错误或密码修改次数超过限制",
-                type:'error'
-              });
-              this.$refs[formName].resetFields();
-            })
-          } else {
-            console.log('error submit!!');
-            return false;
-          }
-        });
-      },
-      */
 
       getMenu(){
         this.$fetch("/sso/menu")
