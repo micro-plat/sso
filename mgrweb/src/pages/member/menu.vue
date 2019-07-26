@@ -11,11 +11,18 @@
       :pwd="pwd"
       :signOut="signOut"
       ref="NewTap"
+      @loadHttpPage=gotoLoadHttp
     >
-      <keep-alive>
-        <router-view v-if="$route.meta.keepAlive" @addTab="addTab" @close="close" @setTab="setTab" ></router-view>
-      </keep-alive>
-      <router-view v-if="!$route.meta.keepAlive" @addTab="addTab" @close="close" @setTab="setTab"></router-view>
+    <iframe v-show="bdTokenUrl.indexOf('http://') == 0 || bdTokenUrl.indexOf('https://') == 0" 
+        ref="bdIframe" id="bdIframe" 
+        :src="bdTokenUrl" 
+        width="100%" 
+        height="100%" 
+        frameborder="0" 
+        allowtransparency="true" 
+        allowfullscreen="true" 
+      ></iframe>
+        <router-view v-show="bdTokenUrl.indexOf('http://') != 0 && bdTokenUrl.indexOf('https://') != 0" @addTab="addTab" />
     </nav-menu>
   </div>
 </template>
@@ -36,19 +43,31 @@
         userinfo: {name:'wule',role:"管理员"},
         indexUrl: "/user/index",
         dialogAddVisible:false,     //添加表单显示隐藏
+        bdTokenUrl: "",
       }
     },
     components:{ //注册插件
       navMenu
     },
+    // watch:{
+    //   "bdTokenUrl": "setIfrema"
+    // },
     created(){
       this.getMenu();
     },
     mounted(){
       document.title = "用户权限系统";
       this.userinfo = JSON.parse(localStorage.getItem("userinfo"));
+      this.setIfrema()
     },
     methods:{
+      setIfrema(){
+        var oIframe = this.$refs.bdIframe
+        var deviceWidth = document.documentElement.clientWidth;
+        var deviceHeight = document.documentElement.clientHeight;
+        oIframe.style.width = (Number(deviceWidth)-220) + 'px'; //数字是页面布局宽度差值
+        oIframe.style.height = (Number(deviceHeight)-150) + 'px'; //数字是页面布局高度差
+      },
       pwd(val){
         VueCookies.remove("__jwt__");
         var config = process.env.service;
@@ -59,10 +78,6 @@
         VueCookies.remove("__jwt__");
         var config = process.env.service;
         window.location.href = config.ssoWebHost + config.loginUrl;
-      },
-      resetForm(formName) {
-        this.dialogAddVisible = false;
-        this.$refs[formName].resetFields();
       },
 
       getMenu(){
@@ -80,7 +95,7 @@
               oldPath = loginedPath;
             }
 
-            if (oldPath ) {    
+            if (oldPath  && oldPath != "/") {    
               var name = this.getOneMenuName(oldPath, res);
               if (name == "") {
                 name = "未知";
@@ -106,6 +121,9 @@
       setTab(name,path,obj){
         console.log("outer",name,path,obj);
         this.$refs.NewTap.set(name,path,obj);
+      },
+      gotoLoadHttp(url){
+        this.bdTokenUrl = url
       },
 
       //查询某个url对应的菜单

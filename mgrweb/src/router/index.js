@@ -22,7 +22,13 @@ Vue.use(Router);
 
 export default new Router({
   mode: "history",
-  routes: [{
+  routes: [
+    {
+      path: '/other',
+      name: 'other',
+      component: roleindex,
+    },
+    {
     path: '/',
     name: 'menu',
     component: menu,
