@@ -30,8 +30,8 @@ func NewLoginHandler(container component.IContainer) (u *LoginHandler) {
 func (u *LoginHandler) TypeConfHandle(ctx *context.Context) (r interface{}) {
 	config := model.GetConf(u.c)
 	return map[string]interface{}{
-		"requirewxlogin": false, //config.RequireWxLogin == 1,
-		"requirecode":    config.RequireCode == 1,
+		"requirewxlogin": config.RequireWxLogin,
+		"requirecode":    config.RequireCode,
 	}
 }
 
@@ -79,7 +79,7 @@ func (u *LoginHandler) PostHandle(ctx *context.Context) (r interface{}) {
 
 	//验证码这个是不是可以不用密码验证了
 	config := model.GetConf(u.c)
-	if config.RequireCode == 1 {
+	if config.RequireCode {
 		validatecode := ctx.Request.GetString("validatecode")
 		if strings.EqualFold(validatecode, "") {
 			return context.NewError(context.ERR_BAD_REQUEST, "请输入微信验证码")

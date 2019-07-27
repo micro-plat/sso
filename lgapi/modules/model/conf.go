@@ -17,8 +17,8 @@ type Conf struct {
 	SendCodeKey    string `json:"sendcode_key" valid:"ascii,required"`    //发微信验证码用到的加密key
 	SendCodeReqUrl string `json:"sendcodereq_url" valid:"ascii,required"` //发微信验证码到哪个接口
 
-	//RequireWxLogin int `json:"require_wx_login" valid:"required"` //是否支持微信扫码登录
-	RequireCode int `json:"require_code" valid:"required"` //是否支持微信验证码登录
+	RequireWxLogin bool `json:"require_wx_login"` //是否支持微信扫码登录
+	RequireCode    bool `json:"require_code"`     //是否支持微信验证码登录
 }
 
 //Valid 验证配置参数是否合法

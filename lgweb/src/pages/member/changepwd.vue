@@ -90,13 +90,17 @@
                          this.$router.push("/login");
                      }, 400);
                 }).catch(err => {
+                    var message = err.response.data.data; 
+                    if (message && message.length > 6 && message.indexOf("error:",0) == 0) {
+                        message = message.substr(6); //error:用户名或密码错误 //框架多还回一些东西
+                    }
                     switch (err.response.status) {
                         case 403:
                             this.$router.push({path:"/login", query :{ changepwd: 1 }});
                             break;
                         case 406:
                         case 400:
-                            this.$alert(err.response.data.data, '提示', {confirmButtonText: '确定'});
+                            this.$alert(message, '提示', {confirmButtonText: '确定'});
                             break;
                         default:
                             this.$alert("网络错误,请稍后再试", '提示', {confirmButtonText: '确定'});
