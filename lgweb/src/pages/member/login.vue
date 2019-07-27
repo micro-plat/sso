@@ -5,6 +5,9 @@
       :systemName="systemName"
       :conf="conf"
       :wxlg="wxLogin"
+      :requireWxLogin="requireWxLogin"
+      :requireCode="requireCode"
+      :getCodeCall="getCodeCall"
       :call="loginsubmit"
       :err-msg.sync="errMsg"
       ref="loginItem">
@@ -23,15 +26,21 @@
       return {
         systemName: "能源业务中心运营管理系统",
         copyright:"四川千行你我科技有限公司Copyright© 2018 版权所有",
-        conf:{loginNameType:"输入用户名",pwd:"输入密码"},
+        conf:{loginNameType:"输入用户名",pwd:"输入密码",validateCode:"请输入微信验证码"},
         callback:"",
         changepwd:0,
         ident: "",
-        errMsg:{message:""}
+        errMsg:{message:""},
+        requireWxLogin:false, //是否支持跳转登录
+        requireCode: false //是否支持微信验证码登录
       }
     },
     components:{ 
       loginWithUp
+    },
+
+    created() {
+      this.controlLoginType();
     },
 
     mounted(){
@@ -44,11 +53,28 @@
     },
 
     methods:{
-      
+
+      //取配置，显示验证码登录还是扫码登录
+      controlLoginType() {
+        this.$post("lg/login/typeconf", {})
+        .then(res => {
+          this.requireWxLogin = res.requirewxlogin;
+          this.requireCode = res.requirecode;
+        })
+        .catch(err => {
+
+        })
+      },
+
+      // 微信调转登录
       wxLogin(){
         this.$post("lg/login/wxconf", {})
         .then(res => {
-            var url = res.wxlogin_url + "?" + "appid=" + res.appid + "&state=" + res.state + "&redirect_uri=" + "https%3A%2F%2Fpassport.yhd.com%2Fwechat%2Fcallback.do" + "&response_type=code&scope=snsapi_login#wechat_redirect"
+            var url = res.wxlogin_url + "?" + "appid=" + res.appid + "&state=" + res.state + "&redirect_uri=" +
+                      encodeURIComponent(process.env.service.wxcallbackhost + process.env.service.wxcallbackurl) +
+                      "&response_type=code&scope=snsapi_login#wechat_redirect";
+                      
+                      
             console.log(url);
             sessionStorage.setItem("sso-bssyscallbackinfo", JSON.stringify({callback: this.callback, changepwd: this.changepwd, ident:this.ident}));
             window.location.href = url;
@@ -58,12 +84,14 @@
         });
       },
 
+      //用户名密码登录
       loginsubmit(e){
         var req = {
           containkey: 0,
           ident: this.ident,
           password: $.md5(e.password),
-          username:e.username
+          username:e.username,
+          validatecode:e.validatecode,
         }
 
         if (this.callback && this.ident) {
@@ -103,7 +131,32 @@
                   this.errMsg = {message: "登录失败"};
               }
           });
+      },
+
+      //发送微信验证码
+      getCodeCall(e){
+         e.ident = this.ident ? this.ident : "";
+         this.errMsg = {message: "发送中....."}; 
+
+         this.$post("/lg/login/wxvalidcode", e)
+          .then(res=>{
+            this.errMsg = {message: "微信验证码发送成功"}; 
+          })
+          .catch(error=>{
+            var message = err.response.data.data; 
+            if (message && message.length > 6 && message.indexOf("error:",0) == 0) {
+              message = message.substr(6); //error:用户名或密码错误 //框架多还回一些东西
+            }
+            switch(err.response.status) {
+              case 401:
+                this.errMsg = {message: message}; 
+                break;
+              default:
+                this.errMsg = {message: "系统繁忙"}; 
+            }
+          })
       }
+
     }
   }
 </script>

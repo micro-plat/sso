@@ -1,13 +1,12 @@
 package sqls
 
-//QueryUserByLogin 获取用户登录信息
-const QueryUserByLogin = `
+//QueryUserByUserName 根据用户名获取用户信息
+const QueryUserByUserName = `
 select 
 	user_id,user_name,password,status,wx_openid,ext_params 
-from 
-	sso_user_info 
-where 
-	user_name=@user_name`
+from sso_user_info 
+where user_name=@user_name
+limit 1;`
 
 //QueryUserInfoByUID 查询用户信息
 const QueryUserInfoByUID = `
@@ -57,19 +56,6 @@ where
 	and r.enable=1 
 	and s.enable=1
 	and i.status=0`
-
-//QueryUserByUserName 根据用户名获取用户信息
-const QueryUserByUserName = `
-select 
-	user_id,
-	user_name,
-	status,
-	wx_openid,
-	ext_params 
-from sso_user_info
-where user_name=@user_name 
-limit 1
-`
 
 //QueryOldPwd .
 const QueryOldPwd = `

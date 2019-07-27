@@ -20,7 +20,11 @@ func (s *SSO) install() {
 			"wxlogin_url": "https://open.weixin.qq.com/connect/qrconnect",
 			"wxgettoken_url":"https: //api.weixin.qq.com/sns/oauth2/access_token",
 			"appid":"wxbdc5610cc59c1631",
-			"secret":"123456"
+			"secret":"123456",
+			"sendcode_key":"qxnw123456",
+			"sendcodereq_url":"http://user.18pingtai.cn:9002/SendVerifyCodeHandler.ashx",
+			"requirewx_login":0,
+			"require_code":1
 		}			
 	`)
 
@@ -30,7 +34,9 @@ func (s *SSO) install() {
 				"exclude": [
 					"/lg/login/post",
 					"/lg/login/wxconf",
-					"/lg/login/wxcheck"
+					"/lg/login/wxcheck",
+					"/lg/login/wxvalidcode",
+					"/lg/login/typeconf"
 				],
 				"expireAt": 36000,
 				"mode": "HS512",

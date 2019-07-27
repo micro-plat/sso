@@ -20,7 +20,12 @@ const (
 	CacheEmail               = "{sso}:email:{@guid}"
 	CacheEamilOutTime        = 60 * 5
 
-	LockFormat       = "{sso}:login:state-locker:{@userName}"
-	CacheLoginUser   = "{sso}:login:state-user:{@key}"
+	LockFormat     = "{sso}:login:state-locker:{@userName}"
+	CacheLoginUser = "{sso}:login:state-user:{@key}"
+	//微信扫码登录用到
 	WxLoginStateCode = "{sso}:wxlogin:state-code:{@code}"
+
+	//微信验证码登录用到
+	WechatValidcodeCacheKey           = `{sso}:wechat.validcode:@senduser`
+	WechatValidcodeErrorCountCacheKey = `{sso}:wechat.validcodecount:@senduser`
 )

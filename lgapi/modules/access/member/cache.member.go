@@ -1,7 +1,10 @@
 package member
 
 import (
+	"strings"
+
 	"github.com/micro-plat/hydra/component"
+	"github.com/micro-plat/hydra/context"
 	"github.com/micro-plat/lib4go/transform"
 	"github.com/micro-plat/lib4go/types"
 
@@ -13,6 +16,9 @@ type ICacheMember interface {
 	CreateUserInfoByCode(code string, userId int64) error
 	SaveWxLoginStateCode(code string) error
 	ExistsWxLoginStateCode(code string) (bool, error)
+
+	CreateValiCode(userName, code string) error
+	VerifyValidCode(userName, validCode string) (isValid bool, err error)
 }
 
 //CacheMember 控制用户登录
@@ -73,4 +79,53 @@ func (l *CacheMember) ExistsWxLoginStateCode(code string) (bool, error) {
 	cache := l.c.GetRegularCache()
 	cachekey := transform.Translate(cachekey.WxLoginStateCode, "code", code)
 	return cache.Exists(cachekey), nil
+}
+
+// CreateValiCode xx
+func (l *CacheMember) CreateValiCode(userName, code string) error {
+	cache := l.c.GetRegularCache()
+
+	key := transform.Translate(cachekey.WechatValidcodeCacheKey, "senduser", userName)
+	err := cache.Set(key, code, 60*5)
+	if err != nil {
+		return context.NewError(context.ERR_SERVER_ERROR, err)
+	}
+	return nil
+}
+
+//VerifyValidCode xx
+func (l *CacheMember) VerifyValidCode(userName, validCode string) (isValid bool, err error) {
+	cache := l.c.GetRegularCache()
+
+	key := transform.Translate(cachekey.WechatValidcodeCacheKey, "senduser", userName)
+	val, err := cache.Get(key)
+	if err != nil {
+		return false, context.NewError(context.ERR_SERVER_ERROR, err)
+	}
+	if val == "" {
+		return false, nil
+	}
+
+	if !strings.EqualFold(val, validCode) {
+		cacheCountKey := transform.Translate(cachekey.WechatValidcodeErrorCountCacheKey, "senduser", userName)
+
+		var newval int64
+		newval = 1
+
+		if flag := cache.Exists(cacheCountKey); !flag {
+			cache.Set(cacheCountKey, "1", 60*5)
+		} else {
+			newval, err = cache.Increment(cacheCountKey, 1)
+			if err != nil {
+				return false, context.NewError(context.ERR_SERVER_ERROR, err)
+			}
+		}
+		if newval >= 3 {
+			cache.Delete(key)
+			cache.Delete(cacheCountKey)
+		}
+		return false, nil
+	}
+	cache.Delete(key)
+	return true, nil
 }

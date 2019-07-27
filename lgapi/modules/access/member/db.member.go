@@ -20,6 +20,7 @@ type IDBMember interface {
 	QueryByID(uid int64) (db.QueryRow, error)
 	CheckUserHasAuth(ident string, userID int64) error
 	QueryByOpenID(openID, ident string) (s *model.MemberState, err error)
+	QueryByName(userName, ident string) (s *model.MemberState, err error)
 
 	QueryByUserName(u string, ident string) (info db.QueryRow, err error)
 	GetUserInfo(u string) (db.QueryRow, error)
@@ -42,7 +43,7 @@ func NewDBMember(c component.IContainer) *DBMember {
 //Query 用户登录时从数据库获取信息
 func (l *DBMember) Query(u, p, ident string) (s *model.MemberState, err error) {
 	db := l.c.GetRegularDB()
-	data, _, _, errt := db.Query(sqls.QueryUserByLogin, map[string]interface{}{
+	data, _, _, errt := db.Query(sqls.QueryUserByUserName, map[string]interface{}{
 		"user_name": u,
 	})
 	if errt != nil {
@@ -186,6 +187,49 @@ func (l *DBMember) QueryByOpenID(openID, ident string) (s *model.MemberState, er
 	return s, err
 }
 
+//QueryByName xx
+func (l *DBMember) QueryByName(userName, ident string) (s *model.MemberState, err error) {
+	db := l.c.GetRegularDB()
+
+	data, _, _, err := db.Query(sqls.QueryUserByUserName,
+		map[string]interface{}{"user_name": userName})
+
+	if err != nil {
+		return nil, context.NewError(context.ERR_SERVER_ERROR, fmt.Sprintf("QueryByName访问出错: %v+", err))
+	}
+	if data.IsEmpty() {
+		return nil, context.NewError(context.ERR_UNAUTHORIZED, "用户名不存在")
+	}
+	row := data.Get(0)
+	if row.GetInt("status") == enum.UserLock || row.GetInt("status") == enum.UserDisable {
+		return nil, context.NewError(context.ERR_UNAUTHORIZED, "用户被锁定或被禁用，暂时无法登录")
+	}
+
+	s = &model.MemberState{
+		UserID:    row.GetInt64("user_id", -1),
+		Password:  row.GetString("password"),
+		UserName:  row.GetString("user_name"),
+		ExtParams: row.GetString("ext_params"),
+		Status:    row.GetInt("status"),
+	}
+
+	//处理如果是子系统传系统编号登录就要判断权限
+	params := map[string]interface{}{
+		"user_id": row.GetInt64("user_id", -1),
+		"ident":   " and 1=1 ",
+	}
+	if ident != "" {
+		params["ident"] = " and s.ident='" + ident + "' "
+	}
+
+	roles, _, _, erro := db.Query(sqls.QueryUserRole, params)
+	if erro != nil || roles.IsEmpty() {
+		return nil, context.NewError(context.ERR_UNSUPPORTED_MEDIA_TYPE, "用户没有相关系统权限,请联系管理员")
+	}
+
+	return s, err
+}
+
 /////////////////////////////////////////////////
 func (l *DBMember) QueryAuth(sysID, userID int64) (data db.QueryRows, err error) {
 	db := l.c.GetRegularDB()
@@ -217,7 +261,7 @@ func (l *DBMember) QueryByID(uid int64) (db.QueryRow, error) {
 //GetUserInfo 根据用户名获取用户信息
 func (l *DBMember) GetUserInfo(u string) (db.QueryRow, error) {
 	db := l.c.GetRegularDB()
-	data, _, _, err := db.Query(sqls.QueryUserByLogin, map[string]interface{}{
+	data, _, _, err := db.Query(sqls.QueryUserByUserName, map[string]interface{}{
 		"user_name": u,
 	})
 	if err != nil {

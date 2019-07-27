@@ -2,6 +2,7 @@ package member
 
 import (
 	"fmt"
+	"strings"
 
 	"github.com/micro-plat/hydra/component"
 	"github.com/micro-plat/hydra/context"
@@ -22,6 +23,15 @@ func NewLoginHandler(container component.IContainer) (u *LoginHandler) {
 	return &LoginHandler{
 		c: container,
 		m: logic.NewMemberLogic(container),
+	}
+}
+
+//TypeConfHandle 取配置，显示验证码登录还是扫码登录
+func (u *LoginHandler) TypeConfHandle(ctx *context.Context) (r interface{}) {
+	config := model.GetConf(u.c)
+	return map[string]interface{}{
+		"requirewxlogin": false, //config.RequireWxLogin == 1,
+		"requirecode":    config.RequireCode == 1,
 	}
 }
 
@@ -58,17 +68,34 @@ func (u *LoginHandler) CheckHandle(ctx *context.Context) (r interface{}) {
 	return code
 }
 
-//PostHandle sso用户登录
+//PostHandle sso用户账号登录(微信扫码登录是另一个)
 func (u *LoginHandler) PostHandle(ctx *context.Context) (r interface{}) {
 	ctx.Log.Info("-------lgapi 用户登录---------")
 
 	ctx.Log.Info("1:参数验证")
 	if err := ctx.Request.Check("username", "password"); err != nil {
-		return context.NewError(context.ERR_NOT_ACCEPTABLE, fmt.Errorf("用户名和密码不能为空"))
+		return context.NewError(context.ERR_NOT_ACCEPTABLE, "用户名和密码不能为空")
+	}
+
+	//验证码这个是不是可以不用密码验证了
+	config := model.GetConf(u.c)
+	if config.RequireCode == 1 {
+		validatecode := ctx.Request.GetString("validatecode")
+		if strings.EqualFold(validatecode, "") {
+			return context.NewError(context.ERR_BAD_REQUEST, "请输入微信验证码")
+		}
+		//验证通过公众号发的验证码
+		isValid, err := u.m.ValidVerifyCode(ctx.Request.GetString("username"), validatecode)
+		if err != nil {
+			return err
+		}
+		if !isValid {
+			return context.NewError(context.ERR_BAD_REQUEST, "微信验证码错误")
+		}
 	}
 
 	//当有ident时没有权限就跳转错误页面
-	ctx.Log.Info("2:处理用户登录")
+	ctx.Log.Info("2:处理用户账号登录")
 	member, err := u.m.Login(
 		ctx.Request.GetString("username"),
 		ctx.Request.GetString("password"),
@@ -120,7 +147,7 @@ func (u *LoginHandler) WxConfHandle(ctx *context.Context) (r interface{}) {
 //WxCheckHandle 验证用户微信登录
 //这里面有两个code, 一个是wx返回的code, 还有给子系统生成的code
 func (u *LoginHandler) WxCheckHandle(ctx *context.Context) (r interface{}) {
-	ctx.Log.Info("-------lgapi 用户跳转登录---------")
+	ctx.Log.Info("-------lgapi 用户微信扫码跳转登录---------")
 
 	ctx.Log.Info("1:参数验证")
 	ctx.Log.Infof("参数为：containkey:%d, ident:%s, code:%s, state:%s",
@@ -150,6 +177,8 @@ func (u *LoginHandler) WxCheckHandle(ctx *context.Context) (r interface{}) {
 		return context.NewError(context.ERR_NOT_EXTENDED, "调用微信失败，稍后再登录")
 	}
 
+	ctx.Log.Infof("openid:%s", opID)
+
 	ctx.Log.Info("4: 通过opid查询是否有相关用户")
 	userInfo, err := u.m.GetUserInfoByOpID(opID, ctx.Request.GetString("ident"))
 	if err != nil {
@@ -170,4 +199,29 @@ func (u *LoginHandler) WxCheckHandle(ctx *context.Context) (r interface{}) {
 	ctx.Response.SetJWT(userInfo)
 
 	return code
+}
+
+//WxValidCodeHandle 获取weixin登录验证码(公众号)
+func (u *LoginHandler) WxValidCodeHandle(ctx *context.Context) (r interface{}) {
+	ctx.Log.Info("-------lgapi 用户获取weixin验证码---------")
+
+	if err := ctx.Request.Check("username"); err != nil {
+		return context.NewError(context.ERR_NOT_ACCEPTABLE, err)
+	}
+	userName := ctx.Request.GetString("username")
+	ident := ctx.Request.GetString("ident")
+
+	ctx.Log.Info("获取要发送验证码的用户名")
+	sendUser, err := u.m.GetSendUserByName(userName, ident)
+	if err != nil {
+		return err
+	}
+
+	ctx.Log.Info("调用接口发微信验证码")
+	//(userName是用户登录的名字，senduser是发给公众号那边对应的), cachekey是以userName为准, senduser是传给其他接口用的
+	err = u.m.SendValidCode(userName, sendUser)
+	if err != nil {
+		return err
+	}
+	return "success"
 }
