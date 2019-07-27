@@ -214,18 +214,15 @@ func (m *MemberLogic) SendValidCode(userName, sendUser string) error {
 	requestURL := requrl + "?" + queryParams
 	fmt.Println("sendValidcodeOut:", requestURL)
 
-	/*
-		resp, err := m.http.Get(requestURL)
-		if err != nil {
-			return context.NewError(context.ERR_FORBIDDEN, fmt.Sprintf("调用发送微信验证码的接口失败: %v+", err))
-		}
-		if resp.StatusCode != 200 {
-			return context.NewError(context.ERR_FORBIDDEN, fmt.Sprintf("调用发送微信验证码的接口失败: 状态码:%d", resp.StatusCode))
-		}
+	resp, err := m.http.Get(requestURL)
+	if err != nil {
+		return context.NewError(context.ERR_FORBIDDEN, fmt.Sprintf("调用发送微信验证码的接口失败: %v+", err))
+	}
+	if resp.StatusCode != 200 {
+		return context.NewError(context.ERR_FORBIDDEN, fmt.Sprintf("调用发送微信验证码的接口失败: 状态码:%d", resp.StatusCode))
+	}
 
-		return err
-	*/
-	return nil
+	return err
 }
 
 // ValidVerifyCode 验证通过公众号发的验证码
