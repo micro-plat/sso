@@ -85,6 +85,7 @@
           .then(res => {
             this.menus = res;
 
+            /*
             //这是处理登录后的回调
             var oldPath = localStorage.getItem("beforeLoginUrl");
             localStorage.removeItem("beforeLoginUrl");
@@ -104,6 +105,8 @@
             } else {
               this.$refs.NewTap.add("首页", this.indexUrl ,{});
             }
+            */
+            this.$refs.NewTap.add("首页", this.indexUrl ,{});
           })
           .catch(err => {
             console.log(err)

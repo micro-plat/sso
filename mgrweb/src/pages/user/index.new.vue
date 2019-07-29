@@ -397,7 +397,7 @@ export default {
             role_id: ""
           }
         ];
-        this.userInfo.email = "";
+        this.userInfo.email = null;
         this.selectSys.push("");
       } else {
         // 编辑用户

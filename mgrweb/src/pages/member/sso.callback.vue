@@ -19,6 +19,13 @@
           this.$post("sso/login/user",{code: this.code})
             .then(res =>{
                 localStorage.setItem("userinfo", JSON.stringify({name:res.user_name, role:res.role_name}));
+
+                var oldPath = window.localStorage.getItem("beforeLoginUrl");
+                localStorage.removeItem("beforeLoginUrl");
+                if (oldPath && oldPath != "/" && oldPath.indexOf("/external") == 0) {
+                  this.$router.push(oldPath);
+                  return;
+                }
                 this.$router.push("/");
             }).catch(err => {
               var config  = process.env.service;

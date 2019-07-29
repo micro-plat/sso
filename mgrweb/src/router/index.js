@@ -9,7 +9,7 @@ import sysindex from '@/pages/system/sys.index.new.vue'
 import sysfunc from '@/pages/system/func.index.vue'
 import userindex from '@/pages/user/index.new.vue'
 // import userindex from '@/pages/user/index';
-import changepassword from '@/pages/user/change.pwd';
+//import changepassword from '@/pages/user/change.pwd';
 import changeInfo from '@/pages/user/change.info';
 import userBind from '@/pages/user/user.bind';
 import roleindex from '@/pages/role/index.new';
@@ -24,7 +24,7 @@ export default new Router({
   mode: "history",
   routes: [
     {
-      path: '/other',
+      path: '/external/other',
       name: 'other',
       component: roleindex,
     },
@@ -47,11 +47,7 @@ export default new Router({
       path: "sys/func",
       name: "sysfunc",
       component: sysfunc
-    }, {
-      path: 'password',
-      name: 'password',
-      component: changepassword
-    }, {
+    },  {
       path: 'userinfo',
       name: 'userinfo',
       component: changeInfo

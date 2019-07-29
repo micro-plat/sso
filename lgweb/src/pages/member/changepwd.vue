@@ -61,6 +61,7 @@
                 this.errorMsg = '旧密码不能为空';
                 return;
             }
+
             if (!this.password1 || !this.password2) {
                 this.errorMsg = '新密码不能为空';
                 return;
@@ -73,7 +74,9 @@
 
             if (this.password1.length > 20 || this.password2.length > 20) {
                 this.errorMsg = '密码长度不能超过20个字符';
+                return;
             }
+            this.errorMsg = '';
         },
         changePwd(){
             this.check();
@@ -88,7 +91,7 @@
                     this.$alert("密码修改成功", '提示', {confirmButtonText: '确定'});
                      setTimeout(() => {
                          this.$router.push("/login");
-                     }, 400);
+                     }, 1000);
                 }).catch(err => {
                     var message = err.response.data.data; 
                     if (message && message.length > 6 && message.indexOf("error:",0) == 0) {
