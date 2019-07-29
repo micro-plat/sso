@@ -46,11 +46,12 @@ type MemberLogic struct {
 
 //NewMemberLogic 创建登录对象
 func NewMemberLogic(c component.IContainer) *MemberLogic {
+	config := model.GetConf(c)
 	return &MemberLogic{
 		c:     c,
 		cache: member.NewCacheMember(c),
 		db:    member.NewDBMember(c),
-		http:  &http.Client{Timeout: 5 * time.Second},
+		http:  &http.Client{Timeout: time.Duration(config.SendCodeTimeOut) * time.Second},
 	}
 }
 
@@ -216,12 +217,28 @@ func (m *MemberLogic) SendValidCode(userName, sendUser string) error {
 
 	resp, err := m.http.Get(requestURL)
 	if err != nil {
-		return context.NewError(context.ERR_FORBIDDEN, fmt.Sprintf("调用发送微信验证码的接口失败: %v+", err))
+		return context.NewError(context.ERR_NOT_EXTENDED, fmt.Sprintf("调用发送微信验证码的接口失败: %v+", err))
 	}
 	if resp.StatusCode != 200 {
-		return context.NewError(context.ERR_FORBIDDEN, fmt.Sprintf("调用发送微信验证码的接口失败: 状态码:%d", resp.StatusCode))
+		return context.NewError(context.ERR_NOT_EXTENDED, fmt.Sprintf("调用发送微信验证码的接口失败: 状态码:%d", resp.StatusCode))
 	}
 
+	defer resp.Body.Close()
+	body, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		return context.NewError(context.ERR_NOT_EXTENDED, fmt.Sprintf("调用发送微信验证码的接口失败: 返回内容为: %s", string(body)))
+	}
+
+	result := make(map[string]interface{})
+	err = json.Unmarshal(body, &result)
+	if err != nil {
+		return context.NewError(context.ERR_NOT_EXTENDED, fmt.Errorf("解析返回结果失败 %s", string(body)))
+	}
+
+	//wx返回全是200,只有通过errcode去判断
+	if status, ok := result["Status"]; ok && status != "1000" {
+		return context.NewError(context.ERR_BAD_REQUEST, result["Message"].(string))
+	}
 	return err
 }
 

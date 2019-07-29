@@ -14,8 +14,9 @@ type Conf struct {
 	Appid      string `json:"appid" valid:"ascii,required"`    // appid (微信扫码登录)
 	Secret     string `json:"secret" valid:"ascii,required"`   // secrect (微信扫码登录)
 
-	SendCodeKey    string `json:"sendcode_key" valid:"ascii,required"`    //发微信验证码用到的加密key
-	SendCodeReqUrl string `json:"sendcodereq_url" valid:"ascii,required"` //发微信验证码到哪个接口
+	SendCodeKey     string `json:"sendcode_key" valid:"ascii,required"`    //发微信验证码用到的加密key
+	SendCodeReqUrl  string `json:"sendcodereq_url" valid:"ascii,required"` //发微信验证码到哪个接口
+	SendCodeTimeOut int    `json:"sendcode_timeout"`                       //发微信验证码超时秒数
 
 	RequireWxLogin bool `json:"require_wx_login"` //是否支持微信扫码登录
 	RequireCode    bool `json:"require_code"`     //是否支持微信验证码登录

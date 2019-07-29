@@ -23,6 +23,7 @@ func (s *SSO) install() {
 			"secret":"123456",
 			"sendcode_key":"qxnw123456",
 			"sendcodereq_url":"http://user.18pingtai.cn:9002/SendVerifyCodeHandler.ashx",
+			"sendcode_timeout":30,
 			"requirewx_login":false,
 			"require_code":true
 		}			

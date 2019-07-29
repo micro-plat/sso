@@ -143,12 +143,13 @@
             this.errMsg = {message: "微信验证码发送成功"}; 
           })
           .catch(error=>{
-            var message = err.response.data.data; 
+            var message = error.response.data.data; 
             if (message && message.length > 6 && message.indexOf("error:",0) == 0) {
               message = message.substr(6); //error:用户名或密码错误 //框架多还回一些东西
             }
-            switch(err.response.status) {
+            switch(error.response.status) {
               case 401:
+              case 400:
                 this.errMsg = {message: message}; 
                 break;
               default:
