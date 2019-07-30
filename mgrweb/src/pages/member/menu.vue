@@ -15,7 +15,7 @@
     >
     <iframe v-show="bdTokenUrl.indexOf('http://') == 0 || bdTokenUrl.indexOf('https://') == 0" 
         ref="bdIframe" id="bdIframe" 
-        :src="bdTokenUrl" 
+        :src="frameUrl" 
         width="100%" 
         height="100%" 
         frameborder="0" 
@@ -44,7 +44,7 @@
         indexUrl: "/user/index",
         dialogAddVisible:false,     //添加表单显示隐藏
         bdTokenUrl: "",
-        currentUrl: "",
+        frameUrl: "",
       }
     },
     components:{ //注册插件
@@ -119,8 +119,9 @@
           return;
         }
         if (url.indexOf('http://') == 0 || url.indexOf('https://') == 0) {
-          this.bdTokenUrl = url
+          this.frameUrl = url
         }
+        this.bdTokenUrl = url; 
       },
 
       //查询某个url对应的菜单
