@@ -22,7 +22,7 @@
         allowtransparency="true" 
         allowfullscreen="true" 
       ></iframe>
-        <router-view v-show="bdTokenUrl.indexOf('http://') != 0 && bdTokenUrl.indexOf('https://') != 0" @addTab="addTab" />
+      <router-view v-show="bdTokenUrl.indexOf('http://') != 0 && bdTokenUrl.indexOf('https://') != 0" />
     </nav-menu>
   </div>
 </template>
@@ -44,14 +44,12 @@
         indexUrl: "/user/index",
         dialogAddVisible:false,     //添加表单显示隐藏
         bdTokenUrl: "",
+        currentUrl: "",
       }
     },
     components:{ //注册插件
       navMenu
     },
-    // watch:{
-    //   "bdTokenUrl": "setIfrema"
-    // },
     created(){
       this.getMenu();
     },
@@ -81,6 +79,7 @@
       },
 
       getMenu(){
+        console.log("调用菜单数据")
         this.$fetch("/sso/menu")
           .then(res => {
             this.menus = res;
@@ -112,21 +111,16 @@
             console.log(err)
           });
       },
-      //@name 标签名称
-      //@path 路由
-      //@obj  路由参数 类型：Object
-      addTab(name,path,obj){
-        this.$refs.NewTap.add(name,path,obj);   //调用组件方法，添加一个页面
-      },
       close(v){
         this.$refs.NewTap.closeTab(v);
       },
-      setTab(name,path,obj){
-        console.log("outer",name,path,obj);
-        this.$refs.NewTap.set(name,path,obj);
-      },
       gotoLoadHttp(url){
-        this.bdTokenUrl = url
+        if (this.indexUrl && this.indexUrl == url){
+          return;
+        }
+        if (url.indexOf('http://') == 0 || url.indexOf('https://') == 0) {
+          this.bdTokenUrl = url
+        }
       },
 
       //查询某个url对应的菜单

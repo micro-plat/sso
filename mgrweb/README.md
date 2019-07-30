@@ -22,5 +22,5 @@ For a detailed explanation on how things work, check out the [guide](http://vuej
 
 
 ```
-/external开始的为外部子系统调用
+由于各个系统间要直接调用，而且要将页面套在另一个系统中，因此以 /external 开始的url都是其他系统的链接
 ```
