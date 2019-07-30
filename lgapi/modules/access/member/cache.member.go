@@ -16,6 +16,8 @@ type ICacheMember interface {
 	CreateUserInfoByCode(code string, userId int64) error
 	SaveWxLoginStateCode(code string) error
 	ExistsWxLoginStateCode(code string) (bool, error)
+	SaveWxLoginInfo(state, content string) error
+	GetWxLoginInfoByStateCode(stateCode string) (string, error)
 
 	CreateValiCode(userName, code string) error
 	VerifyValidCode(userName, validCode string) (isValid bool, err error)
@@ -79,6 +81,20 @@ func (l *CacheMember) ExistsWxLoginStateCode(code string) (bool, error) {
 	cache := l.c.GetRegularCache()
 	cachekey := transform.Translate(cachekey.WxLoginStateCode, "code", code)
 	return cache.Exists(cachekey), nil
+}
+
+// SaveWxLoginInfo xx
+func (l *CacheMember) SaveWxLoginInfo(state, content string) error {
+	cache := l.c.GetRegularCache()
+	cachekey := transform.Translate(cachekey.WxLoginStateCode, "code", state)
+	return cache.Set(cachekey, content, 60*5)
+}
+
+//GetWxLoginInfoByStateCode xx
+func (l *CacheMember) GetWxLoginInfoByStateCode(stateCode string) (string, error) {
+	cache := l.c.GetRegularCache()
+	cachekey := transform.Translate(cachekey.WxLoginStateCode, "code", stateCode)
+	return cache.Get(cachekey)
 }
 
 // CreateValiCode xx

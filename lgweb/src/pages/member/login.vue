@@ -12,13 +12,18 @@
       :err-msg.sync="errMsg"
       ref="loginItem">
     </login-with-up>
+    <div id="qrcodeTable"></div>
+    <input type="button" @click="generateQrCode" value="二维码" />
   </div>
+  
 </template>
 
 <script>
   import VueCookies from 'vue-cookies'
   import loginWithUp from 'login-with-up';
   import {JoinUrlParams} from '@/services/common.js'
+
+  import "@/services/qrcode.min.js"
   import "@/services/md5.js"
   export default {
     name: 'app',
@@ -32,7 +37,10 @@
         ident: "",
         errMsg:{message:""},
         requireWxLogin:false, //是否支持跳转登录
-        requireCode: false //是否支持微信验证码登录
+        requireCode: false, //是否支持微信验证码登录
+
+        stateCode : "", //动态为用户生成标识,用于扫码登录 (在table切换时要改这个值，相当与这个值会随着table切换而变化)
+        //todo 还要改
       }
     },
     components:{ 
@@ -61,27 +69,6 @@
           this.requireWxLogin = res.requirewxlogin;
           this.requireCode = res.requirecode;
         })
-        .catch(err => {
-
-        })
-      },
-
-      // 微信调转登录
-      wxLogin(){
-        this.$post("lg/login/wxconf", {})
-        .then(res => {
-            var url = res.wxlogin_url + "?" + "appid=" + res.appid + "&state=" + res.state + "&redirect_uri=" +
-                      encodeURIComponent(process.env.service.wxcallbackhost + process.env.service.wxcallbackurl) +
-                      "&response_type=code&scope=snsapi_login#wechat_redirect";
-                      
-                      
-            console.log(url);
-            sessionStorage.setItem("sso-bssyscallbackinfo", JSON.stringify({callback: this.callback, changepwd: this.changepwd, ident:this.ident}));
-            window.location.href = url;
-        })
-        .catch(err => {
-          this.errMsg = {message: "系统繁忙,请稍后在试"};
-        });
       },
 
       //用户名密码登录
@@ -156,6 +143,97 @@
                 this.errMsg = {message: "系统繁忙"}; 
             }
           })
+      },
+
+      //生成二维码
+      generateQrCode() {
+        this.$post("/lg/login/getwxstate", {})
+        .then(res => {
+          this.stateCode = res.data;
+          console.log(window.location.protocol + "//" + window.location.host + "/qrcodelogin?state=" + this.stateCode);
+        
+          jQuery('#qrcodeTable').qrcode({
+            render:"table",
+            width:200,
+            height:200,
+            text:window.location.protocol + "//" + window.location.host + "/qrcodelogin?state=" + this.stateCode 
+          });	
+        })
+        .catch(err => {
+          this.errMsg = {message: "系统繁忙,请先用其他方式登录"};
+          return;
+        });
+      },
+
+      wxLogin(){
+        if (!this.stateCode) {
+          return ;
+        }
+
+        var req = {
+          containkey: 0,
+          ident: this.ident,
+          state: this.stateCode,
+        }
+        if (this.callback && this.ident) {
+          req.containkey = 1
+        }
+
+        //定时处理(调用api)
+        var timesRun = 0;
+        var interval = setInterval(function(){
+            timesRun += 1;
+            if(timesRun === 60*5){    
+                clearInterval(interval);    
+            }
+
+            this.$post("/lg/login/wxlogin", req)
+            .then(res=>{
+                if (this.changepwd == 1) {
+                  this.$router.push({ path: '/changepwd'});   
+                  return;
+                }
+
+                if (this.ident && this.callback) {
+                  window.location.href = JoinUrlParams(decodeURIComponent(this.callback),{code:res.data})
+                  return;
+                }
+                this.$router.push({ path: '/chose'});
+            })
+            .catch(error=>{
+              switch (err.response.status) {
+                    case 400:
+                        type = 3;
+                        break;
+                    case 406:
+                        type = 4;
+                        break;
+                    case 408:
+                        type = 5;
+                        break;
+                    case 510:
+                        type = 6;
+                        break;
+                    case 401:
+                        type = 7;
+                        break;
+                    case 415:
+                        type = 1;
+                        break;
+                    default:
+                        type = 0
+// 400: 用户被锁定或被禁用，暂时无法登录 //3
+// 406: 微信登录过程中有些参数丢失,请正常登录 //4
+// 408: 微信登录标识过期,请重新登录 //5
+// 510: 调用微信失败，稍后再登录 // 6
+// 500: 系统出错，等会在试 //0
+// 401: 没有关注公众号 // 7
+// 415: 没有相应权限，请联系管理员 //1
+                }
+                this.$router.push({ path: '/errpage', query: {type: type}});
+            });
+
+        }, 1000);
       }
 
     }

@@ -18,8 +18,9 @@ func (s *SSO) install() {
 
 	s.Conf.API.SetSubConf("app", `
 			{
+				"wxphonelogin_url":"https://open.weixin.qq.com/connect/oauth2/authorize",
 				"wxlogin_url": "https://open.weixin.qq.com/connect/qrconnect",
-				"wxgettoken_url":"https: //api.weixin.qq.com/sns/oauth2/access_token",
+				"wxgettoken_url":"https://api.weixin.qq.com/sns/oauth2/access_token",
 				"appid":"#wx_appid",
 				"secret":"#wx_secret",
 				"sendcode_key":"qxnw123456",
@@ -38,7 +39,9 @@ func (s *SSO) install() {
 					"/lg/login/wxconf",
 					"/lg/login/wxcheck",
 					"/lg/login/wxvalidcode",
-					"/lg/login/typeconf"
+					"/lg/login/typeconf",
+					"/lg/login/getwxstate",
+					"/lg/login/getwxstate"
 					],																																																																														
 				"expireAt": 36000,
 				"mode": "HS512",

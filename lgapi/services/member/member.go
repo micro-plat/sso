@@ -127,32 +127,32 @@ func (u *LoginHandler) RefreshHandle(ctx *context.Context) (r interface{}) {
 
 //WxConfHandle weixin登录取配置
 func (u *LoginHandler) WxConfHandle(ctx *context.Context) (r interface{}) {
-	ctx.Log.Info("-------lgapi weixin登录---------")
+	ctx.Log.Info("-------lgapi 获取weixin配置信息---------")
 
 	config := model.GetConf(u.c)
+	return map[string]interface{}{
+		"wxlogin_url": config.WxPhoneLoginUrl,
+		"appid":       config.Appid,
+	}
+}
+
+//GetWxStateHandle 生成微信statecode(相当与一个用户标识)
+func (u *LoginHandler) GetWxStateHandle(ctx *context.Context) (r interface{}) {
 	stateCode := utility.GetGUID()
 
 	ctx.Log.Info("1: 将stateCode存到缓存中,wx会将这个还回,用于判断是否伪造")
 	if err := u.m.SaveWxLoginStateCode(stateCode); err != nil {
 		return context.NewError(context.ERR_SERVER_ERROR, "系统繁忙，等会在登录")
 	}
-
-	return map[string]interface{}{
-		"wxlogin_url": config.WxLoginUrl,
-		"appid":       config.Appid,
-		"state":       stateCode,
-	}
+	return stateCode
 }
 
 //WxCheckHandle 验证用户微信登录
-//这里面有两个code, 一个是wx返回的code, 还有给子系统生成的code
 func (u *LoginHandler) WxCheckHandle(ctx *context.Context) (r interface{}) {
-	ctx.Log.Info("-------lgapi 用户微信扫码跳转登录---------")
+	ctx.Log.Info("-------lgapi 验证手机微信扫码跳转登录---------")
 
 	ctx.Log.Info("1:参数验证")
-	ctx.Log.Infof("参数为：containkey:%d, ident:%s, code:%s, state:%s",
-		ctx.Request.GetInt("containkey"), ctx.Request.GetString("ident"),
-		ctx.Request.GetString("code"), ctx.Request.GetString("state"))
+	ctx.Log.Infof("参数为：code:%s, state:%s", ctx.Request.GetString("code"), ctx.Request.GetString("state"))
 
 	if err := ctx.Request.Check("code", "state"); err != nil {
 		return context.NewError(context.ERR_NOT_ACCEPTABLE, fmt.Errorf("微信登录过程中有些参数丢失,请正常登录"))
@@ -168,18 +168,41 @@ func (u *LoginHandler) WxCheckHandle(ctx *context.Context) (r interface{}) {
 	url := config.WxTokenUrl + "?appid=" + config.Appid + "&secret=" + config.Secret + "&code=" + ctx.Request.GetString("code") + "&grant_type=authorization_code"
 	ctx.Log.Infof("获取用户openid的url: %s", url)
 
-	opID, err := u.m.GetWxUserOpID(url)
+	content, err := u.m.GetWxUserOpID(url)
 	if err != nil {
 		ctx.Log.Errorf("调用wx api出错: %v+", err)
 		return err
 	}
-	if opID == "" {
-		return context.NewError(context.ERR_NOT_EXTENDED, "调用微信失败，稍后再登录")
+
+	ctx.Log.Info("4:将获取用户openid等信息放到缓存中")
+	if err := u.m.SaveWxLoginInfo(ctx.Request.GetString("state"), content); err != nil {
+		return context.NewError(context.ERR_NOT_EXTENDED, fmt.Errorf("微信登录标识过期,请重新登录"))
 	}
 
+	return "success"
+}
+
+//WxLoginHandle 微信登录，然后跳转  token["openid"].(string)
+func (u *LoginHandler) WxLoginHandle(ctx *context.Context) (r interface{}) {
+	ctx.Log.Info("-------lgapi 用户手机微信扫码跳转登录(5分钟内会一直调)---------")
+
+	ctx.Log.Info("1:参数验证")
+	ctx.Log.Infof("参数为：containkey:%d, ident:%s, state:%s",
+		ctx.Request.GetInt("containkey"), ctx.Request.GetString("ident"),
+		ctx.Request.GetString("state"))
+
+	if err := ctx.Request.Check("state"); err != nil {
+		return context.NewError(context.ERR_NOT_ACCEPTABLE, fmt.Errorf("微信登录过程中有些参数丢失,请正常登录"))
+	}
+
+	ctx.Log.Info("2:通过statecode看是否返回了openid")
+	opID, err := u.m.GetWxLoginInfoByStateCode(ctx.Request.GetString("state"))
+	if err != nil {
+		return err
+	}
 	ctx.Log.Infof("openid:%s", opID)
 
-	ctx.Log.Info("4: 通过opid查询是否有相关用户")
+	ctx.Log.Info("3: 通过opid查询是否有相关用户")
 	userInfo, err := u.m.GetUserInfoByOpID(opID, ctx.Request.GetString("ident"))
 	if err != nil {
 		ctx.Log.Errorf("通过openid:%s, 查询用户信息出错: %v+", opID, err)
@@ -188,14 +211,14 @@ func (u *LoginHandler) WxCheckHandle(ctx *context.Context) (r interface{}) {
 
 	var code string
 	if ctx.Request.GetInt("containkey", 1) == 1 {
-		ctx.Log.Info("5:设置返回code")
+		ctx.Log.Info("4:设置返回code")
 		code, err = u.m.CreateLoginUserCode(userInfo.UserID)
 		if err != nil {
 			return context.NewError(context.ERR_BAD_REQUEST, "请重新登录")
 		}
 	}
 
-	ctx.Log.Info("4: 设置jwt数据")
+	ctx.Log.Info("5: 设置jwt数据")
 	ctx.Response.SetJWT(userInfo)
 
 	return code

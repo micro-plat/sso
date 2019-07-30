@@ -7,6 +7,7 @@ import changepwd from '@/pages/member/changepwd.vue';
 import chose from '@/pages/system/chose.vue';
 import errpage from '@/pages/system/errpage.vue';
 import wxlgcallback from '@/pages/member/wx.login.callback.vue';
+import qrcodelogin from '@/pages/member/qrcode.login.vue';
 
 Vue.use(Router);
 
@@ -45,6 +46,11 @@ export default new Router({
       path: '/changepwd',
       name: 'changepwd',
       component: changepwd
+    },
+    {
+      path: '/qrcodelogin',
+      name: 'qrcodelogin',
+      component: qrcodelogin
     },
     {
       path: '/errpage',
