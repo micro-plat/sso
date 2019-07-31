@@ -55,19 +55,11 @@ func (u *SystemLogic) GetAll(userId int64) (s db.QueryRows, err error) {
 
 //Query 获取用系统管理列表
 func (u *SystemLogic) Query(name string, status string, pi int, ps int) (data db.QueryRows, count int, err error) {
-	//从缓存获取数据
-	data, count, err = u.cache.QuerySysInfo(name, status, pi, ps)
-	if data == nil || err != nil || count == 0 {
-		data, count, err = u.db.Query(name, status, pi, ps)
-		if err != nil {
-			return nil, 0, err
-		}
-		//保存系统数据到缓存
-		if err = u.cache.SaveSysInfo(name, status, pi, ps, data, count); err != nil {
-			return nil, 0, err
-		}
+	data, count, err = u.db.Query(name, status, pi, ps)
+	if err != nil {
+		return nil, 0, err
 	}
-	return data, count, nil
+	return data, count, err
 }
 
 //Delete 删除系统

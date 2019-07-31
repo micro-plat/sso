@@ -11,18 +11,7 @@
       :pwd="pwd"
       :signOut="signOut"
       ref="NewTap"
-      @loadHttpPage=gotoLoadHttp
     >
-    <iframe v-show="bdTokenUrl.indexOf('http://') == 0 || bdTokenUrl.indexOf('https://') == 0" 
-        ref="bdIframe" id="bdIframe" 
-        :src="frameUrl" 
-        width="100%" 
-        height="100%" 
-        frameborder="0" 
-        allowtransparency="true" 
-        allowfullscreen="true" 
-      ></iframe>
-      <router-view v-show="bdTokenUrl.indexOf('http://') != 0 && bdTokenUrl.indexOf('https://') != 0" />
     </nav-menu>
   </div>
 </template>
@@ -43,8 +32,6 @@
         userinfo: {name:'wule',role:"管理员"},
         indexUrl: "/user/index",
         dialogAddVisible:false,     //添加表单显示隐藏
-        bdTokenUrl: "",
-        frameUrl: "",
       }
     },
     components:{ //注册插件
@@ -56,16 +43,8 @@
     mounted(){
       document.title = "用户权限系统";
       this.userinfo = JSON.parse(localStorage.getItem("userinfo"));
-      this.setIfrema()
     },
     methods:{
-      setIfrema(){
-        var oIframe = this.$refs.bdIframe
-        var deviceWidth = document.documentElement.clientWidth;
-        var deviceHeight = document.documentElement.clientHeight;
-        oIframe.style.width = (Number(deviceWidth)-220) + 'px'; //数字是页面布局宽度差值
-        oIframe.style.height = (Number(deviceHeight)-150) + 'px'; //数字是页面布局高度差
-      },
       pwd(val){
         VueCookies.remove("__jwt__");
         var config = process.env.service;
@@ -79,7 +58,6 @@
       },
 
       getMenu(){
-        console.log("调用菜单数据")
         this.$fetch("/sso/menu")
           .then(res => {
             this.menus = res;
@@ -110,18 +88,6 @@
           .catch(err => {
             console.log(err)
           });
-      },
-      close(v){
-        this.$refs.NewTap.closeTab(v);
-      },
-      gotoLoadHttp(url){
-        if (this.indexUrl && this.indexUrl == url){
-          return;
-        }
-        if (url.indexOf('http://') == 0 || url.indexOf('https://') == 0) {
-          this.frameUrl = url
-        }
-        this.bdTokenUrl = url; 
       },
 
       //查询某个url对应的菜单
