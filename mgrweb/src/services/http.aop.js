@@ -7,41 +7,43 @@ import {
 } from './http'
    
 
-export function init(Vue){
+export function init(Vue, freshUrl){
     Vue.prototype.$fetch = function (url, params = {}) {
         var result = fetch(url,params);
-        console.log("ins..fetch....end")
         changeUrl();
         return result
     }
 
     Vue.prototype.$post = function (url, params = {}) {
         var result = post(url,params)
-        console.log("ins..post....end")
         changeUrl();
         return result
     }
 
     Vue.prototype.$patch = function (url, params = {}) {
         var result = patch(url,params)
-        console.log("ins..patch....end")
         changeUrl();
         return result
     }
 
     Vue.prototype.$put = function (url, params = {}) {
         var result = put(url,params)
-        console.log("ins..put....end")
         changeUrl();
         return result
     }
 
     Vue.prototype.$del = function (url, params = {}) {
         var result = del(url,params)
-        console.log("ins..del....end")
         changeUrl();
         return result
     }
+
+    if (!freshUrl) {
+        console.log("freshUrl不能为空, 这个是为刷新sso的jwt信息")
+    }
+
+    var refleshHtml = '<iframe id="ssoreflesh" src="'+ freshUrl + '" style="display:none"></iframe>';
+    $('body').append(refleshHtml);
 }
 
 function changeUrl() {

@@ -51,7 +51,12 @@ Vue.prototype.$patch = patch;
 Vue.prototype.$put = put;
 Vue.prototype.$del = del;
 */
-init(Vue);
+
+var serviceConfig = process.env.service;
+var freshUrl = serviceConfig.ssoApiHost + serviceConfig.freshJwt;
+
+init(Vue, freshUrl);
+
 Vue.config.productionTip = false;
 
   /* eslint-disable no-new */
@@ -64,14 +69,3 @@ new Vue({
     },
     template: '<App/>'
 });
-
-var serviceConfig = process.env.service;
-var refleshHtml = '<iframe id="ssoreflesh" src="'+  serviceConfig.ssoApiHost + serviceConfig.freshJwt + '" style="display:none"></iframe>';
-$('body').append(refleshHtml);
-
-$(function () {
-    history.pushState(null, null, document.URL);
-    window.addEventListener('popstate', function () {
-        history.pushState(null, null, document.URL);
-    });
-})
