@@ -1,6 +1,7 @@
 package member
 
 import (
+	"encoding/json"
 	"fmt"
 	"strings"
 
@@ -20,6 +21,7 @@ type IDBMember interface {
 	QueryByID(uid int64) (db.QueryRow, error)
 	CheckUserHasAuth(ident string, userID int64) error
 	QueryByOpenID(openID, ident string) (s *model.MemberState, err error)
+	ExistsOpenId(content string) error
 	QueryByName(userName, ident string) (s *model.MemberState, err error)
 
 	QueryByUserName(u string, ident string) (info db.QueryRow, err error)
@@ -185,6 +187,32 @@ func (l *DBMember) QueryByOpenID(openID, ident string) (s *model.MemberState, er
 		s.LoginURL = roles.Get(0).GetString("login_url")
 	}
 	return s, err
+}
+
+//ExistsOpenId xx
+func (l *DBMember) ExistsOpenId(content string) error {
+	contentMap := map[string]interface{}{}
+	if err := json.Unmarshal([]byte(content), &contentMap); err != nil {
+		return context.NewError(context.ERR_SERVER_ERROR, err)
+	}
+	openID, ok := contentMap["openid"]
+	if !ok {
+		return context.NewError(context.ERR_SERVER_ERROR, "openid不存在")
+	}
+
+	fmt.Printf("opid:%s", openID)
+	db := l.c.GetRegularDB()
+	count, _, _, err := db.Scalar(sqls.ExistsUserByOpenId, map[string]interface{}{
+		"openid": openID,
+	})
+	fmt.Printf("count:%v", count)
+	if err != nil {
+		return context.NewError(context.ERR_UNSUPPORTED_MEDIA_TYPE, fmt.Sprintf("出现错误，等会在登录: %s", err))
+	}
+	if types.GetInt(count, 0) <= 0 {
+		return context.NewError(context.ERR_UNSUPPORTED_MEDIA_TYPE, "没有绑定公众号,请先绑定")
+	}
+	return nil
 }
 
 //QueryByName xx

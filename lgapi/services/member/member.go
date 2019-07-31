@@ -173,10 +173,17 @@ func (u *LoginHandler) WxCheckHandle(ctx *context.Context) (r interface{}) {
 		ctx.Log.Errorf("调用wx api出错: %v+", err)
 		return err
 	}
+	ctx.Log.Infof("微信返回信息为:%s", content)
+
+	ctx.Log.Info("查询openid是否存在, 不存在表示未绑定")
+	err = u.m.ExistsOpenId(content)
+	if err != nil {
+		return err
+	}
 
 	ctx.Log.Info("4:将获取用户openid等信息放到缓存中")
 	if err := u.m.SaveWxLoginInfo(ctx.Request.GetString("state"), content); err != nil {
-		return context.NewError(context.ERR_NOT_EXTENDED, fmt.Errorf("微信登录标识过期,请重新登录"))
+		return context.NewError(context.ERR_NOT_EXTENDED, fmt.Errorf("出现系统错误,等会再登录"))
 	}
 
 	return "success"
@@ -201,6 +208,10 @@ func (u *LoginHandler) WxLoginHandle(ctx *context.Context) (r interface{}) {
 		return err
 	}
 	ctx.Log.Infof("openid:%s", opID)
+	//用户还没有扫码，要等会
+	if opID == "" {
+		return "success"
+	}
 
 	ctx.Log.Info("3: 通过opid查询是否有相关用户")
 	userInfo, err := u.m.GetUserInfoByOpID(opID, ctx.Request.GetString("ident"))

@@ -17,17 +17,18 @@
     },
     created() {
         document.title = "微信登录";
-        state = this.$route.query.state;
+        this.state = this.$route.query.state;
     },
     methods:{
         wxConfirm() {
+            console.log(this.state);
+            
             this.$post("lg/login/wxconf", {})
             .then(res => {
                 var url = res.wxlogin_url + "?" + "appid=" + res.appid + "&state=" + this.state + "&redirect_uri=" +
                         encodeURIComponent(process.env.service.wxcallbackhost + process.env.service.wxcallbackurl) +
                         "&response_type=code&scope=snsapi_base#wechat_redirect";
                         
-                console.log(url);
                 window.location.href = url;
             })
             .catch(err => {

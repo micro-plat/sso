@@ -12,8 +12,10 @@
       :err-msg.sync="errMsg"
       ref="loginItem">
     </login-with-up>
-    <div id="qrcodeTable"></div>
-    <input type="button" @click="generateQrCode" value="二维码" />
+    <div v-if="requireWxLogin">
+      <div id="qrcodeTable"></div>
+      <input type="button" @click="generateQrCode" value="二维码" />
+    </div>
   </div>
   
 </template>
@@ -158,6 +160,9 @@
             height:200,
             text:window.location.protocol + "//" + window.location.host + "/qrcodelogin?state=" + this.stateCode 
           });	
+
+          //这个暂时放这里
+          this.wxLogin();
         })
         .catch(err => {
           this.errMsg = {message: "系统繁忙,请先用其他方式登录"};
@@ -180,6 +185,7 @@
         }
 
         //定时处理(调用api)
+        var that = this;
         var timesRun = 0;
         var interval = setInterval(function(){
             timesRun += 1;
@@ -187,20 +193,27 @@
                 clearInterval(interval);    
             }
 
-            this.$post("/lg/login/wxlogin", req)
+            that.$post("/lg/login/wxlogin", req)
             .then(res=>{
-                if (this.changepwd == 1) {
-                  this.$router.push({ path: '/changepwd'});   
+                if (res.data  == "success") {
                   return;
                 }
 
-                if (this.ident && this.callback) {
-                  window.location.href = JoinUrlParams(decodeURIComponent(this.callback),{code:res.data})
+                clearInterval(interval);
+
+                if (that.changepwd == 1) {
+                  that.$router.push({ path: '/changepwd'});   
                   return;
                 }
-                this.$router.push({ path: '/chose'});
+
+                if (that.ident && that.callback) {
+                  window.location.href = JoinUrlParams(decodeURIComponent(that.callback),{code:res.data})
+                  return;
+                }
+                that.$router.push({ path: '/chose'});
             })
-            .catch(error=>{
+            .catch(err=>{
+              var type = 0;
               switch (err.response.status) {
                     case 400:
                         type = 3;
@@ -230,10 +243,10 @@
 // 401: 没有关注公众号 // 7
 // 415: 没有相应权限，请联系管理员 //1
                 }
-                this.$router.push({ path: '/errpage', query: {type: type}});
+                //that.$router.push({ path: '/errpage', query: {type: type}});
             });
 
-        }, 1000);
+        }, 1500);
       }
 
     }

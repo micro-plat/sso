@@ -40,6 +40,9 @@ where
 	and s.enable=1
 	and i.status=0`
 
+//ExistsUserByOpenId 查询yonghu角色count
+const ExistsUserByOpenId = `select count(1) as count from sso_user_info where wx_openid=@openid`
+
 //QueryUserRole 查询系统角色列表
 const QueryUserRole = `
 select 

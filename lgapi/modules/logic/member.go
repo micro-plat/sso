@@ -32,6 +32,7 @@ type IMemberLogic interface {
 	GetWxLoginInfoByStateCode(stateCode string) (string, error)
 	SaveWxLoginInfo(state, content string) error
 	GetWxUserOpID(url string) (string, error)
+	ExistsOpenId(content string) error
 	GetUserInfoByOpID(opID, ident string) (*model.LoginState, error)
 	GetSendUserByName(userName, ident string) (senduser string, err error)
 	SendValidCode(userName, sendUser string) error
@@ -123,23 +124,24 @@ func (m *MemberLogic) SaveWxLoginInfo(state, content string) error {
 // GetWxLoginInfoByStateCode 根据statecode去cache中取登录openid信息
 func (m *MemberLogic) GetWxLoginInfoByStateCode(stateCode string) (string, error) {
 	content, err := m.cache.GetWxLoginInfoByStateCode(stateCode)
+	fmt.Printf("cache get data: %s", content)
 	if err != nil {
-		return "", nil
+		return "", err
 	}
 	if content == "1" {
 		return "", nil
 	}
-	fmt.Println(content)
 	tokenInfo := make(map[string]interface{})
 	err = json.Unmarshal([]byte(content), &tokenInfo)
 	if err != nil {
 		return "", context.NewError(context.ERR_NOT_EXTENDED, fmt.Errorf("解析返回结果失败 %s：(%s)", content, err))
 	}
 
-	if openID, ok := tokenInfo["openid"]; !ok || openID == "" {
+	openID, ok := tokenInfo["openid"]
+	if !ok || openID == "" {
 		return "", context.NewError(context.ERR_NOT_EXTENDED, fmt.Errorf("微信返回错误：%s", content))
 	}
-	return "", nil
+	return openID.(string), nil
 }
 
 // GetWxUserOpID xx
@@ -171,6 +173,11 @@ func (m *MemberLogic) GetWxUserOpID(url string) (string, error) {
 	}
 
 	return string(body), nil
+}
+
+//ExistsOpenId xx
+func (m *MemberLogic) ExistsOpenId(content string) error {
+	return m.db.ExistsOpenId(content)
 }
 
 //GetUserInfoByOpID xxx
