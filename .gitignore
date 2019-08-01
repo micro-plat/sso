@@ -39,3 +39,5 @@ mgrapi/mgrapi
 mgrweb/mgrweb
 lgapi/lgapi
 lgweb/lgweb
+
+out/
