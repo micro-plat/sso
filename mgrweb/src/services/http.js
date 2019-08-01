@@ -1,6 +1,8 @@
 import axios from 'axios';
-import VueCookies from 'vue-cookies'
-import router from '../router'
+//import VueCookies from 'vue-cookies'
+//import router from '../router'
+
+import {setLoginInfo} from './sso.login.js'
 
 const Qs = require('qs');
 axios.defaults.timeout = 5000;
@@ -30,14 +32,8 @@ axios.interceptors.response.use(
     },
     error => {
         if (error.response.status == 403) {
-            VueCookies.remove("__jwt__");
-            if (router.currentRoute.fullPath != "/" && router.currentRoute.fullPath != "/login") {
-                window.localStorage.setItem("beforeLoginUrl", router.currentRoute.fullPath);
-            }
-            
             var config = process.env.service;
-            window.location.href=config.ssoWebHost + config.jumpUrl 
-                + "?ident=sso&callback=" + encodeURIComponent(window.location.protocol + "//" + window.location.host + config.callbackUrl);
+            setLoginInfo(config.ssoWebHost + config.jumpUrl, "sso", window.location.protocol + "//" + window.location.host + config.callbackUrl)
         }
         return Promise.reject(error)
     }

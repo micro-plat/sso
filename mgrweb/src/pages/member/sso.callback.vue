@@ -3,6 +3,7 @@
 
 <script>
   import VueCookies from 'vue-cookies'
+  import {setAfterLogin} from '@/services/sso.login.js'
   export default {
     name: 'callback',
     data () {
@@ -19,17 +20,11 @@
           this.$post("sso/login/user",{code: this.code})
             .then(res =>{
                 localStorage.setItem("userinfo", JSON.stringify({name:res.user_name, role:res.role_name}));
-
-                var oldPath = window.localStorage.getItem("beforeLoginUrl");
-                localStorage.removeItem("beforeLoginUrl");
-                if (oldPath && oldPath != "/" && oldPath.indexOf("/external") == 0) {
-                  this.$router.push(oldPath);
-                  return;
-                }
-                this.$router.push("/");
+                setAfterLogin(this.$router);
             }).catch(err => {
-              var config  = process.env.service;
-              window.location.href = config.ssoWebHost + config.errPage;
+              console.log(err);
+              //var config  = process.env.service;
+              //window.location.href = config.ssoWebHost + config.errPage;
             });
       }
     }

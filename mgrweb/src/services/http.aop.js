@@ -6,7 +6,11 @@ import {
     del
 } from './http'
    
-
+/**
+ * 注入http拦截器，刷新sso token
+ * @param {*全局的vue对象} Vue 
+ * @param {*刷新sso token的地址} freshUrl 
+ */
 export function init(Vue, freshUrl){
     Vue.prototype.$fetch = function (url, params = {}) {
         var result = fetch(url,params);
@@ -45,6 +49,7 @@ export function init(Vue, freshUrl){
     var refleshHtml = '<iframe id="ssoreflesh" src="'+ freshUrl + '" style="display:none"></iframe>';
     $('body').append(refleshHtml);
 }
+
 
 function changeUrl() {
     var url = $("#ssoreflesh").attr("src");

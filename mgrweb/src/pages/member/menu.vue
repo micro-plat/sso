@@ -9,7 +9,7 @@
       :headpic="headpic"
       :userinfo="userinfo"
       :pwd="pwd"
-      :signOut="signOut"
+      :signOut="signOutM"
       ref="NewTap"
     >
     </nav-menu>
@@ -19,6 +19,7 @@
 <script>
   import navMenu from 'nav-menu'; // 引入
   import VueCookies from 'vue-cookies';
+  import {signOut,changePwd} from '@/services/sso.login.js'
   export default {
     name: 'app',
     data () {
@@ -45,18 +46,14 @@
       this.userinfo = JSON.parse(localStorage.getItem("userinfo"));
     },
     methods:{
-      pwd(val){
-        VueCookies.remove("__jwt__");
+      pwd(){
         var config = process.env.service;
-        window.location.href = 
-            config.ssoWebHost + config.changePwd;
+        changePwd(config.ssoWebHost + config.changePwd);
       },
-      signOut() {
-        VueCookies.remove("__jwt__");
+      signOutM() {
         var config = process.env.service;
-        window.location.href = config.ssoWebHost + config.loginUrl;
+        signOut(config.ssoWebHost + config.loginUrl);
       },
-
       getMenu(){
         this.$fetch("/sso/menu")
           .then(res => {
