@@ -14,8 +14,10 @@ import (
 type ICacheMember interface {
 	SetLoginFail(u string) (int, error)
 	CreateUserInfoByCode(code string, userId int64) error
-	SaveWxLoginStateCode(code string) error
-	ExistsWxLoginStateCode(code string) (bool, error)
+	SaveWxStateCode(code, content string) error
+	GetContentByStateCode(code string) (string, error)
+
+	ExistsWxStateCode(code string) (bool, error)
 	SaveWxLoginInfo(state, content string) error
 	GetWxLoginInfoByStateCode(stateCode string) (string, error)
 
@@ -69,31 +71,42 @@ func (l *CacheMember) getLoginFailCnt(u string) (int, error) {
 	return types.GetInt(s, 0), nil
 }
 
-// SaveWxLoginStateCode xx
-func (l *CacheMember) SaveWxLoginStateCode(code string) error {
+// SaveWxStateCode xx
+func (l *CacheMember) SaveWxStateCode(code, content string) error {
 	cache := l.c.GetRegularCache()
-	cachekey := transform.Translate(cachekey.WxLoginStateCode, "code", code)
-	return cache.Set(cachekey, "1", 60*5)
+	cachekey := transform.Translate(cachekey.WxStateCode, "code", code)
+	contentT := content
+	if contentT == "" {
+		contentT = "1"
+	}
+	return cache.Set(cachekey, contentT, 60*5)
 }
 
-// ExistsWxLoginStateCode xx
-func (l *CacheMember) ExistsWxLoginStateCode(code string) (bool, error) {
+// GetContentByStateCode xx
+func (l *CacheMember) GetContentByStateCode(code string) (string, error) {
 	cache := l.c.GetRegularCache()
-	cachekey := transform.Translate(cachekey.WxLoginStateCode, "code", code)
+	cachekey := transform.Translate(cachekey.WxStateCode, "code", code)
+	return cache.Get(cachekey)
+}
+
+// ExistsWxStateCode xx
+func (l *CacheMember) ExistsWxStateCode(code string) (bool, error) {
+	cache := l.c.GetRegularCache()
+	cachekey := transform.Translate(cachekey.WxStateCode, "code", code)
 	return cache.Exists(cachekey), nil
 }
 
 // SaveWxLoginInfo xx
 func (l *CacheMember) SaveWxLoginInfo(state, content string) error {
 	cache := l.c.GetRegularCache()
-	cachekey := transform.Translate(cachekey.WxLoginStateCode, "code", state)
+	cachekey := transform.Translate(cachekey.WxStateCode, "code", state)
 	return cache.Set(cachekey, content, 60*5)
 }
 
 //GetWxLoginInfoByStateCode xx
 func (l *CacheMember) GetWxLoginInfoByStateCode(stateCode string) (string, error) {
 	cache := l.c.GetRegularCache()
-	cachekey := transform.Translate(cachekey.WxLoginStateCode, "code", stateCode)
+	cachekey := transform.Translate(cachekey.WxStateCode, "code", stateCode)
 	return cache.Get(cachekey)
 }
 

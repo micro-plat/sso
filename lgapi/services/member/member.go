@@ -126,6 +126,7 @@ func (u *LoginHandler) RefreshHandle(ctx *context.Context) (r interface{}) {
 }
 
 //WxConfHandle weixin登录取配置
+//pc扫码登录要先生成statecode, 手机微信绑定可以一起就生成
 func (u *LoginHandler) WxConfHandle(ctx *context.Context) (r interface{}) {
 	ctx.Log.Info("-------lgapi 获取weixin配置信息---------")
 
@@ -141,7 +142,7 @@ func (u *LoginHandler) GetWxStateHandle(ctx *context.Context) (r interface{}) {
 	stateCode := utility.GetGUID()
 
 	ctx.Log.Info("1: 将stateCode存到缓存中,wx会将这个还回,用于判断是否伪造")
-	if err := u.m.SaveWxLoginStateCode(stateCode); err != nil {
+	if err := u.m.SaveWxStateCode(stateCode, ""); err != nil {
 		return context.NewError(context.ERR_SERVER_ERROR, "系统繁忙，等会在登录")
 	}
 	return stateCode
@@ -158,19 +159,11 @@ func (u *LoginHandler) WxCheckHandle(ctx *context.Context) (r interface{}) {
 		return context.NewError(context.ERR_NOT_ACCEPTABLE, fmt.Errorf("微信登录过程中有些参数丢失,请正常登录"))
 	}
 
-	ctx.Log.Info("2:验证state code是否存在, 防止伪造")
-	if flag, _ := u.m.ExistsWxLoginStateCode(ctx.Request.GetString("state")); !flag {
-		return context.NewError(context.ERR_REQUEST_TIMEOUT, fmt.Errorf("微信登录标识过期,请重新登录"))
-	}
-
-	ctx.Log.Info("3:调用wx接口,获取用户openid")
-	config := model.GetConf(u.c)
-	url := config.WxTokenUrl + "?appid=" + config.Appid + "&secret=" + config.Secret + "&code=" + ctx.Request.GetString("code") + "&grant_type=authorization_code"
-	ctx.Log.Infof("获取用户openid的url: %s", url)
-
-	content, err := u.m.GetWxUserOpID(url)
+	content, err := u.m.ValidStateAndGetOpenID(
+		ctx.Request.GetString("state"),
+		ctx.Request.GetString("code"),
+		ctx.Log)
 	if err != nil {
-		ctx.Log.Errorf("调用wx api出错: %v+", err)
 		return err
 	}
 	ctx.Log.Infof("微信返回信息为:%s", content)

@@ -26,7 +26,7 @@
             this.$post("lg/login/wxconf", {})
             .then(res => {
                 var url = res.wxlogin_url + "?" + "appid=" + res.appid + "&state=" + this.state + "&redirect_uri=" +
-                        encodeURIComponent(process.env.service.wxcallbackhost + process.env.service.wxcallbackurl) +
+                        encodeURIComponent(process.env.service.wxcallbackhost + process.env.service.wxlogincallbackurl) +
                         "&response_type=code&scope=snsapi_base#wechat_redirect";
                         
                 window.location.href = url;

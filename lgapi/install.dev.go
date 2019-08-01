@@ -40,7 +40,8 @@ func (s *SSO) install() {
 					"/lg/login/wxvalidcode",
 					"/lg/login/typeconf",
 					"/lg/login/getwxstate",
-					"/lg/login/getwxstate"
+					"/lg/user/check",
+					"/lg/user/wxbind"
 				],
 				"expireAt": 36000,
 				"mode": "HS512",

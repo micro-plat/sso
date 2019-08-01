@@ -27,6 +27,8 @@
 
   import "@/services/qrcode.min.js"
   import "@/services/md5.js"
+  import {trimError} from "@/services/utils"
+
   export default {
     name: 'app',
     data () {
@@ -104,17 +106,13 @@
             }, 300);
           })
           .catch(err => {
-              var message = err.response.data.data; 
-              if (message && message.length > 6 && message.indexOf("error:",0) == 0) {
-                message = message.substr(6); //error:用户名或密码错误 //框架多还回一些东西
-              }
               switch (err.response.status) {
                 case 400:
                 case 401:
                 case 423:
                 case 405:
                 case 415:
-                  this.errMsg = {message: message}; 
+                  this.errMsg = {message: trimError(err)}; 
                   break;
                 default:
                   this.errMsg = {message: "登录失败"};
@@ -132,14 +130,10 @@
             this.errMsg = {message: "微信验证码发送成功"}; 
           })
           .catch(error=>{
-            var message = error.response.data.data; 
-            if (message && message.length > 6 && message.indexOf("error:",0) == 0) {
-              message = message.substr(6); //error:用户名或密码错误 //框架多还回一些东西
-            }
             switch(error.response.status) {
               case 401:
               case 400:
-                this.errMsg = {message: message}; 
+                this.errMsg = {message: trimError(error)}; 
                 break;
               default:
                 this.errMsg = {message: "系统繁忙"}; 
@@ -243,7 +237,7 @@
 // 401: 没有关注公众号 // 7
 // 415: 没有相应权限，请联系管理员 //1
                 }
-                //that.$router.push({ path: '/errpage', query: {type: type}});
+                that.$router.push({ path: '/errpage', query: {type: type}});
             });
 
         }, 1500);

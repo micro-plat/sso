@@ -23,8 +23,8 @@ const (
 	LockFormat     = "{sso}:login:state-locker:{@userName}"
 	CacheLoginUser = "{sso}:login:state-user:{@key}"
 
-	//微信手机扫码登录用到
-	WxLoginStateCode = "{sso}:wxlogin:state-code:{@code}"
+	//微信手机扫码登录,绑定用到(主要是一个凭证,传给weixin,然后又传回)
+	WxStateCode = "{sso}:wx:state-code:{@code}"
 
 	//微信验证码登录用到
 	WechatValidcodeCacheKey           = `{sso}:wechat.validcode:@senduser`

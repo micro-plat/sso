@@ -13,7 +13,9 @@ import (
 
 	"github.com/micro-plat/hydra/component"
 	"github.com/micro-plat/hydra/context"
+	"github.com/micro-plat/lib4go/logger"
 	"github.com/micro-plat/lib4go/net"
+	"github.com/micro-plat/lib4go/security/md5"
 	"github.com/micro-plat/lib4go/utility"
 
 	"github.com/micro-plat/sso/lgapi/modules/access/member"
@@ -27,8 +29,9 @@ type IMemberLogic interface {
 	Login(u, p, ident string) (*model.LoginState, error)
 	ChangePwd(userID int, expassword string, newpassword string) (err error)
 	CheckHasRoles(userID int64, ident string) error
-	SaveWxLoginStateCode(code string) error
-	ExistsWxLoginStateCode(code string) (bool, error)
+	CheckUerInfo(userName, password string) error
+	SaveWxStateCode(code, content string) error
+	ExistsWxStateCode(code string) (bool, error)
 	GetWxLoginInfoByStateCode(stateCode string) (string, error)
 	SaveWxLoginInfo(state, content string) error
 	GetWxUserOpID(url string) (string, error)
@@ -37,6 +40,9 @@ type IMemberLogic interface {
 	GetSendUserByName(userName, ident string) (senduser string, err error)
 	SendValidCode(userName, sendUser string) error
 	ValidVerifyCode(userName, validatecode string) (bool, error)
+
+	ValidStateAndGetOpenID(state, code string, logger logger.ILogger) (string, error)
+	SaveUserOpenID(content, state string, logger logger.ILogger) error
 }
 
 //MemberLogic 用户登录管理
@@ -106,14 +112,37 @@ func (m *MemberLogic) CheckHasRoles(userID int64, ident string) error {
 	return m.db.CheckUserHasAuth(ident, userID)
 }
 
-//SaveWxLoginStateCode xx
-func (m *MemberLogic) SaveWxLoginStateCode(code string) error {
-	return m.cache.SaveWxLoginStateCode(code)
+//CheckUerInfo 验证用户名密码,以及openid
+func (m *MemberLogic) CheckUerInfo(userName, password string) error {
+	rows, err := m.db.GetUserInfo(userName)
+	if err != nil {
+		return context.NewError(context.ERR_SERVICE_UNAVAILABLE, err)
+	}
+	if rows.IsEmpty() {
+		return context.NewError(context.ERR_NOT_ACCEPTABLE, "用户名或密码错误")
+	}
+	data := rows.Get(0)
+	if strings.ToLower(data.GetString("password")) != strings.ToLower(md5.Encrypt(password)) {
+		return context.NewError(context.ERR_NOT_ACCEPTABLE, "用户名或密码错误")
+	}
+	status := data.GetInt("status")
+	if status == enum.UserLock || status == enum.UserDisable {
+		return context.NewError(context.ERR_NOT_ACCEPTABLE, "用户被锁定或被禁用,请联系管理员")
+	}
+	if data.GetString("wx_openid") != "" {
+		return context.NewError(context.ERR_NOT_ACCEPTABLE, "账号已绑定微信")
+	}
+	return nil
 }
 
-//ExistsWxLoginStateCode 是否存在wx state code 防伪造
-func (m *MemberLogic) ExistsWxLoginStateCode(code string) (bool, error) {
-	return m.cache.ExistsWxLoginStateCode(code)
+//SaveWxStateCode xx
+func (m *MemberLogic) SaveWxStateCode(code, content string) error {
+	return m.cache.SaveWxStateCode(code, content)
+}
+
+//ExistsWxStateCode 是否存在wx state code 防伪造
+func (m *MemberLogic) ExistsWxStateCode(code string) (bool, error) {
+	return m.cache.ExistsWxStateCode(code)
 }
 
 //SaveWxLoginInfo 保存微信登录的openid信息
@@ -281,4 +310,39 @@ func (m *MemberLogic) SendValidCode(userName, sendUser string) error {
 // ValidVerifyCode 验证通过公众号发的验证码
 func (m *MemberLogic) ValidVerifyCode(userName, validatecode string) (bool, error) {
 	return m.cache.VerifyValidCode(userName, validatecode)
+}
+
+//ValidStateAndGetOpenID 验证state并且获取openid
+func (m *MemberLogic) ValidStateAndGetOpenID(state, code string, logger logger.ILogger) (string, error) {
+	logger.Info("2:验证state code是否存在, 防止伪造")
+	if flag, _ := m.ExistsWxStateCode(state); !flag {
+		return "", context.NewError(context.ERR_REQUEST_TIMEOUT, fmt.Errorf("微信登录标识过期,请重新登录"))
+	}
+
+	logger.Info("3:调用wx接口,获取用户openid")
+	config := model.GetConf(m.c)
+	url := config.WxTokenUrl + "?appid=" + config.Appid + "&secret=" + config.Secret + "&code=" + code + "&grant_type=authorization_code"
+	logger.Infof("获取用户openid的url: %s", url)
+
+	content, err := m.GetWxUserOpID(url)
+	if err != nil {
+		logger.Errorf("调用wx api出错: %v+", err)
+		return "", err
+	}
+	return content, err
+}
+
+//SaveUserOpenID 保存用户的openid
+func (m *MemberLogic) SaveUserOpenID(content, state string, logger logger.ILogger) error {
+	userName, err := m.cache.GetContentByStateCode(state)
+	if err != nil || userName == "" {
+		logger.Infof("获取缓存数据出错: %v+, %s", err, userName)
+		return context.NewError(context.ERR_SERVER_ERROR, "出现错误，请稍后在绑定")
+	}
+	var token map[string]interface{}
+	if err := json.Unmarshal([]byte(content), &token); err != nil {
+		logger.Infof("转换数据出错: %v+, 内容: %s", err, content)
+		return context.NewError(context.ERR_SERVER_ERROR, "出现错误，请稍后在绑定")
+	}
+	return m.db.SaveUserOpenID(userName, token["openid"].(string))
 }

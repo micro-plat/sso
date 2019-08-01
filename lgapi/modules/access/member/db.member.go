@@ -23,9 +23,10 @@ type IDBMember interface {
 	QueryByOpenID(openID, ident string) (s *model.MemberState, err error)
 	ExistsOpenId(content string) error
 	QueryByName(userName, ident string) (s *model.MemberState, err error)
+	SaveUserOpenID(userName, openID string) error
 
 	QueryByUserName(u string, ident string) (info db.QueryRow, err error)
-	GetUserInfo(u string) (db.QueryRow, error)
+	GetUserInfo(u string) (db.QueryRows, error)
 
 	QueryAuth(sysID, userID int64) (data db.QueryRows, err error)
 }
@@ -258,6 +259,25 @@ func (l *DBMember) QueryByName(userName, ident string) (s *model.MemberState, er
 	return s, err
 }
 
+//GetUserInfo 根据用户名获取用户信息
+func (l *DBMember) GetUserInfo(u string) (db.QueryRows, error) {
+	db := l.c.GetRegularDB()
+	data, _, _, err := db.Query(sqls.QueryUserByUserName, map[string]interface{}{
+		"user_name": u,
+	})
+	return data, err
+}
+
+//SaveUserOpenID 保存用户的openId信息
+func (l *DBMember) SaveUserOpenID(userName, openID string) error {
+	db := l.c.GetRegularDB()
+	_, _, _, err := db.Execute(sqls.AddUserOpenID, map[string]interface{}{
+		"username": userName,
+		"openid":   openID,
+	})
+	return err
+}
+
 /////////////////////////////////////////////////
 func (l *DBMember) QueryAuth(sysID, userID int64) (data db.QueryRows, err error) {
 	db := l.c.GetRegularDB()
@@ -282,21 +302,6 @@ func (l *DBMember) QueryByID(uid int64) (db.QueryRow, error) {
 	})
 	if err != nil {
 		return nil, err
-	}
-	return data.Get(0), nil
-}
-
-//GetUserInfo 根据用户名获取用户信息
-func (l *DBMember) GetUserInfo(u string) (db.QueryRow, error) {
-	db := l.c.GetRegularDB()
-	data, _, _, err := db.Query(sqls.QueryUserByUserName, map[string]interface{}{
-		"user_name": u,
-	})
-	if err != nil {
-		return nil, context.NewError(context.ERR_SERVICE_UNAVAILABLE, err)
-	}
-	if data.IsEmpty() {
-		return nil, context.NewError(context.ERR_SERVICE_UNAVAILABLE, fmt.Sprintf("用户(%s)不存在", u))
 	}
 	return data.Get(0), nil
 }

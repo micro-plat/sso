@@ -8,6 +8,14 @@ from sso_user_info
 where user_name=@user_name
 limit 1;`
 
+//AddUserOpenID 给用户绑定openid
+const AddUserOpenID = `
+update sso_user_info set 
+	wx_openid = @openid 
+where user_name = @username and 
+	  wx_openid is not null 
+limit 1;`
+
 //QueryUserInfoByUID 查询用户信息
 const QueryUserInfoByUID = `
 select 
