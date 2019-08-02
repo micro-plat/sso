@@ -19,7 +19,7 @@
 <script>
   import navMenu from 'nav-menu'; // 引入
   import VueCookies from 'vue-cookies';
-  import {signOut,changePwd} from '@/services/sso.login.js'
+  import {signOut,changePwd} from '@/services/http.js'
   export default {
     name: 'app',
     data () {
@@ -47,12 +47,10 @@
     },
     methods:{
       pwd(){
-        var config = process.env.service;
-        changePwd(config.ssoWebHost + config.changePwd);
+        changePwd();
       },
       signOutM() {
-        var config = process.env.service;
-        signOut(config.ssoWebHost + config.loginUrl);
+        signOut();
       },
       getMenu(){
         this.$fetch("/sso/menu")

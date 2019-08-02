@@ -53,8 +53,8 @@
             this.$post("lg/user/check",{username:userName, password: password})
             .then(res => {
                 var url = res.wxlogin_url + "?" + "appid=" + res.appid + "&state=" + res.state + "&redirect_uri=" +
-                        encodeURIComponent(process.env.service.wxcallbackhost + process.env.service.wxbindcallbackurl) +
-                        //encodeURIComponent(process.env.service.wxcallbackhost + process.env.service.wxlogincallbackurl) +
+                        //encodeURIComponent(process.env.service.wxcallbackhost + process.env.service.wxbindcallbackurl) +
+                        encodeURIComponent(process.env.service.wxcallbackhost + process.env.service.wxlogincallbackurl + "/bind") +
                         "&response_type=code&scope=snsapi_base#wechat_redirect";            
                 window.location.href = url;
             })

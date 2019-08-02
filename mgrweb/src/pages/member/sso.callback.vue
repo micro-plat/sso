@@ -3,7 +3,8 @@
 
 <script>
   import VueCookies from 'vue-cookies'
-  import {setAfterLogin} from '@/services/sso.login.js'
+  import {changeRouteAfterLogin} from '@/services/http.js'
+  
   export default {
     name: 'callback',
     data () {
@@ -20,7 +21,7 @@
           this.$post("sso/login/user",{code: this.code})
             .then(res =>{
                 localStorage.setItem("userinfo", JSON.stringify({name:res.user_name, role:res.role_name}));
-                setAfterLogin(this.$router);
+                changeRouteAfterLogin(this.$router);
             }).catch(err => {
               console.log(err);
               //var config  = process.env.service;

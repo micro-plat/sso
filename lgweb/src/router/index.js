@@ -57,7 +57,7 @@ export default new Router({
       component: qrcodelogin
     },
     {
-      path: '/wxlgcallback',
+      path: '/wxlgcallback/:type',
       name: 'wxlgcallback',
       component:  wxlgcallback //wxbindcallback
     },

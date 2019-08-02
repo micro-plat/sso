@@ -211,7 +211,7 @@ func (l *DBMember) ExistsOpenId(content string) error {
 		return context.NewError(context.ERR_UNSUPPORTED_MEDIA_TYPE, fmt.Sprintf("出现错误，等会在登录: %s", err))
 	}
 	if types.GetInt(count, 0) <= 0 {
-		return context.NewError(context.ERR_UNSUPPORTED_MEDIA_TYPE, "没有绑定公众号,请先绑定")
+		return context.NewError(context.ERR_UNAUTHORIZED, "没有绑定公众号,请先绑定")
 	}
 	return nil
 }

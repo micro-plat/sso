@@ -79,4 +79,29 @@ cp -r ./dist/static/ ../out/mgr/web/static/
 echo "--------------------------------------"
 
 cd ../
-echo "生成数据完成"
+echo "-----------6:生成数据完成--------------"
+
+
+cd out/
+echo "-----------打包相关文件(zip)-----------"
+zip -r apiserver apiserver
+if [ $? -ne 0 ]; then
+	echo "打包ssoapi调用(apiserver)出错,请检查"
+	exit
+fi
+
+zip -r lg lg
+if [ $? -ne 0 ]; then
+	echo "打包登录中心(lg)出错,请检查"
+	exit
+fi
+
+zip -r mgr mgr
+if [ $? -ne 0 ]; then
+	echo "打包用户管理系统(mgr)出错,请检查"
+	exit
+fi
+
+echo "-----------------------------------"
+echo "lg里面包含api,web | mgr里面包含api,web"
+echo "-----------打包完成(zip)-------------"

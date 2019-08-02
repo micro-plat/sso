@@ -157,7 +157,7 @@ func (m *MemberLogic) GetWxLoginInfoByStateCode(stateCode string) (string, error
 	if err != nil {
 		return "", err
 	}
-	if content == "1" {
+	if content == "1" || content == "" {
 		return "", nil
 	}
 	tokenInfo := make(map[string]interface{})

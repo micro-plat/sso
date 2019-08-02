@@ -23,13 +23,9 @@ import {
     fetch,
     patch,
     put,
-    del
+    del,
+    ssoConfig
 } from './services/http'
-
-import {
-    init
-} from './services/http.aop'
-
 
 const config = {
     fieldsBagName: 'vee-fields'
@@ -43,19 +39,15 @@ Vue.use(VTree);
 Vue.use(VeeValidate,config);
 
 
+var serviceConfig = process.env.service;
+ssoConfig(serviceConfig.ssoWebHost, serviceConfig.ssoApiHost, "sso", "/ssocallback");
+
 //定义全局变量
-/*
 Vue.prototype.$post = post;
 Vue.prototype.$fetch = fetch;
 Vue.prototype.$patch = patch;
 Vue.prototype.$put = put;
 Vue.prototype.$del = del;
-*/
-
-var serviceConfig = process.env.service;
-var freshUrl = serviceConfig.ssoApiHost + serviceConfig.freshJwt;
-
-init(Vue, freshUrl);
 
 Vue.config.productionTip = false;
 

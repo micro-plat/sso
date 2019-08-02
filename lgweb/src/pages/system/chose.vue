@@ -9,7 +9,7 @@
         请选择要登入的系统
     </div>
     <div class="list">
-        <ul v-for="(item, index) in systems" :key="index" @click="goto(item.callbackurl)">
+        <ul v-for="(item, index) in systems" :key="index" @click="goto(item.indexurl)">
             <li class="everyone">
                 <span class="icon">
                     <img v-if="item.logo !=''" :src="item.logo" />

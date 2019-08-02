@@ -70,7 +70,7 @@
       controlLoginType() {
         this.$post("lg/login/typeconf", {})
         .then(res => {
-          this.requireWxLogin = res.requirewxlogin;
+          this.requireWxLogin = true; //res.requirewxlogin;
           this.requireCode = res.requirecode;
         })
       },
