@@ -14,3 +14,10 @@ where role.status = 0 AND
     sys.index_url <> '' and
 	  ur.user_id = @user_id; 
 `
+const QuerySysInfoByIdent = `
+select 
+  id, name, index_url, enable, ident 
+from sso_system_info 
+where ident = @ident 
+limit 1;
+`

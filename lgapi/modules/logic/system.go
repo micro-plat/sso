@@ -9,6 +9,7 @@ import (
 // ISystemLogic xx
 type ISystemLogic interface {
 	QueryUserSystem(userId int64) (db.QueryRows, error)
+	QuerySysInfoByIdent(ident string) (db.QueryRow, error)
 }
 
 // SystemLogic 操作日志
@@ -28,4 +29,9 @@ func NewSystemLogic(c component.IContainer) *SystemLogic {
 // QueryUserSystem 返回用户可用的子系统信息
 func (s *SystemLogic) QueryUserSystem(userId int64) (db.QueryRows, error) {
 	return s.dbSys.QueryUserSystem(userId)
+}
+
+// QuerySysInfoByIdent 根据ident查询系统信息
+func (s *SystemLogic) QuerySysInfoByIdent(ident string) (db.QueryRow, error) {
+	return s.dbSys.QuerySysInfoByIdent(ident)
 }

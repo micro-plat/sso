@@ -24,7 +24,6 @@ import {
     patch,
     put,
     del,
-    ssoConfig
 } from './services/http'
 
 const config = {
@@ -38,9 +37,9 @@ Vue.use(VueCookies);
 Vue.use(VTree);
 Vue.use(VeeValidate,config);
 
-
+import {ssoConfig} from './services/sso.login'
 var serviceConfig = process.env.service;
-ssoConfig(serviceConfig.ssoWebHost, serviceConfig.ssoApiHost, "sso", "/ssocallback");
+ssoConfig(serviceConfig.ssoWebHost, serviceConfig.ssoApiHost, "sso");
 
 //定义全局变量
 Vue.prototype.$post = post;

@@ -19,7 +19,7 @@
 <script>
   import navMenu from 'nav-menu'; // 引入
   import VueCookies from 'vue-cookies';
-  import {signOut,changePwd} from '@/services/http.js'
+  import {signOut,changePwd} from '@/services/sso.login.js'
   export default {
     name: 'app',
     data () {

@@ -29,10 +29,13 @@
 
 <script>
   import VueCookies from 'vue-cookies'
+  import {trimError} from "@/services/utils"
+
   export default {
     name: 'pwd',
     data () {
       return {
+        ident:"",
         expassword: "",
         password1: "",
         password2: "",
@@ -40,9 +43,10 @@
       }
     },
     created() {
+        this.ident = this.$route.params.ident ? this.$route.params.ident : "";
         var isExists = VueCookies.isKey("__jwt__");
         if(!isExists) {
-            this.$router.push({path:"/login", query :{ changepwd: 1 }});
+            this.$router.push({path:"/login/" + this.ident, query :{ changepwd: 1 }});
         }
     },
 
@@ -53,7 +57,7 @@
     methods:{
 
       signOut() {
-          this.$router.push({path:"/login"});
+          this.$router.push({path:"/login/" + this.ident});
       },
 
       check() {
@@ -90,20 +94,16 @@
                 .then(res => {
                     this.$alert("密码修改成功", '提示', {confirmButtonText: '确定'});
                      setTimeout(() => {
-                         this.$router.push("/login");
+                         this.$router.push("/login/" + this.ident);
                      }, 1000);
                 }).catch(err => {
-                    var message = err.response.data.data; 
-                    if (message && message.length > 6 && message.indexOf("error:",0) == 0) {
-                        message = message.substr(6); //error:用户名或密码错误 //框架多还回一些东西
-                    }
                     switch (err.response.status) {
                         case 403:
-                            this.$router.push({path:"/login", query :{ changepwd: 1 }});
+                            this.$router.push({path:"/login/" + this.ident, query :{ changepwd: 1 }});
                             break;
                         case 406:
                         case 400:
-                            this.$alert(message, '提示', {confirmButtonText: '确定'});
+                            this.$alert(trimError(err), '提示', {confirmButtonText: '确定'});
                             break;
                         default:
                             this.$alert("网络错误,请稍后再试", '提示', {confirmButtonText: '确定'});

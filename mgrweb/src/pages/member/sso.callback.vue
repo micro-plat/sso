@@ -3,7 +3,7 @@
 
 <script>
   import VueCookies from 'vue-cookies'
-  import {changeRouteAfterLogin} from '@/services/http.js'
+  import {changeRouteAfterLogin} from '@/services/sso.login.js'
   
   export default {
     name: 'callback',

@@ -59,18 +59,19 @@
       document.title = "登录-能源业务中心运营管理系统";
       this.callback = this.$route.query.callback;
       this.changepwd = this.$route.query.changepwd;
-      this.ident = this.$route.query.ident;
+      this.ident = this.$route.params.ident ? this.$route.params.ident : "";
+
+      console.log(this.ident);
       
       VueCookies.remove("__jwt__")
     },
 
     methods:{
-
       //取配置，显示验证码登录还是扫码登录
       controlLoginType() {
         this.$post("lg/login/typeconf", {})
         .then(res => {
-          this.requireWxLogin = true; //res.requirewxlogin;
+          this.requireWxLogin = res.requirewxlogin;
           this.requireCode = res.requirecode;
         })
       },
@@ -78,15 +79,10 @@
       //用户名密码登录
       loginsubmit(e){
         var req = {
-          containkey: 0,
           ident: this.ident,
           password: $.md5(e.password),
           username:e.username,
           validatecode:e.validatecode,
-        }
-
-        if (this.callback && this.ident) {
-          req.containkey = 1
         }
 
         this.$post("lg/login/post", req)
@@ -97,9 +93,12 @@
                 this.$router.push({ path: '/changepwd'});   
                 return;
               }
-
-              if (this.ident && this.callback) {
-                window.location.href = JoinUrlParams(decodeURIComponent(this.callback),{code:res.data})
+              if (this.callback) {
+                window.location.href = JoinUrlParams(decodeURIComponent(this.callback),{code:res.code});
+                return;
+              }
+              if (this.ident && res.callback) {
+                window.location.href = JoinUrlParams(decodeURIComponent(res.callback),{code:res.code});
                 return;
               }
               this.$router.push({ path: '/chose'});
@@ -168,14 +167,9 @@
         if (!this.stateCode) {
           return ;
         }
-
         var req = {
-          containkey: 0,
           ident: this.ident,
           state: this.stateCode,
-        }
-        if (this.callback && this.ident) {
-          req.containkey = 1
         }
 
         //定时处理(调用api)

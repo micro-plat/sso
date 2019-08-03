@@ -10,7 +10,7 @@
     name: 'jump',
     data () {
       return {
-        callback:"",
+        callback:"", //这个主要是为了本地测试用到，线上用数据库的配置地址
         ident:"",
         notice: "页面调转中..."
       }
@@ -19,21 +19,21 @@
     mounted(){
       document.title = "用户登录";
       this.callback = this.$route.query.callback;
-      this.ident = this.$route.query.ident;
+      this.ident = this.$route.params.ident ? this.$route.params.ident : "";
       this.checkAndJumpLogin();
     },
 
     methods:{
         checkAndJumpLogin() {
-            var containkey = 0;
-            if (this.callback && this.ident) {
-              containkey = 1;
-            }
-            this.$post("lg/login/check",{containkey:containkey, ident:this.ident})
+            this.$post("lg/login/check",{ident:this.ident})
             .then(res =>{
-                this.notice = "已登录,跳转中...";
-                if (this.callback && this.ident) {
-                    window.location.href = JoinUrlParams(decodeURIComponent(this.callback),{code:res.data})
+                this.notice = "已登录,跳转中..."; 
+                if (this.callback) { //本地测试走这条线
+                  window.location.href = JoinUrlParams(decodeURIComponent(this.callback),{code:res.code})
+                  return;
+                }
+                if (this.ident && res.callback) {
+                    window.location.href = JoinUrlParams(decodeURIComponent(res.callback),{code:res.code})
                     return;
                 }
                 this.$router.push({ path: '/chose'});   
@@ -44,8 +44,9 @@
                       break;
                     case 415:
                       this.$router.push({ path: '/errpage', query: {type: 1}});
+                      break;
                     default:
-                      this.$router.push({ path: '/login', query: { ident:this.ident, callback: this.callback }});
+                      this.$router.push({ path: '/login/' + this.ident, query:{callback: this.callback}});
                 }
             });
         }

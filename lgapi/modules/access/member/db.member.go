@@ -123,12 +123,11 @@ func (l *DBMember) CheckUserHasAuth(ident string, userID int64) error {
 	if ident != "" {
 		params["ident"] = " and s.ident='" + ident + "' "
 	}
-	fmt.Println(params)
 
 	db := l.c.GetRegularDB()
 	count, _, _, err := db.Scalar(sqls.QueryUserRoleCount, params)
 	if err != nil {
-		return context.NewError(context.ERR_UNSUPPORTED_MEDIA_TYPE, fmt.Sprintf("出现错误，等会在登录: %s", err))
+		return context.NewError(context.ERR_SERVER_ERROR, fmt.Sprintf("出现错误，等会在登录: %s", err))
 	}
 	if types.GetInt(count, 0) <= 0 {
 		return context.NewError(context.ERR_UNSUPPORTED_MEDIA_TYPE, "没有相应权限，请联系管理员")

@@ -14,15 +14,17 @@ import (
 
 //LoginHandler 用户登录对象
 type LoginHandler struct {
-	c component.IContainer
-	m logic.IMemberLogic
+	c   component.IContainer
+	m   logic.IMemberLogic
+	sys logic.ISystemLogic
 }
 
 //NewLoginHandler 创建登录对象
 func NewLoginHandler(container component.IContainer) (u *LoginHandler) {
 	return &LoginHandler{
-		c: container,
-		m: logic.NewMemberLogic(container),
+		c:   container,
+		m:   logic.NewMemberLogic(container),
+		sys: logic.NewSystemLogic(container),
 	}
 }
 
@@ -47,25 +49,39 @@ func (u *LoginHandler) CheckHandle(ctx *context.Context) (r interface{}) {
 	ctx.Log.Infof("用户信息:%v", m)
 
 	ctx.Log.Info("2:判断当前用户是否有这个子系统的权限")
-	var code = ""
+
+	ident := ctx.Request.GetString("ident")
 	var err error
-	if err = u.m.CheckHasRoles(m.UserID, ctx.Request.GetString("ident")); err != nil {
+	if err = u.m.CheckHasRoles(m.UserID, ident); err != nil {
 		ctx.Log.Errorf("验证权限出错: %v", err)
 		return err
 	}
+	result := map[string]string{
+		"code":     "",
+		"callback": "",
+	}
 
-	if ctx.Request.GetInt("containkey", 1) == 1 {
+	//是否直接调转回子系统
+	if ident != "" {
 		ctx.Log.Info("3:已登录返回code")
-		code, err = u.m.CreateLoginUserCode(m.UserID)
+		code, err := u.m.CreateLoginUserCode(m.UserID)
 		if err != nil {
 			return context.NewError(context.ERR_BAD_REQUEST, "请重新登录")
+		}
+		result["code"] = code
+		sysInfo, err := u.sys.QuerySysInfoByIdent(ident)
+		if err != nil {
+			ctx.Log.Errorf("查询系统信息出错: %v+", err)
+		}
+		if err == nil && sysInfo != nil && sysInfo.GetString("index_url") != "" {
+			result["callback"] = sysInfo.GetString("index_url")
 		}
 	}
 
 	ctx.Log.Info("4: 设置jwt数据")
 	ctx.Response.SetJWT(m)
 
-	return code
+	return result
 }
 
 //PostHandle sso用户账号登录(微信扫码登录是另一个)
@@ -94,28 +110,41 @@ func (u *LoginHandler) PostHandle(ctx *context.Context) (r interface{}) {
 		}
 	}
 
+	ident := ctx.Request.GetString("ident")
 	//当有ident时没有权限就跳转错误页面
 	ctx.Log.Info("2:处理用户账号登录")
 	member, err := u.m.Login(
 		ctx.Request.GetString("username"),
 		ctx.Request.GetString("password"),
-		ctx.Request.GetString("ident"))
+		ident)
 	if err != nil {
 		return err
 	}
 
-	var code = ""
-	if ctx.Request.GetInt("containkey", 1) == 1 {
+	result := map[string]string{
+		"code":     "",
+		"callback": "",
+	}
+
+	if ctx.Request.GetString("ident") != "" {
 		ctx.Log.Info("3: 设置已登录code")
-		code, err = u.m.CreateLoginUserCode(member.UserID)
+		code, err := u.m.CreateLoginUserCode(member.UserID)
 		if err != nil {
 			return context.NewError(context.ERR_BAD_REQUEST, "请重新登录")
+		}
+		result["code"] = code
+		sysInfo, err := u.sys.QuerySysInfoByIdent(ident)
+		if err != nil {
+			ctx.Log.Errorf("查询系统信息出错: %v+", err)
+		}
+		if err == nil && sysInfo != nil && sysInfo.GetString("index_url") != "" {
+			result["callback"] = sysInfo.GetString("index_url")
 		}
 	}
 	ctx.Log.Info("4: 设置jwt数据")
 	ctx.Response.SetJWT(member)
 
-	return code
+	return result
 }
 
 //RefreshHandle 刷新token 这个接口只是为了刷新sso登录用户的jwt, jwt刷新在框架就做了

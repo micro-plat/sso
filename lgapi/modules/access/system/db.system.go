@@ -8,6 +8,7 @@ import (
 
 type IDbSystem interface {
 	QueryUserSystem(userId int64) (s db.QueryRows, err error)
+	QuerySysInfoByIdent(ident string) (db.QueryRow, error)
 }
 
 //DbSystem 系统信息
@@ -30,5 +31,20 @@ func (l *DbSystem) QueryUserSystem(userId int64) (s db.QueryRows, err error) {
 			"user_id": userId,
 		})
 	return data, err
+}
 
+//QuerySysInfoByIdent xx
+func (l *DbSystem) QuerySysInfoByIdent(ident string) (db.QueryRow, error) {
+	db := l.c.GetRegularDB()
+	data, _, _, err := db.Query(
+		sqls.QuerySysInfoByIdent, map[string]interface{}{
+			"ident": ident,
+		})
+	if err != nil {
+		return nil, err
+	}
+	if data.IsEmpty() {
+		return nil, nil
+	}
+	return data.Get(0), nil
 }

@@ -1,13 +1,11 @@
 import Vue from 'vue';
 import Router from 'vue-router';
 import menu from '@/pages/member/menu';
-import login from '@/pages/member/login.jump.vue';
 import ssocallback from '@/pages/member/sso.callback.vue';
 import sysindex from '@/pages/system/sys.index.new.vue'
 import sysfunc from '@/pages/system/func.index.vue'
 import userindex from '@/pages/user/index.new.vue'
 import changeInfo from '@/pages/user/change.info';
-import userBind from '@/pages/user/user.bind';
 import roleindex from '@/pages/role/index.new';
 import roleauth from '@/pages/role/auth';
 
@@ -57,28 +55,9 @@ export default new Router({
   ]
   },
     {
-      path: '/member/login',
-      name: 'loginss',
-      component: login
-    },
-    {
-      path: '/:ident/member/login',
-      name: 'logins',
-      component: login
-    },
-    {
-      path: '/login',
-      name: 'login',
-      component: login
-    },
-    {
       path: '/ssocallback',
       name: 'ssocallback',
       component: ssocallback
-    },{
-      path: '/user/bind',
-      name: 'bind',
-      component: userBind,
     }
   ]
 })

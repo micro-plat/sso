@@ -23,14 +23,6 @@ axios.interceptors.request.use(
 //http response 拦截器
 axios.interceptors.response.use(
     response => {
-        if (response.status == 403) {
-            router.push({
-                path: "/login",
-                querry: {
-                    redirect: router.currentRoute.fullPath
-                } //从哪个页面跳转
-            })
-        }
         return response;
     },
     error => {
