@@ -6,13 +6,18 @@ axios.defaults.timeout = 5000;
 axios.defaults.withCredentials = true;
 axios.defaults.baseURL = process.env.service.url;
 
+let GetTocken = (function () {
+    return window.localStorage["__jwt__"]
+});
+
 
 //http request 拦截器
 axios.interceptors.request.use(
     config => {
 
         config.headers = {
-          'Content-Type': 'application/x-www-form-urlencoded'
+          'Content-Type': 'application/x-www-form-urlencoded',
+          '__jwt__': GetTocken()
         };
 
         return config;
@@ -25,6 +30,9 @@ axios.interceptors.request.use(
 //http response 拦截器
 axios.interceptors.response.use(
     response => {
+        if (response.headers.__jwt__) {
+            window.localStorage["__jwt__"] = response.headers.__jwt__
+        }
         if (response.status == 200){
             changeUrl(); //刷新sso token
         }

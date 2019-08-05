@@ -21,11 +21,9 @@
           this.$post("sso/login/user",{code: this.code})
             .then(res =>{
                 localStorage.setItem("userinfo", JSON.stringify({name:res.user_name, role:res.role_name}));
-                changeRouteAfterLogin(this.$router);
+                this.$sso.changeRouteAfterLogin(this.$router);
             }).catch(err => {
               console.log(err);
-              //var config  = process.env.service;
-              //window.location.href = config.ssoWebHost + config.errPage;
             });
       }
     }

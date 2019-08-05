@@ -18,8 +18,6 @@
 
 <script>
   import navMenu from 'nav-menu'; // 引入
-  import VueCookies from 'vue-cookies';
-  import {signOut,changePwd} from '@/services/sso.login.js'
   export default {
     name: 'app',
     data () {
@@ -32,7 +30,6 @@
         systemName: "用户权限系统",  //系统名称
         userinfo: {name:'wule',role:"管理员"},
         indexUrl: "/user/index",
-        dialogAddVisible:false,     //添加表单显示隐藏
       }
     },
     components:{ //注册插件
@@ -47,10 +44,10 @@
     },
     methods:{
       pwd(){
-        changePwd();
+        this.$sso.changePwd();
       },
       signOutM() {
-        signOut();
+        this.$sso.signOut();
       },
       getMenu(){
         this.$fetch("/sso/menu")

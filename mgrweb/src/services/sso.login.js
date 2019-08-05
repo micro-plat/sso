@@ -7,7 +7,7 @@ import router from '../router'
  * @param {*sso后端host, 刷新token用到} loginApiHost
  * @param {*子系统的ident} ident
  */
-export function ssoConfig(loginWebHost, loginApiHost, ident) {
+export function ssoConfig(loginWebHost, loginApiHost, ident, Vue) {
     window.ssoconfig = {
         loginWebHost: loginWebHost,
         loginApiHost: loginApiHost,
@@ -15,6 +15,14 @@ export function ssoConfig(loginWebHost, loginApiHost, ident) {
     }
     var refleshHtml = '<iframe id="ssoreflesh" src="'+ loginApiHost + '/lg/login/refresh" style="display:none"></iframe>';
     $('body').append(refleshHtml);
+
+    var sso = {
+        changeRouteAfterLogin:changeRouteAfterLogin,
+        signOut:signOut,
+        changePwd:changePwd,
+        errPage:errPage
+    };
+    Vue.prototype.$sso = sso;
 }
 
 /**
@@ -51,14 +59,14 @@ export function setRouteBeforeLogin() {
     //加上 ident 标识
     window.location.href= 
         window.ssoconfig.loginWebHost + "/jump/" + window.ssoconfig.ident
-        //+"?callback=" + encodeURIComponent(window.location.protocol + "//" + window.location.host + "/ssocallback");
+        +"?callback=" + encodeURIComponent(window.location.protocol + "//" + window.location.host + "/ssocallback");
 }
 
 /**
  * sso登录回调，并相关验证成功后,运行此代码
  * 主要是为了如果是子系统间的调要，只加载相应的页面
  */
-export function changeRouteAfterLogin(vueRouter) {
+function changeRouteAfterLogin(vueRouter) {
     var oldPath = window.localStorage.getItem("beforeLoginUrl");
     localStorage.removeItem("beforeLoginUrl");
     if (oldPath && oldPath != "/" && oldPath.indexOf("/external") == 0) {
@@ -72,7 +80,7 @@ export function changeRouteAfterLogin(vueRouter) {
  * 子系统退出登录,会跳转到sso登录界面
  * @param {sso登录地址，和跳转地址不一样, 请注意,不然退不出去, 请带上http} loginUrl 
  */
-export function signOut() {
+function signOut() {
     VueCookies.remove("__jwt__");
     localStorage.removeItem("__jwt__");
     sessionStorage.removeItem("__jwt__");
@@ -84,7 +92,7 @@ export function signOut() {
  * 子系统用户修改密码
  * @param {sso修改密码地址,请带上http} changePwdUrl 
  */
-export function changePwd() {
+function changePwd() {
     VueCookies.remove("__jwt__");
     localStorage.removeItem("__jwt__");
     sessionStorage.removeItem("__jwt__");
@@ -95,6 +103,6 @@ export function changePwd() {
 /**
  * sso的错误页面
  */
-export function errPage() {
+function errPage() {
     window.location.href = window.ssoconfig.loginWebHost + "/errpage";
 }

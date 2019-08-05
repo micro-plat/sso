@@ -159,11 +159,6 @@ li{	list-style:none;}
 
 .sing{
     width: 440px;
-    /*
-    position: absolute;
-    top: 20%;
-    left: 50%;
-    */
     margin:0 auto;
 	margin-top:10%;
     background-color: rgba(0,29,59,0.7);
@@ -173,7 +168,6 @@ li{	list-style:none;}
 }
 .title_text{
 	font-size: 22px;
-	font-weight: bold;
     text-align: center;
     color: #fff;
     padding-bottom: 40px;
