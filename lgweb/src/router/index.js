@@ -2,7 +2,6 @@ import Vue from 'vue';
 import Router from 'vue-router';
 import login from '@/pages/member/login';
 import jump from '@/pages/member/jump.vue';
-import reflesh from '@/pages/member/reflesh.vue';
 import changepwd from '@/pages/member/changepwd.vue';
 import chose from '@/pages/system/chose.vue';
 import errpage from '@/pages/system/errpage.vue';
@@ -36,12 +35,6 @@ export default new Router({
     },
     {
 
-      path: '/reflesh',
-      name: 'reflesh',
-      component: reflesh
-    },
-    {
-
       path: '/chose',
       name: 'chose',
       component: chose
@@ -59,7 +52,7 @@ export default new Router({
     {
       path: '/wxlgcallback/:type',
       name: 'wxlgcallback',
-      component:  wxlgcallback //wxbindcallback
+      component:  wxlgcallback 
     },
     {
       path: '/wxbind',
