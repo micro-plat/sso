@@ -9,7 +9,7 @@
            
             <div class="modal-body" >
                 <el-form :model="addData"  :inline="true"  ref="addform1" label-position="right" label-width="100px">
-                    <el-row>
+                    <!-- <el-row>
                         <el-col :span="12">
                             <div class="form-group">
                                 <label>系统名称</label>
@@ -21,6 +21,11 @@
                                 <input class="form-control" placeholder="请输入系统英文名称" v-validate="'required|alpha'" name="name-e" v-model="addData.ident"  type="text">
                                 <div class="form-height text-danger"><span v-show="errors.first('name-e')">系统英文名称不能为空且为字母</span></div>
                             </div>
+                            <div class="form-group">
+                                <label>超时时长</label>
+                                <input class="form-control" placeholder="请输入超时时常" v-validate="'required|numeric'" v-model="addData.time_out" name="time_out"  type="text">
+                                <div class="form-height text-danger"><span v-show="errors.first('time_out')">超时时长不能为空且必须为数字</span> </div>
+                            </div>
                         </el-col>
                         <el-col :span="12">
                             <div class="form-group">
@@ -29,27 +34,38 @@
                                 <div class="form-height text-danger"><span v-show="errors.first('addr')">首页地址不能为空</span></div>
                             </div>
                             <div class="form-group">
-                                <label>超时时常</label>
+                                <label>超时时长</label>
                                 <input class="form-control" placeholder="请输入超时时常" v-validate="'required|numeric'" v-model="addData.time_out" name="time_out"  type="text">
-                                <div class="form-height text-danger"><span v-show="errors.first('time_out')">超时时常不能为空且必须为数字</span> </div>
+                                <div class="form-height text-danger"><span v-show="errors.first('time_out')">超时时长不能为空且必须为数字</span> </div>
                             </div>
                         </el-col>
-                    </el-row>
+                    </el-row> -->
               
+              <div class="form-group">
+                  <label>系统名称</label>
+                  <input class="form-control" placeholder="请输入系统名称" v-validate="'required'" name="name" v-model="addData.name"  type="text">
+                  <div class="form-height text-danger"><span v-show="errors.first('name')">系统名称不能为空</span></div>
+              </div>
+              <div class="form-group">
+                  <label>系统英文名称</label>
+                  <input class="form-control" placeholder="请输入系统英文名称" v-validate="'required|alpha'" name="name-e" v-model="addData.ident"  type="text">
+                  <div class="form-height text-danger"><span v-show="errors.first('name-e')">系统英文名称不能为空且为字母</span></div>
+              </div>
+              <div class="form-group">
+                <label>secret</label>
+                <input class="form-control" placeholder="请输系统签名所需的secret" v-validate="'required'" v-model="addData.secret" name="secret"  type="text">
+                <div class="form-height text-danger"><span v-show="errors.first('secret')">secret不能为空</span> </div>
+              </div>
+
               <div class="form-group">
                 <label>sso登录后回调子系统的地址(如:http://www.123.com/abc)</label>
                 <input class="form-control" placeholder="请输入回调地址" v-model="addData.callbackurl" name="callbackurl"  type="text">
               </div>
 
               <div class="form-group">
-                <label>secret</label>
-                <input class="form-control" placeholder="请输系统签名所需的secret" v-validate="'required'" v-model="addData.secret" name="secret"  type="text">
-                <div class="form-height text-danger"><span v-show="errors.first('secret')">secret不能为空</span> </div>
-              </div>
-              <div class="form-group">
                 <!--<label>logo</label>-->
                 <input class="form-control" placeholder="logo地址" v-validate="'required'" name="logo" v-model="addData.logo"  readonly>
-                <!--<div class="form-height text-danger"> <span v-show="errors.first('logo')">logo地址不能为空</span> </div>-->
+                <div class="form-height text-danger"> <span v-show="errors.first('logo')">logo地址不能为空</span> </div>
                 <uploader :options="options" class="uploader-example" :file-status-text="statusText"   ref="uploader" @file-success="fileSuccess" @file-error="fileError">
                   <uploader-unsupport></uploader-unsupport>
                   <uploader-drop>
@@ -407,8 +423,7 @@ export default {
             },
             addData: {
                 name: "",
-                addr: "",
-                time_out: "",
+                //time_out: "",
                 logo: "",
                 theme: "",
                 style: [],
@@ -471,15 +486,14 @@ export default {
         });
         this.$post("/sso/sys/manage", {
             name: this.addData.name,
-            addr: this.addData.addr,
-            time_out: this.addData.time_out,
+            callbackurl: this.addData.callbackurl,
+            //time_out: this.addData.time_out,
             logo: this.addData.logo,
             style: str,
             theme: this.addData.theme,
             ident: this.addData.ident,
             secret:this.addData.secret,
             wechat_status: this.addData.wechat_status,
-            callbackurl: this.addData.callbackurl
         })
             .then(res => {
             this.resetForm()

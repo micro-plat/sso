@@ -33,7 +33,7 @@
 
           <el-table-column width="100" prop="id" label="编号" ></el-table-column>
           <el-table-column width="250" prop="name" label="系统名称" ></el-table-column>
-          <el-table-column width="320" prop="index_url" label="首页地址" ></el-table-column>
+          <el-table-column width="320" prop="callbackurl" label="登录回调地址" ></el-table-column>
 
           <el-table-column  width="150" prop="enable" label="状态" >
             <template slot-scope="scope">
@@ -42,7 +42,7 @@
               <el-tag type="success" v-if="scope.row.enable == 1">启用</el-tag>
             </template>
           </el-table-column>
-          <el-table-column width="100" prop="login_timeout" label="超时时长" ></el-table-column>
+          <!-- <el-table-column width="100" prop="login_timeout" label="超时时长" ></el-table-column> -->
 
           <el-table-column width="200" prop="logo" label="logo" >
             <template slot-scope="scope">
@@ -51,9 +51,7 @@
 
             </template>
           </el-table-column>
-
-          <!--<el-table-column width="300" prop="secret" label="secret" ></el-table-column>-->
-
+          <el-table-column width="300" prop="secret" label="secret" ></el-table-column>
           <el-table-column  label="操作">
             <template slot-scope="scope">
               <el-button plain type="primary" size="mini" @click="edit(scope.row.id)">编辑</el-button>
@@ -82,8 +80,6 @@
         </el-pagination>
       </div>
 
-
-
     <bootstrap-modal ref="theModal" :need-header="true" :need-footer="true" >
       <div slot="title">
         删除系统
@@ -107,374 +103,6 @@
         <a class="btn btn-sm btn-primary" @click="cancel">确定</a>
       </div>
     </bootstrap-modal>
-    <bootstrap-modal ref="addModal" :need-header="true" :need-footer="true">
-      <div slot="title">
-        添加系统
-      </div>
-      <div slot="body">
-        <div class="panel panel-default">
-          <div class="panel-body">
-            <form role="form" class="ng-pristine ng-valid ng-submitted height-min">
-              <div class="form-group">
-                <label>系统名称</label>
-                <input class="form-control" placeholder="请输入系统名称" v-validate="'required'" name="name" v-model="addData.name"  type="text">
-                <div class="form-height text-danger"><span v-show="errors.first('name')">系统名称不能为空</span></div>
-              </div>
-              <div class="form-group">
-                <label>系统英文名称</label>
-                <input class="form-control" placeholder="请输入系统英文名称" v-validate="'required|alpha'" name="name-e" v-model="addData.ident"  type="text">
-                <div class="form-height text-danger"><span v-show="errors.first('name-e')">系统英文名称不能为空且为字母</span></div>
-              </div>
-              <div class="form-group">
-                <label>首页地址</label>
-                <input class="form-control" placeholder="请输入首页地址" v-validate="'required'" name="addr" v-model="addData.addr"  type="text">
-                <div class="form-height text-danger"><span v-show="errors.first('addr')">首页地址不能为空</span></div>
-              </div>
-              <div class="form-group">
-                <label>超时时常</label>
-                <input class="form-control" placeholder="请输入超时时常" v-validate="'required|numeric'" v-model="addData.time_out" name="time_out"  type="text">
-                <div class="form-height text-danger"><span v-show="errors.first('time_out')">超时时常不能为空且必须为数字</span> </div>
-              </div>
-              <div class="form-group">
-                <label>secret</label>
-                <input class="form-control" placeholder="请输系统签名所需的secret" v-validate="'required'" v-model="addData.secret" name="secret"  type="text">
-                <div class="form-height text-danger"><span v-show="errors.first('secret')">secret不能为空</span> </div>
-              </div>
-              <div class="form-group">
-                <label>sso登录后回调子系统的地址(如:http://www.123.com/abc)</label>
-                <input class="form-control" placeholder="请输入回调地址"  v-model="addData.callbackurl" name="callbackurl"  type="text">
-              </div>
-              <div class="form-group">
-                <!--<label>logo</label>-->
-                <input class="form-control" placeholder="logo地址" v-validate="'required'" name="logo" v-model="addData.logo"  readonly>
-                <!--<div class="form-height text-danger"> <span v-show="errors.first('logo')">logo地址不能为空</span> </div>-->
-                <uploader :options="options" class="uploader-example" :file-status-text="statusText"   ref="uploader" @file-success="fileSuccess" @file-error="fileError">
-                  <uploader-unsupport></uploader-unsupport>
-                  <uploader-drop>
-                    <p>上传logo</p>
-                    <uploader-btn :attrs="attrs">选择图片</uploader-btn>
-                  </uploader-drop>
-                  <uploader-list></uploader-list>
-                </uploader>
-              </div>
-              <div class="form-group">
-                <div class="settings">
-                  <div class="container">
-                    <div class="row">
-                      <div class="col col-lg-2-4">
-                        <div class="panel-body ng-scope">
-                          <div class="m-b-sm">
-                            <label class="i-switch bg-info pull-right">
-                              <input type="checkbox" v-model="addData.style" class="ng-pristine ng-untouched ng-valid"  value="app-header-fixed">
-                              <i></i>
-                            </label>
-                            Fixed header
-                          </div>
-                          <div class="m-b-sm">
-                            <label class="i-switch bg-info pull-right">
-                              <input type="checkbox" v-model="addData.style" class="ng-pristine ng-untouched ng-valid"  value="app-aside-fixed">
-                              <i></i>
-                            </label>
-                            Fixed aside
-                          </div>
-                          <div class="m-b-sm">
-                            <label class="i-switch bg-info pull-right">
-                              <input type="checkbox" v-model="addData.style" class="ng-pristine ng-untouched ng-valid"  value="app-aside-folded">
-                              <i></i>
-                            </label>
-                            Folded aside
-                          </div>
-                          <div class="m-b-sm">
-                            <label class="i-switch bg-info pull-right">
-                              <input type="checkbox" v-model="addData.style" class="ng-pristine ng-untouched ng-valid"  value="app-aside-dock">
-                              <i></i>
-                            </label>
-                            Dock aside
-                          </div>
-                          <div>
-                            <label class="i-switch bg-info pull-right">
-                              <input type="checkbox" v-model="addData.style" class="ng-pristine ng-untouched ng-valid"  value="container">
-                              <i></i>
-                            </label>
-                            Boxed layout
-                          </div>
-                        </div>
-                      </div>
-                      <div class="col col-lg-2-4">
-                        <div class="wrapper b-t b-light bg-light lter r-b ng-scope">
-                          <div class="row row-sm">
-                            <div class="col-xs-6">
-                              <label class="i-checks block m-b-sm" ng-click="
-          app.settings.navbarHeaderColor='bg-black';
-          app.settings.navbarCollapseColor='bg-white-only';
-          app.settings.asideColor='bg-black';
-         " role="button" tabindex="0">
-                                <input type="radio" name="a" ng-model="app.settings.themeID" v-model="addData.theme"
-                                       value="bg-black|bg-white|bg-black black-black" class="ng-pristine ng-untouched ng-valid" aria-checked="true" tabindex="0" aria-invalid="false">
-                                <span class="block bg-light clearfix pos-rlt">
-            <span class="active pos-abt w-full h-full bg-black-opacity text-center">
-              <i class="glyphicon glyphicon-ok text-white m-t-xs"></i>
-            </span>
-            <b class="bg-black header"></b>
-            <b class="bg-white header"></b>
-            <b class="bg-black black-black"></b>
-          </span>
-                              </label>
-
-                              <label class="i-checks block m-b-sm" ng-click="
-          app.settings.navbarHeaderColor='bg-dark';
-          app.settings.navbarCollapseColor='bg-white-only';
-          app.settings.asideColor='bg-dark';
-         " role="button" tabindex="0">
-                                <input type="radio" name="a" ng-model="app.settings.themeID" v-model="addData.theme"
-                                       value="bg-dark|bg-white|bg-dark dark-dark" class="ng-pristine ng-untouched ng-valid" aria-checked="false" tabindex="-1" aria-invalid="false">
-                                <span class="block bg-light clearfix pos-rlt">
-            <span class="active pos-abt w-full h-full bg-black-opacity text-center">
-              <i class="glyphicon glyphicon-ok text-white m-t-xs"></i>
-            </span>
-            <b class="bg-dark header"></b>
-            <b class="bg-white header"></b>
-            <b class="bg-dark dark-dark"></b>
-          </span>
-                              </label>
-
-                              <label class="i-checks block m-b-sm" ng-click="
-          app.settings.navbarHeaderColor='bg-white-only';
-          app.settings.navbarCollapseColor='bg-white-only';
-          app.settings.asideColor='bg-black';
-         " role="button" tabindex="0">
-                                <input type="radio" ng-model="app.settings.themeID" v-model="addData.theme"
-                                       value="bg-white|bg-white|bg-black black-white" class="ng-pristine ng-untouched ng-valid" name="a" aria-checked="false" tabindex="-1" aria-invalid="false">
-                                <span class="block bg-light clearfix pos-rlt">
-            <span class="active pos-abt w-full h-full bg-black-opacity text-center">
-              <i class="glyphicon glyphicon-ok text-white m-t-xs"></i>
-            </span>
-            <b class="bg-white header"></b>
-            <b class="bg-white header"></b>
-            <b class="bg-black black-white"></b>
-          </span>
-                              </label>
-
-                              <label class="i-checks block m-b-sm" ng-click="
-          app.settings.navbarHeaderColor='bg-primary';
-          app.settings.navbarCollapseColor='bg-white-only';
-          app.settings.asideColor='bg-dark';
-         " role="button" tabindex="0">
-                                <input type="radio" ng-model="app.settings.themeID" v-model="addData.theme"
-                                       value="bg-primary|bg-white|bg-dark dark-primary" class="ng-pristine ng-untouched ng-valid" name="a" aria-checked="false" tabindex="-1" aria-invalid="false">
-                                <span class="block bg-light clearfix pos-rlt">
-            <span class="active pos-abt w-full h-full bg-black-opacity text-center">
-              <i class="glyphicon glyphicon-ok text-white m-t-xs"></i>
-            </span>
-            <b class="bg-primary header"></b>
-            <b class="bg-white header"></b>
-            <b class="bg-dark dark-primary"></b>
-          </span>
-                              </label>
-
-                              <label class="i-checks block m-b-sm" ng-click="
-          app.settings.navbarHeaderColor='bg-info';
-          app.settings.navbarCollapseColor='bg-white-only';
-          app.settings.asideColor='bg-black';
-         " role="button" tabindex="0">
-                                <input type="radio" ng-model="app.settings.themeID" v-model="addData.theme"
-                                       value="bg-info|bg-white|bg-black black-info" class="ng-pristine ng-untouched ng-valid" name="a" aria-checked="false" tabindex="-1" aria-invalid="false">
-                                <span class="block bg-light clearfix pos-rlt">
-            <span class="active pos-abt w-full h-full bg-black-opacity text-center">
-              <i class="glyphicon glyphicon-ok text-white m-t-xs"></i>
-            </span>
-            <b class="bg-info header"></b>
-            <b class="bg-white header"></b>
-            <b class="bg-black black-info"></b>
-          </span>
-                              </label>
-
-                              <label class="i-checks block m-b-sm" ng-click="
-          app.settings.navbarHeaderColor='bg-success';
-          app.settings.navbarCollapseColor='bg-white-only';
-          app.settings.asideColor='bg-dark';
-         " role="button" tabindex="0">
-                                <input type="radio" ng-model="app.settings.themeID" v-model="addData.theme"
-                                       value="bg-success|bg-white|bg-dark dark-success" class="ng-pristine ng-untouched ng-valid" name="a" aria-checked="false" tabindex="-1" aria-invalid="false">
-                                <span class="block bg-light clearfix pos-rlt">
-            <span class="active pos-abt w-full h-full bg-black-opacity text-center">
-              <i class="glyphicon glyphicon-ok text-white m-t-xs"></i>
-            </span>
-            <b class="bg-success header"></b>
-            <b class="bg-white header"></b>
-            <b class="bg-dark dark-success"></b>
-          </span>
-                              </label>
-
-                              <label class="i-checks block">
-                                <input type="radio" v-model="addData.theme"
-                                       value="bg-danger|bg-white|bg-dark dark-danger" class="ng-pristine ng-untouched ng-valid" name="a" aria-checked="false" tabindex="-1" aria-invalid="false">
-                                <span class="block bg-light clearfix pos-rlt">
-            <span class="active pos-abt w-full h-full bg-black-opacity text-center">
-              <i class="glyphicon glyphicon-ok text-white m-t-xs"></i>
-            </span>
-            <b class="bg-danger header"></b>
-            <b class="bg-white header"></b>
-            <b class="bg-dark dark-danger"></b>
-          </span>
-                              </label>
-                              <label class="i-checks block">
-                                <input type="radio" v-model="addData.theme"
-                                       value="bg-danger|bg-white|bg-light light-danger" class="ng-pristine ng-untouched ng-valid" name="a" aria-checked="false" tabindex="-1" aria-invalid="false">
-                                <span class="block bg-light clearfix pos-rlt">
-            <span class="active pos-abt w-full h-full bg-black-opacity text-center">
-              <i class="glyphicon glyphicon-ok text-white m-t-xs"></i>
-            </span>
-            <b class="bg-danger header"></b>
-            <b class="bg-white header"></b>
-            <b class="bg-light light-danger"></b>
-          </span>
-                              </label>
-                            </div>
-                            <div class="col-xs-6">
-                              <label class="i-checks block m-b-sm" ng-click="
-          app.settings.navbarHeaderColor='bg-black';
-          app.settings.navbarCollapseColor='bg-black';
-          app.settings.asideColor='bg-white b-r';
-         " role="button" tabindex="0">
-                                <input type="radio" ng-model="app.settings.themeID" v-model="addData.theme"
-                                       value="bg-black|bg-black|bg-white white-black" class="ng-pristine ng-untouched ng-valid" name="a" aria-checked="false" tabindex="-1" aria-invalid="false">
-                                <span class="block bg-light clearfix pos-rlt">
-            <span class="active pos-abt w-full h-full bg-black-opacity text-center">
-              <i class="glyphicon glyphicon-ok text-white m-t-xs"></i>
-            </span>
-            <b class="bg-black header"></b>
-            <b class="bg-black header"></b>
-            <b class="bg-white white-black"></b>
-          </span>
-                              </label>
-
-                              <label class="i-checks block m-b-sm" ng-click="
-          app.settings.navbarHeaderColor='bg-dark';
-          app.settings.navbarCollapseColor='bg-dark';
-          app.settings.asideColor='bg-light';
-         " role="button" tabindex="0">
-                                <input type="radio" name="a" ng-model="app.settings.themeID" v-model="addData.theme"
-                                       value="bg-dark|bg-dark|bg-light light-dark" class="ng-pristine ng-untouched ng-valid" aria-checked="false" tabindex="-1" aria-invalid="false">
-                                <span class="block bg-light clearfix pos-rlt">
-            <span class="active pos-abt w-full h-full bg-black-opacity text-center">
-              <i class="glyphicon glyphicon-ok text-white m-t-xs"></i>
-            </span>
-            <b class="bg-dark header"></b>
-            <b class="bg-dark header"></b>
-            <b class="bg-light light-dark"></b>
-          </span>
-                              </label>
-
-                              <label class="i-checks block m-b-sm" ng-click="
-          app.settings.navbarHeaderColor='bg-info dker';
-          app.settings.navbarCollapseColor='bg-info dker';
-          app.settings.asideColor='bg-light dker b-r';
-         " role="button" tabindex="0">
-                                <input type="radio" ng-model="app.settings.themeID" v-model="addData.theme"
-                                       value="bg-info|bg-info|bg-light light-info" class="ng-pristine ng-untouched ng-valid" name="a" aria-checked="false" tabindex="-1" aria-invalid="false">
-                                <span class="block bg-light clearfix pos-rlt">
-            <span class="active pos-abt w-full h-full bg-black-opacity text-center">
-              <i class="glyphicon glyphicon-ok text-white m-t-xs"></i>
-            </span>
-            <b class="bg-info header"></b>
-            <b class="bg-info header"></b>
-            <b class="bg-light light-info"></b>
-          </span>
-                              </label>
-
-                              <label class="i-checks block m-b-sm" ng-click="
-          app.settings.navbarHeaderColor='bg-primary';
-          app.settings.navbarCollapseColor='bg-primary';
-          app.settings.asideColor='bg-dark';
-         " role="button" tabindex="0">
-                                <input type="radio" ng-model="app.settings.themeID" v-model="addData.theme"
-                                       value="bg-primary|bg-primary|bg-dark dark-primary" class="ng-pristine ng-untouched ng-valid" name="a" aria-checked="false" tabindex="-1" aria-invalid="false">
-                                <span class="block bg-light clearfix pos-rlt">
-            <span class="active pos-abt w-full h-full bg-black-opacity text-center">
-              <i class="glyphicon glyphicon-ok text-white m-t-xs"></i>
-            </span>
-            <b class="bg-primary header"></b>
-            <b class="bg-primary header"></b>
-            <b class="bg-dark dark-primary"></b>
-          </span>
-                              </label>
-
-                              <label class="i-checks block m-b-sm" ng-click="
-          app.settings.navbarHeaderColor='bg-info dker';
-          app.settings.navbarCollapseColor='bg-info dk';
-          app.settings.asideColor='bg-black';
-         " role="button" tabindex="0">
-                                <input type="radio" ng-model="app.settings.themeID" v-model="addData.theme"
-                                       value="bg-info|bg-info|bg-black black-info" class="ng-pristine ng-untouched ng-valid" name="a" aria-checked="false" tabindex="-1" aria-invalid="false">
-                                <span class="block bg-light clearfix pos-rlt">
-            <span class="active pos-abt w-full h-full bg-black-opacity text-center">
-              <i class="glyphicon glyphicon-ok text-white m-t-xs"></i>
-            </span>
-            <b class="bg-info header"></b>
-            <b class="bg-info header"></b>
-            <b class="bg-black black-info"></b>
-          </span>
-                              </label>
-
-                              <label class="i-checks block m-b-sm" ng-click="
-          app.settings.navbarHeaderColor='bg-success';
-          app.settings.navbarCollapseColor='bg-success';
-          app.settings.asideColor='bg-dark';
-          " role="button" tabindex="0">
-                                <input type="radio" ng-model="app.settings.themeID" v-model="addData.theme"
-                                       value="bg-success|bg-success|bg-dark dark-success" class="ng-pristine ng-untouched ng-valid" name="a" aria-checked="false" tabindex="-1" aria-invalid="false">
-                                <span class="block bg-light clearfix pos-rlt">
-            <span class="active pos-abt w-full h-full bg-black-opacity text-center">
-              <i class="glyphicon glyphicon-ok text-white m-t-xs"></i>
-            </span>
-            <b class="bg-success header"></b>
-            <b class="bg-success header"></b>
-            <b class="bg-dark dark-success"></b>
-          </span>
-                              </label>
-
-                              <label class="i-checks block" >
-                                <input type="radio" ng-model="app.settings.themeID" v-model="addData.theme"
-                                       value="bg-danger|bg-danger|bg-dark dark-danger" class="ng-pristine ng-untouched ng-valid" name="a" aria-checked="false" tabindex="-1" aria-invalid="false">
-                                <span class="block bg-light clearfix pos-rlt">
-            <span class="active pos-abt w-full h-full bg-black-opacity text-center">
-              <i class="glyphicon glyphicon-ok text-white m-t-xs"></i>
-            </span>
-            <b class="bg-danger header"></b>
-            <b class="bg-danger header"></b>
-            <b class="bg-dark dark-danger"></b>
-          </span>
-                              </label>
-                              <label class="i-checks block" >
-                                <input type="radio" v-model="addData.theme"
-                                       value="bg-danger|bg-danger|bg-light light-danger" class="ng-pristine ng-untouched ng-valid" name="a" aria-checked="false" tabindex="-1" aria-invalid="false">
-                                <span class="block bg-light clearfix pos-rlt">
-            <span class="active pos-abt w-full h-full bg-black-opacity text-center">
-              <i class="glyphicon glyphicon-ok text-white m-t-xs"></i>
-            </span>
-            <b class="bg-danger header"></b>
-            <b class="bg-danger header"></b>
-            <b class="bg-light light-danger"></b>
-          </span>
-                              </label>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </form>
-          </div>
-        </div>
-      </div>
-      <div slot="footer">
-        <a  class="btn btn-sm btn-danger" @click="addNew">提交</a>
-        <a  class="btn btn-sm btn-primary" @click="cancel">取消</a>
-      </div>
-    </bootstrap-modal>
     <bootstrap-modal ref="editModal" :need-header="true" :need-footer="true">
       <div slot="title">
         编辑系统
@@ -495,19 +123,19 @@
                 <div class="form-height text-danger"><span v-show="errors.first('name-e')">系统名称不能为空</span></div>
                 <input class="form-control" placeholder=""  v-model="editData.id"  type="hidden">
               </div>
-              <div class="form-group">
+              <!-- <div class="form-group">
                 <label>首页地址</label>
                 <input class="form-control" placeholder="" v-validate="'required'" name="url2" v-model="editData.index_url"  type="text">
                 <div class="form-height text-danger"><span v-show="errors.first('url2')">首页地址不能为空</span></div>
-              </div>
-              <div class="form-group">
+              </div> -->
+              <!-- <div class="form-group">
                 <label>超时时常</label>
                 <input class="form-control" placeholder="" v-validate="'required|numeric'" name="time_out2" v-model="editData.login_timeout"  type="text">
                 <div class="form-height text-danger"><span v-show="errors.first('time_out2')">超时时常不能为空且必须为数字</span></div>
-              </div>
+              </div> -->
               <div class="form-group">
                 <label>secret</label>
-                <input class="form-control" placeholder="请输系统签名所需的secret" v-validate="'required'" v-model="editData.secret" name="secret"  type="text">
+                <input class="form-control" placeholder="系统签名的secret" v-validate="'required'" v-model="editData.secret" name="secret"  type="text">
                 <div class="form-height text-danger"><span v-show="errors.first('secret')">secret不能为空</span> </div>
               </div>
               <div class="form-group">
@@ -517,7 +145,7 @@
               <div class="form-group">
                 <label>{{editData.logo}}</label>
                 <input class="form-control" placeholder="" v-validate="'required'" name="logo2" v-model="editData.logo"  type="hidden">
-                <!--<div class="form-height text-danger"><span v-show="errors.first('logo2')">logo地址不能为空</span></div>-->
+                <div class="form-height text-danger"><span v-show="errors.first('logo2')">logo地址不能为空</span></div>
                 <uploader :options="options" class="uploader-example" :file-status-text="statusText" ref="uploader" @file-success="fileEditSuccess" @file-error="fileError">
                   <uploader-unsupport></uploader-unsupport>
                   <uploader-drop>
@@ -950,8 +578,6 @@ export default {
   mounted() {
     this.$refs.main.style.height = document.documentElement.clientHeight + 'px';
     this.query()
-    // this.goPage({ page: 1,ps:this.ps });
-    //this.queryTags(this.path);
   },
   computed: {
     editLayout() {
@@ -959,30 +585,6 @@ export default {
     }
   },
   methods: {
-    // queryTags(path){
-    //   if (path == '') return;
-    //   this.$fetch("/sso/role/auth",{sys_id:0,role_id:0,path:path})
-    //     .then(res => {
-    //       this.pageAuth = res;
-    //       if (this.pageAuth.length <= 0){
-    //         return false
-    //       }
-    //       this.pageAuth.forEach((item,index)=>{
-    //         let path = item.path;
-    //        this.auth[path] = true
-    //
-    //       })
-    //     })
-    //     .catch(err => {
-    //       this.$notify({
-    //         title: '错误',
-    //         message: '网络错误,请稍后再试',
-    //         type: 'error',
-    //         offset: 50,
-    //         duration:2000,
-    //       });
-    //     });
-    // },
     //上传成功的事件
     fileSuccess (rootFile, file, message, chunk) {
       let data =JSON.parse(message);
@@ -1048,27 +650,6 @@ export default {
     goPage(val) {
       this.pi = val;
       this.query()
-      // this.$fetch("/sso/sys/manage", { pi: val ,ps:this.ps,name: this.sysname,status: this.selected})
-      //   .then(res => {
-      //     this.datalist = res.list;
-      //     this.datacount = res.count;
-      //     this.totalPage = Math.ceil(res.count / 10);
-      //   })
-      //   .catch(err => {
-      //     if (err.response) {
-      //       if (err.response.status == 403) {
-      //         this.$router.push("/member/login");
-      //       }else{
-      //         this.$notify({
-      //           title: '错误',
-      //           message: '网络错误,请稍后再试',
-      //           type: 'error',
-      //           offset: 50,
-      //           duration:2000,
-      //         });
-      //       }
-      //     }
-      //   });
     },
 
     //点查询事件

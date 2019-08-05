@@ -94,8 +94,8 @@ func (u *DbSystem) Add(input *model.AddSystemInput) (err error) {
 	db := u.c.GetRegularDB()
 	params := map[string]interface{}{
 		"name":          input.Name,
-		"addr":          input.Addr,
-		"time_out":      input.Time_out,
+		"addr":          input.CallBackUrl,
+		"time_out":      3000,
 		"logo":          input.Logo,
 		"style":         input.Style,
 		"theme":         input.Theme,
@@ -103,7 +103,6 @@ func (u *DbSystem) Add(input *model.AddSystemInput) (err error) {
 		"wechat_status": input.Wechat_status,
 		"login_url":     "http://member/login",
 		"secret":        input.Secret,
-		"callbackurl":   input.CallBackUrl,
 	}
 	_, q, a, err := db.Execute(sqls.AddSubSystem, params)
 	if err != nil {
@@ -129,8 +128,8 @@ func (u *DbSystem) Edit(input *model.SystemEditInput) (err error) {
 	params := map[string]interface{}{
 		"enable":        input.Enable,
 		"id":            input.Id,
-		"index_url":     input.Index_url,
-		"login_timeout": input.Login_timeout,
+		"index_url":     input.CallBackUrl,
+		"login_timeout": 3000,
 		"logo":          input.Logo,
 		"name":          input.Name,
 		"layout":        input.Layout,
@@ -138,7 +137,6 @@ func (u *DbSystem) Edit(input *model.SystemEditInput) (err error) {
 		"ident":         input.Ident,
 		"wechat_status": input.Wechat_status,
 		"secret":        input.Secret,
-		"callbackurl":   input.CallBackUrl,
 	}
 	_, q, a, err := db.Execute(sqls.UpdateEdit, params)
 	if err != nil {
