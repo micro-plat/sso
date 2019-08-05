@@ -1,10 +1,5 @@
 <template>
   <div class="swipercontiner">
-    <!-- <div data-v-21e0ac8e="" id="bg" style="background: rgb(33, 150, 243);">
-        <canvas data-v-21e0ac8e="" width="1840" height="454"></canvas>
-        <canvas data-v-21e0ac8e="" width="1840" height="454"></canvas> 
-        <canvas data-v-21e0ac8e="" width="1840" height="454"></canvas>
-    </div> -->
     <div class="title">
         请选择要登入的系统
     </div>
@@ -61,7 +56,7 @@
                 }
                 this.systems = res;
             }).catch(err => {
-                this.$router.push({ path: '/login', query: { callback: "", sysid: 0 }});
+                this.$router.push({ path: '/login'});
             });
         }
     }
@@ -71,12 +66,12 @@
 <style>
 .swipercontiner{ height:100%;}
 
-body{font-family:"黑体";	background:#f5f5f5; font-size:12px; margin:0;padding:0;}
+body{font-family:"黑体";background:#f5f5f5; font-size:12px; margin:0;padding:0;}
 
 li{	list-style:none;}
 
 .title{
-	font-size: 40px;
+	font-size: 22px;
     padding: 80px 0;
     text-align: center;
     font-weight: bold;
@@ -97,18 +92,18 @@ li{	list-style:none;}
 	background-color: #fff;
 	padding: 60px 0;
 	border-top-left-radius: 10px;
-    border-top-right-radius: 10px
+    border-top-right-radius: 10px;
 }
 
 .list .icon img {
-    height: 90px;
-    width:90px;
+  height: 90px;
+  width:90px;
 }
 
 .list .text{
-	font-size: 30px;
+	font-size: 20px;
 	color: #fff;
-    padding: 30px 0;
+    padding: 22px 0;
     background-color: rgba(0,14,13,0.5);
     border-bottom-left-radius: 10px;
     border-bottom-right-radius: 10px;
@@ -118,28 +113,7 @@ li{	list-style:none;}
 }
  body{
     background: url(../../img/background.png) ;
-     background-size: 100% 100%;
+     background-size: cover;
 } 
-
-/* #bg {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    z-index: -1;
-}
-
-#bg canvas {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-} */
-
-.body {
-    
-}
 
 </style>

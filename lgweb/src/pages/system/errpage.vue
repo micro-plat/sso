@@ -1,7 +1,7 @@
 <template>
   <div class="main">
     <div class="content">
-      <i><img src="../../img/wrong.png"></i>
+      <i><img style="margin: auto; width:300px" src="../../img/wrong.png"></i>
       <div class="message">{{msg}}</div>
       <div class="btn"><button @click="signOut">登录</button></div>
     </div>
@@ -70,14 +70,15 @@
   margin-top:200px;
 }
 .content {
-    width: 300px;
+    width: 60%;
+    text-align: center;
     margin: 0 auto;
 }
 .message {
-  font-size:30px;
+  font-size:20px;
   text-align: center;
-  margin-top: 30px;
-  color :#AAAAAA;
+  margin-top: 20px;
+  color :#999;
   font-weight: bold;
 }
 .btn {
@@ -86,13 +87,12 @@
   text-align: center;
 }
 .btn button{
-	  width: 140px;
+	  width: 160px;
     padding: 14px 0;
-    font-size: 20px;
+    font-size: 16px;
     color: #fff;
-    background-color: #f4286e;
-    border-radius: 10px;
+    background-color: #f7296f;
     border: 0;
-    margin-top: 40px;
+    margin-top: 24px;
 }
 </style>

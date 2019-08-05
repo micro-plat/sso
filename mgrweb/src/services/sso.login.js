@@ -50,8 +50,8 @@ export function setRouteBeforeLogin() {
 
     //加上 ident 标识
     window.location.href= 
-        window.ssoconfig.loginWebHost + "/jump/" + window.ssoconfig.ident;
-        //+"&callback=" + encodeURIComponent(window.location.protocol + "//" + window.location.host + "/ssocallback");
+        window.ssoconfig.loginWebHost + "/jump/" + window.ssoconfig.ident
+        //+"?callback=" + encodeURIComponent(window.location.protocol + "//" + window.location.host + "/ssocallback");
 }
 
 /**

@@ -4,23 +4,27 @@
             <div class="sing">
                 <div class="title_text">修改密码</div>
                 <div class="tips_text">
-                    <i><img src="../../img/password.png"></i>
+                    <i><img class="tips_image" src="../../img/password.png"></i>
                     <span>原密码</span>
                 </div>
-                <input type="password" v-model="expassword"  placeholder="请输入原密码">
+                <input class="tips-input" type="password" v-model="expassword"  placeholder="请输入原密码">
                 <div class="tips_text">
-                    <i><img src="../../img/password.png"></i>
+                    <i><img class="tips_image" src="../../img/password.png"></i>
                     <span>新密码</span>
                 </div>
-                <input  type="password" v-model="password1" placeholder="请输入新密码">
+                <input class="tips-input" type="password" v-model="password1" placeholder="请输入新密码">
                 <div class="tips_text">
-                    <i><img src="../../img/password.png"></i>
+                    <i><img class="tips_image" src="../../img/password.png"></i>
                     <span>确认新密码</span>
                 </div>
-                <input type="password" v-model="password2" placeholder="请再次输入新密码">
+                <input class="tips-input" @keyup.enter="changePwd" type="password" v-model="password2" placeholder="请再次输入新密码">
+                
+                <div style="font-size:14px;color:#F7296F;">
+                    {{errorMsg}}
+                </div>
                 <div class="but">
                     <span><button type="button" @click="changePwd"  class="btn blue-btn">确定</button></span>
-                    <span><button type="button" @click="signOut" class="btn blue-btn">取消</button></span>
+                    <span><button style="background: #b4b4b4;" type="button" @click="signOut" class="btn blue-btn">取消</button></span>
                 </div>
             </div>
         </div>
@@ -85,14 +89,12 @@
         changePwd(){
             this.check();
             if (this.errorMsg) {
-                 this.$alert(this.errorMsg, '提示', {
-                    confirmButtonText: '确定'
-                });
                 return;
             }
+            this.errorMsg = '';
             this.$post("lg/user/changepwd", {expassword:this.expassword.trim(), newpassword:this.password1.trim()})
                 .then(res => {
-                    this.$alert("密码修改成功", '提示', {confirmButtonText: '确定'});
+                    this.errorMsg = "密码修改成功";
                      setTimeout(() => {
                          this.$router.push("/login/" + this.ident);
                      }, 1000);
@@ -103,10 +105,10 @@
                             break;
                         case 406:
                         case 400:
-                            this.$alert(trimError(err), '提示', {confirmButtonText: '确定'});
+                            this.errorMsg = trimError(err);
                             break;
                         default:
-                            this.$alert("网络错误,请稍后再试", '提示', {confirmButtonText: '确定'});
+                            this.errorMsg = "网络错误,请稍后再试";
                     }
                 })
         }
@@ -117,7 +119,7 @@
 <style>
 
 .swipercontiner{ height:100%;}
-body{font-family:"黑体";background:url(../../img/background.png); font-size:12px; margin:0;padding:0;}
+body{font-family:"黑体";background:url(../../img/background.png); background-size: cover; font-size:12px; margin:0;padding:0;}
 li{	list-style:none;}
 .input{ border:none;}
 .input{ border:none;font-family:"黑体"; width:100%;	}
@@ -170,33 +172,39 @@ li{	list-style:none;}
     
 }
 .title_text{
-	font-size: 40px;
+	font-size: 22px;
 	font-weight: bold;
     text-align: center;
     color: #fff;
     padding-bottom: 40px;
 }
 .tips_text{
-	font-size: 22px;
+	font-size: 14px;
 	color: #FFFFFF;
 	padding-bottom: 10px;
 }
+
+.tips_image {
+    width: 11px;
+    height: 11px;
+    margin-right: 4px;
+}
+
 .sing input{
 	width: 92%;
-    padding: 15px 20px;
-    font-size: 20px;
+    padding: 15px;
+    font-size: 15px;
     color: #333;
     margin-bottom: 24px;
     border:0
 }
 .but button{
-	width: 140px;
-    padding: 14px 0;
-    font-size: 20px;
+	width: 36%;
+    padding: 16px 0;
+    font-size: 16px;
     color: #fff;
-    background-color: #f4286e;
-    border-radius: 10px;
-    border: 0;
+    background-color: #F7296F;
+    border: none;
     margin: 0 10px;
 }
 .but{
