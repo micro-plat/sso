@@ -12,10 +12,9 @@ import (
 )
 
 //GetUserMenu 查询用户在某个系统下的菜单数据
-func GetUserMenu(conf *model.Config, userID) (*[]*Menu, error) {
+func GetUserMenu(conf *model.Config, userID int) (*[]*Menu, error) {
 	values := net.NewValues()
 	values.Set("user_id", types.GetString(userID))
-	//values.Set("system_id", types.GetString(systemID))
 	values.Set("ident", conf.Ident)
 	values.Set("timestamp", types.GetString(time.Now().Unix()))
 

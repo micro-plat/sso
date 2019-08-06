@@ -34,7 +34,7 @@ func (client *SSOClient) GetUserInfoByName(userName string) (info *service.User,
 }
 
 //GetUserMenu 获取用户菜单信息
-func (client *SSOClient) GetUserMenu(userIDint) (*[]*service.Menu, error) {
+func (client *SSOClient) GetUserMenu(userID int) (*[]*service.Menu, error) {
 	return service.GetUserMenu(client.cfg, userID)
 }
 
