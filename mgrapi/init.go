@@ -12,6 +12,7 @@ import (
 	"github.com/micro-plat/sso/mgrapi/services/role"
 	"github.com/micro-plat/sso/mgrapi/services/system"
 	"github.com/micro-plat/sso/mgrapi/services/user"
+	ssoSdk "github.com/micro-plat/sso/sso"
 )
 
 //init 检查应用程序配置文件，并根据配置初始化服务
@@ -36,16 +37,21 @@ func (r *SSO) init() {
 		if _, err := c.GetCache(); err != nil {
 			return err
 		}
-
 		logic.Set(c) //保存全局菜单变量
+
+		ssoCleint, err := ssoSdk.New(conf.SsoApiHost, "sso", conf.Secret)
+		if err != nil {
+			return err
+		}
+		model.SaveSSOClient(c, ssoCleint)
 		return nil
 	})
 
-	r.Micro("/sso/login", member.NewLoginHandler, "*")               //用户名密码登录
-	r.Micro("/sso/menu", menu.NewMenuHandler, "*")                   //系统菜单相关接口
-	r.Micro("/sso/ident", system.NewSystemIdentHandler, "*")         //系统信息获取
-	r.Micro("/sso/member", member.NewQueryHandler, "*")              //查询登录用户信息
-	r.Micro("/sso/user/changepwd", user.NewUserPasswordHandler, "*") // 修改密码
+	r.Micro("/sso/login", member.NewLoginHandler, "*")       //用户名密码登录
+	r.Micro("/sso/menu", menu.NewMenuHandler, "*")           //系统菜单相关接口
+	r.Micro("/sso/ident", system.NewSystemIdentHandler, "*") //系统信息获取
+	r.Micro("/sso/member", member.NewQueryHandler, "*")      //查询登录用户信息
+	//r.Micro("/sso/user/changepwd", user.NewUserPasswordHandler, "*") // 修改密码
 	r.Micro("/sso/base", base.NewBaseUserHandler, "*")
 	r.Micro("/sso/user", user.NewUserHandler, "*")                        //用户相关接口
 	r.Micro("/sso/auth", role.NewRoleAuthHandler, "/user/role")           //权限管理

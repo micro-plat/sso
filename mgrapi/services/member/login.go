@@ -40,7 +40,8 @@ func (u *LoginHandler) UserHandle(ctx *context.Context) (r interface{}) {
 	code := ctx.Request.GetString("code")
 
 	ctx.Log.Info("调用sso api 用code取用户信息")
-	data, err := u.m.LoginNew(code)
+	//data, err := u.m.LoginNew(code)
+	data, err := model.GetSSOClient(u.c).CheckCodeLogin(code)
 	if err != nil {
 		return context.NewError(context.ERR_NOT_ACCEPTABLE, err)
 	}

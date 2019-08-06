@@ -7,7 +7,7 @@ import (
 
 // IMenuLogic interface
 type IMenuLogic interface {
-	Query(uid int64, sysid int) ([]map[string]interface{}, error)
+	Query(uid int64, ident string) ([]map[string]interface{}, error)
 }
 
 // MenuLogic 菜单
@@ -25,6 +25,6 @@ func NewMenuLogic(c component.IContainer) *MenuLogic {
 }
 
 //Query 获取用户指定系统的菜单信息
-func (m *MenuLogic) Query(uid int64, sysid int) ([]map[string]interface{}, error) {
-	return m.db.Query(uid, sysid)
+func (m *MenuLogic) Query(uid int64, ident string) ([]map[string]interface{}, error) {
+	return m.db.Query(uid, ident)
 }

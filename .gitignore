@@ -28,7 +28,6 @@
 ./lgweb/*.sln
 
 logs/
-*sso
 conf/
 
 ./mgrapi/static/

@@ -5,6 +5,7 @@ import (
 
 	"github.com/asaskevich/govalidator"
 	"github.com/micro-plat/hydra/component"
+	"github.com/micro-plat/sso/sso"
 )
 
 //Conf 应用程序配置
@@ -66,4 +67,14 @@ func SaveConf(c component.IContainer, m *Conf) {
 //GetConf 获取当前应用程序配置
 func GetConf(c component.IContainer) *Conf {
 	return c.Get("__AppConf__").(*Conf)
+}
+
+//SaveSSOClient  保存sso client
+func SaveSSOClient(c component.IContainer, m *sso.SSOClient) {
+	c.Set("__SsoClient__", m)
+}
+
+//GetSSOClient  获取sso client
+func GetSSOClient(c component.IContainer) *sso.SSOClient {
+	return c.Get("__SsoClient__").(*sso.SSOClient)
 }

@@ -6,7 +6,7 @@ import (
 )
 
 type IMenu interface {
-	Query(uid int64, sysid int) ([]map[string]interface{}, error)
+	Query(uid int64, ident string) ([]map[string]interface{}, error)
 }
 
 type Menu struct {
@@ -20,11 +20,11 @@ func NewMenu(c component.IContainer) *Menu {
 }
 
 //Query 获取用户指定系统的菜单信息
-func (l *Menu) Query(uid int64, sysid int) ([]map[string]interface{}, error) {
+func (l *Menu) Query(uid int64, ident string) ([]map[string]interface{}, error) {
 	db := l.c.GetRegularDB()
 	data, _, _, err := db.Query(sqls.QueryUserMenus, map[string]interface{}{
 		"user_id": uid,
-		"sys_id":  sysid,
+		"ident":   ident,
 	})
 	if err != nil {
 		return nil, err
