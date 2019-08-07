@@ -40,7 +40,7 @@ Vue.use(VeeValidate,config);
 import {ssoConfig} from './services/sso.login'
 
 var serviceConfig = process.env.service;
-ssoConfig(serviceConfig.ssoWebHost, serviceConfig.ssoApiHost, "sso", Vue);
+Vue.prototype.$sso = ssoConfig(serviceConfig.ssoWebHost, serviceConfig.ssoApiHost, "sso");
 
 //定义全局变量
 Vue.prototype.$post = post;

@@ -7,7 +7,7 @@ import router from '../router'
  * @param {*sso后端host, 刷新token用到} loginApiHost
  * @param {*子系统的ident} ident
  */
-export function ssoConfig(loginWebHost, loginApiHost, ident, Vue) {
+export function ssoConfig(loginWebHost, loginApiHost, ident) {
     window.ssoconfig = {
         loginWebHost: loginWebHost,
         loginApiHost: loginApiHost,
@@ -22,7 +22,7 @@ export function ssoConfig(loginWebHost, loginApiHost, ident, Vue) {
         changePwd:changePwd,
         errPage:errPage
     };
-    Vue.prototype.$sso = sso;
+    return sso;
 }
 
 /**
@@ -66,7 +66,10 @@ export function setRouteBeforeLogin() {
  * sso登录回调，并相关验证成功后,运行此代码
  * 主要是为了如果是子系统间的调要，只加载相应的页面
  */
-function changeRouteAfterLogin(vueRouter) {
+function changeRouteAfterLogin(vueRouter,userName, userRole) {
+    //保存登录用户的用户名和角色名称(主要是菜单组件要用到)
+    localStorage.setItem("userinfo", JSON.stringify({name:userName, role:userRole}));
+
     var oldPath = window.localStorage.getItem("beforeLoginUrl");
     localStorage.removeItem("beforeLoginUrl");
     if (oldPath && oldPath != "/" && oldPath.indexOf("/external") == 0) {

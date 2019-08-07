@@ -10,6 +10,21 @@ let GetTocken = (function () {
     return window.localStorage["__jwt__"]
 });
 
+/**
+ * http初始话
+ * @param {前端对应apiHost} apiUrl
+ */
+export function httpConfig(apiBaseUrl) {
+    axios.defaults.baseURL = apiBaseUrl;
+
+    return {
+        get: fetch,
+        post:post,
+        patch:patch,
+        put:put,
+        del:del
+    }
+}
 
 //http request 拦截器
 axios.interceptors.request.use(
