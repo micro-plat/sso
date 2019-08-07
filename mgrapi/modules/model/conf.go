@@ -70,11 +70,11 @@ func GetConf(c component.IContainer) *Conf {
 }
 
 //SaveSSOClient  保存sso client
-func SaveSSOClient(c component.IContainer, m *sso.SSOClient) {
+func SaveSSOClient(c component.IContainer, m *sso.Client) {
 	c.Set("__SsoClient__", m)
 }
 
 //GetSSOClient  获取sso client
-func GetSSOClient(c component.IContainer) *sso.SSOClient {
-	return c.Get("__SsoClient__").(*sso.SSOClient)
+func GetSSOClient(c component.IContainer) *sso.Client {
+	return c.Get("__SsoClient__").(*sso.Client)
 }

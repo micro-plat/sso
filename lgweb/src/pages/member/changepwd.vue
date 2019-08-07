@@ -1,5 +1,6 @@
 <template>
     <div class="swipercontiner">
+        <h1 class="lg-title">能源业务中心运营管理系统</h1>
         <div>
             <div class="sing">
                 <div class="title_text">修改密码</div>
@@ -28,12 +29,13 @@
                 </div>
             </div>
         </div>
+        <div class="footer"><p>四川千行你我科技有限公司Copyright© 2018 版权所有</p></div>
     </div>
 </template>
 
 <script>
-  import VueCookies from 'vue-cookies'
   import {trimError} from "@/services/utils"
+  import VueCookies from 'vue-cookies'
 
   export default {
     name: 'pwd',
@@ -48,7 +50,7 @@
     },
     created() {
         this.ident = this.$route.params.ident ? this.$route.params.ident : "";
-        var isExists = VueCookies.isKey("__jwt__");
+        var isExists = VueCookies.isKey("__sso_jwt__");
         if(!isExists) {
             this.$router.push({path:"/login/" + this.ident, query :{ changepwd: 1 }});
         }
@@ -59,7 +61,6 @@
     },
 
     methods:{
-
       signOut() {
           this.$router.push({path:"/login/" + this.ident});
       },
@@ -160,7 +161,7 @@ li{	list-style:none;}
 .sing{
     width: 440px;
     margin:0 auto;
-	margin-top:10%;
+	margin-top:7%;
     background-color: rgba(0,29,59,0.7);
     border-radius: 40px;
     padding: 60px 100px;
@@ -200,10 +201,32 @@ li{	list-style:none;}
     background-color: #F7296F;
     border: none;
     margin: 0 10px;
+    border-radius: 10px;
 }
 .but{
 	text-align: center;
 	margin-top: 16px;
+}
+
+.footer{
+    margin: 4vw .3vw 2vw;
+}
+
+.footer p {
+    font-size: 14px;
+    color: #fff;
+    letter-spacing: 2px;
+    text-align: center;
+    line-height: 1.8;
+}
+
+.lg-title {
+    font-size: 2.8vw;
+    color: #fff;
+    letter-spacing: 3px;
+    text-align: center;
+    margin: 3vw 1vw;
+    font-family: Josefin Sans,sans-serif;
 }
 
 </style>

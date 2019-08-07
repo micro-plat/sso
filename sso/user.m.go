@@ -1,4 +1,4 @@
-package service
+package sso
 
 import "encoding/json"
 

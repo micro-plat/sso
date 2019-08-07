@@ -60,10 +60,8 @@
       this.callback = this.$route.query.callback;
       this.changepwd = this.$route.query.changepwd;
       this.ident = this.$route.params.ident ? this.$route.params.ident : "";
-
-      console.log(this.ident);
       
-      VueCookies.remove("__jwt__")
+      VueCookies.remove("__sso_jwt__");
     },
 
     methods:{

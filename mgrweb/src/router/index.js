@@ -5,12 +5,10 @@ import ssocallback from '@/pages/member/sso.callback.vue';
 import sysindex from '@/pages/system/sys.index.new.vue'
 import sysfunc from '@/pages/system/func.index.vue'
 import userindex from '@/pages/user/index.new.vue'
-import changeInfo from '@/pages/user/change.info';
 import roleindex from '@/pages/role/index.new';
 import roleauth from '@/pages/role/auth';
 
 Vue.use(Router);
-
 
 export default new Router({
   mode: "history",
@@ -39,10 +37,6 @@ export default new Router({
       path: "sys/func",
       name: "sysfunc",
       component: sysfunc
-    },  {
-      path: 'userinfo',
-      name: 'userinfo',
-      component: changeInfo
     }, {
       path: 'user/role',
       name: 'userrole',

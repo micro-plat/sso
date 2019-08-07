@@ -1,4 +1,4 @@
-package model
+package sso
 
 import (
 	"fmt"
@@ -9,13 +9,13 @@ import (
 //Config 配置信息
 type Config struct {
 	//ApiHost ssoApi地址(不是跳转地址)
-	Host string `valid:"required"`
+	host string `valid:"required"`
 
 	/*系统标识*/
-	Ident string `valid:"required"`
+	ident string `valid:"required"`
 
 	/*系统秘钥*/
-	Secret string `valid:"required"`
+	secret string `valid:"required"`
 }
 
 //Valid 验证传入参数

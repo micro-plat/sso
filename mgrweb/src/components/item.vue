@@ -265,7 +265,7 @@
       // 删除节点
       delNode(nodeModel) {
         if (nodeModel) {
-          this.$del("/sso/sys/func", {data: {id: nodeModel.id}})
+          this.$http.del("/sso/sys/func", {data: {id: nodeModel.id}})
             .then(res => {
               if (this.parentNodeModel.hasOwnProperty("children")) {
                 this.parentNodeModel.children.splice(this.parentNodeModel.children.indexOf(nodeModel), 1);
@@ -316,7 +316,7 @@
           } else {
             status = 1
           }
-          this.$post("/sso/sys/func/enable", {id: nodeModel.id, status: status})
+          this.$http.post("/sso/sys/func/enable", {id: nodeModel.id, status: status})
             .then(res => {
               nodeModel.enable = status;
               this.$notify({
@@ -356,7 +356,7 @@
 
       upNode(nodeModel) {
         console.log(nodeModel,"所有参数")
-        this.$post("/sso/sys/manage/up",nodeModel).then(res =>{
+        this.$http.post("/sso/sys/manage/up",nodeModel).then(res =>{
             this.$notify({
               title: '成功',
               message: '上移成功',
@@ -390,7 +390,7 @@
       },
       downNode(nodeModel) {
         console.log(nodeModel,"所有参数")
-        this.$post("/sso/sys/manage/down",nodeModel).then(res =>{
+        this.$http.post("/sso/sys/manage/down",nodeModel).then(res =>{
             this.$notify({
               title: '成功',
               message: '下移成功',
@@ -421,7 +421,7 @@
 
       //获取系统下面的菜单数据
       getSysMenu(sysId) {
-        this.$fetch("/sso/sys/func", { id: sysId })
+        this.$http.get("/sso/sys/func", { id: sysId })
         .then(res => {
           if (res.length != 0) {
             this.model = res;

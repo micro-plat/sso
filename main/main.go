@@ -1,9 +1,9 @@
 package main
 
-import "github.com/micro-plat/sso/sdk"
+import "github.com/micro-plat/sso/sso"
 
 func main() {
-	sdk.TestMenu()
-	//sdk.TestSystemInfo()
-	//sdk.TestGetUserInfoByName()
+	//sso.TestMenu()
+	//sso.TestSystemInfo()
+	sso.TestGetUserInfoByName()
 }

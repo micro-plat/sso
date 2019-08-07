@@ -116,7 +116,7 @@ export default {
   methods: {
     goPage(data){
       this.pi = data.page;
-      this.$fetch("/sso/notify/info", {
+      this.$http.get("/sso/notify/info", {
         title:this.title,
         pi: data.page ,
         ps:this.ps})
@@ -152,7 +152,7 @@ export default {
         cancelButtonText: '取消',
         type: 'warning'
       }).then(() => {
-        this.$del("/sso/notify/info", {data:{id:id}})
+        this.$http.del("/sso/notify/info", {data:{id:id}})
           .then(res => {
             this.goPage({page:this.pi})
             this.$notify({

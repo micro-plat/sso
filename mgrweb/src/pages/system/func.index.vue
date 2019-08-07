@@ -625,7 +625,7 @@ export default {
       let routerParams = this.$route.query;
       this.id = routerParams.id;
       console.log(this.id,"编号")
-      this.$fetch("/sso/sys/func", { id: this.id })
+      this.$http.get("/sso/sys/func", { id: this.id })
         .then(res => {
           if (res.length != 0) {
             this.ztreeDataSource = res;
@@ -667,7 +667,7 @@ export default {
       }else{
           icon = data.iconTemp + " " + data.color
       }
-          this.$put("/sso/sys/func", {
+          this.$http.put("/sso/sys/func", {
             id: data.id,
             name: data.name,
             sortrank:data.sortrank,
@@ -705,7 +705,7 @@ export default {
             });
     },
     addFunc() {
-      this.$post("/sso/sys/func", {
+      this.$http.post("/sso/sys/func", {
         parentid: this.currentData.parentId,
         parentlevel: this.currentData.parentLevel,
         sysid: this.id,

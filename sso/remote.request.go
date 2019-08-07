@@ -1,10 +1,11 @@
-package service
+package sso
 
 import (
 	"encoding/json"
 	"fmt"
 	"time"
 
+	"github.com/micro-plat/hydra/context"
 	"github.com/micro-plat/lib4go/net/http"
 )
 
@@ -16,7 +17,7 @@ func remoteRequest(host, path, content string, data interface{}) (interface{}, e
 		return nil, err
 	}
 	if statusCode != 200 {
-		return nil, fmt.Errorf("读取系统信息失败,HttpStatus:%d, body:%s", statusCode, body)
+		return nil, context.NewErrorf(statusCode, "读取系统信息失败,HttpStatus:%d, body:%s", statusCode, body)
 	}
 
 	listByte := []byte(body)

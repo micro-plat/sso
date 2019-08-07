@@ -52,6 +52,7 @@ func (s *SSO) install() {
 					"/sso/user/changepwd"
 					],
 				"expireAt": 36000,
+				"source":"H",
 				"mode": "HS512",
 				"name": "__jwt__",
 				"secret": "12345678"

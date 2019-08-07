@@ -1,4 +1,4 @@
-package service
+package sso
 
 //System 系统信息 (由于接口返回全是string,因此...)
 type System struct {

@@ -5,7 +5,6 @@ import (
 
 	"github.com/micro-plat/hydra/component"
 	"github.com/micro-plat/hydra/context"
-	"github.com/micro-plat/lib4go/security/md5"
 	"github.com/micro-plat/sso/mgrapi/modules/logic"
 	"github.com/micro-plat/sso/mgrapi/modules/model"
 )
@@ -50,6 +49,7 @@ func (u *LoginHandler) UserHandle(ctx *context.Context) (r interface{}) {
 	return data
 }
 
+/*
 //PostHandle 根据登录get获取用户信息，jwt信息获取用户信息
 func (u *LoginHandler) PostHandle(ctx *context.Context) (r interface{}) {
 	ctx.Log.Info("-------根据登录get获取用户信息，jwt信息获取用户信息---------")
@@ -101,7 +101,9 @@ func (u *LoginHandler) GetHandle(ctx *context.Context) (r interface{}) {
 		"ident": ctx.Request.GetString("ident"),
 	}
 }
+*/
 
+/*
 //CodeHandle  切换系统，用旧code换取新code
 func (u *LoginHandler) CodeHandle(ctx *context.Context) (r interface{}) {
 	ctx.Log.Info("--------换取code-------")
@@ -151,3 +153,4 @@ func (u *LoginHandler) isWechatLogin(ident string) (bool, string, error) {
 	}
 	return false, data.GetString("secret"), nil
 }
+*/

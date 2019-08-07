@@ -9,14 +9,14 @@ var storagePlace = "";
 
 let GetTocken = (function () {
     var jwt = window.localStorage.getItem("__jwt__");
-    if (storagePlace == "session") {
+    if (storagePlace == "sessionStorage") {
         jwt = window.sessionStorage.getItem("__jwt__");
     }
     return jwt;
 });
 
 function SetToken(response) {
-    if (storagePlace == "session") {
+    if (storagePlace == "sessionStorage") {
         window.sessionStorage.setItem("__jwt__", response.headers.__jwt__);
     } else {
         window.localStorage.setItem("__jwt__", response.headers.__jwt__);
@@ -26,7 +26,7 @@ function SetToken(response) {
 /**
  * http初始话
  * @param {前端对应后台的api地址 apiHost} apiUrl
- * @param {jwt存储地方, local,session} storagePlace}
+ * @param {jwt存储地方, sessionStorage:就是存储在sessionStorage, localStorage:存储在localStorage} storagePlace}
  */
 export function httpConfig(apiBaseUrl, storagePlace) {
     axios.defaults.baseURL = apiBaseUrl;
@@ -68,6 +68,7 @@ axios.interceptors.response.use(
         return response;
     },
     error => {
+
         if (error.response.status == 403) {
             setRouteBeforeLogin();
         }

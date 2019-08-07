@@ -617,7 +617,7 @@ export default {
     next(){
       let pi =this.pi;
       this.pi = pi + 1;
-      this.$fetch("/sso/sys/manage", { pi: this.pi ,ps:this.ps,name: this.sysname,status: this.selected})
+      this.$http.get("/sso/sys/manage", { pi: this.pi ,ps:this.ps,name: this.sysname,status: this.selected})
         .then(res => {
           if(res.list.length <= 0){
             this.pi=pi;
@@ -659,7 +659,7 @@ export default {
     },
 
     query() {
-      this.$fetch("/sso/sys/manage", {
+      this.$http.get("/sso/sys/manage", {
         pi: this.pi,
         ps:this.ps,
         name: this.sysname,
@@ -692,7 +692,7 @@ export default {
       this.addData.style.forEach((item, index) => {
         str += item + " ";
       });
-      this.$post("/sso/sys/manage", {
+      this.$http.post("/sso/sys/manage", {
         name: this.addData.name,
         addr: this.addData.addr,
         time_out: this.addData.time_out,
@@ -744,7 +744,7 @@ export default {
       this.$refs.msg2Modal.close();
     },
     ok() {
-      this.$del("/sso/sys/manage", { data: { id: this.sysid } })
+      this.$http.del("/sso/sys/manage", { data: { id: this.sysid } })
         .then(res => {
           this.cancel();
           this.goPage({ page: this.pi });
@@ -780,7 +780,7 @@ export default {
         cancelButtonText: "取消",
         type: "warning"
       }).then(() => {
-        this.$put("/sso/sys/manage", {
+        this.$http.put("/sso/sys/manage", {
           id: this.enableData.id,
           status: this.enableData.status
         })
@@ -839,7 +839,7 @@ export default {
         str += item + " ";
       });
       edit.layout = str.trim();
-      this.$post("/sso/sys/manage/edit", edit)
+      this.$http.post("/sso/sys/manage/edit", edit)
         .then(res => {
           this.$refs.editModal.close();
           this.goPage({ page: this.pi });

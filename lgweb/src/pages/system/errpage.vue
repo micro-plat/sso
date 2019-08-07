@@ -94,5 +94,6 @@
     background-color: #f7296f;
     border: 0;
     margin-top: 24px;
+    border-radius: 10px;
 }
 </style>

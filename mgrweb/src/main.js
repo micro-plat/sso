@@ -18,14 +18,6 @@ import ElementUI from 'element-ui';
 import 'element-ui/lib/theme-chalk/index.css';
 Vue.use(ElementUI);
 
-import {
-    post,
-    fetch,
-    patch,
-    put,
-    del,
-} from './services/http'
-
 const config = {
     fieldsBagName: 'vee-fields'
     }
@@ -37,17 +29,28 @@ Vue.use(VueCookies);
 Vue.use(VTree);
 Vue.use(VeeValidate,config);
 
-import {ssoConfig} from './services/sso.login'
-
+import {ssoHttpConfig} from './services/sso';
 var serviceConfig = process.env.service;
-Vue.prototype.$sso = ssoConfig(serviceConfig.ssoWebHost, serviceConfig.ssoApiHost, "sso");
+var ssocfg =  ssoHttpConfig(serviceConfig.url, "localStorage", serviceConfig.ssoWebHost, "sso");
+
+Vue.prototype.$sso = ssocfg.sso;
+Vue.prototype.$http = ssocfg.http;
+
+
+// import {ssoConfig} from './services/sso.login'
+// var serviceConfig = process.env.service;
+// Vue.prototype.$sso = ssoConfig(serviceConfig.ssoWebHost, serviceConfig.ssoApiHost, "sso");
+
+// import {httpConfig} from './services/http'
+// Vue.prototype.$http = httpConfig(serviceConfig.url, "local")
+
 
 //定义全局变量
-Vue.prototype.$post = post;
-Vue.prototype.$fetch = fetch;
-Vue.prototype.$patch = patch;
-Vue.prototype.$put = put;
-Vue.prototype.$del = del;
+// Vue.prototype.$post = post;
+// Vue.prototype.$fetch = fetch;
+// Vue.prototype.$patch = patch;
+// Vue.prototype.$put = put;
+// Vue.prototype.$del = del;
 
 Vue.config.productionTip = false;
 

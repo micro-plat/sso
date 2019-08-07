@@ -484,7 +484,7 @@ export default {
         this.addData.style.forEach((item, index) => {
             str += item + " ";
         });
-        this.$post("/sso/sys/manage", {
+        this.$http.post("/sso/sys/manage", {
             name: this.addData.name,
             callbackurl: this.addData.callbackurl,
             //time_out: this.addData.time_out,

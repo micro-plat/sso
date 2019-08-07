@@ -1,4 +1,4 @@
-package service
+package sso
 
 //Menu 菜单数据
 type Menu struct {

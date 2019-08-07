@@ -50,7 +50,7 @@
         this.$sso.signOut();
       },
       getMenu(){
-        this.$fetch("/sso/menu")
+        this.$http.get("/sso/menu")
           .then(res => {
             this.menus = res;
 
