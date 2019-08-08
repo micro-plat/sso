@@ -5,24 +5,23 @@ const Qs = require('qs');
 axios.defaults.timeout = 5000;
 axios.defaults.withCredentials = true;
 axios.defaults.baseURL = ""; //process.env.service.url;
-var storagePlace = "";
 
 let GetTocken = (function () {
-    if (!storagePlace){
+    if (!window.sso_StoragePlace){
         return "";
     }
     var jwt = window.localStorage.getItem("__jwt__");
-    if (storagePlace == "sessionStorage") {
+    if (window.sso_StoragePlace == "sessionStorage") {
         jwt = window.sessionStorage.getItem("__jwt__");
     }
     return jwt;
 });
 
 function SetToken(response) {
-    if (!storagePlace) {
+    if (!window.sso_StoragePlace){
         return;
     }
-    if (storagePlace == "sessionStorage") {
+    if (window.sso_StoragePlace == "sessionStorage") {
         window.sessionStorage.setItem("__jwt__", response.headers.__jwt__);
     } else {
         window.localStorage.setItem("__jwt__", response.headers.__jwt__);
@@ -36,7 +35,7 @@ function SetToken(response) {
  */
 export function httpConfig(apiBaseUrl, storagePlace) {
     axios.defaults.baseURL = apiBaseUrl;
-    storagePlace = storagePlace;
+    window.sso_StoragePlace = storagePlace;
     return {
         get: fetch,
         post:post,
@@ -74,7 +73,7 @@ axios.interceptors.response.use(
         return response;
     },
     error => {
-
+        console.log(error);
         if (error.response.status == 403) {
             setRouteBeforeLogin();
         }

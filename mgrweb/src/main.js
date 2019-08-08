@@ -1,5 +1,3 @@
-// The Vue build version to load with the `import` command
-// (runtime-only or standalone) has been set in webpack.base.conf with an alias.
 import "jquery"
 import "bootstrap"
 
@@ -30,8 +28,8 @@ Vue.use(VTree);
 Vue.use(VeeValidate,config);
 
 import {ssoHttpConfig} from './services/sso';
-var serviceConfig = process.env.service;
-var ssocfg =  ssoHttpConfig(serviceConfig.url, "localStorage", serviceConfig.ssoWebHost, "sso");
+var conf = process.env.service;
+var ssocfg =  ssoHttpConfig(conf.apiHost, "localStorage", conf.ssoWebHost, conf.ident);
 
 Vue.prototype.$sso = ssocfg.sso;
 Vue.prototype.$http = ssocfg.http;

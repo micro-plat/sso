@@ -107,12 +107,12 @@ func (m *MemberLogic) GetUserInfoByCode(code, ident string) (res *model.LoginSta
 	//1:缓存取信息
 	userStr, err := m.cache.GetUserInfoByCode(code)
 	if err != nil || userStr == "" {
-		return nil, context.NewError(context.ERR_FORBIDDEN, fmt.Sprintf("没有登录记录,请先登录,err:%s", err))
+		return nil, context.NewError(context.ERR_NOT_ACCEPTABLE, fmt.Sprintf("没有登录记录,请先登录,err:%s", err))
 	}
 
 	userID := types.GetInt(userStr, -1)
 	if userID == -1 {
-		return nil, context.NewError(context.ERR_FORBIDDEN, "登录出错，请重新登录")
+		return nil, context.NewError(context.ERR_NOT_ACCEPTABLE, "登录出错，请重新登录")
 	}
 
 	//2. 清楚Code的缓存

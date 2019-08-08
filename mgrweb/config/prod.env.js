@@ -2,12 +2,10 @@
 module.exports = {
     NODE_ENV: '"production"',
     service: {
-        ssoApiHost:`"http://192.168.106.226:6687"`,
-        ssoWebHost:`"http://192.168.106.226:8091"`,
-        url: '"http://192.168.106.152:6677"', //测试环境
-        //url: '"http://192.168.5.78:6688"', //本地     
-
-
+        ident:`"sso"`,
+        apiHost: '"http://192.168.106.152:6677"', //测试环境 
+        ssoWebHost:`"http://192.168.106.226:8091"`, //测试环境
+        
         //url: '"http://api.sso.sinopecscsy.com:6688"',   //线上
         //ws: `"ws://api.sso.sinopecscsy.com:6689/ws"`,
         //webHost:'"http://web.coupon.sinopecscsy.com"',
