@@ -42,7 +42,7 @@ func (u *LoginHandler) UserHandle(ctx *context.Context) (r interface{}) {
 	//data, err := u.m.LoginNew(code)
 	data, err := model.GetSSOClient(u.c).CheckCodeLogin(code)
 	if err != nil {
-		return context.NewError(context.ERR_NOT_ACCEPTABLE, err)
+		return err
 	}
 	ctx.Log.Infof("data: %v", data)
 	ctx.Response.SetJWT(data)

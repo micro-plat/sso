@@ -8,6 +8,9 @@ axios.defaults.baseURL = ""; //process.env.service.url;
 var storagePlace = "";
 
 let GetTocken = (function () {
+    if (!storagePlace){
+        return "";
+    }
     var jwt = window.localStorage.getItem("__jwt__");
     if (storagePlace == "sessionStorage") {
         jwt = window.sessionStorage.getItem("__jwt__");
@@ -16,6 +19,9 @@ let GetTocken = (function () {
 });
 
 function SetToken(response) {
+    if (!storagePlace) {
+        return;
+    }
     if (storagePlace == "sessionStorage") {
         window.sessionStorage.setItem("__jwt__", response.headers.__jwt__);
     } else {

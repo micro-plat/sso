@@ -36,22 +36,6 @@ var ssocfg =  ssoHttpConfig(serviceConfig.url, "localStorage", serviceConfig.sso
 Vue.prototype.$sso = ssocfg.sso;
 Vue.prototype.$http = ssocfg.http;
 
-
-// import {ssoConfig} from './services/sso.login'
-// var serviceConfig = process.env.service;
-// Vue.prototype.$sso = ssoConfig(serviceConfig.ssoWebHost, serviceConfig.ssoApiHost, "sso");
-
-// import {httpConfig} from './services/http'
-// Vue.prototype.$http = httpConfig(serviceConfig.url, "local")
-
-
-//定义全局变量
-// Vue.prototype.$post = post;
-// Vue.prototype.$fetch = fetch;
-// Vue.prototype.$patch = patch;
-// Vue.prototype.$put = put;
-// Vue.prototype.$del = del;
-
 Vue.config.productionTip = false;
 
   /* eslint-disable no-new */
