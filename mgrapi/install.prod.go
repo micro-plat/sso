@@ -7,11 +7,17 @@ func (s *SSO) install() {
 	s.IsDebug = false
 
 	s.Conf.API.SetMainConf(`{"address":":6677"}`)
+	s.Conf.SetInput(`#mysql_db_string`, `mysql数据库连接串`, `username:password@tcp(host)/sso?charset=utf8`)
+	s.Conf.SetInput(`#redis_string`, `redis连接串`, ``)
+	s.Conf.SetInput(`#pic_host`, `sso图片上传地址`, ``)
+	s.Conf.SetInput(`#secret`, `用户管理系统的secret`, ``)
+	s.Conf.SetInput(`#sso_api_host`, `sso api host`, ``)
+
 	s.Conf.API.SetSubConf("app", `
 			{
 				"pic_host": "#pic_host",
 				"secret":"#secret",
-				"sso_api_host":"http://192.168.106.226:6689",
+				"sso_api_host":"#sso_api_host",
 				"ident":"sso"
 			}			
 			`)
@@ -62,7 +68,7 @@ func (s *SSO) install() {
 
 	s.Conf.Plat.SetVarConf("db", "db", `{			
 			"provider":"mysql",
-			"connString":"#db_string",
+			"connString":"#mysql_db_string",
 			"max":8,
 			"maxOpen":20,
 			"maxIdle":10,
