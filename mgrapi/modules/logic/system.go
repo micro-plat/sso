@@ -2,6 +2,7 @@ package logic
 
 import (
 	"github.com/micro-plat/hydra/component"
+	"github.com/micro-plat/hydra/context"
 	"github.com/micro-plat/lib4go/db"
 	"github.com/micro-plat/sso/mgrapi/modules/access/system"
 	"github.com/micro-plat/sso/mgrapi/modules/model"
@@ -73,6 +74,16 @@ func (u *SystemLogic) Delete(id int) (err error) {
 
 //Add 添加系统
 func (u *SystemLogic) Add(input *model.AddSystemInput) (err error) {
+	//1验证系统名称,ident是否重复
+
+	count, err := u.db.ExistsNameOrIdent(input.Name, input.Ident)
+	if err != nil {
+		return err
+	}
+	if count > 0 {
+		return context.NewError(context.ERR_BAD_REQUEST, "系统名称和英文名称已存在")
+	}
+
 	if err = u.db.Add(input); err != nil {
 		return
 	}

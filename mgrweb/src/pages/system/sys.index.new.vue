@@ -30,28 +30,23 @@
       </div>
       <el-scrollbar style="height:100%">
         <el-table :data="datalist" stripe  style="width: 100%">
-
-          <el-table-column width="100" prop="id" label="编号" ></el-table-column>
+          <el-table-column width="130" prop="ident" label="英文名称" ></el-table-column>
           <el-table-column width="250" prop="name" label="系统名称" ></el-table-column>
-          <el-table-column width="320" prop="callbackurl" label="登录回调地址" ></el-table-column>
-
           <el-table-column  width="150" prop="enable" label="状态" >
             <template slot-scope="scope">
-
               <el-tag type="info" v-if="scope.row.enable == 0">禁用</el-tag>
               <el-tag type="success" v-if="scope.row.enable == 1">启用</el-tag>
             </template>
           </el-table-column>
-          <!-- <el-table-column width="100" prop="login_timeout" label="超时时长" ></el-table-column> -->
-
           <el-table-column width="200" prop="logo" label="logo" >
             <template slot-scope="scope">
               <img v-if="scope.row.theme" :class="scope.row.theme.split('|')[0]"
                    :src="scope.row.logo" :onerror="errorImg" alt="">
-
             </template>
           </el-table-column>
           <el-table-column width="300" prop="secret" label="secret" ></el-table-column>
+          <el-table-column width="320" prop="callbackurl" label="登录回调地址" ></el-table-column>
+
           <el-table-column  label="操作">
             <template slot-scope="scope">
               <el-button plain type="primary" size="mini" @click="edit(scope.row.id)">编辑</el-button>
@@ -111,31 +106,27 @@
         <div class="panel panel-default">
           <div class="panel-body">
             <form role="form" class="ng-pristine ng-valid ng-submitted">
-              <div class="form-group">
-                <label>系统名称</label>
-                <input class="form-control" placeholder="" v-validate="'required'" name="name2" v-model="editData.name"  type="text">
-                <div class="form-height text-danger"><span v-show="errors.first('name2')">系统名称不能为空</span></div>
-                <input class="form-control" placeholder=""  v-model="editData.id"  type="hidden">
-              </div>
-              <div class="form-group">
-                <label>系统英文名称</label>
-                <input class="form-control" placeholder="" v-validate="'required|alpha'" name="name-e" v-model="editData.ident"  type="text">
-                <div class="form-height text-danger"><span v-show="errors.first('name-e')">系统名称不能为空</span></div>
-                <input class="form-control" placeholder=""  v-model="editData.id"  type="hidden">
-              </div>
-              <!-- <div class="form-group">
-                <label>首页地址</label>
-                <input class="form-control" placeholder="" v-validate="'required'" name="url2" v-model="editData.index_url"  type="text">
-                <div class="form-height text-danger"><span v-show="errors.first('url2')">首页地址不能为空</span></div>
-              </div> -->
-              <!-- <div class="form-group">
-                <label>超时时常</label>
-                <input class="form-control" placeholder="" v-validate="'required|numeric'" name="time_out2" v-model="editData.login_timeout"  type="text">
-                <div class="form-height text-danger"><span v-show="errors.first('time_out2')">超时时常不能为空且必须为数字</span></div>
-              </div> -->
+               <el-row :span="24">
+                 <el-col :span="12">
+                   <div class="form-group">
+                    <label>系统名称</label>
+                    <input class="form-control" placeholder="" name="name2" v-model="editData.name"  type="text">
+                    <div class="form-height text-danger"><span v-show="errors.first('name2')">系统名称不能为空</span></div>
+                    <input class="form-control" placeholder=""  v-model="editData.id"  type="hidden">
+                  </div>
+                 </el-col>
+                 <el-col :span="12">
+                   <div class="form-group" style="margin-left:10px;">
+                    <label>系统英文名称</label>
+                    <input class="form-control" placeholder="" name="name-e" v-model="editData.ident"  type="text">
+                    <div class="form-height text-danger"><span v-show="errors.first('name-e')">系统名称不能为空</span></div>
+                    <input class="form-control" placeholder=""  v-model="editData.id"  type="hidden">
+                  </div>
+                 </el-col>
+               </el-row>
               <div class="form-group">
                 <label>secret</label>
-                <input class="form-control" placeholder="系统签名的secret" v-validate="'required'" v-model="editData.secret" name="secret"  type="text">
+                <input class="form-control" placeholder="系统签名的secret" v-model="editData.secret" name="secret"  type="text">
                 <div class="form-height text-danger"><span v-show="errors.first('secret')">secret不能为空</span> </div>
               </div>
               <div class="form-group">
@@ -144,7 +135,7 @@
               </div>
               <div class="form-group">
                 <label>{{editData.logo}}</label>
-                <input class="form-control" placeholder="" v-validate="'required'" name="logo2" v-model="editData.logo"  type="hidden">
+                <input class="form-control" placeholder="" name="logo2" v-model="editData.logo"  type="hidden">
                 <div class="form-height text-danger"><span v-show="errors.first('logo2')">logo地址不能为空</span></div>
                 <uploader :options="options" class="uploader-example" :file-status-text="statusText" ref="uploader" @file-success="fileEditSuccess" @file-error="fileError">
                   <uploader-unsupport></uploader-unsupport>
@@ -747,7 +738,7 @@ export default {
       this.$http.del("/sso/sys/manage", { data: { id: this.sysid } })
         .then(res => {
           this.cancel();
-          this.goPage({ page: this.pi });
+          this.querySearch();
             this.$notify({
               title: '成功',
               message: '删除成功',
@@ -757,9 +748,7 @@ export default {
             });
         })
         .catch(err => {
-          if (err.response.status == 403) {
-            this.$router.push("/member/login");
-          }else{
+            console.log(err);
             this.$notify({
               title: '错误',
               message: '网络错误,请稍后再试',
@@ -767,7 +756,6 @@ export default {
               offset: 50,
               duration:2000,
             });
-          }
         });
     },
     enable(id, status) {
@@ -784,28 +772,27 @@ export default {
           id: this.enableData.id,
           status: this.enableData.status
         })
-          .then(res => {
-            this.goPage(this.pi);
-
-            this.$notify({
-              title: '成功',
-              message: '状态修改成功',
-              type: 'success',
-              offset: 50,
-              duration:2000,
-            });
-          })
-          .catch(err => {
-
-              this.$notify({
-                title: '错误',
-                message: '网络错误,请稍后再试',
-                type: 'error',
-                offset: 50,
-                duration:2000,
-              });
-
+        .then(res => {
+          this.goPage(this.pi);
+          this.$notify({
+            title: '成功',
+            message: '状态修改成功',
+            type: 'success',
+            offset: 50,
+            duration:2000,
           });
+        })
+        .catch(err => {
+          console.log(err);
+          this.$notify({
+            title: '错误',
+            message: '网络错误,请稍后再试',
+            type: 'error',
+            offset: 50,
+            duration:2000,
+          });
+
+        });
 
       }).catch(() => {
         this.$message({
@@ -839,6 +826,18 @@ export default {
         str += item + " ";
       });
       edit.layout = str.trim();
+
+      var msg = this.checkBeforeSave(edit);
+      if (msg) {
+        this.$notify({
+              title: '错误',
+              message: msg,
+              type: 'error',
+              offset: 50,
+              duration:2000
+            });
+        return;
+      }
       this.$http.post("/sso/sys/manage/edit", edit)
         .then(res => {
           this.$refs.editModal.close();
@@ -881,7 +880,29 @@ export default {
           id: id
         }
       });
+    },
+    checkBeforeSave(editData) {
+      if (!editData.name) {
+        return "系统名称不能为空";
+      }
+      if(!editData.ident) {
+        return "系统英文名称不能为空";
+      }
+      if(!editData.secret) {
+        return "secret不能为空";
+      }
+      if (!editData.logo) {
+        return "logo图片必须上传";
+      }
+      if(!editData.theme) {
+        return "请选择主题样式";
+      }
+      if(!editData.layout) {
+        return "请选择页面布局样式";
+      }
+      return ""
     }
+
   }
 };
 </script>

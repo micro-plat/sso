@@ -71,33 +71,33 @@ body{font-family:"黑体";background:#f5f5f5; font-size:12px; margin:0;padding:0
 li{	list-style:none;}
 
 .title{
-	font-size: 22px;
+	font-size: 34px;
     padding: 80px 0;
     text-align: center;
     font-weight: bold;
-    color:blanchedalmond;
+    color:#fff;
 }
 .list{
-	width: 900px;
+	width: 1100px;
     margin: 0 auto;
 }
 .everyone{
-    width: 45%;
+    width: 28%;
     text-align: center;
     display: inline-grid;
     margin: 20px;
     float: left;
 }
 .list .icon{
-	background-color: #fff;
-	padding: 60px 0;
+	background-color: rgba(21, 171, 160, 0.5);
+    padding-top: 20px;
+    line-height: 120px;
 	border-top-left-radius: 10px;
     border-top-right-radius: 10px;
 }
 
 .list .icon img {
-  height: 90px;
-  width:90px;
+  
 }
 
 .list .text{

@@ -15,6 +15,7 @@ type IDbSystem interface {
 	GetAll(userId int64) (s db.QueryRows, err error)
 	Query(name string, status string, pi int, ps int) (data db.QueryRows, count int, err error)
 	Delete(id int) (err error)
+	ExistsNameOrIdent(name, ident string) (int, error)
 	Add(input *model.AddSystemInput) (err error)
 	ChangeStatus(sysID int, status int) (err error)
 	Edit(input *model.SystemEditInput) (err error)
@@ -86,6 +87,20 @@ func (u *DbSystem) Delete(id int) (err error) {
 	return nil
 }
 
+//ExistsNameOrIdent xx
+func (u *DbSystem) ExistsNameOrIdent(name, ident string) (int, error) {
+	db := u.c.GetRegularDB()
+	count, _, _, err := db.Scalar(sqls.ExistsNameOrIdent, map[string]interface{}{
+		"name":  name,
+		"ident": ident,
+	})
+	if err != nil {
+		return 0, err
+	}
+	return types.GetInt(count), err
+}
+
+//Add xx
 func (u *DbSystem) Add(input *model.AddSystemInput) (err error) {
 	if input.Wechat_status == "" {
 		input.Wechat_status = "0"

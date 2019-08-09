@@ -53,10 +53,11 @@ export function setRouteBeforeLogin() {
         window.localStorage.setItem("beforeLoginUrl", window.location.pathname);
     }
 
-    //加上 ident 标识
-    window.location.href= 
-        window.ssoconfig.loginWebHost + "/jump/" + window.ssoconfig.ident
-        //+"?callback=" + encodeURIComponent(window.location.protocol + "//" + window.location.host + "/ssocallback");
+    var url = window.ssoconfig.loginWebHost + "/jump/" + window.ssoconfig.ident;
+    if (process.env.NODE_ENV == "development") {
+        url += "?callback=" + encodeURIComponent(window.location.protocol + "//" + window.location.host + "/ssocallback");
+    }
+    window.location.href= url;
 }
 
 /**

@@ -42,6 +42,11 @@ where
   id = @id
 `
 
+const ExistsNameOrIdent = `select 
+  count(1) as count 
+from sso_system_info 
+where name=@name or ident=@ident`
+
 const AddSubSystem = `
 insert into 
   sso_system_info
