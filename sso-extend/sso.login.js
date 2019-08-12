@@ -1,4 +1,5 @@
-import VueCookies from 'vue-cookies'
+import "jquery"; 
+import VueCookies from 'vue-cookies';
 
 /**
  *  配置sso相关的host)
