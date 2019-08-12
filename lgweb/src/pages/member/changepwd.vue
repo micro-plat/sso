@@ -120,14 +120,15 @@
 <style>
 
 .swipercontiner{ height:100%;}
-body{font-family:"黑体";background:url(../../img/background.png); background-size: cover; font-size:12px; margin:0;padding:0;}
+body{font-family: "\9ED1\4F53";background:url(../../img/background.png); background-size: cover; font-size:12px; margin:0;padding:0;}
 li{	list-style:none;}
 .input{ border:none;}
-.input{ border:none;font-family:"黑体"; width:100%;	}
+.input{ border:none;font-family: "\9ED1\4F53"; width:100%;	}
 
 .title{
 	font-size: 60px;
     padding: 80px 0;
+    font-weight: 500;
     text-align: center;
     font-weight: bold;
 }
@@ -175,6 +176,7 @@ li{	list-style:none;}
 }
 .tips_text{
 	font-size: 14px;
+    font-weight: 500;
 	color: #FFFFFF;
 	padding-bottom: 10px;
 }
@@ -188,7 +190,7 @@ li{	list-style:none;}
 .sing input{
 	width: 92%;
     padding: 15px;
-    font-size: 15px;
+    font-size: 14px;
     color: #333;
     margin-bottom: 24px;
     border:0
@@ -228,5 +230,23 @@ li{	list-style:none;}
     margin: 3vw 1vw;
     font-family: Josefin Sans,sans-serif;
 }
+
+ ::-webkit-input-placeholder {
+    color: #333;
+  }
+
+  :-moz-placeholder {
+    /* Firefox 18- */
+    color: #333;
+  }
+
+  ::-moz-placeholder {
+    /* Firefox 19+ */
+    color: #333;
+  }
+
+  :-ms-input-placeholder {
+    color: #333;
+  }
 
 </style>

@@ -6,7 +6,7 @@
     <div class="list">
         <ul v-for="(item, index) in systems" :key="index" @click="goto(item.indexurl)">
             <li class="everyone">
-                <span class="icon">
+                <span class="icons">
                     <img v-if="item.logo !=''" :src="item.logo" />
                     <img v-if="item.logo==''" src="../../img/iocn_yh.png" >
                 </span>
@@ -88,16 +88,12 @@ li{	list-style:none;}
     margin: 20px;
     float: left;
 }
-.list .icon{
+.list .icons{
 	background-color: rgba(21, 171, 160, 0.5);
-    padding-top: 20px;
+    padding-top: 20px ;
     line-height: 120px;
 	border-top-left-radius: 10px;
     border-top-right-radius: 10px;
-}
-
-.list .icon img {
-  
 }
 
 .list .text{

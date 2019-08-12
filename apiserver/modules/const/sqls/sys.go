@@ -5,7 +5,7 @@ const QuerySystemInfo = `
 select 
 	t.id,
 	t.name,
-	t.index_url,
+	'' as index_url,
 	t.logo,
 	t.theme,
 	t.layout,
