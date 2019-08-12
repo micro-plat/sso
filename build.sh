@@ -2,40 +2,52 @@
 
 rm -rf ./out 
 
+echo "------------------------------------"
 echo "sso五个项目的打包脚本...."
-
-read -p "所有配置参数都改好了？确认请输入[yes],否则输入[no]: " flag
-temp=$(echo $flag | tr [A-Z] [a-z])
-if [ $temp != "yes" ]; then
-	echo "请前去修改"
-	exit
+if [ $# != 1 ]; then 
+	echo "请输入要生成的环境[prod, dev]"
+	exit 1
 fi
 
+publishenv=$1
+
+if [ $publishenv != "prod" ] && [ $publishenv != "dev" ]; then 
+	echo "请在命令行中输入要生成的环境[prod, dev]"
+	exit 1
+fi
+
+echo "当前生成的环境为: $publishenv" 
+
+tags=""
+if [ $publishenv != "dev" ]; then
+	tags=" -tags prod "
+fi
 
 echo "----------1:生成apiserver数据-----------"
 cd apiserver/
-CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o "../out/apiserver/apiserver"
+CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build  $tags -o "../out/sso_apiserver/api/bin/apiserver"
 if [ $? -ne 0 ]; then
 	echo "apiserver 项目编译出错,请检查"
-	exit
+	exit 1
 fi
 cd ../
 
+
 echo "----------2:生成lgapi数据------------"
 cd lgapi/
-CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o "../out/lg/bin/lgapi"
+CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build $tags -o "../out/sso_login/api/bin/lgapi"
 if [ $? -ne 0 ]; then
 	echo "lgapi 项目编译出错,请检查"
-	exit
+	exit 1
 fi
 cd ../
 
 echo "----------3:生成lgweb数据-----------"
 cd lgweb/
-CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o "../out/lg/web/lgweb"
+CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build $tags -o "../out/sso_login/web/lgweb"
 if [ $? -ne 0 ]; then
 	echo "lgweb golang 项目编译出错,请检查"
-	exit
+	exit 1
 fi
 
 rm -rf ./dist/
@@ -44,25 +56,28 @@ echo "--------------------------------------"
 npm run build
 if [ $? -ne 0 ]; then
 	echo "lgweb vue项目编译出错,请检查"
-	exit
+	exit 1
 fi
-cp -r ./dist/static/ ../out/lg/web/static/
+cp -r ./dist/static/ ../out/sso_login/web/static/
 echo "--------------------------------------"
 cd ../
 
 
 echo "----------4:生成mgrapi数据----------"
 cd mgrapi/
-CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o "../out/mgr/bin/mgrapi"
+CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build  $tags -o "../out/sso_mgr/api/bin/mgrapi"
 if [ $? -ne 0 ]; then
 	echo "mgrapi 项目编译出错,请检查"
-	exit
+	exit 1
 fi
 cd ../
 
+echo "-------创建mgrapi图片临时目录--------"
+mkdir -p ./out/sso_mgr/api/bin/static/img
+
 echo "----------5:生成mgrweb数据------------"
 cd mgrweb/
-CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o "../out/mgr/web/mgrweb"
+CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build  $tags -o "../out/sso_mgr/web/mgrweb"
 if [ $? -ne 0 ]; then
 	echo "mgrweb golang 项目编译出错,请检查"
 	exit
@@ -75,33 +90,47 @@ if [ $? -ne 0 ]; then
 	echo "mgrweb vue项目编译出错,请检查"
 	exit
 fi
-cp -r ./dist/static/ ../out/mgr/web/static/
+cp -r ./dist/static/ ../out/sso_mgr/web/static/
 echo "--------------------------------------"
 
 cd ../
 echo "-----------6:生成数据完成--------------"
 
+echo "-----------7:添加日志配置文件-----------"
+cp -r ./conf out/sso_apiserver/api/conf
+cp -r ./conf out/sso_login/api/conf
+cp -r ./conf out/sso_mgr/api/conf
+
 
 cd out/
 echo "-----------打包相关文件(zip)-----------"
-zip -r apiserver apiserver
+zip -r sso_apiserver sso_apiserver
 if [ $? -ne 0 ]; then
-	echo "打包ssoapi调用(apiserver)出错,请检查"
+	echo "打包ssoapi调用(sso_apiserver)出错,请检查"
 	exit
 fi
 
-zip -r lg lg
+zip -r sso_login sso_login
 if [ $? -ne 0 ]; then
-	echo "打包登录中心(lg)出错,请检查"
+	echo "打包登录中心(sso_login)出错,请检查"
 	exit
 fi
 
-zip -r mgr mgr
+zip -r sso_mgr sso_mgr
 if [ $? -ne 0 ]; then
-	echo "打包用户管理系统(mgr)出错,请检查"
+	echo "打包用户管理系统(sso_mgr)出错,请检查"
 	exit
 fi
 
 echo "-----------------------------------"
-echo "lg里面包含api,web | mgr里面包含api,web"
+echo "sso_login里面包含api,web | sso_mgr里面包含api,web"
 echo "-----------打包完成(zip)-------------"
+
+
+
+# read -p "所有配置参数都改好了？确认请输入[y],否则输入[n]: " flag
+# temp=$(echo $flag | tr [A-Z] [a-z])
+# if [ $temp != "y" ]; then
+# 	echo "请前去修改"
+# 	exit
+# fi

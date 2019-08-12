@@ -7,7 +7,6 @@ module.exports = {
         wxbindcallbackurl:'"/wxbindcallback"',
 
         url: '"http://192.168.106.226:6687"',   //测试环境
-        // ws: `"ws://api.sso.sinopecscsy.com:6689/ws"`,
-        // webHost:'"http://web.coupon.sinopecscsy.com"'
+        //url: '"http://loginapi.sso.18jiayou.com"',   //线上环境(跳转登录的api地址)
     }
 }

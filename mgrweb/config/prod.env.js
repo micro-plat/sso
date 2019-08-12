@@ -6,11 +6,7 @@ module.exports = {
         apiHost: '"http://192.168.106.152:6677"', //测试环境 
         ssoWebHost:`"http://192.168.106.226:8091"`, //测试环境
         
-        //url: '"http://api.sso.sinopecscsy.com:6688"',   //线上
-        //ws: `"ws://api.sso.sinopecscsy.com:6689/ws"`,
-        //webHost:'"http://web.coupon.sinopecscsy.com"',
-        // url: '"http://192.168.106.152:6688"',     //线下
-        // ws: `"ws://api.sso2.100bm.cn:6689/ws"`,
-        // webHost:'"http://coupon2.100bm.cn:6060"',
+        //apiHost: '"http://webapi.sso.18jiayou.com"', //线上环境(用户管理api地址)
+        //ssoWebHost:`"http://login.sso.18jiayou.com"`, //线上环境(sso登录跳转地址)
     }
 }

@@ -9,7 +9,5 @@ module.exports = merge(prodEnv, {
         wxlogincallbackurl:'"/wxlgcallback"',
         wxbindcallbackurl:'"/wxbindcallback"',
         url: '"http://192.168.5.78:6687"',     //本地
-        //ws: `"ws://192.168.7.188:8099/ws"`,
-        //webHost:'"http://coupon2.100bm.cn:6060"',
     }
 });

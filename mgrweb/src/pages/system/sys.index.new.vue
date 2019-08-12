@@ -521,7 +521,7 @@ export default {
     return {
       options: {
         // 可通过 https://github.com/simple-uploader/Uploader/tree/develop/samples/Node.js 示例启动服务
-        target: process.env.service.url+'/sso/img/upload',   //上传地址
+        target: process.env.service.apiHost+'/sso/img/upload',   //上传地址
         testChunks: false,
         withCredentials:true,   //携带jwt
         singleFile:true,        //单文件上传
