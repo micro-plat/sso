@@ -24,13 +24,13 @@ export default new Router({
       component: login
     },
     {
-      path: '/login/:ident?',
+      path: '/:ident?/login',
       name: 'login',
       component: login
     },
     {
 
-      path: '/jump/:ident?',
+      path: '/:ident?/jump',
       name: 'jump',
       component: jump
     },
@@ -41,7 +41,7 @@ export default new Router({
       component: chose
     },
     {
-      path: '/changepwd/:ident?',
+      path: '/:ident?/changepwd',
       name: 'changepwd',
       component: changepwd
     },

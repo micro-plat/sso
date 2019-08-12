@@ -9,3 +9,15 @@ export function trimError(err) {
     }
     return message;
 }
+
+/**
+ * 返回登录的地址
+ * @param {*子系统标识} ident 
+ */
+export function jumpLogin(ident) {
+    var pathT = '/'+ ident +'/login';
+    if (!ident) {
+        pathT = '/login'
+    }
+    return pathT;
+}

@@ -1,4 +1,5 @@
-import VueCookies from 'vue-cookies'
+import "jquery"; 
+import VueCookies from 'vue-cookies';
 
 /**
  *  配置sso相关的host)
@@ -53,7 +54,7 @@ export function setRouteBeforeLogin() {
         window.localStorage.setItem("beforeLoginUrl", window.location.pathname);
     }
 
-    var url = window.ssoconfig.loginWebHost + "/jump/" + window.ssoconfig.ident;
+    var url = window.ssoconfig.loginWebHost + "/" + window.ssoconfig.ident + "/jump";
     if (process.env.NODE_ENV == "development") {
         url += "?callback=" + encodeURIComponent(window.location.protocol + "//" + window.location.host + "/ssocallback");
     }
@@ -86,7 +87,7 @@ function signOut() {
     localStorage.removeItem("__jwt__");
     sessionStorage.removeItem("__jwt__");
 
-    window.location.href = window.ssoconfig.loginWebHost + "/login/" + window.ssoconfig.ident;
+    window.location.href = window.ssoconfig.loginWebHost + "/" + window.ssoconfig.ident + "/login";
 }
 
 /**
@@ -98,7 +99,7 @@ function changePwd() {
     localStorage.removeItem("__jwt__");
     sessionStorage.removeItem("__jwt__");
 
-    window.location.href = window.ssoconfig.loginWebHost + "/changepwd/" + window.ssoconfig.ident;
+    window.location.href = window.ssoconfig.loginWebHost + "/" + window.ssoconfig.ident + "/changepwd";
 }
 
 /**

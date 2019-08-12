@@ -36,6 +36,7 @@
 <script>
   import {trimError} from "@/services/utils"
   import VueCookies from 'vue-cookies'
+  import {jumpLogin} from '@/services/utils'
 
   export default {
     name: 'pwd',
@@ -52,7 +53,7 @@
         this.ident = this.$route.params.ident ? this.$route.params.ident : "";
         var isExists = VueCookies.isKey("__sso_jwt__");
         if(!isExists) {
-            this.$router.push({path:"/login/" + this.ident, query :{ changepwd: 1 }});
+            this.$router.push({path:jumpLogin(this.ident), query :{ changepwd: 1 }});
         }
     },
 
@@ -62,7 +63,7 @@
 
     methods:{
       signOut() {
-          this.$router.push({path:"/login/" + this.ident});
+          this.$router.push({path:jumpLogin(this.ident)});
       },
 
       check() {
@@ -97,12 +98,12 @@
                 .then(res => {
                     this.errorMsg = "密码修改成功";
                      setTimeout(() => {
-                         this.$router.push("/login/" + this.ident);
+                         this.$router.push(jumpLogin(this.ident));
                      }, 1000);
                 }).catch(err => {
                     switch (err.response.status) {
                         case 403:
-                            this.$router.push({path:"/login/" + this.ident, query :{ changepwd: 1 }});
+                            this.$router.push({path:jumpLogin(this.ident), query :{ changepwd: 1 }});
                             break;
                         case 406:
                         case 400:

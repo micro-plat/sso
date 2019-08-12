@@ -6,6 +6,7 @@
 
 <script>
    import {JoinUrlParams} from '@/services/common'
+   import {jumpLogin} from '@/services/utils'
   export default {
     name: 'jump',
     data () {
@@ -46,7 +47,7 @@
                       this.$router.push({ path: '/errpage', query: {type: 1}});
                       break;
                     default:
-                      this.$router.push({ path: '/login/' + this.ident, query:{callback: this.callback}});
+                      this.$router.push({ path: jumpLogin(this.ident), query:{callback: this.callback}});
                 }
             });
         }
