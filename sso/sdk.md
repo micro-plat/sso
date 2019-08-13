@@ -41,13 +41,13 @@ data, err := model.GetSSOClient(u.c).CheckCodeLogin(code)
 ``` go
 New(apiHost, ident, secret string)
 ```
-输⼊参数
-|参数 |类型|说明|
-| -------------|:--------------:|:--------------:|
-|apiHost |string |sso api host |
-|ident | string | ⼦系统标识(相当于英⽂名称)|
-|secret | string | ⼦系统秘钥|
-输出
+输⼊参数 
+|参数 |类型|说明| 
+| -------------|:--------------:|:--------------:| 
+|apiHost |string |sso api host | 
+|ident | string | ⼦系统标识(相当于英⽂名称)| 
+|secret | string | ⼦系统秘钥| 
+输出 
 ```
 返回ssoClient 对象
 ```
