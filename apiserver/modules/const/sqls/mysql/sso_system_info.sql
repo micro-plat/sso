@@ -16,5 +16,7 @@
 		secret varchar(32)      comment '签名密钥'	
   ) COMMENT='系统信息表';
 
+    /*auto_increment=10000*/
+
 alter table sso_system_info add index index_sso_system_info_name_ident(name,ident);
 

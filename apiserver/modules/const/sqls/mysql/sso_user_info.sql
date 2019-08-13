@@ -15,6 +15,8 @@
 				
   ) COMMENT='用户信息表';
 
+    /*auto_increment=10000*/
+
  alter table sso_user_info add index index_user_info_username(user_name);
 
 

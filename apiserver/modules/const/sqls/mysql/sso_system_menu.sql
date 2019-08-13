@@ -16,6 +16,8 @@
 					
   ) COMMENT='功能信息';
 
+    /*auto_increment=10000*/
+
  
 alter table sso_system_menu add index index_system_menu_sysid(sys_id) 
 

@@ -11,6 +11,7 @@
 		sortrank bigint  not null    comment '排序编号'
 				
   )COMMENT='功能信息';
+    /*auto_increment=10000*/
 
 alter table sso_role_menu add unique(sys_id,role_id,menu_id);
 alter table sso_role_menu add index index_role_menu_roleid_menuid(role_id,menu_id)

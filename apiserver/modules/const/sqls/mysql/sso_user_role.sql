@@ -10,5 +10,7 @@
 				
   )comment='用户角色信息';
 
+    /*auto_increment=10000*/
+
 alter table sso_user_role add unique(user_id,sys_id,role_id);
 alter table sso_user_role add index index_user_role_sysid_roleid(sys_id, user_id, role_id); 

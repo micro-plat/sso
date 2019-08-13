@@ -10,3 +10,5 @@
   ) COMMENT='角色信息';
 
   alter table sso_role_info add index index_role_info_name(name);
+
+  /*auto_increment=10000*/
