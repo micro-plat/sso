@@ -15,7 +15,7 @@ func (s *SSO) install() {
 			{
 				"pic_host": "http://sso.sinopecscsy.com",
 				"secret":"#secret",
-				"sso_api_host":"http://api.sso.18jiayou.com",
+				"sso_api_host":"http://api.sso.18jiayou.com:6689",
 				"ident":"sso"
 			}			
 			`)
