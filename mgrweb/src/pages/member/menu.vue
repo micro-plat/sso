@@ -6,7 +6,6 @@
       :themes="themes"
       :logo="logo"
       :systemName="systemName"
-      :headpic="headpic"
       :userinfo="userinfo"
       :pwd="pwd"
       :signOut="signOutM"
@@ -22,7 +21,6 @@
     name: 'app',
     data () {
       return {
-        headpic: "http://sso2.100bm.cn:6888/static/img/a0.jpg",
         logo: "http://sso2.100bm.cn:6888/static/img/d663155de6dc8e060415bbcd891cb9d4.png",
         copyright: "2018 admin-web", //版权信息
         themes: "bg-danger|bg-danger|bg-dark light-danger", //顶部左侧背景颜色,顶部右侧背景颜色,右边菜单背景颜色
@@ -75,7 +73,7 @@
               this.$refs.NewTap.add("首页", this.indexUrl ,{});
             }
             */
-            this.$refs.NewTap.add("首页", this.indexUrl ,{});
+            this.$refs.NewTap.open("首页", this.indexUrl);
           })
           .catch(err => {
             console.log(err)

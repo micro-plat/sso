@@ -3,14 +3,20 @@
     <login-with-up
       :copyright="copyright"
       :systemName="systemName"
-      :conf="conf"
       :wxlg="wxLogin"
       :requireWxLogin="requireWxLogin"
       :requireCode="requireCode"
-      :getCodeCall="getCodeCall"
-      :call="loginsubmit"
-      :err-msg.sync="errMsg"
-      ref="loginItem">
+      :sendCode="getCodeCall"
+      :loginCallBack="loginsubmit"
+
+      :loginNameLabel="loginNameLabel"
+      :loginNameHolder="loginNameHolder"
+      :loginPwdLabel="loginPwdLabel"
+      :loginPwdHolder="loginPwdHolder"
+      :codeLabel="codeLabel"
+      :codeHolder="codeHolder"
+      :sendBtnLabel="sendBtnLabel"
+      ref="LoginUp">
     </login-with-up>
     <div v-if="requireWxLogin">
       <div id="qrcodeTable"></div>
@@ -35,13 +41,19 @@
       return {
         systemName: "能源业务中心运营管理系统",
         copyright:"四川千行你我科技有限公司Copyright© 2018 版权所有",
-        conf:{loginNameType:"输入用户名",pwd:"输入密码",validateCode:"请输入微信验证码"},
         callback:"",
         changepwd:0,
         ident: "",
-        errMsg:{message:""},
         requireWxLogin:false, //是否支持跳转登录
         requireCode: false, //是否支持微信验证码登录
+
+        loginNameLabel:"用户名",
+        loginNameHolder:"请输入用户名",
+        loginPwdLabel:"密码",
+        loginPwdHolder:"请输入用户密码",
+        codeLabel:"微信验证码",
+        codeHolder:"请输入微信验证码",
+        sendBtnLabel:"获取微信验证码",
 
         stateCode : "", //动态为用户生成标识,用于扫码登录 (在table切换时要改这个值，相当与这个值会随着table切换而变化)
         //todo 还要改
@@ -109,10 +121,10 @@
                 case 423:
                 case 405:
                 case 415:
-                  this.errMsg = {message: trimError(err)}; 
+                  this.$refs.LoginUp.showError(trimError(err))
                   break;
                 default:
-                  this.errMsg = {message: "登录失败"};
+                  this.$refs.LoginUp.showError("登录失败")
               }
           });
       },
@@ -120,20 +132,21 @@
       //发送微信验证码
       getCodeCall(e){
          e.ident = this.ident ? this.ident : "";
-         this.errMsg = {message: "发送中....."}; 
+         this.$refs.LoginUp.showError("发送中...");
 
          this.$post("/lg/login/wxvalidcode", e)
           .then(res=>{
-            this.errMsg = {message: "微信验证码发送成功"}; 
+            this.$refs.LoginUp.showError("微信验证码发送成功");
+            this.$refs.LoginUp.countDown(this.sendBtnLabel);
           })
           .catch(error=>{
             switch(error.response.status) {
               case 401:
               case 400:
-                this.errMsg = {message: trimError(error)}; 
+                this.$refs.LoginUp.showError(trimError(error));
                 break;
               default:
-                this.errMsg = {message: "系统繁忙"}; 
+                this.$refs.LoginUp.showError("系统繁忙");
             }
           })
       },
@@ -156,7 +169,7 @@
           this.wxLogin();
         })
         .catch(err => {
-          this.errMsg = {message: "系统繁忙,请先用其他方式登录"};
+          this.$refs.LoginUp.showError("系统繁忙,请先用其他方式登录");
           return;
         });
       },
