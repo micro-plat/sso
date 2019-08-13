@@ -25,7 +25,7 @@ fi
 
 echo "----------1:生成apiserver数据-----------"
 cd apiserver/
-CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build  $tags -o "../out/sso_apiserver/api/bin/apiserver"
+CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build  $tags -o "../out/sso_apiserver/api/bin/sso_apiserver"
 if [ $? -ne 0 ]; then
 	echo "apiserver 项目编译出错,请检查"
 	exit 1
@@ -35,7 +35,7 @@ cd ../
 
 echo "----------2:生成lgapi数据------------"
 cd lgapi/
-CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build $tags -o "../out/sso_login/api/bin/lgapi"
+CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build $tags -o "../out/sso_login/api/bin/sso_lgapi"
 if [ $? -ne 0 ]; then
 	echo "lgapi 项目编译出错,请检查"
 	exit 1
@@ -44,7 +44,7 @@ cd ../
 
 echo "----------3:生成lgweb数据-----------"
 cd lgweb/
-CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build $tags -o "../out/sso_login/web/lgweb"
+CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build $tags -o "../out/sso_login/web/sso_lgweb"
 if [ $? -ne 0 ]; then
 	echo "lgweb golang 项目编译出错,请检查"
 	exit 1
@@ -58,14 +58,17 @@ if [ $? -ne 0 ]; then
 	echo "lgweb vue项目编译出错,请检查"
 	exit 1
 fi
+
+#mkdir -p ../out/sso_login/web/web/static/ && cp -r ./dist/static/ "$_"
 cp -r ./dist/static/ ../out/sso_login/web/static/
+
 echo "--------------------------------------"
 cd ../
 
 
 echo "----------4:生成mgrapi数据----------"
 cd mgrapi/
-CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build  $tags -o "../out/sso_mgr/api/bin/mgrapi"
+CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build  $tags -o "../out/sso_mgr/api/bin/sso_mgrapi"
 if [ $? -ne 0 ]; then
 	echo "mgrapi 项目编译出错,请检查"
 	exit 1
@@ -77,7 +80,7 @@ mkdir -p ./out/sso_mgr/api/bin/static/img
 
 echo "----------5:生成mgrweb数据------------"
 cd mgrweb/
-CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build  $tags -o "../out/sso_mgr/web/mgrweb"
+CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build  $tags -o "../out/sso_mgr/web/sso_mgrweb"
 if [ $? -ne 0 ]; then
 	echo "mgrweb golang 项目编译出错,请检查"
 	exit
@@ -95,11 +98,6 @@ echo "--------------------------------------"
 
 cd ../
 echo "-----------6:生成数据完成--------------"
-
-echo "-----------7:添加日志配置文件-----------"
-cp -r ./conf out/sso_apiserver/api/conf
-cp -r ./conf out/sso_login/api/conf
-cp -r ./conf out/sso_mgr/api/conf
 
 
 cd out/
