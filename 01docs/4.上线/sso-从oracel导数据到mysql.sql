@@ -1,6 +1,9 @@
-1: 第一部查询oracle数据
+/*mysql表要先创建*/
+
+/*1: 第一部查询oracle数据
 2: 导出oracle的查询数据(导出成文件)
 3: 将insert 文件放到mysql中运行
+*/
 
 /*oracle*/ 导出文件的语句
 SELECT * from sso_system_info;
@@ -12,9 +15,9 @@ select user_id, sys_id, role_id, enable from sso_user_role;
 
 
 
-#------mysql操作------
+------mysql操作------
 
-## 以下为历史原因，原来对主键设置了0,而且是用来表示特殊意义，因此要作修改
+/* 以下为历史原因，原来对主键设置了0,而且是用来表示特殊意义，因此要作修改*/
 
 /*更新系统表为 当ident = sso 表示为 用户权限系统 */
 update sso_system_info set id = 0 where ident = 'sso'
