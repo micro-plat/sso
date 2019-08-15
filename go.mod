@@ -17,13 +17,9 @@ require (
 	github.com/golang/snappy v0.0.1
 	github.com/gorilla/websocket v1.4.0
 	github.com/jordan-wright/email v0.0.0-20190218024454-3ea4d25e7cf8
-<<<<<<< HEAD
-	github.com/micro-plat/hydra v0.10.6
-=======
 	github.com/json-iterator/go v1.1.6
 	github.com/mattn/go-isatty v0.0.7
-	github.com/micro-plat/hydra v0.10.5
->>>>>>> 2cf3a7f5768e552c4760e018bd793dc69f904719
+	github.com/micro-plat/hydra v0.10.6
 	github.com/micro-plat/lib4go v0.1.4
 	github.com/micro-plat/wechat v0.0.0-20190124071457-da29af712665
 	github.com/modern-go/concurrent v0.0.0-20180306012644-bacd9c7ef1dd

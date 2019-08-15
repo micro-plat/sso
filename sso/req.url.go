@@ -1,6 +1,6 @@
 package sso
 
-const userInfoUrl = "/subsys/user/info"
-const codeLoginUrl = "/subsys/user/code"
-const systemInfoUrl = "/subsys/info"
-const userMenuUrl = "/subsys/menu"
+const userInfoUrl = "/member/info/get"
+const codeLoginUrl = "/login/auth"
+const systemInfoUrl = "/system/info/get"
+const userMenuUrl = "/member/menu/get"
