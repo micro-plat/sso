@@ -11,19 +11,8 @@ func (s *SSO) install() {
 	s.Conf.API.SetMain(conf.NewAPIServerConf(":6689"))
 	s.Conf.API.SetHeaders(conf.NewHeader().WithCrossDomain())
 	s.Conf.Plat.SetDB(conf.NewMysqlConf("root", "rTo0CesHi2018Qx", "192.168.0.36:3306", "sso").WithConnect(20, 10, 600))
-
-	s.Conf.Plat.SetVarConf("cache", "cache", `
-		{
-			"proto":"redis",
-			"addrs":[
-					"192.168.0.111:6379","192.168.0.112:6379","192.168.0.113:6379","192.168.0.114:6379","192.168.0.115:6379","192.168.0.116:6379"
-			],
-			"db":1,
-			"dial_timeout":10,
-			"read_timeout":10,
-			"write_timeout":10,
-			"pool_size":10
-	}		
-		`)
+	s.Conf.Plat.SetCache(conf.NewRedisCacheConf(1, "192.168.0.111:6379",
+		"192.168.0.112:6379", "192.168.0.113:6379", "192.168.0.114:6379",
+		"192.168.0.115:6379", "192.168.0.116:6379"))
 
 }
