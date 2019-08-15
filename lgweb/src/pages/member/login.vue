@@ -9,6 +9,7 @@
       :sendCode="getCodeCall"
       :loginCallBack="loginsubmit"
 
+      :loginTitle="loginTitle"
       :loginNameLabel="loginNameLabel"
       :loginNameHolder="loginNameHolder"
       :loginPwdLabel="loginPwdLabel"
@@ -47,6 +48,7 @@
         requireWxLogin:false, //是否支持跳转登录
         requireCode: false, //是否支持微信验证码登录
 
+        loginTitle:"用户登录",
         loginNameLabel:"用户名",
         loginNameHolder:"请输入用户名",
         loginPwdLabel:"密码",
@@ -63,26 +65,27 @@
       loginWithUp
     },
 
-    created() {
-      this.controlLoginType();
-    },
-
     mounted(){
+      VueCookies.remove("__sso_jwt__");
+
       document.title = "登录-能源业务中心运营管理系统";
       this.callback = this.$route.query.callback;
       this.changepwd = this.$route.query.changepwd;
       this.ident = this.$route.params.ident ? this.$route.params.ident : "";
-      
-      VueCookies.remove("__sso_jwt__");
+
+      this.controlLoginType();
     },
 
     methods:{
       //取配置，显示验证码登录还是扫码登录
       controlLoginType() {
-        this.$post("lg/login/typeconf", {})
+        this.$post("lg/login/typeconf", {ident: this.ident})
         .then(res => {
           this.requireWxLogin = res.requirewxlogin;
           this.requireCode = res.requirecode;
+          if (res.sysname) {
+            this.loginTitle = "登录到【" + res.sysname + "】";
+          }
         })
       },
 
