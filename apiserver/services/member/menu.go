@@ -10,17 +10,15 @@ import (
 
 //MenuHandler 菜单查询对象
 type MenuHandler struct {
-	c   component.IContainer
-	m   logic.IMenuLogic
-	sys logic.ISystemLogic
+	c component.IContainer
+	m logic.IMenuLogic
 }
 
 //NewMenuHandler 创建菜单查询对象
 func NewMenuHandler(container component.IContainer) (u *MenuHandler) {
 	return &MenuHandler{
-		c:   container,
-		m:   logic.NewMenuLogic(container),
-		sys: logic.NewSystemLogic(container),
+		c: container,
+		m: logic.NewMenuLogic(container),
 	}
 }
 

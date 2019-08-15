@@ -9,18 +9,14 @@ import (
 //MemberHandler is
 type MemberHandler struct {
 	container component.IContainer
-	sys       logic.ISystemLogic
 	m         logic.IMemberLogic
-	op        logic.IOperateLogic
 }
 
 //NewMemberHandler is
 func NewMemberHandler(container component.IContainer) (u *MemberHandler) {
 	return &MemberHandler{
 		container: container,
-		sys:       logic.NewSystemLogic(container),
 		m:         logic.NewMemberLogic(container),
-		op:        logic.NewOperateLogic(container),
 	}
 }
 

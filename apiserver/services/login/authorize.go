@@ -9,7 +9,6 @@ import (
 //AuthorizeHandler is
 type AuthorizeHandler struct {
 	container component.IContainer
-	sys       logic.ISystemLogic
 	m         logic.IMemberLogic
 	op        logic.IOperateLogic
 }
@@ -18,7 +17,6 @@ type AuthorizeHandler struct {
 func NewAuthorizeHandler(container component.IContainer) (u *AuthorizeHandler) {
 	return &AuthorizeHandler{
 		container: container,
-		sys:       logic.NewSystemLogic(container),
 		m:         logic.NewMemberLogic(container),
 		op:        logic.NewOperateLogic(container),
 	}
