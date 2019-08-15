@@ -7,7 +7,6 @@ import (
 	"github.com/micro-plat/hydra/context"
 	"github.com/micro-plat/sso/lgapi/modules/access/member"
 	"github.com/micro-plat/sso/lgapi/modules/logic"
-	"github.com/micro-plat/sso/lgapi/modules/model"
 )
 
 //LoginHandler 用户登录对象
@@ -97,25 +96,7 @@ func (u *LoginHandler) PostHandle(ctx *context.Context) (r interface{}) {
 		return context.NewError(context.ERR_NOT_ACCEPTABLE, "用户名和密码不能为空")
 	}
 
-	//验证码这个是不是可以不用密码验证了
-	config := model.GetConf(u.c)
-	if config.RequireCode {
-		validatecode := ctx.Request.GetString("validatecode")
-		if strings.EqualFold(validatecode, "") {
-			return context.NewError(context.ERR_BAD_REQUEST, "请输入微信验证码")
-		}
-		//验证通过公众号发的验证码
-		isValid, err := u.m.ValidVerifyCode(ctx.Request.GetString("username"), validatecode)
-		if err != nil {
-			return err
-		}
-		if !isValid {
-			return context.NewError(context.ERR_BAD_REQUEST, "微信验证码错误")
-		}
-	}
-
 	ident := ctx.Request.GetString("ident")
-	//当有ident时没有权限就跳转错误页面
 	ctx.Log.Info("2:处理用户账号登录")
 	member, err := u.m.Login(
 		ctx.Request.GetString("username"),

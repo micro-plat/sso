@@ -23,7 +23,6 @@ type IDBMember interface {
 	QueryByOpenID(openID, ident string) (s *model.MemberState, err error)
 	ExistsOpenId(content string) error
 	QueryByName(userName, ident string) (s *model.MemberState, err error)
-	SaveUserOpenID(userName, openID string) error
 
 	GetUserInfo(u string) (db.QueryRows, error)
 }

@@ -7,7 +7,6 @@ import (
 
 	"github.com/micro-plat/hydra/component"
 	"github.com/micro-plat/hydra/context"
-	"github.com/micro-plat/lib4go/security/md5"
 	"github.com/micro-plat/lib4go/utility"
 
 	"github.com/micro-plat/sso/lgapi/modules/access/member"
@@ -21,7 +20,6 @@ type IMemberLogic interface {
 	Login(u, p, ident string) (*model.LoginState, error)
 	ChangePwd(userID int, expassword string, newpassword string) (err error)
 	CheckHasRoles(userID int64, ident string) error
-	CheckUerInfo(userName, password string) error
 }
 
 //MemberLogic 用户登录管理
@@ -89,27 +87,4 @@ func (m *MemberLogic) CheckHasRoles(userID int64, ident string) error {
 	}
 
 	return m.db.CheckUserHasAuth(ident, userID)
-}
-
-//CheckUerInfo 验证用户名密码,以及openid
-func (m *MemberLogic) CheckUerInfo(userName, password string) error {
-	rows, err := m.db.GetUserInfo(userName)
-	if err != nil {
-		return context.NewError(context.ERR_SERVICE_UNAVAILABLE, err)
-	}
-	if rows.IsEmpty() {
-		return context.NewError(context.ERR_NOT_ACCEPTABLE, "用户名或密码错误")
-	}
-	data := rows.Get(0)
-	if strings.ToLower(data.GetString("password")) != strings.ToLower(md5.Encrypt(password)) {
-		return context.NewError(context.ERR_NOT_ACCEPTABLE, "用户名或密码错误")
-	}
-	status := data.GetInt("status")
-	if status == enum.UserLock || status == enum.UserDisable {
-		return context.NewError(context.ERR_NOT_ACCEPTABLE, "用户被锁定或被禁用,请联系管理员")
-	}
-	if data.GetString("wx_openid") != "" {
-		return context.NewError(context.ERR_NOT_ACCEPTABLE, "账号已绑定微信")
-	}
-	return nil
 }
