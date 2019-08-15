@@ -1,13 +1,19 @@
 package types
 
 import (
+	"encoding/json"
+	"encoding/xml"
 	"fmt"
+	"io"
+	"strings"
 	"time"
 )
 
 var _ IXMap = XMap{}
 
 type IXMap interface {
+	Keys() []string
+	GetValue(name string) interface{}
 	GetString(name string) string
 	GetInt(name string, def ...int) int
 	GetInt64(name string, def ...int64) int64
@@ -25,9 +31,49 @@ type IXMap interface {
 
 type XMap map[string]interface{}
 
+//Merge 合并
+func (q XMap) Merge(m IXMap) {
+	keys := m.Keys()
+	for _, key := range keys {
+		q.SetValue(key, m.GetValue(key))
+	}
+}
+
+//GetString 从对象中获取数据值，如果不是字符串则返回空
+func (q XMap) Keys() []string {
+	keys := make([]string, len(q))
+	idx := 0
+	for k := range q {
+		keys[idx] = k
+		idx++
+	}
+	return keys
+}
+
+func (q XMap) GetValue(name string) interface{} {
+	return q[name]
+}
+
 //GetString 从对象中获取数据值，如果不是字符串则返回空
 func (q XMap) GetString(name string) string {
-	return GetString(q[name])
+	parties := strings.Split(name, ":")
+	if len(parties) == 1 {
+		return GetString(q[name])
+	}
+	tmpv := q[parties[0]]
+	for i, cnt := 1, len(parties); i < cnt; i++ {
+		if v, ok := tmpv.(map[string]interface{}); ok {
+			tmpv = v[parties[i]]
+			continue
+		}
+		if v, ok := tmpv.(string); ok {
+			tmp := map[string]interface{}{}
+			json.Unmarshal([]byte(v), &tmp)
+			tmpv = tmp[parties[i]]
+			continue
+		}
+	}
+	return GetString(tmpv)
 }
 
 //GetInt 从对象中获取数据值，如果不是字符串则返回0
@@ -93,11 +139,59 @@ func (q XMap) GetMustFloat64(name string) (float64, bool) {
 
 //ToStruct 将当前对象转换为指定的struct
 func (q XMap) ToStruct(o interface{}) error {
-	input := make(map[string]interface{})
-	for k, v := range q {
-		input[k] = fmt.Sprint(v)
+	return Map2Struct(q, o)
+}
+
+func (m *XMap) Megre(anr XMap) {
+	if anr != nil {
+		for k, v := range anr {
+			(*m)[k] = v
+		}
 	}
-	return Map2Struct(&input, &o)
+}
+
+type xmlMapEntry struct {
+	XMLName xml.Name
+	Value   string `xml:",chardata"`
+}
+
+func (m XMap) MarshalXML(e *xml.Encoder, start xml.StartElement) error {
+	if len(m) == 0 {
+		return nil
+	}
+
+	err := e.EncodeToken(start)
+	if err != nil {
+		return err
+	}
+
+	for k, v := range m {
+		if v == nil || GetString(v) == "" {
+			continue
+		}
+		e.Encode(xmlMapEntry{XMLName: xml.Name{Local: k}, Value: GetString(v)})
+	}
+
+	return e.EncodeToken(start.End())
+}
+
+func (m *XMap) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
+	if m == nil {
+		m = &XMap{}
+	}
+	for {
+		var e xmlMapEntry
+
+		err := d.Decode(&e)
+		if err == io.EOF {
+			break
+		} else if err != nil {
+			return err
+		}
+
+		(*m)[e.XMLName.Local] = e.Value
+	}
+	return nil
 }
 
 //XMaps 多行数据
@@ -127,7 +221,7 @@ func (q XMaps) Get(i int) XMap {
 }
 
 //ParseBool 将字符串转换为bool值
-func parseBool(val interface{}) (value bool, err error) {
+func ParseBool(val interface{}) (value bool, err error) {
 	if val != nil {
 		switch v := val.(type) {
 		case bool:

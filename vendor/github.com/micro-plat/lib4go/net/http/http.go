@@ -18,11 +18,16 @@ import (
 	"time"
 
 	"github.com/micro-plat/lib4go/encoding"
+	"github.com/micro-plat/lib4go/envs"
 )
 
 type OptionConf struct {
 	ConnectionTimeout time.Duration
 	RequestTimeout    time.Duration
+	certFiles         []string
+	cafile            string
+	proxy             string
+	keepalive         bool
 }
 
 //Option 配置选项
@@ -42,14 +47,42 @@ func WithRequestTimeout(tm time.Duration) Option {
 	}
 }
 
-// HTTPClient HTTP客户端
+//WithCert 设置请求证书
+func WithCert(cerfile string, key string) Option {
+	return func(o *OptionConf) {
+		o.certFiles = []string{cerfile, key}
+	}
+}
+
+//WithCa 设置ca证书
+func WithCa(cafile string) Option {
+	return func(o *OptionConf) {
+		o.cafile = cafile
+	}
+}
+
+//WithProxy 使用代理地址
+func WithProxy(proxy string) Option {
+	return func(o *OptionConf) {
+		o.proxy = proxy
+	}
+}
+
+//WithKeepalive 设置keep alive
+func WithKeepalive(keepalive bool) Option {
+	return func(o *OptionConf) {
+		o.keepalive = keepalive
+	}
+}
+
+//HTTPClient HTTP客户端
 type HTTPClient struct {
 	*OptionConf
 	client   *http.Client
 	Response *http.Response
 }
 
-// HTTPClientRequest  http请求
+//HTTPClientRequest  http请求
 type HTTPClientRequest struct {
 	headers  map[string]string
 	client   *http.Client
@@ -59,111 +92,24 @@ type HTTPClientRequest struct {
 	encoding string
 }
 
-// NewHTTPClientCert 根据pem证书初始化httpClient
-func NewHTTPClientCert(certFile string, keyFile string, caFile string) (client *HTTPClient, err error) {
-	cert, err := tls.LoadX509KeyPair(certFile, keyFile)
-	if err != nil {
-		return
-	}
-	caData, err := ioutil.ReadFile(caFile)
-	if err != nil {
-		return
-	}
-	pool := x509.NewCertPool()
-	pool.AppendCertsFromPEM(caData)
-	ssl := &tls.Config{
-		Certificates: []tls.Certificate{cert},
-		RootCAs:      pool,
-	}
-	ssl.Rand = rand.Reader
-	client = &HTTPClient{}
-	client.client = &http.Client{
-		Transport: &http.Transport{
-			DisableKeepAlives: true,
-			TLSClientConfig:   ssl,
-			Dial: func(netw, addr string) (net.Conn, error) {
-				c, err := net.DialTimeout(netw, addr, 0)
-				if err != nil {
-					return nil, err
-				}
-				return c, nil
-			},
-			MaxIdleConnsPerHost:   0,
-			ResponseHeaderTimeout: 0,
-		},
-	}
-	return
-}
-
-// NewHTTPClientCert2 根据ca证书来初始化httpClient
-func NewHTTPClientCert2(caFile string) (client *HTTPClient, err error) {
-	pool := x509.NewCertPool()
-	client = &HTTPClient{}
-	caData, err := ioutil.ReadFile(caFile)
-	if err != nil {
-		return
-	}
-	pool.AppendCertsFromPEM(caData)
-
-	client.client = &http.Client{
-		Transport: &http.Transport{
-			DisableKeepAlives: true,
-			TLSClientConfig:   &tls.Config{RootCAs: pool},
-			Dial: func(netw, addr string) (net.Conn, error) {
-				c, err := net.DialTimeout(netw, addr, 0)
-				if err != nil {
-					return nil, err
-				}
-				return c, nil
-			},
-			MaxIdleConnsPerHost:   0,
-			ResponseHeaderTimeout: 0,
-			DisableCompression:    true,
-		},
-	}
-	return
-}
-
-// NewHTTPClientCert1 根据ca证书来初始化httpClient
-func NewHTTPClientCert1(caFile string) (client *HTTPClient, err error) {
-
-	pool := x509.NewCertPool()
-	caData, err := ioutil.ReadFile(caFile)
-	if err != nil {
-		return
-	}
-	pool.AppendCertsFromPEM(caData)
-	client = &HTTPClient{}
-	client.client = &http.Client{
-		Transport: &http.Transport{
-			DisableKeepAlives: true,
-			TLSClientConfig:   &tls.Config{RootCAs: pool},
-			Dial: func(netw, addr string) (net.Conn, error) {
-				c, err := net.DialTimeout(netw, addr, 0)
-				if err != nil {
-					return nil, err
-				}
-				return c, nil
-			},
-			MaxIdleConnsPerHost:   0,
-			ResponseHeaderTimeout: 0,
-			DisableCompression:    true,
-		},
-	}
-
-	return
-}
-
 // NewHTTPClient 构建HTTP客户端，用于发送GET POST等请求
-func NewHTTPClient(opts ...Option) (client *HTTPClient) {
+func NewHTTPClient(opts ...Option) (client *HTTPClient, err error) {
 	client = &HTTPClient{}
-	client.OptionConf = &OptionConf{ConnectionTimeout: time.Second * 3, RequestTimeout: time.Second * 20}
+	client.OptionConf = &OptionConf{
+		ConnectionTimeout: time.Second * time.Duration(envs.GetInt("hydra_http_conn_timeout", 3)),
+		RequestTimeout:    time.Second * time.Duration(envs.GetInt("hydra_http_req_timeout", 10))}
 	for _, opt := range opts {
 		opt(client.OptionConf)
 	}
+	tlsConf, err := getCert(client.OptionConf)
+	if err != nil {
+		return nil, err
+	}
 	client.client = &http.Client{
 		Transport: &http.Transport{
-			DisableKeepAlives: true,
+			DisableKeepAlives: client.OptionConf.keepalive,
+			TLSClientConfig:   tlsConf,
+			Proxy:             getProxy(client.OptionConf),
 			Dial: func(netw, addr string) (net.Conn, error) {
 				c, err := net.DialTimeout(netw, addr, client.OptionConf.ConnectionTimeout)
 				if err != nil {
@@ -172,7 +118,6 @@ func NewHTTPClient(opts ...Option) (client *HTTPClient) {
 				c.SetDeadline(time.Now().Add(client.OptionConf.RequestTimeout))
 				return c, nil
 			},
-
 			MaxIdleConnsPerHost:   0,
 			ResponseHeaderTimeout: 0,
 		},
@@ -180,27 +125,38 @@ func NewHTTPClient(opts ...Option) (client *HTTPClient) {
 	return
 }
 
-// NewHTTPClientProxy 根据代理服务器地址创建httpClient
-func NewHTTPClientProxy(proxy string) (client *HTTPClient) {
-	client = &HTTPClient{}
-	client.client = &http.Client{
-		Transport: &http.Transport{
-			DisableKeepAlives: true,
-			Proxy: func(_ *http.Request) (*url.URL, error) {
-				return url.Parse(proxy) //根据定义Proxy func(*Request) (*url.URL, error)这里要返回url.URL
-			},
-			Dial: func(netw, addr string) (net.Conn, error) {
-				c, err := net.DialTimeout(netw, addr, 0)
-				if err != nil {
-					return nil, err
-				}
-				return c, nil
-			},
-			MaxIdleConnsPerHost:   0,
-			ResponseHeaderTimeout: 0,
-		},
+func getCert(c *OptionConf) (*tls.Config, error) {
+	ssl := &tls.Config{}
+	if len(c.certFiles) == 2 {
+		cert, err := tls.LoadX509KeyPair(c.certFiles[0], c.certFiles[1])
+		if err != nil {
+			return nil, fmt.Errorf("cert证书(pem:%s,key:%s),加载失败:%v", c.certFiles[0], c.certFiles[1], err)
+		}
+		ssl.Certificates = []tls.Certificate{cert}
 	}
-	return
+	if c.cafile != "" {
+		caData, err := ioutil.ReadFile(c.cafile)
+		if err != nil {
+			return nil, fmt.Errorf("ca证书(%s)读取错误:%v", c.cafile, err)
+		}
+		pool := x509.NewCertPool()
+		pool.AppendCertsFromPEM(caData)
+		ssl.RootCAs = pool
+	}
+	if len(ssl.Certificates) == 0 && ssl.RootCAs == nil {
+		return nil, nil
+	}
+	ssl.Rand = rand.Reader
+	return ssl, nil
+
+}
+func getProxy(c *OptionConf) func(*http.Request) (*url.URL, error) {
+	if c.proxy != "" {
+		return func(_ *http.Request) (*url.URL, error) {
+			return url.Parse(c.proxy) //根据定义Proxy func(*Request) (*url.URL, error)这里要返回url.URL
+		}
+	}
+	return nil
 }
 
 // Download 发送http请求, method:http请求方法包括:get,post,delete,put等 url: 请求的HTTP地址,不包括参数,params:请求参数,

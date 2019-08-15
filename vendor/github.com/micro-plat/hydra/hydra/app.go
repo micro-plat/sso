@@ -4,17 +4,16 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/micro-plat/hydra/conf/creator"
-	"github.com/micro-plat/hydra/hydra/daemon"
-	"github.com/zkfy/log"
-
 	"github.com/asaskevich/govalidator"
 	"github.com/micro-plat/hydra/component"
+	"github.com/micro-plat/hydra/conf/creator"
+	"github.com/micro-plat/hydra/hydra/daemon"
 	_ "github.com/micro-plat/hydra/hydra/impt"
 	"github.com/micro-plat/hydra/hydra/rqs"
 	"github.com/micro-plat/hydra/registry"
 	"github.com/micro-plat/lib4go/logger"
 	"github.com/urfave/cli"
+	"github.com/zkfy/log"
 )
 
 //MicroApp  微服务应用
@@ -30,6 +29,7 @@ type MicroApp struct {
 	//	registry           registry.IRegistry
 	component.IComponentRegistry
 	service daemon.Daemon
+	Cli     ICli
 }
 
 //NewApp 创建微服务应用
@@ -38,6 +38,7 @@ func NewApp(opts ...Option) (m *MicroApp) {
 	logging := log.New(os.Stdout, "", log.Llongcolor)
 	logging.SetOutputLevel(log.Ldebug)
 	m.xlogger = logging
+	m.Cli = NewCli()
 	m.Conf = creator.NewBinder(logging)
 	for _, opt := range opts {
 		opt(m.option)
@@ -54,9 +55,6 @@ func (m *MicroApp) Start() {
 	if m.IsDebug {
 		m.PlatName += "_debug"
 	}
-	//	m.app.ErrWriter = (logger.LogWriter)(m.xlogger.Error)
-	//m.app.Writer = (logger.LogWriter)(m.xlogger.Info)
-
 	m.service, err = daemon.New(m.app.Name, m.app.Name)
 	if err != nil {
 		m.logger.Error(err)
@@ -65,6 +63,7 @@ func (m *MicroApp) Start() {
 	if err := m.app.Run(os.Args); err != nil {
 		return
 	}
+
 }
 
 //Use 注册所有服务
@@ -73,11 +72,12 @@ func (m *MicroApp) Use(r func(r component.IServiceRegistry)) {
 }
 
 func (m *MicroApp) action(c *cli.Context) (err error) {
-	if err := m.checkInput(); err != nil {
+	if err := m.checkInput(c); err != nil {
 		m.xlogger.Warn(err)
 		cli.ShowCommandHelp(c, c.Command.Name)
 		return nil
 	}
+
 	//初始化远程日志
 	if m.remoteLogger {
 		m.RemoteLogger = m.remoteLogger
@@ -105,27 +105,39 @@ func (m *MicroApp) action(c *cli.Context) (err error) {
 		defer m.remoteQueryService.Shutdown()
 	}
 
-	m.hydra = NewHydra(m.PlatName, m.SystemName, m.ServerTypes, m.ClusterName, m.Trace,
+	m.hydra = NewHydra(m.app.Name, m.PlatName, m.SystemName, m.ServerTypes, m.ClusterName, m.Trace,
 		m.RegistryAddr, m.IsDebug, m.RemoteLogger, m.logger, m.IComponentRegistry)
 
-	if _, err := m.hydra.Start(); err != nil {
-		m.logger.Error(err)
-		return err
-	}
+	m.run()
+	// if _, err := m.hydra.Start(); err != nil {
+	// 	m.logger.Error(err)
+	// 	return err
+	// }
 	return nil
 }
-
-func (m *MicroApp) checkInput() (err error) {
+func (m *MicroApp) run() {
+	p := &once{app: m}
+	p.run()
+}
+func (m *MicroApp) checkInput(c *cli.Context) (err error) {
+	m.Cli.setContext(c)
 	if m.ServerTypeNames != "" && len(m.ServerTypes) == 0 {
 		WithServerTypes(m.ServerTypeNames)(m.option)
 	}
 	if m.PlatName == "" && m.Name != "" {
 		WithName(m.Name)(m.option)
 	}
-
 	if b, err := govalidator.ValidateStruct(m.option); !b {
 		err = fmt.Errorf("服务器运行缺少参数，请查看以下帮助信息")
 		return err
+	}
+
+	//获取外部验证
+	vds := m.Cli.getValidators(c.Command.Name)
+	for _, validator := range vds {
+		if err := validator(c); err != nil {
+			return err
+		}
 	}
 	return
 }

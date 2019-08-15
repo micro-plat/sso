@@ -78,12 +78,19 @@ func ResetConfig(conf string) (err error) {
 }
 
 //New 根据一个或多个日志名称构建日志对象，该日志对象具有新的session id系统不会缓存该日志组件
-func New(names string) (logger *Logger) {
+func New(names string, tags ...string) (logger *Logger) {
 	logger = &Logger{index: 100}
 	logger.names = names
 	logger.sessions = CreateSession()
 	logger.DoPrint = logger.Info
 	logger.DoPrintf = logger.Infof
+	logger.tags = make(map[string]string)
+	if len(tags) > 0 && len(tags) != 2 {
+		panic(fmt.Sprintf("日志输入参数错误，扩展参数必须成对出现:%s,%v", names, tags))
+	}
+	for i := 0; i < len(tags)-1; i++ {
+		logger.tags[tags[i]] = tags[i+1]
+	}
 	return logger
 }
 
@@ -100,6 +107,9 @@ func GetSession(name string, sessionID string, tags ...string) (logger *Logger) 
 		logger.tags[tags[i]] = tags[i+1]
 	}
 	return logger
+}
+func (logger *Logger) SetName(name string) {
+	logger.names = name
 }
 
 //Close 关闭当前日志组件
@@ -122,9 +132,9 @@ func (logger *Logger) StartLogging() {
 }
 
 //SetTag 设置tag
-func (logger *Logger) SetTag(name string, value string) {
-	logger.tags[name] = value
-}
+// func (logger *Logger) SetTag(name string, value string) {
+// 	logger.tags[name] = value
+// }
 
 //GetSessionID 获取当前日志的session id
 func (logger *Logger) GetSessionID() string {
@@ -242,15 +252,16 @@ func (logger *Logger) Println(content ...interface{}) {
 
 }
 func (logger *Logger) logfmt(f string, level string, content ...interface{}) {
-	event := NewLogEvent(logger.names, level, logger.sessions, fmt.Sprintf(f, content...), nil, atomic.AddInt64(&logger.index, 1))
+	event := NewLogEvent(logger.names, level, logger.sessions, fmt.Sprintf(f, content...), logger.tags, atomic.AddInt64(&logger.index, 1))
 	loggerEventChan <- event
 }
 func (logger *Logger) log(level string, content ...interface{}) {
-	event := NewLogEvent(logger.names, level, logger.sessions, getString(content...), nil, atomic.AddInt64(&logger.index, 1))
+	event := NewLogEvent(logger.names, level, logger.sessions, getString(content...), logger.tags, atomic.AddInt64(&logger.index, 1))
 	loggerEventChan <- event
 }
 func logNow() {
 	for {
+
 		select {
 		case logger := <-loggerCloserChan:
 			loggerPool.Put(logger)

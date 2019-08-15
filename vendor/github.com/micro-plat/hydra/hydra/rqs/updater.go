@@ -1,7 +1,6 @@
 package rqs
 
 import (
-	"bytes"
 	"fmt"
 	"io"
 	"io/ioutil"
@@ -13,13 +12,13 @@ import (
 	"time"
 
 	"github.com/asaskevich/govalidator"
+	"github.com/mholt/archiver"
 	"github.com/micro-plat/hydra/conf"
 	"github.com/micro-plat/hydra/context"
 	"github.com/micro-plat/hydra/registry"
 	"github.com/micro-plat/lib4go/logger"
 	"github.com/micro-plat/lib4go/osext"
 	"github.com/micro-plat/lib4go/security/crc32"
-	"github.com/zkfy/archiver"
 )
 
 type updater struct {
@@ -67,12 +66,7 @@ func (u *updater) Apply(update io.Reader, opts updaterOptions) (err error) {
 	defer os.RemoveAll(u.newDir)
 
 	//读取归档并解压文件
-	archiver := archiver.MatchingFormat(opts.TargetName)
-	if archiver == nil {
-		err = fmt.Errorf("文件不是有效的归档或压缩文件")
-		return
-	}
-	err = archiver.Read(bytes.NewReader(newBytes), u.newDir)
+	err = archiver.Unarchive(opts.TargetName, u.newDir)
 	if err != nil {
 		err = fmt.Errorf("读取归档文件失败:%v", err)
 		return
@@ -132,16 +126,16 @@ type updaterOptions struct {
 }
 
 //NeedUpdate 检查当前服务是否需要更新
-func NeedUpdate(registry registry.IRegistry, platName string, systemName string, v string) (bool, *conf.Package, error) {
-	path := filepath.Join("/", platName, "package", systemName, v)
-	b, err := registry.Exists(path)
+func NeedUpdate(r registry.IRegistry, platName string, systemName string, v string) (bool, *conf.Package, error) {
+	path := registry.Join("/", platName, "package", systemName, v)
+	b, err := r.Exists(path)
 	if err != nil {
 		return false, nil, context.NewError(406, err)
 	}
 	if !b {
-		return false, nil, context.NewError(406, fmt.Sprintf("版本%s不存在(%s未配置)",v, path))
+		return false, nil, context.NewError(406, fmt.Sprintf("版本%s不存在(%s未配置)", v, path))
 	}
-	buffer, vr, err := registry.GetValue(path)
+	buffer, vr, err := r.GetValue(path)
 	if err != nil {
 		return false, nil, context.NewError(406, err)
 	}

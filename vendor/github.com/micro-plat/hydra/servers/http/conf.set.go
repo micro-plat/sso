@@ -58,7 +58,7 @@ func SetStatic(set ISetStatic, cnf conf.IServerConf) (enable bool, err error) {
 	if static.FirstPage == "" {
 		static.FirstPage = "index.html"
 	}
-	static.Exts = append(static.Exts, ".txt", ".jpg", ".png", ".gif", ".ico", ".html", ".htm", ".js", ".css", ".map", ".ttf", ".woff", ".woff2")
+	static.Exts = append(static.Exts, ".txt", ".jpg", ".png", ".gif", ".ico", ".html", ".htm", ".js", ".css", ".map", ".ttf", ".woff", ".woff2", ".woff2")
 	static.Rewriters = append(static.Rewriters, "/", "index.htm", "default.html")
 	static.Exclude = append(static.Exclude, "/views/", ".exe", ".so")
 	err = set.SetStatic(&static)
@@ -70,13 +70,38 @@ type ISetRouterHandler interface {
 	SetRouters([]*conf.Router) error
 }
 
+func getRouters(services map[string][]string) conf.Routers {
+	routers := conf.Routers{}
+
+	if len(services) == 0 {
+		routers.Routers = make([]*conf.Router, 0, 1)
+		routers.Routers = append(routers.Routers, &conf.Router{Action: []string{"GET", "POST", "PUT", "DELETE", "HEAD", "OPTIONS"}, Name: "/*name", Service: "/@name", Engine: "*"})
+		return routers
+	}
+	routers.Routers = make([]*conf.Router, 0, len(services))
+	for name, actions := range services {
+		router := &conf.Router{
+			Action:  actions, //[]string{"GET", "POST", "PUT", "DELETE", "HEAD", "OPTIONS"},
+			Name:    name,
+			Service: name,
+			Engine:  "*",
+		}
+		router.Action = append(router.Action, "HEAD", "OPTIONS")
+		routers.Routers = append(routers.Routers, router)
+	}
+	return routers
+}
+
 //SetHttpRouters 设置路由
 func SetHttpRouters(engine servers.IRegistryEngine, set ISetRouterHandler, cnf conf.IServerConf) (enable bool, err error) {
 	var routers conf.Routers
 	if _, err = cnf.GetSubObject("router", &routers); err == conf.ErrNoSetting || len(routers.Routers) == 0 {
-		routers = conf.Routers{}
-		routers.Routers = make([]*conf.Router, 0, 1)
-		routers.Routers = append(routers.Routers, &conf.Router{Action: []string{"GET", "POST", "PUT", "DELETE", "HEAD", "OPTIONS"}, Name: "/*name", Service: "/@name", Engine: "*"})
+		// routers = conf.Routers{}
+		// routers.Routers = make([]*conf.Router, 0, 1)
+		// routers.Routers = append(routers.Routers, &conf.Router{Action: []string{"GET", "POST", "PUT", "DELETE", "HEAD", "OPTIONS"}, Name: "/*name", Service: "/@name", Engine: "*"})
+
+		routers = getRouters(engine.GetServices())
+		// fmt.Println("routers:", engine.GetServices())
 	}
 	if err != nil && err != conf.ErrNoSetting {
 		err = fmt.Errorf("路由:%v", err)

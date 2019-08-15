@@ -2,10 +2,9 @@ package component
 
 import (
 	"fmt"
-	"path/filepath"
 
-	"github.com/asaskevich/govalidator"
 	"github.com/micro-plat/hydra/conf"
+	"github.com/micro-plat/hydra/registry"
 	"github.com/micro-plat/lib4go/concurrent/cmap"
 	"github.com/micro-plat/lib4go/queue"
 )
@@ -65,10 +64,10 @@ func (s *StandardQueue) GetQueueBy(tpName string, name string) (c queue.IQueue, 
 		if err = jConf.Unmarshal(&qConf); err != nil {
 			return nil, err
 		}
-		if b, err := govalidator.ValidateStruct(&qConf); !b {
-			return nil, err
-		}
-		return queue.NewQueue(qConf.Proto, string(jConf.GetRaw()))
+		// if b, err := govalidator.ValidateStruct(&qConf); !b {
+		// 	return nil, err
+		// }
+		return queue.NewQueue(qConf.GetProto(), string(jConf.GetRaw()))
 	})
 	return c, err
 }
@@ -77,9 +76,9 @@ func (s *StandardQueue) GetQueueBy(tpName string, name string) (c queue.IQueue, 
 func (s *StandardQueue) SaveQueueObject(tpName string, name string, f func(c conf.IConf) (queue.IQueue, error)) (bool, queue.IQueue, error) {
 	cacheConf, err := s.IContainer.GetVarConf(tpName, name)
 	if err != nil {
-		return false, nil, fmt.Errorf("%s %v", filepath.Join("/", s.GetPlatName(), "var", tpName, name), err)
+		return false, nil, fmt.Errorf("%s %v", registry.Join("/", s.GetPlatName(), "var", tpName, name), err)
 	}
-	key := fmt.Sprintf("%s/%s:%d", tpName, name, cacheConf.GetVersion())
+	key := fmt.Sprintf("%s/%s:%s", tpName, name, cacheConf.GetSignature())
 	ok, ch, err := s.queueCache.SetIfAbsentCb(key, func(input ...interface{}) (c interface{}, err error) {
 		return f(cacheConf)
 	})

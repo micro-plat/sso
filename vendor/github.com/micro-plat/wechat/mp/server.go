@@ -207,7 +207,8 @@ func (srv *Server) buildResponse(requestMsg *MixedMsg, reply *Reply) (msgData in
 func (srv *Server) send(responseMsg interface{}, ctx *context.Context) (err error) {
 	replyMsg := responseMsg
 	if replyMsg == nil || reflect.ValueOf(replyMsg).IsNil() {
-		ctx.Response.ShouldContent("success")
+		ctx.Response.Text("success")
+		//ctx.Response.ShouldContent("success")
 		return nil
 	}
 	if srv.isSafeMode {

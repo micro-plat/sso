@@ -45,7 +45,8 @@ func NewMqcResponsiveServer(registryAddr string, cnf conf.IServerConf, logger *l
 	if err != nil {
 		return nil, fmt.Errorf("%s:engine启动失败%v", cnf.GetServerName(), err)
 	}
-	if err = h.engine.SetHandler(cnf.Get("__component_handler_").(component.IComponentHandler)); err != nil {
+	chandler := cnf.Get("__component_handler_").(component.IComponentHandler)
+	if err = h.engine.SetHandler(chandler); err != nil {
 		return nil, err
 	}
 	if h.server, err = NewMqcServer(cnf.GetServerName(),
@@ -53,12 +54,15 @@ func NewMqcResponsiveServer(registryAddr string, cnf conf.IServerConf, logger *l
 		"",
 		nil,
 		WithShowTrace(cnf.GetBool("trace", false)),
+		WithName(cnf.GetPlatName(), cnf.GetSysName(), cnf.GetClusterName(), cnf.GetServerType()),
 		WithLogger(logger)); err != nil {
 		return
 	}
 	if err = h.SetConf(true, h.currentConf); err != nil {
 		return
 	}
+	go h.server.Dynamic(h.engine, chandler.GetDynamicQueue())
+
 	return
 }
 
@@ -74,7 +78,8 @@ func (w *MqcResponsiveServer) Restart(cnf conf.IServerConf) (err error) {
 	if err != nil {
 		return fmt.Errorf("%s:engine启动失败%v", cnf.GetServerName(), err)
 	}
-	if err = w.engine.SetHandler(cnf.Get("__component_handler_").(component.IComponentHandler)); err != nil {
+	chandler := cnf.Get("__component_handler_").(component.IComponentHandler)
+	if err = w.engine.SetHandler(chandler); err != nil {
 		return err
 	}
 	if w.server, err = NewMqcServer(cnf.GetServerName(),
@@ -82,12 +87,15 @@ func (w *MqcResponsiveServer) Restart(cnf conf.IServerConf) (err error) {
 		"",
 		nil,
 		WithShowTrace(cnf.GetBool("trace", false)),
+		WithName(cnf.GetPlatName(), cnf.GetSysName(), cnf.GetClusterName(), cnf.GetServerType()),
 		WithLogger(w.Logger)); err != nil {
 		return
 	}
 	if err = w.SetConf(true, cnf); err != nil {
 		return
 	}
+
+	go w.server.Dynamic(w.engine, chandler.GetDynamicQueue())
 	if err = w.Start(); err == nil {
 		w.currentConf = cnf
 		w.restarted = true
@@ -129,7 +137,7 @@ func (w *MqcResponsiveServer) GetStatus() string {
 }
 
 //GetServices 获取服务列表
-func (w *MqcResponsiveServer) GetServices() []string {
+func (w *MqcResponsiveServer) GetServices() map[string][]string {
 	return w.engine.GetServices()
 }
 
