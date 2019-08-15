@@ -23,3 +23,8 @@ export function JoinUrlParams(url,params) {
   }
   return url;
 }
+
+//获取url的host
+export function GetUrlHost(url) {
+  return url.substr(0, url.lastIndexOf("/"));
+}

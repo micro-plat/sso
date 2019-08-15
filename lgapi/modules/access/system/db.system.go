@@ -1,6 +1,8 @@
 package system
 
 import (
+	"errors"
+
 	"github.com/micro-plat/hydra/component"
 	"github.com/micro-plat/lib4go/db"
 	"github.com/micro-plat/sso/lgapi/modules/const/sqls"
@@ -33,7 +35,7 @@ func (l *DbSystem) QueryUserSystem(userId int64) (s db.QueryRows, err error) {
 	return data, err
 }
 
-//QuerySysInfoByIdent xx
+//QuerySysInfoByIdent
 func (l *DbSystem) QuerySysInfoByIdent(ident string) (db.QueryRow, error) {
 	db := l.c.GetRegularDB()
 	data, _, _, err := db.Query(
@@ -44,7 +46,7 @@ func (l *DbSystem) QuerySysInfoByIdent(ident string) (db.QueryRow, error) {
 		return nil, err
 	}
 	if data.IsEmpty() {
-		return nil, nil
+		return nil, errors.New("系统不存在")
 	}
 	return data.Get(0), nil
 }

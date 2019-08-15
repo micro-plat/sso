@@ -39,18 +39,6 @@ func (u *MemberHandler) ChangePwdHandle(ctx *context.Context) (r interface{}) {
 	return "success"
 }
 
-//GetCodeHandle 返回用户的身份code(这个是子系统选择页面，返回一个登录标识给子系统)
-func (u *MemberHandler) GetCodeHandle(ctx *context.Context) (r interface{}) {
-	ctx.Log.Info("-------返回用户的身份code---------")
-
-	code, err := u.mem.CreateLoginUserCode(m.Get(ctx).UserID)
-	if err != nil {
-		return context.NewError(context.ERR_BAD_REQUEST, err.Error)
-	}
-
-	return code
-}
-
 //RefreshHandle 刷新token 这个接口只是为了刷新sso登录用户的jwt, jwt刷新在框架就做了
 func (u *MemberHandler) RefreshHandle(ctx *context.Context) (r interface{}) {
 	ctx.Log.Info("-------刷新token---------")

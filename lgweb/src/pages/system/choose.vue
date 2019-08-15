@@ -18,7 +18,7 @@
 </template>
 
 <script>
-   import {JoinUrlParams} from '@/services/common'
+   import {JoinUrlParams, GetUrlHost} from '@/services/common'
   export default {
     name: 'chose',
     data () {
@@ -34,18 +34,10 @@
 
     methods:{
         goto(url) {
-            if (url) {
-                this.$post("lg/user/code")
-                .then(res => {
-                    window.location.href = JoinUrlParams(url,{code:res.data});
-                    })
-                .catch(err =>{
-                    this.$router.push({ path: '/login'});
-                });
-            } 
+            window.location.href = GetUrlHost(url);
         },
         searchSystemInfo() {
-            this.$post("lg/user/system")
+            this.$post("/member/getusersys")
             .then(res =>{
                 if (res != undefined && res.length > 0) {
                     res.forEach((current, index) =>{

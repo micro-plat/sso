@@ -14,7 +14,7 @@
     },
     methods:{
         refreshToken() {
-            this.$post("lg/login/refresh", {})
+            this.$post("/member/refresh", {})
         }
     }
   }

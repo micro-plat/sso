@@ -34,5 +34,8 @@ func (u *SystemHandler) Handle(ctx *context.Context) (r interface{}) {
 		return err
 	}
 
-	return data
+	return map[string]string{
+		"ident":   data.GetString("ident"),
+		"sysname": data.GetString("name"),
+	}
 }
