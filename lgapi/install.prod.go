@@ -32,57 +32,8 @@ func (s *SSO) install() {
 				"require_code":true
 			}			
 		`)
+	s.Conf.API.SetAuthes(conf.NewAuthes().WithJWT(
+		conf.NewJWT("__sso_jwt__", "HS512", "f0abd74b09bcc61449d66ae5d8128c18", 36000, "/login")))
 
-	s.Conf.API.SetSubConf("auth", `
-		{
-			"jwt": {
-				"exclude": [
-					"/lg/login/post",
-					"/lg/login/wxconf",
-					"/lg/login/wxcheck",
-					"/lg/login/wxvalidcode",
-					"/lg/login/typeconf",
-					"/lg/login/getwxstate",
-					"/lg/user/check",
-					"/lg/user/wxbind"
-					],																																																																														
-				"expireAt": 36000,
-				"mode": "HS512",
-				"name": "__sso_jwt__",
-				"secret": "12345678"
-			}
-		}
-		`)
-
-	s.Conf.Plat.SetVarConf("cache", "cache", `
-		{
-			"proto":"redis",
-			"addrs":[
-					#redis_string
-			],
-			"db":1,
-			"dial_timeout":10,
-			"read_timeout":10,
-			"write_timeout":10,
-			"pool_size":10
-	}		
-		`)
-
-	// s.Conf.API.SetSubConf("header", `
-	// 	{
-	// 		"Access-Control-Allow-Origin": "*",
-	// 		"Access-Control-Allow-Methods": "GET,POST,PUT,DELETE,PATCH,OPTIONS",
-	// 		"Access-Control-Allow-Headers": "X-Requested-With,Content-Type",
-	// 		"Access-Control-Allow-Credentials": "true"
-	// 	}
-	// `)
-
-	// 	s.Conf.Plat.SetVarConf("db", "db", `{
-	// 		"provider":"mysql",
-	// 		"connString":"#mysql_db_string",
-	// 		"max":8,
-	// 		"maxOpen":20,
-	// 		"maxIdle":10,
-	// 		"lifeTime":600
-	// }`)
+	s.Conf.Plat.SetCache(conf.NewRedisCacheConfForProd(1, "redis_string").WithPoolSize(100))
 }

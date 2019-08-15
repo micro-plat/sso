@@ -26,54 +26,10 @@ func (s *SSO) install() {
 			"require_code":true
 		}			
 	`)
+	s.Conf.API.SetAuthes(conf.NewAuthes().WithJWT(conf.NewJWT("__sso_jwt__", "HS512", "bf8f3171946d8d5a13cca23aa6080c8e", 36000, "/login/")))
 
-	s.Conf.API.SetSubConf("auth", `
-		{
-			"jwt": {
-				"exclude": [
-					"/lg/login/post",
-					"/lg/login/wxconf",
-					"/lg/login/wxcheck",
-					"/lg/login/wxvalidcode",
-					"/lg/login/typeconf",
-					"/lg/login/getwxstate",
-					"/lg/user/check",
-					"/lg/user/wxbind"
-				],
-				"expireAt": 36000,
-				"mode": "HS512",
-				"name": "__sso_jwt__",
-				"secret": "12345678"
-			}
-		}
-		`)
-
-	s.Conf.Plat.SetVarConf("cache", "cache", `
-	{
-		"proto":"redis",
-		"addrs":[
-			"192.168.0.111:6379",
-			"192.168.0.112:6379",
-			"192.168.0.113:6379",
-			"192.168.0.114:6379",
-			"192.168.0.115:6379",
-			"192.168.0.116:6379"
-		],
-		"db":1,
-		"dial_timeout":10,
-		"read_timeout":10,
-		"write_timeout":10,
-		"pool_size":10
-	}		
-	`)
+	s.Conf.Plat.SetCache(conf.NewRedisCacheConf(1, "192.168.0.111:6379",
+		"192.168.0.112:6379", "192.168.0.113:6379", "192.168.0.114:6379",
+		"192.168.0.115:6379", "192.168.0.116:6379"))
 
 }
-
-// s.Conf.API.SetSubConf("header", `
-// 		{
-// 			"Access-Control-Allow-Origin": "*",
-// 			"Access-Control-Allow-Methods": "GET,POST,PUT,DELETE,PATCH,OPTIONS",
-// 			"Access-Control-Allow-Headers": "X-Requested-With,Content-Type",
-// 			"Access-Control-Allow-Credentials": "true"
-// 		}
-// 	`)

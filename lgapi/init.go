@@ -31,6 +31,6 @@ func (r *SSO) init() {
 		return nil
 	})
 
-	r.API("/lg/login", member.NewLoginHandler) //用户登录相关 /lg/login/post 登录 /lg/login/check 验证是否登录 /lg/login/refresh 刷新token
-	r.API("/lg/user", user.NewUserHandler)     //用户可访问的子系统
+	r.API("/login", member.NewLoginHandler) //用户登录相关 /lg/login/post 登录 /lg/login/check 验证是否登录 /lg/login/refresh 刷新token
+	r.API("/member", user.NewUserHandler)   //用户可访问的子系统
 }
