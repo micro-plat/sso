@@ -9,6 +9,8 @@ import (
 
 	"github.com/asaskevich/govalidator"
 
+	"github.com/micro-plat/lib4go/net"
+	"github.com/micro-plat/lib4go/security/md5"
 	"github.com/micro-plat/lib4go/utility"
 )
 
@@ -97,20 +99,20 @@ func (r *Request) BindWith(obj interface{}, contentType string) error {
 }
 
 //Check 检查输入参数和配置参数是否为空
-func (r *Request) Check(field ...string) error {
+func (r *Request) Check(field ...string) (err error) {
 	data, err := r.GetBodyMap()
 	for _, fd := range field {
-		if err := r.Form.Check(fd); err == nil {
+		if err = r.Form.Check(fd); err == nil {
 			continue
 		}
-		if err := r.QueryString.Check(fd); err == nil {
+		if err = r.QueryString.Check(fd); err == nil {
 			continue
 		}
 		if v, ok := data[fd]; !ok && fmt.Sprint(v) != "" {
-			return fmt.Errorf("输入参数:%s值不能为空 %v", fd, err)
+			return fmt.Errorf("输入参数:%s值不能为空", fd)
 		}
 	}
-	return nil
+	return
 }
 
 //Body2Input 根据编码格式解码body参数，并更新input参数
@@ -123,9 +125,6 @@ func (r *Request) Body2Input(encoding ...string) (map[string]string, error) {
 	if err != nil {
 		return nil, err
 	}
-	//for k, v := range qString {
-	//w.Form.data.Set(k, v)
-	//}
 	return qString, nil
 }
 
@@ -281,4 +280,43 @@ func (r *Request) GetDataTimeByFormat(name string, format string, p ...time.Time
 		return p[0], nil
 	}
 	return v, err
+}
+
+//GetSignRaw 检查签名原串
+func (r *Request) GetSignRaw(all bool, a string, b string, f ...string) (string, string) {
+	input := make(map[string]interface{})
+	if len(f) == 0 {
+		input, _ = r.GetBodyMap()
+	} else {
+		for _, k := range f {
+			input[k] = r.GetString(k)
+		}
+	}
+	values := net.NewValues()
+	values.SetMap(input)
+
+	sign := values.Get("sign")
+	if sign == "" {
+		sign = values.Get("signature")
+	}
+	values.Remove("sign")
+	values.Remove("signature")
+	values.Sort()
+	if all {
+		return sign, values.JoinAll(a, b)
+	}
+	return sign, values.Join(a, b)
+
+}
+
+//CheckSign 检查签名是否正确(只值为空不参与签名，键值及每个串之前使用空进行连接)
+func (r *Request) CheckSign(key string, f ...string) bool {
+	sign, raw := r.GetSignRaw(false, "", "", f...)
+	return strings.EqualFold(md5.Encrypt(raw+key), sign)
+}
+
+//CheckSignAll 检查签名是否正确
+func (r *Request) CheckSignAll(key string, all bool, a string, b string, f ...string) bool {
+	sign, raw := r.GetSignRaw(all, a, b, f...)
+	return strings.EqualFold(md5.Encrypt(raw+key), sign)
 }

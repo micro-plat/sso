@@ -1,27 +1,32 @@
 package creator
 
 import (
+	"encoding/json"
 	"fmt"
-	"path/filepath"
 	"regexp"
 
 	"github.com/micro-plat/hydra/component"
+	"github.com/micro-plat/hydra/conf"
+	"github.com/micro-plat/hydra/registry"
 )
 
-var _ IMainBinder = &MainBinder{}
+// var _ ImainBinder = &mainBinder{}
 
-type IMainBinder interface {
-	SetMainConf(s string)
-	SetSubConf(n string, s string)
-	GetSubConfNames() []string
-	Scan(mainConf string, nodeName string) error
-	NeedScanCount(nodeName string) int
-	GetNodeConf(nodeName string) string
+type imainBinder interface {
+	SetMainConf(input interface{})
+	SetSubConf(n string, input interface{})
+	SetMetric(m *conf.Metric)
+	SetApp(interface{})
+	getSubConfNames() []string
+	scan(mainConf string, nodeName string) error
+	needScanCount(nodeName string) int
+	getNodeConf(nodeName string) string
+	getInstallers() []func(c component.IContainer) error
 	Installer(func(c component.IContainer) error)
 }
 
-//MainBinder 主配置绑定
-type MainBinder struct {
+//mainBinder 主配置绑定
+type mainBinder struct {
 	mainConf           string              //系统主配置
 	subConf            map[string]string   //子系统配置
 	mainParamsForInput []string            //主配置参数，用于用户输入
@@ -33,9 +38,9 @@ type MainBinder struct {
 	installers         []func(c component.IContainer) error
 }
 
-//NewMainBinder 构建主配置绑定
-func NewMainBinder(params map[string]string, inputs map[string]*Input) *MainBinder {
-	return &MainBinder{
+//newMainBinder 构建主配置绑定
+func newMainBinder(params map[string]string, inputs map[string]*Input) *mainBinder {
+	return &mainBinder{
 		subConf:            make(map[string]string),
 		mainParamsForInput: make([]string, 0, 2),
 		subParamsForInput:  make(map[string][]string),
@@ -45,21 +50,29 @@ func NewMainBinder(params map[string]string, inputs map[string]*Input) *MainBind
 		installers:         make([]func(c component.IContainer) error, 0, 2),
 	}
 }
-func (c *MainBinder) GetInstallers() []func(c component.IContainer) error {
+func (c *mainBinder) getInstallers() []func(c component.IContainer) error {
 	return c.installers
 }
-func (c *MainBinder) Installer(f func(c component.IContainer) error) {
+func (c *mainBinder) Installer(f func(c component.IContainer) error) {
 	c.installers = append(c.installers, f)
 }
 
 //SetMainConf 设置主配置内容
-func (c *MainBinder) SetMainConf(s string) {
+func (c *mainBinder) SetMainConf(input interface{}) {
+	s, err := getConfig(input)
+	if err != nil {
+		panic(err)
+	}
 	c.mainConf = s
 	c.mainParamsForInput = getParams(s)
 }
 
 //SetSubConf 设置子配置内容
-func (c *MainBinder) SetSubConf(n string, s string) {
+func (c *mainBinder) SetSubConf(n string, input interface{}) {
+	s, err := getConfig(input)
+	if err != nil {
+		panic(err)
+	}
 	c.subConf[n] = s
 	params := getParams(s)
 	if len(params) > 0 {
@@ -67,8 +80,18 @@ func (c *MainBinder) SetSubConf(n string, s string) {
 	}
 }
 
+//SetMetric 设置服务器监控配置项
+func (c *mainBinder) SetMetric(m *conf.Metric) {
+	c.SetSubConf("metric", m)
+}
+
+//SetMetric 设置服务器监控配置项
+func (c *mainBinder) SetApp(m interface{}) {
+	c.SetSubConf("app", m)
+}
+
 //GetSubConfNames 获取子系统名称
-func (c *MainBinder) GetSubConfNames() []string {
+func (c *mainBinder) getSubConfNames() []string {
 	v := make([]string, 0, len(c.subConf))
 	for k := range c.subConf {
 		v = append(v, k)
@@ -77,7 +100,7 @@ func (c *MainBinder) GetSubConfNames() []string {
 }
 
 //NeedScanCount 待输入个数
-func (c *MainBinder) NeedScanCount(nodeName string) int {
+func (c *mainBinder) needScanCount(nodeName string) int {
 	count := 0
 	if nodeName == "" {
 		for _, p := range c.mainParamsForInput {
@@ -95,7 +118,7 @@ func (c *MainBinder) NeedScanCount(nodeName string) int {
 }
 
 //Scan 绑定参数
-func (c *MainBinder) Scan(mainConf string, nodeName string) (err error) {
+func (c *mainBinder) scan(mainConf string, nodeName string) (err error) {
 	if nodeName == "" {
 		for _, p := range c.mainParamsForInput {
 			if _, ok := c.params[p]; ok {
@@ -113,7 +136,7 @@ func (c *MainBinder) Scan(mainConf string, nodeName string) (err error) {
 			if _, ok := c.params[p]; ok {
 				continue
 			}
-			nvalue, err := getInputValue(p, c.inputs, filepath.Join(mainConf, nodeName))
+			nvalue, err := getInputValue(p, c.inputs, registry.Join(mainConf, nodeName))
 			if err != nil {
 				return err
 			}
@@ -128,7 +151,7 @@ func (c *MainBinder) Scan(mainConf string, nodeName string) (err error) {
 }
 
 //GetNodeConf 获取节点配置
-func (c *MainBinder) GetNodeConf(nodeName string) string {
+func (c *mainBinder) getNodeConf(nodeName string) string {
 	if nodeName == "" {
 		return c.rmainConf
 	}
@@ -205,4 +228,16 @@ func getInputValue(param string, inputs map[string]*Input, path string) (v strin
 	}
 
 	return nvalue, nil
+}
+func getConfig(i interface{}) (string, error) {
+	switch v := i.(type) {
+	case string:
+		return v, nil
+	default:
+		buff, err := json.Marshal(i)
+		if err != nil {
+			return "", err
+		}
+		return string(buff), nil
+	}
 }

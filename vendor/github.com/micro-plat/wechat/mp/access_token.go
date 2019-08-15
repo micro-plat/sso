@@ -1,12 +1,10 @@
 package mp
 
 import (
-	"errors"
 	"fmt"
 	"math/rand"
 	"net/http"
 	"net/url"
-	"strconv"
 	"strings"
 	"sync/atomic"
 	"time"
@@ -15,6 +13,25 @@ import (
 	"github.com/micro-plat/wechat/internal/debug/api"
 	"github.com/micro-plat/wechat/util"
 )
+
+type refreshTokenResult struct {
+	token string
+	err   error
+}
+
+type accessToken struct {
+	Token       string `json:"access_token"`
+	ExpiresIn   int64  `json:"expires_in"`
+	expiresDate string `json:"expires_date"`
+}
+
+func (a *accessToken) GetExpiresDate() int64 {
+	t, err := time.Parse("20060102150405", a.expiresDate)
+	if err != nil {
+		return 0
+	}
+	return t.Unix()
+}
 
 // IAccessToken 中控服务器接口.
 type IAccessToken interface {
@@ -60,10 +77,10 @@ func NewDefaultAccessTokenByClient(appId, appSecret string, u string, httpClient
 	}
 
 	srv = &DefaultAccessToken{
-		appId:      url.QueryEscape(appId),
-		appSecret:  url.QueryEscape(appSecret),
-		httpClient: httpClient,
-		url:        u,
+		appId:                    url.QueryEscape(appId),
+		appSecret:                url.QueryEscape(appSecret),
+		httpClient:               httpClient,
+		url:                      u,
 		refreshTokenRequestChan:  make(chan string),
 		refreshTokenResponseChan: make(chan refreshTokenResult),
 	}
@@ -74,14 +91,12 @@ func NewDefaultAccessTokenByClient(appId, appSecret string, u string, httpClient
 
 func (srv *DefaultAccessToken) Token() (token string, err error) {
 	if p := (*accessToken)(atomic.LoadPointer(&srv.tokenCache)); p != nil {
+		if p.GetExpiresDate() < time.Now().Unix() {
+			return srv.RefreshToken("")
+		}
 		return p.Token, nil
 	}
 	return srv.RefreshToken("")
-}
-
-type refreshTokenResult struct {
-	token string
-	err   error
 }
 
 func (srv *DefaultAccessToken) RefreshToken(currentToken string) (token string, err error) {
@@ -93,9 +108,9 @@ func (srv *DefaultAccessToken) RefreshToken(currentToken string) (token string, 
 func (srv *DefaultAccessToken) tokenUpdateDaemon(initTickDuration time.Duration) {
 	tickDuration := initTickDuration
 
-NEW_TICK_DURATION:
 	ticker := time.NewTicker(tickDuration)
 	for {
+	NEW_TICK_DURATION:
 		select {
 		case currentToken := <-srv.refreshTokenRequestChan:
 			accessToken, cached, err := srv.updateToken(currentToken)
@@ -130,11 +145,6 @@ func abs(x time.Duration) time.Duration {
 		return x
 	}
 	return -x
-}
-
-type accessToken struct {
-	Token     string `json:"access_token"`
-	ExpiresIn int64  `json:"expires_in"`
 }
 
 // updateToken 从微信服务器获取新的 access_token 并存入缓存, 同时返回该 access_token.
@@ -174,27 +184,7 @@ func (srv *DefaultAccessToken) updateToken(currentToken string) (token *accessTo
 		err = &result.Error
 		return
 	}
-
-	// 由于网络的延时, access_token 过期时间留有一个缓冲区
-	switch {
-	case result.ExpiresIn > 31556952: // 60*60*24*365.2425
-		atomic.StorePointer(&srv.tokenCache, nil)
-		err = errors.New("expires_in too large: " + strconv.FormatInt(result.ExpiresIn, 10))
-		return
-	case result.ExpiresIn > 60*60:
-		result.ExpiresIn -= 60 * 10
-	case result.ExpiresIn > 60*30:
-		result.ExpiresIn -= 60 * 5
-	case result.ExpiresIn > 60*5:
-		result.ExpiresIn -= 60
-	case result.ExpiresIn > 60:
-		result.ExpiresIn -= 10
-	default:
-		atomic.StorePointer(&srv.tokenCache, nil)
-		err = errors.New("expires_in too small: " + strconv.FormatInt(result.ExpiresIn, 10))
-		return
-	}
-
+	result.ExpiresIn -= 10
 	tokenCopy := result.accessToken
 	atomic.StorePointer(&srv.tokenCache, unsafe.Pointer(&tokenCopy))
 	token = &tokenCopy

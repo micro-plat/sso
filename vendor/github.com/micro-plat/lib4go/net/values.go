@@ -69,6 +69,21 @@ func (s *Values) Encode() string {
 	return s.u.Encode()
 }
 
+//Remove 移除某个值
+func (s *Values) Remove(ks ...string) {
+	for _, k := range ks {
+		delete(s.u, k)
+		for i, v := range s.s {
+			if v.k == k {
+				ns := s.s[:i]
+				ns = append(ns, s.s[i+1:]...)
+				s.s = ns
+				return
+			}
+		}
+	}
+}
+
 //Sort 对参数进行参数
 func (s *Values) Sort() *Values {
 	sort.Slice(s.s, func(i, j int) bool {
@@ -84,6 +99,7 @@ func (s *Values) JoinAll(a string, b string, e ...string) string {
 		buffer.WriteString(v.k)
 		buffer.WriteString(a)
 		buffer.WriteString(v.v)
+		buffer.WriteString(b)
 	}
 	if len(e) > 0 {
 		for i := 0; i < len(e)/2; i++ {

@@ -11,7 +11,10 @@ import (
 
 func remoteRequest(host, path, content string, data interface{}) (interface{}, error) {
 	url := host + path
-	client := http.NewHTTPClient(http.WithRequestTimeout(5 * time.Second))
+	client, err := http.NewHTTPClient(http.WithRequestTimeout(5 * time.Second))
+	if err != nil {
+		return nil, err
+	}
 	body, statusCode, err := client.Post(url, content)
 	if err != nil {
 		return nil, err

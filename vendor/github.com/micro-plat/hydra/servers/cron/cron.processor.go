@@ -2,7 +2,6 @@ package cron
 
 import (
 	"errors"
-	"fmt"
 	"sync"
 	"time"
 
@@ -82,7 +81,7 @@ func (s *Processor) execute() {
 	})
 }
 func (s *Processor) handle(task iCronTask) error {
-	if s.done {
+	if s.done || !task.Enable() {
 		return nil
 	}
 	if !s.isPause {
@@ -97,10 +96,24 @@ func (s *Processor) handle(task iCronTask) error {
 	}
 	_, _, err := s.Add(task, false)
 	if err != nil {
-		fmt.Println(err)
+		return err
 	}
-	return err
+	return nil
 
+}
+func (s *Processor) Remove(name string) {
+	if name == "" {
+		return
+	}
+	s.lock.Lock()
+	defer s.lock.Unlock()
+	for _, slot := range s.slots {
+		slot.RemoveIterCb(func(k string, value interface{}) bool {
+			task := value.(iCronTask)
+			task.SetDisable()
+			return task.GetName() == name
+		})
+	}
 }
 
 //Add 添加任务
@@ -122,7 +135,10 @@ func (s *Processor) Add(task iCronTask, r bool) (offset int, round int, err erro
 	task.SetRound(round)
 	s.slots[offset].Set(utility.GetGUID(), task)
 	if r {
-		s.Dispatcher.Handle(task.GetMethod(), task.GetService(), task.GetHandler().(dispatcher.HandlerFunc))
+		if !s.Dispatcher.Find(task.GetService()) {
+			s.Dispatcher.Handle(task.GetMethod(), task.GetService(), task.GetHandler().(dispatcher.HandlerFunc))
+		}
+
 	}
 	return
 }

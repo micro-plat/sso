@@ -39,6 +39,7 @@ type Consumer struct {
 	lk         sync.Mutex
 	header     []string
 	once       sync.Once
+	clientOnce sync.Once
 	*mq.OptionConf
 	conf *Conf
 }
@@ -81,12 +82,12 @@ func (consumer *Consumer) reconnect() {
 				consumer.Logger.Debug("consumer与服务器断开连接，准备重连")
 				func() {
 					defer recover()
-					consumer.client.Disconnect()
-					consumer.client.Terminate()
+					consumer.clientOnce.Do(consumer.client.Terminate)
 				}()
 				client, b, err := consumer.connect()
 				if err != nil {
-					consumer.Logger.Error("连接失败:", err)
+					consumer.connCh <- 1
+					consumer.Logger.Error("consumer连接失败:", err)
 				}
 				if b {
 					consumer.Logger.Info("consumer成功连接到服务器")
@@ -131,14 +132,16 @@ func (consumer *Consumer) connect() (*client.Client, bool, error) {
 	}
 	for _, addr := range addrs {
 		if err := cc.Connect(&client.ConnectOptions{
-			Network:   "tcp",
-			Address:   addr + ":" + port,
-			UserName:  []byte(consumer.conf.UserName),
-			Password:  []byte(consumer.conf.Password),
-			ClientID:  []byte(fmt.Sprintf("%s-%s", net.GetLocalIPAddress(), utility.GetGUID()[0:6])),
-			TLSConfig: cert,
-			KeepAlive: 3,
+			Network:         "tcp",
+			Address:         addr + ":" + port,
+			UserName:        []byte(consumer.conf.UserName),
+			Password:        []byte(consumer.conf.Password),
+			ClientID:        []byte(fmt.Sprintf("%s-%s", net.GetLocalIPAddress(), utility.GetGUID()[0:6])),
+			TLSConfig:       cert,
+			PINGRESPTimeout: 3,
+			KeepAlive:       10,
 		}); err == nil {
+			consumer.clientOnce = sync.Once{}
 			return cc, true, nil
 		}
 	}
@@ -225,7 +228,7 @@ func (consumer *Consumer) Consume(queue string, concurrency int, callback func(m
 						if !ok {
 							break START
 						}
-						go callback(message)
+						callback(message)
 					}
 				}
 			}()

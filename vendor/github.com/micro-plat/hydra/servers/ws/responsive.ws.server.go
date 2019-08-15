@@ -67,6 +67,7 @@ func NewWSServerResponsiveServer(registryAddr string, cnf conf.IServerConf, logg
 		nil,
 		WithShowTrace(cnf.GetBool("trace", false)),
 		WithLogger(logger),
+		WithName(cnf.GetPlatName(), cnf.GetSysName(), cnf.GetClusterName(), cnf.GetServerType()),
 		WithTimeout(cnf.GetInt("rTimeout", 10), cnf.GetInt("wTimeout", 10), cnf.GetInt("rhTimeout", 10))); err != nil {
 		return
 	}
@@ -96,6 +97,7 @@ func (w *WSServerResponsiveServer) Restart(cnf conf.IServerConf) (err error) {
 		nil,
 		WithShowTrace(cnf.GetBool("trace", false)),
 		WithLogger(w.Logger),
+		WithName(cnf.GetPlatName(), cnf.GetSysName(), cnf.GetClusterName(), cnf.GetServerType()),
 		WithTimeout(cnf.GetInt("rTimeout", 10), cnf.GetInt("wTimeout", 10), cnf.GetInt("rhTimeout", 10))); err != nil {
 		return
 	}
@@ -147,7 +149,7 @@ func (w *WSServerResponsiveServer) GetStatus() string {
 }
 
 //GetServices 获取服务列表
-func (w *WSServerResponsiveServer) GetServices() []string {
+func (w *WSServerResponsiveServer) GetServices() map[string][]string {
 	return w.engine.GetServices()
 }
 

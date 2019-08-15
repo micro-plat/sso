@@ -10,7 +10,10 @@ import (
 	"github.com/micro-plat/lib4go/db"
 	"github.com/micro-plat/lib4go/influxdb"
 	"github.com/micro-plat/lib4go/logger"
+	"github.com/micro-plat/lib4go/net"
 	"github.com/micro-plat/lib4go/queue"
+	"github.com/micro-plat/lib4go/security/jwt"
+	"github.com/micro-plat/lib4go/security/md5"
 )
 
 type IContainer interface {
@@ -84,6 +87,15 @@ func (c *Context) SetRPC(rpc RPCInvoker) {
 	c.RPC.reset(c, rpc)
 }
 
+//BuildJwt 构建JWT
+func (c *Context) BuildJwt(data interface{}) (string, error) {
+	jwtAuth, err := c.Request.GetJWTConfig()
+	if err != nil {
+		return "", err
+	}
+	return jwt.Encrypt(jwtAuth.Secret, jwtAuth.Mode, data, jwtAuth.ExpireAt)
+}
+
 var contextPool *sync.Pool
 
 func init() {
@@ -109,4 +121,12 @@ func (c *Context) Close() {
 func formatName(name string) string {
 	text := "/" + strings.Trim(strings.Trim(name, " "), "/")
 	return strings.ToLower(text)
+}
+
+//MakeSign 检查签名原串
+func MakeSign(input map[string]interface{}, key string) string {
+	values := net.NewValues()
+	values.SetMap(input)
+	values.Sort()
+	return md5.Encrypt(values.Join("", "") + key)
 }
