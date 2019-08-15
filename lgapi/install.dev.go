@@ -15,40 +15,8 @@ func (s *SSO) install() {
 		"192.168.0.112:6379", "192.168.0.113:6379", "192.168.0.114:6379",
 		"192.168.0.115:6379", "192.168.0.116:6379"))
 
-	s.Conf.API.SetSubConf("app", `
-		{
-			"wxphonelogin_url":"https://open.weixin.qq.com/connect/oauth2/authorize",
-			"wxlogin_url": "https://open.weixin.qq.com/connect/qrconnect",
-			"wxgettoken_url":"https://api.weixin.qq.com/sns/oauth2/access_token",
-			"appid":"wx1234566",
-			"secret":"123456",
-			"sendcode_key":"123456",
-			"sendcodereq_url":"http://user.18pingtai.cn:9002/SendVerifyCodeHandler.ashx",
-			"sendcode_timeout":30,
-			"requirewx_login":false,
-			"require_code":true
-		}			
-	`)
-
-	s.Conf.API.SetSubConf("auth", `
-		{
-			"jwt": {
-				"exclude": [
-					"/lg/login/post",
-					"/lg/login/wxconf",
-					"/lg/login/wxcheck",
-					"/lg/login/wxvalidcode",
-					"/lg/login/typeconf",
-					"/lg/login/getwxstate",
-					"/lg/user/check",
-					"/lg/user/wxbind"
-				],
-				"expireAt": 36000,
-				"mode": "HS512",
-				"name": "__sso_jwt__",
-				"secret": "12345678"
-			}
-		}
-		`)
+	s.Conf.API.SetAuthes(
+		conf.NewAuthes().WithJWT(
+			conf.NewJWT("__sso_jwt__", "HS512", "bf8f3171946d8d5a13cca23aa6080c8e", 36000, "/lg/login/post", "/lg/user/check")))
 
 }

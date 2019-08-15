@@ -9,7 +9,7 @@ import (
 //handling 验证api的参数
 func (r *SSO) handling() {
 	r.MicroApp.Handling(func(ctx *context.Context) (rt interface{}) {
-		if err := ctx.Request.Check("ident", "sign", "timestamp"); err != nil {
+		if err := ctx.Request.Check("ident", "timestamp", "sign"); err != nil {
 			return context.NewError(context.ERR_NOT_ACCEPTABLE, err)
 		}
 		secret, err := getSecret(ctx.GetContainer(), ctx.Request.GetString("ident"))

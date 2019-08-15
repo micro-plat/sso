@@ -19,39 +19,6 @@ func (s *SSO) install() {
 	s.Conf.Plat.SetDB(conf.NewMysqlConfForProd("#mysql_db_string"))
 	s.Conf.Plat.SetCache(conf.NewRedisCacheConfForProd(1, "#redis_string"))
 
-	s.Conf.API.SetSubConf("app", `
-			{
-				"wxphonelogin_url":"https://open.weixin.qq.com/connect/oauth2/authorize",
-				"wxlogin_url": "https://open.weixin.qq.com/connect/qrconnect",
-				"wxgettoken_url":"https://api.weixin.qq.com/sns/oauth2/access_token",
-				"appid":"#wx_appid",
-				"secret":"#wx_secret",
-				"sendcode_key":"#sendcode_key",
-				"sendcodereq_url":"http://user.18pingtai.cn:9002/SendVerifyCodeHandler.ashx",
-				"sendcode_timeout":30,
-				"requirewx_login":false,
-				"require_code":true
-			}			
-		`)
-
-	s.Conf.API.SetSubConf("auth", `
-		{
-			"jwt": {
-				"exclude": [
-					"/lg/login/post",
-					"/lg/login/wxconf",
-					"/lg/login/wxcheck",
-					"/lg/login/wxvalidcode",
-					"/lg/login/typeconf",
-					"/lg/login/getwxstate",
-					"/lg/user/check",
-					"/lg/user/wxbind"
-					],																																																																														
-				"expireAt": 36000,
-				"mode": "HS512",
-				"name": "__sso_jwt__",
-				"secret": "12345678"
-			}
-		}
-		`)
+	s.Conf.API.SetAuthes(conf.NewAuthes().WithJWT(
+		conf.NewJWT("__sso_jwt__", "HS512", "f0abd74b09bcc61449d66ae5d8128c18", 36000, "/lg/login/post", "/lg/user/check")))
 }
