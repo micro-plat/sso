@@ -3,7 +3,7 @@ package logic
 import (
 	"encoding/json"
 	"fmt"
-	"gsms/express_service/modules/util/security"
+
 	"io/ioutil"
 	"math/rand"
 	"net/http"
@@ -21,6 +21,7 @@ import (
 	"github.com/micro-plat/sso/lgapi/modules/access/member"
 	"github.com/micro-plat/sso/lgapi/modules/const/enum"
 	"github.com/micro-plat/sso/lgapi/modules/model"
+	"github.com/micro-plat/sso/lgapi/modules/util"
 )
 
 //IMemberLogic 用户登录
@@ -274,7 +275,7 @@ func (m *MemberLogic) SendValidCode(userName, sendUser string) error {
 	}
 
 	//md5(key+send_user+system_no+key)
-	params["sign"] = security.Md5(key + sendUser + systemno + key)
+	params["sign"] = util.Md5(key + sendUser + systemno + key)
 	vals.SetSMap(params)
 	queryParams := vals.Join("=", "&")
 	requestURL := requrl + "?" + queryParams
