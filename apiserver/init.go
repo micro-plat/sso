@@ -2,8 +2,9 @@ package main
 
 import (
 	"github.com/micro-plat/hydra/component"
+	"github.com/micro-plat/sso/apiserver/services/login"
+	"github.com/micro-plat/sso/apiserver/services/member"
 	"github.com/micro-plat/sso/apiserver/services/system"
-	"github.com/micro-plat/sso/apiserver/services/user"
 )
 
 //init 检查应用程序配置文件，并根据配置初始化服务
@@ -20,9 +21,9 @@ func (r *SSO) init() {
 		return nil
 	})
 
-	//r.Micro("/subsys/login", user.NewLoginHandler)   //子系统远程登录
-	r.Micro("/subsys/menu", user.NewMenuHandler)     //子系统获取菜单数据
-	r.Micro("/subsys/user", user.NewUserInfoHandler) //子系统,获取用户信息
-	// r.Micro("/subsys/pwd", user.NewPwdHandler)       //子系统,修改密码
-	r.Micro("/subsys/info", system.NewInfoHandler) //子系统,获取系统信息
+	r.Micro("/member/menu/get", member.NewMenuHandler)   //获取用户菜单数据
+	r.Micro("/member/info/get", member.NewMemberHandler) //获取用户信息
+	r.Micro("/system/info/get", system.NewInfoHandler)   //获取用户系统
+	r.Micro("/login/auth", login.NewAuthorizeHandler)    //用户登录认证
+
 }

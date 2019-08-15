@@ -4,7 +4,6 @@ import (
 	"github.com/micro-plat/hydra/component"
 	"github.com/micro-plat/hydra/context"
 	"github.com/micro-plat/sso/apiserver/modules/logic"
-	"github.com/micro-plat/sso/apiserver/modules/util"
 )
 
 //handling 验证api的参数
@@ -19,16 +18,20 @@ func (r *SSO) handling() {
 			return err
 		}
 
-		data := ctx.Request.GetRequestMap("utf8")
-		ctx.Log.Info("请求原数据", data)
-		if _, flag := data["sign"]; !flag {
-			return context.NewError(context.ERR_NOT_ACCEPTABLE, "sign is empty")
+		if ok, raw := ctx.Request.CheckSign(secret); !ok {
+			return context.NewErrorf(context.ERR_PAYMENT_REQUIRED, "sign签名错误:%s", raw)
 		}
 
-		delete(data, "sign")
-		if ok := util.VerifySign(ctx, data, secret, ctx.Request.GetString("sign")); ok != true {
-			return context.NewError(context.ERR_PAYMENT_REQUIRED, "sign签名错误(402)")
-		}
+		// data := ctx.Request.GetRequestMap("utf8")
+		// ctx.Log.Info("请求原数据", data)
+		// if _, flag := data["sign"]; !flag {
+		// 	return context.NewError(context.ERR_NOT_ACCEPTABLE, "sign is empty")
+		// }
+
+		// delete(data, "sign")
+		// if ok := util.VerifySign(ctx, data, secret, ctx.Request.GetString("sign")); ok != true {
+		// 	return context.NewError(context.ERR_PAYMENT_REQUIRED, "sign签名错误(402)")
+		// }
 		return nil
 	})
 }

@@ -27,8 +27,7 @@ func NewInfoHandler(container component.IContainer) (u *InfoHandler) {
 * sign:签名字符
  */
 func (u *InfoHandler) Handle(ctx *context.Context) (r interface{}) {
-	ctx.Log.Info("-------子系统调用，获取系统信息------")
-
+	ctx.Log.Info("-------获取系统信息------")
 	data, err := u.sys.Get(ctx.Request.GetString("ident"))
 	if err != nil {
 		return err
