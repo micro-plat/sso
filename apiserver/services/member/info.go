@@ -38,6 +38,6 @@ func (u *MemberHandler) GetHandle(ctx *context.Context) (r interface{}) {
 	if err != nil {
 		return err
 	}
-	ctx.Log.Info("3. 返回用户信息")
+	ctx.Log.Info("2. 返回用户信息")
 	return member
 }

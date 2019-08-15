@@ -33,11 +33,13 @@ func (u *MenuHandler) Handle(ctx *context.Context) (r interface{}) {
 	if err := ctx.Request.Check("user_id"); err != nil {
 		return fmt.Errorf("参数错误：%v", err)
 	}
+
 	ctx.Log.Info("1. 获取用户在指定系统的菜单列表数据")
 	data, err := u.m.Query(ctx.Request.GetInt64("user_id"), ctx.Request.GetString("ident"))
 	if err != nil {
 		return err
 	}
+
 	ctx.Log.Info("2. 返回菜单数据")
 	return data
 }

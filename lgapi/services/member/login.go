@@ -30,11 +30,14 @@ func (u *LoginHandler) TypeConfHandle(ctx *context.Context) (r interface{}) {
 	ident := ctx.Request.GetString("ident")
 	sysName := ""
 	if !strings.EqualFold(ident, "") {
-		data, err := u.sys.QuerySysInfoByIdent(ident)
-		if err == nil && data != nil {
-			sysName = data.GetString("name")
-		}
+
 	}
+
+	data, err := u.sys.QuerySysInfoByIdent(ident)
+	if err == nil && data != nil {
+		sysName = data.GetString("name")
+	}
+
 	return map[string]interface{}{
 		"sysname": sysName,
 	}
@@ -97,6 +100,7 @@ func (u *LoginHandler) PostHandle(ctx *context.Context) (r interface{}) {
 	}
 
 	ident := ctx.Request.GetString("ident")
+
 	ctx.Log.Info("2:处理用户账号登录")
 	member, err := u.m.Login(
 		ctx.Request.GetString("username"),
@@ -106,28 +110,28 @@ func (u *LoginHandler) PostHandle(ctx *context.Context) (r interface{}) {
 		return err
 	}
 
-	result := map[string]string{
-		"code":     "",
-		"callback": "",
+	if !ctx.Request.GetString("ident") != "" {
+		return
 	}
 
-	if ctx.Request.GetString("ident") != "" {
-		ctx.Log.Info("3: 设置已登录code")
-		code, err := u.m.CreateLoginUserCode(member.UserID)
-		if err != nil {
-			return context.NewError(context.ERR_BAD_REQUEST, "请重新登录")
-		}
-		result["code"] = code
-		sysInfo, err := u.sys.QuerySysInfoByIdent(ident)
-		if err != nil {
-			ctx.Log.Errorf("查询系统信息出错: %v+", err)
-		}
-		if err == nil && sysInfo != nil && sysInfo.GetString("index_url") != "" {
-			result["callback"] = sysInfo.GetString("index_url")
-		}
+	ctx.Log.Info("3: 设置已登录code")
+	code, err := u.m.CreateLoginUserCode(member.UserID)
+	if err != nil {
+		return context.NewError(context.ERR_BAD_REQUEST, "请重新登录")
 	}
+
+	result := map[string]string{"code": code, "callback": ""}
+
+	sysInfo, err := u.sys.QuerySysInfoByIdent(ident)
+	if err != nil {
+		ctx.Log.Errorf("查询系统信息出错: %v+", err)
+	}
+
+	if sysInfo.GetString("index_url") != "" {
+		result["callback"] = sysInfo.GetString("index_url")
+	}
+
 	ctx.Log.Info("4: 设置jwt数据")
-	ctx.Response.SetJWT(member)
 
 	return result
 }
