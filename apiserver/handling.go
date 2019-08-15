@@ -18,8 +18,8 @@ func (r *SSO) handling() {
 			return err
 		}
 
-		if ok, raw := ctx.Request.CheckSign(secret); !ok {
-			return context.NewErrorf(context.ERR_PAYMENT_REQUIRED, "sign签名错误:%s", raw)
+		if ok, err := ctx.Request.CheckSign(secret); !ok {
+			return context.NewError(context.ERR_PAYMENT_REQUIRED, err)
 		}
 
 		// data := ctx.Request.GetRequestMap("utf8")
