@@ -9,6 +9,13 @@ import (
 
 //init 检查应用程序配置文件，并根据配置初始化服务
 func (r *SSO) init() {
+
+	//设置配置参数
+	r.install()
+
+	//挂载请求处理函数
+	r.handling()
+
 	r.Initializing(func(c component.IContainer) error {
 
 		if _, err := c.GetDB(); err != nil {

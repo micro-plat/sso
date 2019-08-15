@@ -17,10 +17,6 @@ func main() {
 			hydra.WithSystemName("apiserver"),
 			hydra.WithServerTypes("api")),
 	}
-
 	app.init()
-	app.install()
-	app.handling()
-
 	app.Start()
 }
