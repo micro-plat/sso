@@ -9,17 +9,6 @@ import (
 //init 检查应用程序配置文件，并根据配置初始化服务
 func (r *SSO) init() {
 	r.Initializing(func(c component.IContainer) error {
-
-		// //1: 检查weixin config
-		// var conf model.Conf
-		// if err := c.GetAppConf(&conf); err != nil {
-		// 	return err
-		// }
-		// if err := conf.Valid(); err != nil {
-		// 	return err
-		// }
-		// model.SaveConf(c, &conf)
-
 		if _, err := c.GetDB(); err != nil {
 			return err
 		}
