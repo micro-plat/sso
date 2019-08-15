@@ -10,13 +10,14 @@ func (s *SSO) install() {
 	s.Conf.SetInput(`#redis_string`, `redis连接串`, ``)
 	s.Conf.SetInput(`#mysql_db_string`, `mysql数据库连接串`, `username:password@tcp(host)/sso?charset=utf8`)
 
-	s.Conf.API.SetMain(conf.NewAPIServerConf(":6687"))
-	s.Conf.API.SetHeaders(conf.NewHeader().WithCrossDomain())
-	s.Conf.Plat.SetDB(conf.NewMysqlConfForProd("#mysql_db_string"))
-
 	s.Conf.SetInput(`#wx_appid`, `微信公众号appid`, ``)
 	s.Conf.SetInput(`#wx_secret`, `微信公众号secret`, ``)
 	s.Conf.SetInput(`#sendcode_key`, `调用其他部门发微信验证码的key`, ``)
+
+	s.Conf.API.SetMain(conf.NewAPIServerConf(":6687"))
+	s.Conf.API.SetHeaders(conf.NewHeader().WithCrossDomain())
+	s.Conf.Plat.SetDB(conf.NewMysqlConfForProd("#mysql_db_string"))
+	s.Conf.Plat.SetCache(conf.NewRedisCacheConfForProd(1, "#redis_string"))
 
 	s.Conf.API.SetSubConf("app", `
 			{
@@ -53,36 +54,4 @@ func (s *SSO) install() {
 			}
 		}
 		`)
-
-	s.Conf.Plat.SetVarConf("cache", "cache", `
-		{
-			"proto":"redis",
-			"addrs":[
-					#redis_string
-			],
-			"db":1,
-			"dial_timeout":10,
-			"read_timeout":10,
-			"write_timeout":10,
-			"pool_size":10
-	}		
-		`)
-
-	// s.Conf.API.SetSubConf("header", `
-	// 	{
-	// 		"Access-Control-Allow-Origin": "*",
-	// 		"Access-Control-Allow-Methods": "GET,POST,PUT,DELETE,PATCH,OPTIONS",
-	// 		"Access-Control-Allow-Headers": "X-Requested-With,Content-Type",
-	// 		"Access-Control-Allow-Credentials": "true"
-	// 	}
-	// `)
-
-	// 	s.Conf.Plat.SetVarConf("db", "db", `{
-	// 		"provider":"mysql",
-	// 		"connString":"#mysql_db_string",
-	// 		"max":8,
-	// 		"maxOpen":20,
-	// 		"maxIdle":10,
-	// 		"lifeTime":600
-	// }`)
 }

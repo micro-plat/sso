@@ -15,6 +15,7 @@ func (s *SSO) install() {
 	s.Conf.API.SetMain(conf.NewAPIServerConf(":6677"))
 	s.Conf.API.SetHeaders(conf.NewHeader().WithCrossDomain())
 	s.Conf.Plat.SetDB(conf.NewMysqlConfForProd("#mysql_db_string"))
+	s.Conf.Plat.SetCache(conf.NewRedisCacheConfForProd(1, "#redis_string"))
 
 	s.Conf.API.SetSubConf("app", `
 			{
@@ -59,40 +60,4 @@ func (s *SSO) install() {
 			}
 		}
 		`)
-
-	s.Conf.Plat.SetVarConf("cache", "cache", `
-		{
-			"proto":"redis",
-			"addrs":[
-					#redis_string
-			],
-			"db":1,
-			"dial_timeout":10,
-			"read_timeout":10,
-			"write_timeout":10,
-			"pool_size":10
-	}		
-		`)
-
-	// s.Conf.API.SetSubConf("header", `
-	// 	{
-	// 		"Access-Control-Allow-Origin": "*",
-	// 		"Access-Control-Allow-Methods": "GET,POST,PUT,DELETE,PATCH,OPTIONS",
-	// 		"Access-Control-Allow-Headers": "X-Requested-With,Content-Type,__jwt__",
-	// 		"Access-Control-Allow-Credentials": "true",
-	// 		"Access-Control-Expose-Headers":"__jwt__"
-	// 	}
-	// `)
-
-	// s.Conf.Plat.SetVarConf("db", "db", `{
-	// 		"provider":"mysql",
-	// 		"connString":"#mysql_db_string",
-	// 		"max":8,
-	// 		"maxOpen":20,
-	// 		"maxIdle":10,
-	// 		"lifeTime":600
-	// }`)
-
-	// s.Conf.API.SetMainConf(`{"address":":6677"}`)
-	// s.Conf.SetInput(`#mysql_db_string`, `mysql数据库连接串`, `username:password@tcp(host)/sso?charset=utf8`)
 }

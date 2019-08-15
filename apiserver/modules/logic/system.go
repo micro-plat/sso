@@ -26,7 +26,6 @@ func NewSystemLogic(c component.IContainer) *SystemLogic {
 
 //Get 从数据库中获取系统信息
 func (u *SystemLogic) Get(ident string) (s db.QueryRow, err error) {
-	//从缓存中获取用户信息，不存在时从数据库中获取
 	s, err = u.cache.Query(ident)
 	if s == nil || err != nil {
 		if s, err = u.db.Get(ident); err != nil {

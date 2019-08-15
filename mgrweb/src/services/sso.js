@@ -1,4 +1,4 @@
-import {httpConfig} from './http.sso';
+import {httpConfig} from './sso.http';
 import {ssoConfig} from './sso.login';
 
 /**

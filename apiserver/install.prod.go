@@ -11,5 +11,5 @@ func (s *SSO) install() {
 	s.Conf.API.SetMain(conf.NewAPIServerConf(":6689"))
 	s.Conf.API.SetHeaders(conf.NewHeader().WithCrossDomain())
 	s.Conf.Plat.SetDB(conf.NewMysqlConfForProd("#mysql_db_string"))
-	s.Conf.Plat.SetCache(conf.NewRedisCacheConfForProd(1, "redis_string").WithPoolSize(100))
+	s.Conf.Plat.SetCache(conf.NewRedisCacheConfForProd(1, "#redis_string"))
 }

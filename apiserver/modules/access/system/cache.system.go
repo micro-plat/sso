@@ -47,7 +47,6 @@ func (l *CacheSystem) Save(s db.QueryRow) (err error) {
 
 //Query 获取系统信息
 func (l *CacheSystem) Query(ident string) (ls db.QueryRow, err error) {
-	//从缓存中查询用户数据
 	cache := l.c.GetRegularCache()
 	key := transform.Translate(cacheFormat, "ident", ident)
 	v, err := cache.Get(key)
@@ -55,7 +54,7 @@ func (l *CacheSystem) Query(ident string) (ls db.QueryRow, err error) {
 		return nil, err
 	}
 	if v == "" {
-		return nil, context.NewError(context.ERR_FORBIDDEN, "ident无效")
+		return nil, context.NewError(context.ERR_BAD_REQUEST, "ident无效")
 	}
 	nmap := make(map[string]interface{})
 	if err = json.Unmarshal([]byte(v), &nmap); err != nil {

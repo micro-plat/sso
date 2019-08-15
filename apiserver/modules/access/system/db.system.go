@@ -1,6 +1,8 @@
 package system
 
 import (
+	"errors"
+
 	"github.com/micro-plat/hydra/component"
 	"github.com/micro-plat/lib4go/db"
 	"github.com/micro-plat/sso/apiserver/modules/const/sqls"
@@ -27,5 +29,12 @@ func (l *DbSystem) Get(ident string) (s db.QueryRow, err error) {
 	data, _, _, err := db.Query(sqls.QuerySystemInfo, map[string]interface{}{
 		"ident": ident,
 	})
+
+	if err != nil {
+		return nil, err
+	}
+	if data == nil || data.Len() == 0 {
+		return nil, errors.New("ident 不存在")
+	}
 	return data.Get(0), err
 }
