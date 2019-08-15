@@ -30,10 +30,20 @@ func NewLoginHandler(container component.IContainer) (u *LoginHandler) {
 
 //TypeConfHandle 取配置，显示验证码登录还是扫码登录
 func (u *LoginHandler) TypeConfHandle(ctx *context.Context) (r interface{}) {
+	ident := ctx.Request.GetString("ident")
+	sysName := ""
+	if !strings.EqualFold(ident, "") {
+		data, err := u.sys.QuerySysInfoByIdent(ident)
+		if err == nil && data != nil {
+			sysName = data.GetString("name")
+		}
+	}
+
 	config := model.GetConf(u.c)
 	return map[string]interface{}{
 		"requirewxlogin": config.RequireWxLogin,
 		"requirecode":    config.RequireCode,
+		"sysname":        sysName,
 	}
 }
 

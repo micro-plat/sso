@@ -69,3 +69,10 @@ func IsImage(f string) bool {
 	}
 	return false
 }
+
+//Md5 加密处理
+func Md5(key string) string {
+	h := md5.New()
+	h.Write([]byte(key))
+	return hex.EncodeToString(h.Sum(nil))
+}
