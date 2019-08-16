@@ -37,7 +37,7 @@
                     window.location.href = JoinUrlParams(decodeURIComponent(res.callback),{code:res.code})
                     return;
                 }
-                this.$router.push({ path: '/chose'});   
+                this.$router.push({ path: '/choose'});   
             }).catch(err => {
                 switch (err.response.status) {
                     case 423:

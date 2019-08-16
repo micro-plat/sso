@@ -35,7 +35,7 @@ func (u *SystemHandler) Handle(ctx *context.Context) (r interface{}) {
 	}
 
 	return map[string]string{
-		"ident":   data.GetString("ident"),
-		"sysname": data.GetString("name"),
+		"ident":    data.GetString("ident"),
+		"sys_name": data.GetString("name"),
 	}
 }

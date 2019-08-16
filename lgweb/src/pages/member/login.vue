@@ -43,7 +43,7 @@
         systemName: "能源业务中心运营管理系统",
         copyright:"四川千行你我科技有限公司Copyright© 2018 版权所有",
         callback:"",
-        changepwd:0,
+        changePwd:0,
         ident: "",
 
         loginTitle:"用户登录",
@@ -66,7 +66,7 @@
 
       document.title = "登录-能源业务中心运营管理系统";
       this.callback = this.$route.query.callback;
-      this.changepwd = this.$route.query.changepwd;
+      this.changePwd = this.$route.query.changepwd;
       this.ident = this.$route.params.ident ? this.$route.params.ident : "";
 
       this.controlLoginType();
@@ -80,7 +80,7 @@
         this.$post("/system", {ident: this.ident})
         .then(res => {
           if (res.sysname) {
-            this.loginTitle = "登录到【" + res.sysname + "】";
+            this.loginTitle = "登录到【" + res.sys_name + "】";
           }
         })
       },
@@ -90,15 +90,14 @@
         var req = {
           ident: this.ident,
           password: $.md5(e.password),
-          username:e.username,
-          validatecode:e.validatecode,
+          username:e.username
         }
 
         this.$post("/login", req)
           .then(res => {
             setTimeout(() => {
 
-              if (this.changepwd == 1) {
+              if (this.changePwd == 1) {
                 this.$router.push({ path: '/changepwd'});   
                 return;
               }
@@ -110,7 +109,7 @@
                 window.location.href = JoinUrlParams(decodeURIComponent(res.callback),{code:res.code});
                 return;
               }
-              this.$router.push({ path: '/chose'});
+              this.$router.push({ path: '/choose'});
             }, 300);
           })
           .catch(err => {

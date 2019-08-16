@@ -4,7 +4,7 @@ const SearchUserSystemInfo = `
 select
   sys.id,
   sys.name,
-  sys.index_url as indexurl,
+  sys.index_url,
   sys.logo
 from sso_system_info sys
 inner join sso_user_role ur on ur.sys_id = sys.id

@@ -5,8 +5,6 @@ import (
 	"github.com/micro-plat/sso/apiserver/modules/model"
 )
 
-const maxErrorCnt = 5
-
 //Save 保存member信息
 func Save(ctx *context.Context, m *model.LoginState) error {
 	ctx.Meta.Set("login-state", m)

@@ -1,16 +1,16 @@
 <template>
-  <div class="swipercontiner">
+  <div class="container">
     <div class="title">
         请选择要登入的系统
     </div>
     <div class="list">
-        <ul v-for="(item, index) in systems" :key="index" @click="goto(item.indexurl)">
-            <li class="everyone">
+        <ul v-for="(item, index) in systems" :key="index" @click="goto(item.index_url)">
+            <li class="item">
                 <span class="icons">
                     <img v-if="item.logo !=''" :src="item.logo" />
-                    <img v-if="item.logo==''" src="../../img/iocn_yh.png" >
+                    <img v-if="item.logo==''" src="../../img/icon_yh.png" >
                 </span>
-                <span  class="text">{{item.name}}</span>
+                <span  class="text">{{item.name | subStr}}</span>
             </li>
         </ul>
     </div>
@@ -18,45 +18,44 @@
 </template>
 
 <script>
-   import {JoinUrlParams, GetUrlHost} from '@/services/common'
+   import {JoinUrlParams, GetUrlHosts} from '@/services/common'
   export default {
-    name: 'chose',
+    name: 'choose',
     data () {
       return {
           systems:[]
       }
     },
-
     mounted(){
       document.title = "选择系统";
       this.searchSystemInfo();
     },
-
     methods:{
         goto(url) {
-            window.location.href = GetUrlHost(url);
+            window.location.href = GetUrlHosts(url);
         },
         searchSystemInfo() {
             this.$post("/member/getusersys")
             .then(res =>{
-                if (res != undefined && res.length > 0) {
-                    res.forEach((current, index) =>{
-                        if (current.name.length >= 9) {
-                            current.name = current.name.substr(0,9);
-                        }
-                    })
-                }
                 this.systems = res;
             }).catch(err => {
                 this.$router.push({ path: '/login'});
             });
+        }
+    },
+    filters:{
+        subStr: function(value) {
+            if (value && value.length > 9) {  
+                value = value.substring(0, 9) + "...";
+            }
+            return value;
         }
     }
   }
 </script>
 
 <style>
-.swipercontiner{ height:100%;}
+.container{ height:100%;}
 
 body{font-family:"黑体";background:#f5f5f5; font-size:12px; margin:0;padding:0;}
 
@@ -73,7 +72,7 @@ li{	list-style:none;}
 	width: 1100px;
     margin: 0 auto;
 }
-.everyone{
+.item{
     width: 28%;
     text-align: center;
     display: inline-grid;

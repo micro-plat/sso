@@ -1,29 +1,29 @@
 <template>
-    <div class="swipercontiner">
-        <h1 class="lg-title">能源业务中心运营管理系统</h1>
+    <div class="container">
+        <h1 class="title">能源业务中心运营管理系统</h1>
         <div>
-            <div class="sing">
+            <div class="content">
                 <div class="title_text">修改密码</div>
                 <div class="tips_text">
                     <i><img class="tips_image" src="../../img/password.png"></i>
                     <span>原密码</span>
                 </div>
-                <input class="tips-input" type="password" v-model="expassword"  placeholder="请输入原密码">
+                <input  type="password" v-model="expassword"  placeholder="请输入原密码">
                 <div class="tips_text">
                     <i><img class="tips_image" src="../../img/password.png"></i>
                     <span>新密码</span>
                 </div>
-                <input class="tips-input" type="password" v-model="password1" placeholder="请输入新密码">
+                <input type="password" v-model="password1" placeholder="请输入新密码">
                 <div class="tips_text">
                     <i><img class="tips_image" src="../../img/password.png"></i>
                     <span>确认新密码</span>
                 </div>
-                <input class="tips-input" @keyup.enter="changePwd" type="password" v-model="password2" placeholder="请再次输入新密码">
+                <input  @keyup.enter="changePwd" type="password" v-model="password2" placeholder="请再次输入新密码">
                 
                 <div style="font-size:14px;color:#F7296F;">
                     {{errorMsg}}
                 </div>
-                <div class="but">
+                <div class="confirm">
                     <span><button type="button" @click="changePwd"  class="btn blue-btn">确定</button></span>
                     <span><button style="background: #b4b4b4;" type="button" @click="signOut" class="btn blue-btn">取消</button></span>
                 </div>
@@ -39,7 +39,7 @@
   import {jumpLogin} from '@/services/utils'
 
   export default {
-    name: 'pwd',
+    name: '',
     data () {
       return {
         ident:"",
@@ -51,8 +51,7 @@
     },
     created() {
         this.ident = this.$route.params.ident ? this.$route.params.ident : "";
-        var isExists = VueCookies.isKey("__sso_jwt__");
-        if(!isExists) {
+        if (!VueCookies.isKey("__sso_jwt__")) {
             this.$router.push({path:jumpLogin(this.ident), query :{ changepwd: 1 }});
         }
     },
@@ -120,19 +119,12 @@
 
 <style>
 
-.swipercontiner{ height:100%;}
+.container{ height:100%;}
 body{font-family: "\9ED1\4F53";background:url(../../img/background.png); background-size: cover; font-size:12px; margin:0;padding:0;}
 li{	list-style:none;}
 .input{ border:none;}
 .input{ border:none;font-family: "\9ED1\4F53"; width:100%;	}
 
-.title{
-	font-size: 60px;
-    padding: 80px 0;
-    font-weight: 500;
-    text-align: center;
-    font-weight: bold;
-}
 .list{
 	width: 900px;
     margin: 0 auto;
@@ -160,7 +152,7 @@ li{	list-style:none;}
     border-bottom-right-radius: 10px
 }
 
-.sing{
+.content{
     width: 440px;
     margin:0 auto;
 	margin-top:7%;
@@ -188,7 +180,7 @@ li{	list-style:none;}
     margin-right: 4px;
 }
 
-.sing input{
+.content input{
 	width: 92%;
     padding: 15px;
     font-size: 14px;
@@ -196,7 +188,7 @@ li{	list-style:none;}
     margin-bottom: 24px;
     border:0
 }
-.but button{
+.confirm button{
 	width: 36%;
     padding: 16px 0;
     font-size: 16px;
@@ -206,7 +198,7 @@ li{	list-style:none;}
     margin: 0 10px;
     border-radius: 10px;
 }
-.but{
+.confirm{
 	text-align: center;
 	margin-top: 16px;
 }
@@ -223,7 +215,7 @@ li{	list-style:none;}
     line-height: 1.8;
 }
 
-.lg-title {
+title {
     font-size: 2.8vw;
     color: #fff;
     letter-spacing: 3px;
@@ -249,5 +241,13 @@ li{	list-style:none;}
   :-ms-input-placeholder {
     color: #333;
   }
+
+  /* .title{
+	font-size: 60px;
+    padding: 80px 0;
+    font-weight: 500;
+    text-align: center;
+    font-weight: bold;
+} */
 
 </style>

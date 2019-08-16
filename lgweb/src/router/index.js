@@ -2,8 +2,8 @@ import Vue from 'vue';
 import Router from 'vue-router';
 import login from '@/pages/member/login';
 import jump from '@/pages/member/jump.vue';
-import changepwd from '@/pages/member/changepwd.vue';
-import chose from '@/pages/system/choose.vue';
+import changepwd from '@/pages/member/change.password.vue';
+import choose from '@/pages/system/choose.vue';
 import errpage from '@/pages/system/errpage.vue';
 import refresh from '@/pages/system/refresh.token.vue'
 
@@ -14,7 +14,7 @@ export default new Router({
   routes: [
     {
       path: '/',
-      name: 'first',
+      name: 'home',
       component: login
     },
     {
@@ -30,9 +30,9 @@ export default new Router({
     },
     {
 
-      path: '/chose',
-      name: 'chose',
-      component: chose
+      path: '/choose',
+      name: 'choose',
+      component: choose
     },
     {
       path: '/:ident?/changepwd',
