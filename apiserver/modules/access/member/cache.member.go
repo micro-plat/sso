@@ -6,7 +6,6 @@ import (
 )
 
 type ICacheMember interface {
-	//Save(s *model.MemberState) error
 	GetUserInfoByCode(code string) (string, error)
 	DeleteInfoByCode(code string)
 }
@@ -17,7 +16,6 @@ type CacheMember struct {
 }
 
 const (
-	//cacheFormat    = "{sso}:login:state-info:{@userName}-{@ident}"
 	cacheLoginUser = "{sso}:login:state-user:{@code}"
 )
 
