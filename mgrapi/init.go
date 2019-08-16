@@ -17,16 +17,19 @@ import (
 
 //init 检查应用程序配置文件，并根据配置初始化服务
 func (r *SSO) init() {
-	//初始化
+	r.install()
+	r.handling()
+
 	r.Initializing(func(c component.IContainer) error {
+		//检查配置信息
 		var conf model.Conf
 		if err := c.GetAppConf(&conf); err != nil {
 			return err
 		}
-		model.SaveConf(c, &conf)
 		if err := conf.Valid(); err != nil {
 			return err
 		}
+		model.SaveConf(c, &conf)
 
 		//检查db配置是否正确
 		if _, err := c.GetDB(); err != nil {
@@ -47,15 +50,15 @@ func (r *SSO) init() {
 		return nil
 	})
 
-	r.Micro("/sso/login", member.NewLoginHandler, "*")       //用户名密码登录
-	r.Micro("/sso/menu", menu.NewMenuHandler, "*")           //系统菜单相关接口
-	r.Micro("/sso/ident", system.NewSystemIdentHandler, "*") //系统信息获取
-	r.Micro("/sso/member", member.NewQueryHandler, "*")      //查询登录用户信息
-	r.Micro("/sso/base", base.NewBaseUserHandler, "*")
-	r.Micro("/sso/user", user.NewUserHandler, "*")                        //用户相关接口
-	r.Micro("/sso/auth", role.NewRoleAuthHandler, "/user/role")           //权限管理
-	r.Micro("/sso/role", role.NewRoleHandler, "/user/role")               //角色管理相关接口
-	r.Micro("/sso/sys/manage", system.NewSystemHandler, "*")              //系统管理相关接口
-	r.Micro("/sso/sys/func", function.NewSystemFuncHandler, "/sys/index") //系统功能相关接口
-	r.Micro("/sso/img/upload", image.NewImageHandler("static/img"), "*")  //图片上传
+	r.Micro("/login", member.NewLoginHandler)       //调用sso登录
+	r.Micro("/menu", menu.NewMenuHandler)           //菜单相关接口
+	//r.Micro("/ident", system.NewSystemIdentHandler) //系统信息获取
+	//r.Micro("/member", member.NewQueryHandler)      //查询登录用户信息
+	r.Micro("/base", base.NewBaseUserHandler)         
+	r.Micro("/user", user.NewUserHandler)               //用户相关接口
+	r.Micro("/auth", role.NewRoleAuthHandler)           //权限管理
+	r.Micro("/role", role.NewRoleHandler)               //角色管理相关接口
+	r.Micro("/sys/manage", system.NewSystemHandler)     //系统管理相关接口
+	r.Micro("/sys/func", function.NewSystemFuncHandler) //系统功能相关接口
+	r.Micro("/img/upload", image.NewImageHandler("static/img"))  //图片上传
 }

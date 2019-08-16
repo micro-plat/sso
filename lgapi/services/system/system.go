@@ -23,7 +23,7 @@ func NewSystemHandler(container component.IContainer) (u *SystemHandler) {
 
 //Handle 取系统信息配置
 func (u *SystemHandler) Handle(ctx *context.Context) (r interface{}) {
-	ctx.Log.Info("-------取系统信息配置---------")
+	ctx.Log.Info("-------获取系统信息配置---------")
 
 	if err := ctx.Request.Check("ident"); err != nil {
 		return fmt.Errorf("参数错误：%v", err)
@@ -33,9 +33,5 @@ func (u *SystemHandler) Handle(ctx *context.Context) (r interface{}) {
 	if err != nil {
 		return err
 	}
-
-	return map[string]string{
-		"ident":    data.GetString("ident"),
-		"sys_name": data.GetString("name"),
-	}
+	return data
 }

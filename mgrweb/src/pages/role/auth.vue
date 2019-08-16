@@ -51,7 +51,7 @@ export default {
       for (var i = 0; i < array.length; i++) {
         this.selectAuth.push(array[i].id);
       }
-      this.$http.post("/sso/auth", {
+      this.$http.post("/auth", {
         role_id: this.role_id,
         sys_id: this.sysid,
         selectauth: this.selectAuth.join(",")
@@ -92,7 +92,7 @@ export default {
         });
     },
     queryTree: function() {
-      this.$http.put("sso/auth", {
+      this.$http.put("/auth", {
         sys_id: this.sysid,
         role_id: this.role_id
       })
@@ -118,9 +118,9 @@ export default {
         });
     },
     querySys: function() {
-      this.$http.post("/sso/base",{})
+      this.$http.post("/base",{})
         .then(res => {
-          this.datalist = res.list;
+          this.datalist = res;
           if (this.datalist.length > 0) {
             this.sysid = this.datalist[0].id;
             this.queryTree();

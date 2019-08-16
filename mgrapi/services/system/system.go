@@ -19,6 +19,7 @@ type SystemHandler struct {
 	op        logic.IOperateLogic
 }
 
+//NewSystemHandler xx
 func NewSystemHandler(container component.IContainer) (u *SystemHandler) {
 	return &SystemHandler{
 		container: container,
@@ -56,21 +57,16 @@ func (u *SystemHandler) PostHandle(ctx *context.Context) (r interface{}) {
 	if err := ctx.Request.Bind(&input); err != nil {
 		return context.NewError(context.ERR_NOT_ACCEPTABLE, err)
 	}
-	ctx.Log.Info("2.添加数据库查询--------")
+	ctx.Log.Info("2.添加系统--------")
 	err := u.subLib.Add(&input)
 	if err != nil {
 		return err
 	}
 	ctx.Log.Info("3.记录行为")
 	data, _ := types.Struct2Map(&input)
-	if err := u.op.SysOperate(
-		member.Query(ctx, u.container),
-		"添加系统",
-		data,
-	); err != nil {
+	if err := u.op.SysOperate(member.Query(ctx, u.container), "添加系统", data); err != nil {
 		return err
 	}
-	ctx.Log.Info("4.返回数据")
 	return "success"
 }
 
@@ -90,14 +86,10 @@ func (u *SystemHandler) DeleteHandle(ctx *context.Context) (r interface{}) {
 		return err
 	}
 	ctx.Log.Info("3.记录行为")
-	if err := u.op.SysOperate(
-		member.Query(ctx, u.container),
-		"删除系统",
-		"id", ctx.Request.GetInt("id"),
-	); err != nil {
+	if err := u.op.SysOperate(member.Query(ctx, u.container), "删除系统", "id", ctx.Request.GetInt("id")); err != nil {
 		return err
 	}
-	ctx.Log.Info("4.返回数据")
+
 	return "success"
 }
 
@@ -108,111 +100,61 @@ func (u *SystemHandler) PutHandle(ctx *context.Context) (r interface{}) {
 	if err := ctx.Request.Check("id", "status"); err != nil {
 		return context.NewError(context.ERR_NOT_ACCEPTABLE, err)
 	}
-	ctx.Log.Info("2.更新数据库查询--------")
+	ctx.Log.Info("2.更新系统状态--------")
 	err := u.subLib.ChangeStatus(ctx.Request.GetInt("id"), ctx.Request.GetInt("status"))
 	if err != nil {
 		return err
 	}
 	ctx.Log.Info("3.记录行为")
-	if err := u.op.SysOperate(
-		member.Query(ctx, u.container),
-		"修改系统状态",
-		"id", ctx.Request.GetInt("id"), "status", ctx.Request.GetInt("status"),
-	); err != nil {
+	if err := u.op.SysOperate(member.Query(ctx, u.container), "修改系统状态", "id", ctx.Request.GetInt("id"), "status", ctx.Request.GetInt("status")); err != nil {
 		return err
 	}
-	ctx.Log.Info("3.返回数据")
+
 	return "success"
 }
 
-//EditHandle 编辑系统管理数据
+//EditHandle 编辑系统数据
 func (u *SystemHandler) EditHandle(ctx *context.Context) (r interface{}) {
 	ctx.Log.Info("------编辑系统管理数据------")
 	ctx.Log.Info("1. 参数检查")
+
 	var input model.SystemEditInput
 	if err := ctx.Request.Bind(&input); err != nil {
 		return context.NewError(context.ERR_NOT_ACCEPTABLE, err)
 	}
-	ctx.Log.Info("2.更新数据库--------")
+	ctx.Log.Info("2.更新系统数据--------")
 	err := u.subLib.Edit(&input)
 	if err != nil {
 		return err
 	}
 	ctx.Log.Info("3.记录行为")
 	data, _ := types.Struct2Map(&input)
-	if err := u.op.SysOperate(
-		member.Query(ctx, u.container),
-		"编辑系统数据",
-		data,
-	); err != nil {
+	if err := u.op.SysOperate(member.Query(ctx, u.container), "编辑系统数据", data); err != nil {
 		return err
 	}
-	ctx.Log.Info("3.返回数据。")
 	return "success"
 }
 
-// UpHandle 排序功能菜单
-func (u *SystemHandler) UpHandle(ctx *context.Context) (r interface{}) {
-	ctx.Log.Info("------上移------")
+// ExchangeHandle 排序功能菜单
+func (u *SystemHandler) ExchangeHandle(ctx *context.Context) (r interface{}) {
+	ctx.Log.Info("------互换两个功能菜单------")
+
 	ctx.Log.Info("1.参数校验")
-	if err := ctx.Request.Check("sys_id", "sortrank", "level_id", "id"); err != nil {
+	request := ctx.Request
+	if err := request.Check("sys_id", "sortrank", "level_id", "id", "is_up"); err != nil {
 		return context.NewError(context.ERR_NOT_ACCEPTABLE, err)
 	}
 
 	ctx.Log.Info("2.执行操作")
-	request := ctx.Request
 	err := u.subLib.Sort(
-		request.GetInt("sys_id"),
-		request.GetInt("sortrank"),
-		request.GetInt("level_id"),
-		request.GetInt("id"),
-		request.GetInt("parent"),
-		true)
-
+		request.GetInt("sys_id"), request.GetInt("sortrank"), request.GetInt("level_id"),
+		request.GetInt("id"), request.GetInt("parent"), request.GetInt("is_up") == 2)
 	if err != nil {
 		return err
 	}
 
 	ctx.Log.Info("3.记录行为")
-	if err := u.op.SysOperate(
-		member.Query(ctx, u.container),
-		"上移",
-		"sys_id", ctx.Request.GetInt("sys_id"), "sortrank", ctx.Request.GetInt("sortrank"), "level_id", ctx.Request.GetInt("level_id"), "id", ctx.Request.GetInt("id"),
-	); err != nil {
-		return err
-	}
-
-	return "success"
-}
-
-// DownHandle 向下排序功能菜单
-func (u *SystemHandler) DownHandle(ctx *context.Context) (r interface{}) {
-	ctx.Log.Info("------下移------")
-	ctx.Log.Info("1.参数校验")
-	if err := ctx.Request.Check("sys_id", "sortrank", "level_id", "id"); err != nil {
-		return context.NewError(context.ERR_NOT_ACCEPTABLE, err)
-	}
-
-	ctx.Log.Info("2.执行操作")
-	request := ctx.Request
-	err := u.subLib.Sort(
-		request.GetInt("sys_id"),
-		request.GetInt("sortrank"),
-		request.GetInt("level_id"),
-		request.GetInt("id"),
-		request.GetInt("parent"),
-		false)
-
-	if err != nil {
-		return err
-	}
-
-	ctx.Log.Info("3.记录行为")
-	if err := u.op.SysOperate(
-		member.Query(ctx, u.container),
-		"下移",
-		"sys_id", ctx.Request.GetInt("sys_id"), "sortrank", ctx.Request.GetInt("sortrank"), "level_id", ctx.Request.GetInt("level_id"), "id", ctx.Request.GetInt("id"),
-	); err != nil {
+	if err := u.op.SysOperate(member.Query(ctx, u.container), "菜单移动", "sys_id", request.GetInt("sys_id"), "sortrank", request.GetInt("sortrank"), "level_id", request.GetInt("level_id"), "id", request.GetInt("id")); err != nil {
 		return err
 	}
 

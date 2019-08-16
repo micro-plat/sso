@@ -142,7 +142,7 @@ export default {
   methods: {
     goPage(data){
       this.pi = data.page;
-      this.$http.get("/sso/notify/settings", {
+      this.$http.get("/notify/settings", {
         title:this.title,
         pi: data.page ,
         ps:this.ps})
@@ -174,7 +174,7 @@ export default {
     },
     post(){
       if (this.type == "add") {
-        this.$http.put("/sso/notify/settings",this.addData)
+        this.$http.put("/notify/settings",this.addData)
           .then(res=>{
             this.close();
             this.$notify({
@@ -196,7 +196,7 @@ export default {
         })
       }else if (this.type == "edit") {
         this.addData.id  = this.editID
-        this.$http.post("/sso/notify/settings",this.addData)
+        this.$http.post("/notify/settings",this.addData)
           .then(res=>{
             this.close();
             this.$notify({
@@ -236,7 +236,7 @@ export default {
         cancelButtonText: '取消',
         type: 'warning'
       }).then(() => {
-        this.$http.del("/sso/notify/settings",{ data: { id: id } })
+        this.$http.del("/notify/settings",{ data: { id: id } })
           .then(res=>{
             this.$notify({
               title: '成功',

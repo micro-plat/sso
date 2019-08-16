@@ -28,22 +28,20 @@ func NewRoleHandler(container component.IContainer) (u *RoleHandler) {
 func (u *RoleHandler) GetHandle(ctx *context.Context) (r interface{}) {
 
 	ctx.Log.Info("--------查询角色信息数据--------")
+
 	ctx.Log.Info("1.参数校验")
-	l := member.Query(ctx, u.container)
-	if l == nil {
-		return context.NewError(context.ERR_FORBIDDEN, "code not be null")
-	}
 	var inputData model.QueryRoleInput
 	if err := ctx.Request.Bind(&inputData); err != nil {
 		return context.NewError(context.ERR_NOT_ACCEPTABLE, err)
 	}
 
+	ctx.Log.Info("2.查询数据")
 	rows, count, err := u.roleLib.Query(&inputData)
 	if err != nil {
 		return context.NewError(context.ERR_NOT_IMPLEMENTED, err)
 	}
 
-	ctx.Log.Info("2.返回数据。")
+	ctx.Log.Info("3.返回数据。")
 	return map[string]interface{}{
 		"count": count,
 		"list":  rows,

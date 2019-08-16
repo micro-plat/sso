@@ -54,6 +54,9 @@
                 case 7:
                     this.msg = '请先关注公众号,并且绑定后才能使用微信登录';
                     break;
+                case 8:
+                    this.msg = '系统被禁用,暂时不能登录';
+                    break;
                 default:
                   this.msg = '登录出错,等会再试';
            }

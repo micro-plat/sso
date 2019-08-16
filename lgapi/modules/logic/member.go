@@ -51,6 +51,11 @@ func (m *MemberLogic) CreateLoginUserCode(userID int64) (code string, err error)
 
 //Login 登录系统
 func (m *MemberLogic) Login(u, p, ident string) (s *model.LoginState, err error) {
+	if !strings.EqualFold(ident, "") {
+		if err := m.CheckSystemStatus(ident); err != nil {
+			return nil, err
+		}
+	}
 	var ls *model.MemberState
 	if ls, err = m.db.Query(u, p, ident); err != nil {
 		return nil, err
@@ -60,7 +65,6 @@ func (m *MemberLogic) Login(u, p, ident string) (s *model.LoginState, err error)
 		return nil, context.NewError(context.ERR_BAD_REQUEST, "用户名或密码错误")
 	}
 
-	//检查用户是否已锁定
 	if ls.Status == enum.UserLock || ls.Status == enum.UserDisable {
 		return nil, context.NewError(context.ERR_BAD_REQUEST, "用户被锁定或被禁用，暂时无法登录")
 	}
@@ -73,8 +77,12 @@ func (m *MemberLogic) ChangePwd(userID int, expassword string, newpassword strin
 	return m.db.ChangePwd(userID, expassword, newpassword)
 }
 
-//CheckHasRoles jiancha daqian yong hu jiaoshe
+//CheckHasRoles 检查用户是否有相应的角色
 func (m *MemberLogic) CheckHasRoles(userID int64, ident string) error {
+	if err := m.CheckSystemStatus(ident); err != nil {
+		return err
+	}
+
 	user, err := m.db.QueryByID(userID)
 	if err != nil {
 		return err
@@ -105,4 +113,16 @@ func (m *MemberLogic) GenerateCodeAndSysInfo(ident string, userID int64) (map[st
 	}
 
 	return map[string]string{"code": code, "callback": sysInfo.GetString("index_url")}, nil
+}
+
+//CheckSystemStatus 检查系统的状态
+func (m *MemberLogic) CheckSystemStatus(ident string) error {
+	data, err := m.sysDB.QuerySysInfoByIdent(ident)
+	if err != nil {
+		return err
+	}
+	if data.GetInt("enable") == enum.SystemDisable {
+		return context.NewError(context.ERR_BAD_REQUEST, "系统被禁用,不能登录")
+	}
+	return nil
 }

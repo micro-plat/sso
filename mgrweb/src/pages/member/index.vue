@@ -515,7 +515,7 @@
       },
       changeSys(v) {
         let user = JSON.parse(sessionStorage.getItem("user"));
-        this.$http.post("/sso/login/code", {ident: v.ident, code: sessionStorage.getItem("code"), username: user.user_name})
+        this.$http.post("/login/code", {ident: v.ident, code: sessionStorage.getItem("code"), username: user.user_name})
           .then(res => {
             if (sessionStorage.getItem("__jwt__") != null) {
               sessionStorage.setItem("code", res.code);
@@ -602,7 +602,7 @@
         this.showMenu = item.id
       },
       loadSysList() {
-        this.$http.get("/sso/user/query")
+        this.$http.get("/user/query")
           .then(res => {
             this.sysList = res
             //console.log("系统列表",res)
@@ -635,7 +635,7 @@
         });
       },
       loadMember: function () {
-        this.$http.get("/sso/member/query")
+        this.$http.get("/member/query")
           .then(res => {
             this.user = res;
             sessionStorage.setItem("user", JSON.stringify(res))
@@ -655,7 +655,7 @@
           });
       },
       loadSysInfo: function () {
-        this.$http.get("/sso/sys/get", {ident: this.ident})
+        this.$http.get("/sys/get", {ident: this.ident})
           .then(res => {
             this.sys = res;
             document.title = res.name;
@@ -684,7 +684,7 @@
           });
       },
       loadMenu: function () {
-        this.$http.get("/sso/menu/get")
+        this.$http.get("/menu/get")
           .then(res => {
             //console.log("菜单： ",res)
             this.menus = res;
@@ -712,7 +712,7 @@
               });
             }
           });
-        this.$http.get("/sso/popular")
+        this.$http.get("/popular")
           .then(res => {
             this.populars = res;
           })
@@ -858,7 +858,7 @@
       if (menu_ids.length == 0) {
         return;
       }
-      this.$http.post("/sso/popular", {
+      this.$http.post("/popular", {
         menu_ids: menu_ids.join(","),
         pids: pids.join(",")
       })

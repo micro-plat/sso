@@ -521,7 +521,7 @@ export default {
     return {
       options: {
         // 可通过 https://github.com/simple-uploader/Uploader/tree/develop/samples/Node.js 示例启动服务
-        target: process.env.service.apiHost+'/sso/img/upload',   //上传地址
+        target: process.env.service.apiHost+'/img/upload',   //上传地址
         testChunks: false,
         withCredentials:true,   //携带jwt
         singleFile:true,        //单文件上传
@@ -608,7 +608,7 @@ export default {
     next(){
       let pi =this.pi;
       this.pi = pi + 1;
-      this.$http.get("/sso/sys/manage", { pi: this.pi ,ps:this.ps,name: this.sysname,status: this.selected})
+      this.$http.get("/sys/manage", { pi: this.pi ,ps:this.ps,name: this.sysname,status: this.selected})
         .then(res => {
           if(res.list.length <= 0){
             this.pi=pi;
@@ -650,7 +650,7 @@ export default {
     },
 
     query() {
-      this.$http.get("/sso/sys/manage", {
+      this.$http.get("/sys/manage", {
         pi: this.pi,
         ps:this.ps,
         name: this.sysname,
@@ -683,7 +683,7 @@ export default {
       this.addData.style.forEach((item, index) => {
         str += item + " ";
       });
-      this.$http.post("/sso/sys/manage", {
+      this.$http.post("/sys/manage", {
         name: this.addData.name,
         addr: this.addData.addr,
         time_out: this.addData.time_out,
@@ -735,7 +735,7 @@ export default {
       this.$refs.msg2Modal.close();
     },
     ok() {
-      this.$http.del("/sso/sys/manage", { data: { id: this.sysid } })
+      this.$http.del("/sys/manage", { data: { id: this.sysid } })
         .then(res => {
           this.cancel();
           this.querySearch();
@@ -768,7 +768,7 @@ export default {
         cancelButtonText: "取消",
         type: "warning"
       }).then(() => {
-        this.$http.put("/sso/sys/manage", {
+        this.$http.put("/sys/manage", {
           id: this.enableData.id,
           status: this.enableData.status
         })
@@ -838,7 +838,7 @@ export default {
             });
         return;
       }
-      this.$http.post("/sso/sys/manage/edit", edit)
+      this.$http.post("/sys/manage/edit", edit)
         .then(res => {
           this.$refs.editModal.close();
           this.goPage({ page: this.pi });

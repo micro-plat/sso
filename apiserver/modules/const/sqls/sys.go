@@ -12,7 +12,8 @@ select
 	t.ident,
 	t.wechat_status,
 	t.login_url,
-	t.secret 
+	t.secret,
+	t.enable 
 from 
 	sso_system_info t
 where 

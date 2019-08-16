@@ -30,9 +30,11 @@ func (u *BaseUserHandler) GetHandle(ctx *context.Context) (r interface{}) {
 	}
 
 	ctx.Log.Info("2.返回数据。")
-	return map[string]interface{}{
-		"rolelist": rows,
-	}
+	return rows
+
+	// return map[string]interface{}{
+	// 	"rolelist": rows,
+	// }
 }
 
 //PostHandle 查询系统列表
@@ -49,7 +51,9 @@ func (u *BaseUserHandler) PostHandle(ctx *context.Context) (r interface{}) {
 	}
 
 	ctx.Log.Info("2.返回数据。")
-	return map[string]interface{}{
-		"list": rows,
-	}
+	return rows
+
+	// return map[string]interface{}{
+	// 	"list": rows,
+	// }
 }

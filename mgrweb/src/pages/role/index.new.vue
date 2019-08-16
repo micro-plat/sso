@@ -145,7 +145,7 @@ export default {
         next() {
             let pi = this.paging.pi
             this.paging.pi = pi + 1;
-            this.$http.post("/sso/role", this.paging)
+            this.$http.post("/role", this.paging)
                 .then(res => {
                     if (res.list.length <= 0) {
                         this.paging.pi = pi
@@ -173,7 +173,7 @@ export default {
             if (this.paging.pi == 0) {
                 this.paging.pi = 1;
             }
-            this.$http.get("/sso/role", this.paging)
+            this.$http.get("/role", this.paging)
                 .then(res => {
                     this.datalist.items = res.list;
                     this.datalist.count = new Number(res.count);
@@ -233,7 +233,7 @@ export default {
                 cancelButtonText: "取消",
                 type: "warning"
             }).then(() => {
-                this.$http.put("/sso/role", role)
+                this.$http.put("/role", role)
                     .then(res => {
                         this.queryData();
                         this.$notify({
@@ -276,7 +276,7 @@ export default {
                 cancelButtonText: "取消",
                 type: "warning"
             }).then(() => {
-                this.$http.del("/sso/role", role)
+                this.$http.del("/role", role)
                     .then(res => {
                         this.queryData();
                         this.$notify({
@@ -325,7 +325,7 @@ export default {
                             this.roleInfo.status = 2
                         }
                     }
-                    this.$http.post("/sso/role", this.roleInfo)
+                    this.$http.post("/role", this.roleInfo)
                         .then(res => {
                             this.dialogFormVisible = false;
                             this.queryData();

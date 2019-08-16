@@ -1,5 +1,6 @@
 package member
 
+/*
 import (
 	"github.com/micro-plat/hydra/component"
 	"github.com/micro-plat/hydra/context"
@@ -30,3 +31,4 @@ func (u *QueryHandler) Handle(ctx *context.Context) (r interface{}) {
 	}
 	return (*model.LoginState)(data)
 }
+*/

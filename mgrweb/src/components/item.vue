@@ -265,7 +265,7 @@
       // 删除节点
       delNode(nodeModel) {
         if (nodeModel) {
-          this.$http.del("/sso/sys/func", {data: {id: nodeModel.id}})
+          this.$http.del("/sys/func", {data: {id: nodeModel.id}})
             .then(res => {
               if (this.parentNodeModel.hasOwnProperty("children")) {
                 this.parentNodeModel.children.splice(this.parentNodeModel.children.indexOf(nodeModel), 1);
@@ -316,7 +316,7 @@
           } else {
             status = 1
           }
-          this.$http.post("/sso/sys/func/enable", {id: nodeModel.id, status: status})
+          this.$http.post("/sys/func/enable", {id: nodeModel.id, status: status})
             .then(res => {
               nodeModel.enable = status;
               this.$notify({
@@ -355,8 +355,8 @@
       },
 
       upNode(nodeModel) {
-        console.log(nodeModel,"所有参数")
-        this.$http.post("/sso/sys/manage/up",nodeModel).then(res =>{
+        nodeModel.is_up = 2;
+        this.$http.post("/sys/manage/exchange",nodeModel).then(res =>{
             this.$notify({
               title: '成功',
               message: '上移成功',
@@ -366,31 +366,10 @@
                 this.callback.call(null,nodeModel);
             }
           })
-        // if (this.parentNodeModel.hasOwnProperty("children")) {
-        //   var index = this.parentNodeModel.children.indexOf(nodeModel);
-        //   if (index - 1 >= 0) {
-        //     var model = this.parentNodeModel.children.splice(this.parentNodeModel.children.indexOf(nodeModel), 1);
-        //     this.parentNodeModel.children.splice(index - 1, 0, model[0]);
-        //   }
-        //   this.$get("/sso/sys/manage/up",nodeModel).then(res =>{
-        //     this.$notify({
-        //       title: '成功',
-        //       message: '上移成功',
-              
-        //     });
-        //   })
-        // } else if (this.parentNodeModel instanceof Array) {
-        //   // 第一级根节点处理
-        //   var index = this.parentNodeModel.indexOf(nodeModel);
-        //   if (index - 1 >= 0) {
-        //     var model = this.parentNodeModel.splice(this.parentNodeModel.indexOf(nodeModel), 1);
-        //     this.parentNodeModel.splice(index - 1, 0, model[0]);
-        //   }
-        // }
       },
       downNode(nodeModel) {
-        console.log(nodeModel,"所有参数")
-        this.$http.post("/sso/sys/manage/down",nodeModel).then(res =>{
+        nodeModel.is_up = 1;
+        this.$http.post("/sys/manage/exchange",nodeModel).then(res =>{
             this.$notify({
               title: '成功',
               message: '下移成功',
@@ -400,28 +379,11 @@
                 this.callback.call(null,nodeModel);
             }
           })
-
-        /*console.log(nodeModel);
-        if (this.parentNodeModel.hasOwnProperty("children")) {
-          var index = this.parentNodeModel.children.indexOf(nodeModel);
-          if (index + 1 <= this.parentNodeModel.children.length) {
-            var model = this.parentNodeModel.children.splice(this.parentNodeModel.children.indexOf(nodeModel), 1);
-            this.parentNodeModel.children.splice(index + 1, 0, model[0]);
-          }
-        } else if (this.parentNodeModel instanceof Array) {
-          // 第一级根节点处理
-          var index = this.parentNodeModel.indexOf(nodeModel);
-          if (index + 1 <= this.parentNodeModel.length) {
-            var model = this.parentNodeModel.splice(this.parentNodeModel.indexOf(nodeModel), 1);
-            this.parentNodeModel.splice(index + 1, 0, model[0]);
-          }
-        }
-        */
       },
 
       //获取系统下面的菜单数据
       getSysMenu(sysId) {
-        this.$http.get("/sso/sys/func", { id: sysId })
+        this.$http.get("/sys/func", { id: sysId })
         .then(res => {
           if (res.length != 0) {
             this.model = res;

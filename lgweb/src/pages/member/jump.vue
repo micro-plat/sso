@@ -46,6 +46,8 @@
                     case 415:
                       this.$router.push({ path: '/errpage', query: {type: 1}});
                       break;
+                    case 400:
+                      this.$route.push({ path: '/errpage', query: {type: 8}})
                     default:
                       this.$router.push({ path: jumpLogin(this.ident), query:{callback: this.callback}});
                 }

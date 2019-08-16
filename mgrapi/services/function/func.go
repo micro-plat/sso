@@ -29,9 +29,8 @@ func NewSystemFuncHandler(container component.IContainer) (u *SystemFuncHandler)
 func (u *SystemFuncHandler) GetHandle(ctx *context.Context) (r interface{}) {
 	ctx.Log.Info("------查询系统功能数据------")
 	ctx.Log.Info("1. 参数检查")
-	l := member.Query(ctx, u.container)
-	if l == nil {
-		return context.NewError(context.ERR_FORBIDDEN, "code not be null")
+	if err := ctx.Request.Bind(""); err != nil {
+		return context.NewError(context.ERR_NOT_ACCEPTABLE, err)
 	}
 	sysid := ctx.Request.GetInt("id")
 	ctx.Log.Info("2.丛数据库获取数据")

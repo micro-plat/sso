@@ -20,5 +20,5 @@ func (s *SSO) install() {
 	s.Conf.Plat.SetCache(conf.NewRedisCacheConfForProd(1, "#redis_string"))
 
 	s.Conf.API.SetAuthes(conf.NewAuthes().WithJWT(
-		conf.NewJWT("__sso_jwt__", "HS512", "f0abd74b09bcc61449d66ae5d8128c18", 36000, "/login", "/system")))
+		conf.NewJWT("__sso_jwt__", "HS512", "f0abd74b09bcc61449d66ae5d8128c18", 36000, "/system/get", "/member/login")))
 }

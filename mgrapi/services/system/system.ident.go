@@ -1,5 +1,6 @@
 package system
 
+/*
 import (
 	"fmt"
 
@@ -53,3 +54,4 @@ func (u *SystemIdentHandler) PostHandle(ctx *context.Context) (r interface{}) {
 		"alluser": datas,
 	}
 }
+*/

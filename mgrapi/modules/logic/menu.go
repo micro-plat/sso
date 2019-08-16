@@ -40,7 +40,7 @@ func (m *MenuLogic) Query(uid int64, sysid int) ([]map[string]interface{}, error
 	return m.db.Query(uid, sysid)
 }
 
-//Verify 获取用户指定系统的菜单信息
-func (m *MenuLogic) Verify(uid int64, sysid int, menuURL string, method string) error {
-	return m.db.Verify(uid, sysid, menuURL, method)
-}
+// //Verify 获取用户指定系统的菜单信息
+// func (m *MenuLogic) Verify(uid int64, sysid int, menuURL string, method string) error {
+// 	return m.db.Verify(uid, sysid, menuURL, method)
+// }

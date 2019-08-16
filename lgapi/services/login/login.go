@@ -22,7 +22,7 @@ func NewLoginHandler(container component.IContainer) (u *LoginHandler) {
 
 //Handle 账号登录
 func (u *LoginHandler) Handle(ctx *context.Context) (r interface{}) {
-	ctx.Log.Info("-------sso用户账号登录---------")
+	ctx.Log.Info("-------用户账号登录---------")
 
 	ctx.Log.Info("1:参数验证")
 	if err := ctx.Request.Check("username", "password"); err != nil {

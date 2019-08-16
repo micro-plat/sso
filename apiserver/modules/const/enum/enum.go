@@ -8,3 +8,8 @@ const (
 	UserLock
 	UserDisable
 )
+
+const (
+	SystemDisable = 0
+	SystemNormal  = 1
+)

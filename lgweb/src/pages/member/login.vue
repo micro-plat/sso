@@ -77,12 +77,13 @@
         if (! this.ident){
           return;
         }
-        this.$post("/system", {ident: this.ident})
+        this.$post("/system/get", {ident: this.ident})
         .then(res => {
-          if (res.sysname) {
-            this.loginTitle = "登录到【" + res.sys_name + "】";
-          }
+            this.loginTitle = "登录到【" + res.name + "】";
         })
+        .catch(err => {
+            this.$refs.LoginUp.showError("获取系统信息失败");
+        }); 
       },
 
       //用户名密码登录
@@ -93,7 +94,7 @@
           username:e.username
         }
 
-        this.$post("/login", req)
+        this.$post("/member/login", req)
           .then(res => {
             setTimeout(() => {
 

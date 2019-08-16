@@ -2,7 +2,10 @@ package logic
 
 import (
 	"github.com/micro-plat/hydra/component"
+	"github.com/micro-plat/hydra/context"
 	"github.com/micro-plat/sso/apiserver/modules/access/menu"
+	"github.com/micro-plat/sso/apiserver/modules/access/system"
+	"github.com/micro-plat/sso/apiserver/modules/const/enum"
 )
 
 // IMenuLogic interface
@@ -12,19 +15,29 @@ type IMenuLogic interface {
 
 // MenuLogic 菜单
 type MenuLogic struct {
-	c  component.IContainer
-	db menu.IMenu
+	c     component.IContainer
+	db    menu.IMenu
+	dbSys system.IDbSystem
 }
 
 // NewMenuLogic new
 func NewMenuLogic(c component.IContainer) *MenuLogic {
 	return &MenuLogic{
-		c:  c,
-		db: menu.NewMenu(c),
+		c:     c,
+		db:    menu.NewMenu(c),
+		dbSys: system.NewDbSystem(c),
 	}
 }
 
 //Query 获取用户指定系统的菜单信息
 func (m *MenuLogic) Query(uid int64, ident string) ([]map[string]interface{}, error) {
+	status, err := m.dbSys.QuerySystemStatus(ident)
+	if err != nil {
+		return nil, err
+	}
+	if status == enum.SystemDisable {
+		return nil, context.NewError(context.ERR_BAD_REQUEST, "系统被禁用")
+	}
+
 	return m.db.Query(uid, ident)
 }

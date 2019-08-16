@@ -307,7 +307,7 @@ export default {
       if (this.paging.pi == 0) {
         this.paging.pi = 1;
       }
-      this.$http.post("/sso/user", this.paging)
+      this.$http.post("/user", this.paging)
         .then(res => {
           this.datalist.items = res.list;
           this.datalist.count = new Number(res.count);
@@ -343,7 +343,7 @@ export default {
     next() {
       let pi = this.paging.pi;
       this.paging.pi = pi + 1;
-      this.$http.post("/sso/user", this.paging)
+      this.$http.post("/user", this.paging)
         .then(res => {
           if (res.list.length <= 0) {
             this.paging.pi = pi;
@@ -430,7 +430,7 @@ export default {
             status: ests,
             user_id: userid
           };
-          this.$http.put("/sso/user", user)
+          this.$http.put("/user", user)
             .then(res => {
               this.queryData();
               this.$notify({
@@ -482,7 +482,7 @@ export default {
         type: "warning"
       })
         .then(() => {
-          this.$http.post("/sso/user/delete", user)
+          this.$http.post("/user/delete", user)
             .then(res => {
               this.queryData();
               this.$notify({
@@ -592,7 +592,7 @@ export default {
             } else {
               this.userInfo.status = 2;
             }
-            this.$http.post("/sso/user/save", this.userInfo)
+            this.$http.post("/user/save", this.userInfo)
               .then(res => {
                 this.queryData();
                 this.$notify({
@@ -626,7 +626,7 @@ export default {
                 }
               });
           } else if (this.isAdd == 2) {
-            this.$http.post("/sso/user/edit", this.userInfo)
+            this.$http.post("/user/edit", this.userInfo)
               .then(res => {
                 this.queryData();
                 this.$notify({
@@ -666,15 +666,15 @@ export default {
       });
     },
     querySys() {
-      this.$http.get("/sso/base", {})
+      this.$http.get("/base", {})
         .then(res => {
-          this.roleList = res.rolelist;
+          this.roleList = res;
         })
         .catch(err => {});
 
-      this.$http.post("/sso/base", {})
+      this.$http.post("/base", {})
         .then(res => {
-          this.sysList = res.list;
+          this.sysList = res;
           for (s in this.sysList) {
             s.disabled = false;
           }

@@ -43,7 +43,9 @@ func (u *LoginHandler) UserHandle(ctx *context.Context) (r interface{}) {
 	if err != nil {
 		return err
 	}
+
 	ctx.Log.Infof("data: %v", data)
 	ctx.Response.SetJWT(data)
+
 	return data
 }

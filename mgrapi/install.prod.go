@@ -2,7 +2,10 @@
 
 package main
 
-import "github.com/micro-plat/hydra/conf"
+import (
+	"github.com/micro-plat/hydra/conf"
+	"github.com/micro-plat/sso/mgrapi/modules/model"
+)
 
 //bindConf 绑定启动配置， 启动时检查注册中心配置是否存在，不存在则引导用户输入配置参数并自动创建到注册中心
 func (s *SSO) install() {
@@ -21,12 +24,10 @@ func (s *SSO) install() {
 		conf.NewAuthes().WithJWT(
 			conf.NewJWT("__jwt__", "HS512", "bf8f3171946d8d5a13cca23aa6080c8e", 36000, "/sso/login/user").WithHeaderStore()))
 
-	s.Conf.API.SetSubConf("app", `
-			{
-				"pic_host": "http://sso.sinopecscsy.com",
-				"secret":"#secret",
-				"sso_api_host":"http://api.sso.18jiayou.com:6689",
-				"ident":"sso"
-			}			
-			`)
+	s.Conf.API.SetApp(model.Conf{
+		PicHost:    "http://sso.sinopecscsy.com",
+		Secret:     "#secret",
+		SsoApiHost: "http://api.sso.18jiayou.com:6689",
+		Ident:      "sso",
+	})
 }
