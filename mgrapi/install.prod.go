@@ -17,6 +17,10 @@ func (s *SSO) install() {
 	s.Conf.Plat.SetDB(conf.NewMysqlConfForProd("#mysql_db_string"))
 	s.Conf.Plat.SetCache(conf.NewRedisCacheConfForProd(1, "#redis_string"))
 
+	s.Conf.API.SetAuthes(
+		conf.NewAuthes().WithJWT(
+			conf.NewJWT("__jwt__", "HS512", "bf8f3171946d8d5a13cca23aa6080c8e", 36000, "/sso/login/user").WithHeaderStore()))
+
 	s.Conf.API.SetSubConf("app", `
 			{
 				"pic_host": "http://sso.sinopecscsy.com",
@@ -25,39 +29,4 @@ func (s *SSO) install() {
 				"ident":"sso"
 			}			
 			`)
-
-	s.Conf.API.SetSubConf("auth", `
-		{
-			"jwt": {
-				"exclude": [
-					"/sso/login",
-					"/sso/login/user",
-					"/sso/sys/func/enable",
-					"/sso/sys/manage/edit",
-					"/sso/login/code",
-					"/sso/sys/get",
-					"/sso/ident",
-					"/sso/user/bind",
-					"/sso/notify/send",
-					"/sso/img/upload",
-					"/sso/user/getall",
-					"/sso/user/info",
-					"/sso/user/save",
-					"/sso/user/edit",
-					"/sso/user/delete",
-					"/sso/role/query",
-					"/sso/menu/get",
-					"/sso/sys/func/query",
-					"/sso/sys/manage/up",
-					"/sso/sys/manage/down",
-					"/sso/user/changepwd"
-					],
-				"expireAt": 36000,
-				"source":"H",
-				"mode": "HS512",
-				"name": "__jwt__",
-				"secret": "12345678"
-			}
-		}
-		`)
 }

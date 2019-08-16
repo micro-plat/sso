@@ -15,47 +15,16 @@ func (s *SSO) install() {
 		"192.168.0.112:6379", "192.168.0.113:6379", "192.168.0.114:6379",
 		"192.168.0.115:6379", "192.168.0.116:6379"))
 
-	s.Conf.API.SetSubConf("app", `
-			{
-				"pic_host": "http://sso2.100bm.cn",
-				"secret":"B128F779D5741E701923346F7FA9F95C",
-				"sso_api_host":"http://192.168.106.226:6689",
-				"ident":"sso"
-			}			
-			`)
+	s.Conf.API.SetAuthes(
+		conf.NewAuthes().WithJWT(
+			conf.NewJWT("__jwt__", "HS512", "bf8f3171946d8d5a13cca23aa6080c8e", 36000, "/sso/login/user").WithHeaderStore()))
 
-	s.Conf.API.SetSubConf("auth", `
-		{
-			"jwt": {
-				"exclude": [
-					"/sso/login",
-					"/sso/login/user",
-					"/sso/sys/func/enable",
-					"/sso/sys/manage/edit",
-					"/sso/login/code",
-					"/sso/sys/get",
-					"/sso/ident",
-					"/sso/user/bind",
-					"/sso/notify/send",
-					"/sso/img/upload",
-					"/sso/user/getall",
-					"/sso/user/info",
-					"/sso/user/save",
-					"/sso/user/edit",
-					"/sso/user/delete",
-					"/sso/role/query",
-					"/sso/menu/get",
-					"/sso/sys/func/query",
-					"/sso/sys/manage/up",
-					"/sso/sys/manage/down",
-					"/sso/user/changepwd"
-				],
-				"expireAt": 36000,
-				"source":"H",
-				"mode": "HS512",
-				"name": "__jwt__",
-				"secret": "12345678"
-			}
-		}
-		`)
+	s.Conf.API.SetSubConf("app", `
+	{
+		"pic_host": "http://sso2.100bm.cn",
+		"secret":"B128F779D5741E701923346F7FA9F95C",
+		"sso_api_host":"http://192.168.106.226:6689",
+		"ident":"sso"
+	}			
+	`)
 }

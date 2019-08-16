@@ -22,9 +22,7 @@ type CacheMember struct {
 //NewCacheMember 创建登录对象
 func NewCacheMember(c component.IContainer) *CacheMember {
 	return &CacheMember{
-		c:          c,
-		maxFailCnt: 5,
-		cacheTime:  3600 * 24,
+		c: c,
 	}
 }
 
@@ -32,5 +30,5 @@ func NewCacheMember(c component.IContainer) *CacheMember {
 func (l *CacheMember) CreateUserInfoByCode(code string, userId int64) error {
 	cache := l.c.GetRegularCache()
 	cachekey := transform.Translate(cachekey.CacheLoginUser, "key", code)
-	return cache.Set(cachekey, types.GetString(userId), 60)
+	return cache.Set(cachekey, types.GetString(userId), 300)
 }

@@ -8,7 +8,6 @@ import (
 
 // IOperateLogic xx
 type IOperateLogic interface {
-	// 登录行为
 	LoginOperate(m *model.LoginState) (err error)
 }
 

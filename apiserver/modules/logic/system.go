@@ -31,7 +31,6 @@ func (u *SystemLogic) Get(ident string) (s db.QueryRow, err error) {
 		if s, err = u.db.Get(ident); err != nil {
 			return nil, err
 		}
-		//保存用户数据到缓存
 		if err = u.cache.Save(s); err != nil {
 			return nil, err
 		}

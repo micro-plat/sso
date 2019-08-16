@@ -20,7 +20,7 @@ func main() {
 
 	app.init()
 	app.install()
-	app.handing()
+	app.handling()
 
 	app.Start()
 }
