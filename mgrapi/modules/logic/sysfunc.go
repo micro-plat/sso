@@ -28,7 +28,7 @@ func NewSystemFuncLogic(c component.IContainer) *SystemFuncLogic {
 	}
 }
 
-//Query 获取用系统管理列表
+//Get 获取用系统管理列表
 func (u *SystemFuncLogic) Get(sysid int) (data []map[string]interface{}, err error) {
 	//从缓存中获取功能信息，不存在时从数据库中获取
 	data, err = u.cache.Query(sysid)

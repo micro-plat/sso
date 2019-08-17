@@ -29,36 +29,6 @@ func (c *Conf) GetWebHostName() string {
 	return c.PicHost
 }
 
-//GetLoginURL .
-func (c *Conf) GetLoginURL() string {
-	return c.SsoApiHost + "/subsys/login"
-}
-
-//GetUserInfoURL cc .
-func (c *Conf) GetUserInfoURL() string {
-	return c.SsoApiHost + "/subsys/user/info"
-}
-
-//GetUserInfoCode 通过code取用户信息 .
-func (c *Conf) GetUserInfoCode() string {
-	return c.SsoApiHost + "/subsys/user/code"
-}
-
-//GetMenuURL .
-func (c *Conf) GetMenuURL() string {
-	return c.SsoApiHost + "/subsys/menu"
-}
-
-//GetChangePwdURL 获取sso服务器修改密码地址
-func (c *Conf) GetChangePwdURL() string {
-	return c.SsoApiHost + "/subsys/pwd"
-}
-
-//GetSysInfoURL 或取系统信息链接
-func (c *Conf) GetSysInfoURL() string {
-	return c.SsoApiHost + "/subsys/info"
-}
-
 //SaveConf 保存当前应用程序配置
 func SaveConf(c component.IContainer, m *Conf) {
 	c.Set("__AppConf__", m)

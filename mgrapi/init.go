@@ -2,7 +2,6 @@ package main
 
 import (
 	"github.com/micro-plat/hydra/component"
-	"github.com/micro-plat/sso/mgrapi/modules/logic"
 	"github.com/micro-plat/sso/mgrapi/modules/model"
 	"github.com/micro-plat/sso/mgrapi/services/base"
 	"github.com/micro-plat/sso/mgrapi/services/function"
@@ -40,7 +39,6 @@ func (r *SSO) init() {
 		if _, err := c.GetCache(); err != nil {
 			return err
 		}
-		logic.Set(c) //保存全局菜单变量
 
 		ssoCleint, err := ssoSdk.New(conf.SsoApiHost, "sso", conf.Secret)
 		if err != nil {

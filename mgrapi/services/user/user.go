@@ -14,7 +14,6 @@ type UserHandler struct {
 	userLib   logic.IUserLogic
 	sys       logic.ISystemLogic
 	op        logic.IOperateLogic
-	member    logic.IMemberLogic
 }
 
 //NewUserHandler is
@@ -24,7 +23,6 @@ func NewUserHandler(container component.IContainer) (u *UserHandler) {
 		userLib:   logic.NewUserLogic(container),
 		sys:       logic.NewSystemLogic(container),
 		op:        logic.NewOperateLogic(container),
-		member:    logic.NewMemberLogic(container),
 	}
 }
 

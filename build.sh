@@ -1,19 +1,21 @@
 #!/bin/sh
 
 rm -rf ./out 
+echo "-----------(默认生成 prod环境, 开发环境传 dev)--------"
 
-echo "------------------------------------"
-echo "sso五个项目的打包脚本...."
-if [ $# != 1 ]; then 
-	echo "请输入要生成的环境[prod, dev]"
+read -p "所有配置参数都改好了？确认请输入[y],否则输入[n]: " flag
+temp=$(echo $flag | tr [A-Z] [a-z])
+if [ $temp != "y" ]; then
+	echo "请前去修改"
 	exit 1
 fi
 
-publishenv=$1
+echo "------------------------------------"
+echo "-------打包开始....-------"
 
-if [ $publishenv != "prod" ] && [ $publishenv != "dev" ]; then 
-	echo "请在命令行中输入要生成的环境[prod, dev]"
-	exit 1
+publishenv="prod"
+if [ $# -eq 1 ] && [ $1 = "dev" ]; then 
+	publishenv=$1
 fi
 
 echo "当前生成的环境为: $publishenv" 
@@ -123,12 +125,3 @@ fi
 echo "-----------------------------------"
 echo "sso_login里面包含api,web | sso_mgr里面包含api,web"
 echo "-----------打包完成(zip)-------------"
-
-
-
-# read -p "所有配置参数都改好了？确认请输入[y],否则输入[n]: " flag
-# temp=$(echo $flag | tr [A-Z] [a-z])
-# if [ $temp != "y" ]; then
-# 	echo "请前去修改"
-# 	exit
-# fi

@@ -5,7 +5,7 @@ import (
 	"github.com/micro-plat/sso/mgrapi/modules/model"
 )
 
-const maxErrorCnt = 5
+//const maxErrorCnt = 5
 
 //Save 保存member信息
 func Save(ctx *context.Context, m *model.LoginState) error {

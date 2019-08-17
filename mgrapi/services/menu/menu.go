@@ -5,21 +5,18 @@ import (
 
 	"github.com/micro-plat/hydra/component"
 	"github.com/micro-plat/hydra/context"
-	"github.com/micro-plat/sso/mgrapi/modules/access/menu"
 	"github.com/micro-plat/sso/mgrapi/modules/model"
 )
 
 //MenuHandler 菜单查询对象
 type MenuHandler struct {
 	c component.IContainer
-	m menu.IMenu
 }
 
 //NewMenuHandler 创建菜单查询对象
 func NewMenuHandler(container component.IContainer) (u *MenuHandler) {
 	return &MenuHandler{
 		c: container,
-		m: menu.NewMenu(container),
 	}
 }
 

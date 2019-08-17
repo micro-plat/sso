@@ -16,12 +16,6 @@ type IUserLogic interface {
 	Save(input *model.UserInputNew) (err error)
 	Add(input *model.UserInputNew) (err error)
 	Edit(username string, tel string, email string) (err error)
-	ChangePwd(user_id int, expassword string, newpassword string) (err error) //对外api要调用
-	ResetPwd(user_id int64) (err error)
-	Bind(email string, openID string) (err error)
-	SetEmail(Guid string, email string) (err error)
-	GetEmail(Guid string) (email string, err error)
-	IsSendEmail(input *model.UserInputNew) (b bool, err error)
 }
 
 type UserLogic struct {
@@ -36,19 +30,6 @@ func NewUserLogic(c component.IContainer) *UserLogic {
 		db:    user.NewDbUser(c),
 		cache: user.NewCacheUser(c),
 	}
-}
-
-func (u *UserLogic) SetEmail(Guid string, email string) (err error) {
-	return u.cache.SetEmail(Guid, email)
-}
-
-func (u *UserLogic) GetEmail(Guid string) (email string, err error) {
-	return u.cache.GetEmail(Guid)
-}
-
-func (u *UserLogic) IsSendEmail(input *model.UserInputNew) (b bool, err error) {
-
-	return u.db.IsSendEmail(input)
 }
 
 //Query 获取用户信息列表
@@ -96,6 +77,7 @@ func (u *UserLogic) Get(userID int) (data db.QueryRow, err error) {
 	return data, nil
 }
 
+//GetAll GetAll
 func (u *UserLogic) GetAll(sysID, pi, ps int) (data db.QueryRows, count int, err error) {
 	data, count, err = u.cache.QueryUserBySys(sysID, pi, ps)
 	if data == nil || err != nil {
@@ -129,16 +111,4 @@ func (u *UserLogic) Edit(username string, tel string, email string) (err error) 
 		return err
 	}
 	return u.db.EditInfo(username, tel, email)
-}
-
-func (u *UserLogic) ChangePwd(user_id int, expassword string, newpassword string) (err error) {
-	return u.db.ChangePwd(user_id, expassword, newpassword)
-}
-
-func (u *UserLogic) ResetPwd(user_id int64) (err error) {
-	return u.db.ResetPwd(user_id)
-}
-
-func (u *UserLogic) Bind(email string, openID string) (err error) {
-	return u.db.Bind(email, openID)
 }
