@@ -6,7 +6,6 @@
         <div class="panel-body">
           <form class="form-inline" role="form">
             <div class="form-group">
-              <!-- <label class="sr-only" for="exampleInputEmail2">用户名</label> -->
               <input
                 type="text"
                 class="form-control"
@@ -16,7 +15,6 @@
               />
             </div>
             <div class="form-group">
-              <!-- <label class="col-sm-2 control-label sr-only">角色</label> -->
               <select
                 v-model="paging.role_id"
                 name="role_id"
@@ -307,16 +305,13 @@ export default {
       if (this.paging.pi == 0) {
         this.paging.pi = 1;
       }
-      this.$http.post("/user", this.paging)
+      this.$http.post("/user/getall", this.paging)
         .then(res => {
           this.datalist.items = res.list;
           this.datalist.count = new Number(res.count);
           this.totalpage = res.count;
         })
         .catch(err => {
-          if (err.response.status == 403) {
-            this.$router.push("/login");
-          } else {
             this.$notify({
               title: "错误",
               message: "网络错误,请稍后再试",
@@ -324,7 +319,6 @@ export default {
               offset: 50,
               duration: 2000
             });
-          }
         });
     },
     pageChange(val) {
@@ -343,7 +337,7 @@ export default {
     next() {
       let pi = this.paging.pi;
       this.paging.pi = pi + 1;
-      this.$http.post("/user", this.paging)
+      this.$http.post("/user/getall", this.paging)
         .then(res => {
           if (res.list.length <= 0) {
             this.paging.pi = pi;
@@ -354,9 +348,6 @@ export default {
           this.totalpage = Math.ceil(this.datalist.count / this.paging.ps);
         })
         .catch(err => {
-          if (err.response.status == 403) {
-            this.$router.push("/login");
-          } else {
             this.$notify({
               title: "错误",
               message: "网络错误,请稍后再试",
@@ -364,7 +355,6 @@ export default {
               offset: 50,
               duration: 2000
             });
-          }
         });
     },
     stateChange(e) {
@@ -430,7 +420,7 @@ export default {
             status: ests,
             user_id: userid
           };
-          this.$http.put("/user", user)
+          this.$http.post("/user/changestatus", user)
             .then(res => {
               this.queryData();
               this.$notify({
@@ -442,18 +432,6 @@ export default {
               });
             })
             .catch(err => {
-              if (err.response.status == 403) {
-                this.$notify({
-                  title: "错误",
-                  message: "登录超时,请重新登录",
-                  type: "error",
-                  offset: 50,
-                  duration: 2000,
-                  onClose: () => {
-                    this.$router.push("/login");
-                  }
-                });
-              } else {
                 this.$notify({
                   title: "错误",
                   message: "网络错误,请稍后再试",
@@ -461,15 +439,8 @@ export default {
                   offset: 50,
                   duration: 2000
                 });
-              }
             });
         })
-        .catch(() => {
-          this.$message({
-            type: "info",
-            message: "已取消删除"
-          });
-        });
     },
     userDel: function(userid) {
       var user = {
@@ -482,7 +453,7 @@ export default {
         type: "warning"
       })
         .then(() => {
-          this.$http.post("/user/delete", user)
+          this.$http.post("/user/del", user)
             .then(res => {
               this.queryData();
               this.$notify({
@@ -503,12 +474,6 @@ export default {
               });
             });
         })
-        .catch(() => {
-          this.$message({
-            type: "info",
-            message: "已取消删除"
-          });
-        });
     },
     add() {
       this.userInfo.lists.push({
@@ -592,7 +557,7 @@ export default {
             } else {
               this.userInfo.status = 2;
             }
-            this.$http.post("/user/save", this.userInfo)
+            this.$http.post("/user/add", this.userInfo)
               .then(res => {
                 this.queryData();
                 this.$notify({
@@ -604,18 +569,6 @@ export default {
                 });
               })
               .catch(err => {
-                if (err.response.status == 403) {
-                  this.$notify({
-                    title: "错误",
-                    message: "登录超时,请重新登录",
-                    type: "error",
-                    offset: 50,
-                    duration: 2000,
-                    onClose: () => {
-                      this.$router.push("/login");
-                    }
-                  });
-                } else {
                   this.$notify({
                     title: "错误",
                     message: "网络错误,请稍后再试",
@@ -623,7 +576,6 @@ export default {
                     offset: 50,
                     duration: 2000
                   });
-                }
               });
           } else if (this.isAdd == 2) {
             this.$http.post("/user/edit", this.userInfo)
@@ -666,13 +618,13 @@ export default {
       });
     },
     querySys() {
-      this.$http.get("/base", {})
+      this.$http.get("/base/getroles", {})
         .then(res => {
           this.roleList = res;
         })
         .catch(err => {});
 
-      this.$http.post("/base", {})
+      this.$http.post("/base/getsystems", {})
         .then(res => {
           this.sysList = res;
           for (s in this.sysList) {

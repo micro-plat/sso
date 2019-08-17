@@ -52,7 +52,7 @@
 
         </el-scrollbar>
 
-        <el-dialog width="30%" @closed="closed" :visible.sync="dialogFormVisible">
+        <el-dialog width="30%" :visible.sync="dialogFormVisible">
             <div slot="title">
                 {{isAdd == 1 ? "添加角色" : "编辑角色"}}
             </div>
@@ -131,10 +131,6 @@ export default {
         this.queryData();
     },
     methods: {
-        closed() {
-            console.log("colsed")
-            // this.query()
-        },
         loadmore: function (loaded) {
             return new Promise(function (resolve, reject) {
                 setTimeout(function () {
@@ -156,41 +152,33 @@ export default {
                     this.totalpage = Math.ceil(this.datalist.count / this.paging.ps);
                 })
                 .catch(err => {
-                    if (err.response.status == 403) {
-                        this.$router.push("/login");
-                    } else {
-                        this.$notify({
-                            title: '错误',
-                            message: '网络错误,请稍后再试',
-                            type: 'error',
-                            offset: 50,
-                            duration: 2000,
-                        });
-                    }
+                    this.$notify({
+                        title: '错误',
+                        message: '网络错误,请稍后再试',
+                        type: 'error',
+                        offset: 50,
+                        duration: 2000,
+                    });
                 });
         },
         queryData: function () {
             if (this.paging.pi == 0) {
                 this.paging.pi = 1;
             }
-            this.$http.get("/role", this.paging)
+            this.$http.get("/role/getall", this.paging)
                 .then(res => {
                     this.datalist.items = res.list;
                     this.datalist.count = new Number(res.count);
                     this.totalpage = res.count;
                 })
                 .catch(err => {
-                    if (err.response.status == 403) {
-                        this.$router.push("/login");
-                    } else {
-                        this.$notify({
-                            title: '错误',
-                            message: '网络错误,请稍后再试',
-                            type: 'error',
-                            offset: 50,
-                            duration: 2000,
-                        });
-                    }
+                    this.$notify({
+                        title: '错误',
+                        message: '网络错误,请稍后再试',
+                        type: 'error',
+                        offset: 50,
+                        duration: 2000,
+                    });
                 });
         },
         pageChange: function (data) {
@@ -233,7 +221,7 @@ export default {
                 cancelButtonText: "取消",
                 type: "warning"
             }).then(() => {
-                this.$http.put("/role", role)
+                this.$http.post("/role/changestatus", role)
                     .then(res => {
                         this.queryData();
                         this.$notify({
@@ -245,7 +233,6 @@ export default {
                         });
                     })
                     .catch(err => {
-
                         this.$notify({
                             title: '错误',
                             message: '网络错误,请稍后再试',
@@ -253,30 +240,16 @@ export default {
                             offset: 50,
                             duration: 2000,
                         });
-
                     });
-
-            }).catch(() => {
-                this.$message({
-                    type: "info",
-                    message: "已取消删除"
-                });
-            });
-
+            })
         },
         roleDel: function (roleid) {
-            var role = {
-                data: {
-                    role_id: roleid
-                }
-            };
-
             this.$confirm("此操作将永久删除该数据, 是否继续?", "提示", {
                 confirmButtonText: "确定",
                 cancelButtonText: "取消",
                 type: "warning"
             }).then(() => {
-                this.$http.del("/role", role)
+                this.$http.post("/role/del", {role_id: roleid})
                     .then(res => {
                         this.queryData();
                         this.$notify({
@@ -297,13 +270,7 @@ export default {
                         });
                     });
 
-            }).catch(() => {
-                this.$message({
-                    type: "info",
-                    message: "已取消删除"
-                });
-            });
-
+            })
         },
         submitUser() {
             this.$validator.validate().then(result => {
@@ -312,20 +279,12 @@ export default {
                 } else {
                     if (this.isAdd == 1) {
                         this.roleInfo.is_add = 1;
-
-                        // if (this.roleInfo.status) {
-                        //   this.roleInfo.status = 0;
-                        // } else {
-                        //   this.roleInfo.status = 2;
-                        // }
-                        var x = document.getElementById("statuscheck").checked;
-                        if (x) {
+                        this.roleInfo.status = 2;
+                        if (document.getElementById("statuscheck").checked) {
                             this.roleInfo.status = 0
-                        } else {
-                            this.roleInfo.status = 2
                         }
                     }
-                    this.$http.post("/role", this.roleInfo)
+                    this.$http.post("/role/save", this.roleInfo)
                         .then(res => {
                             this.dialogFormVisible = false;
                             this.queryData();

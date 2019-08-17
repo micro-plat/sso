@@ -44,14 +44,14 @@ export default {
   },
   methods: {
     back: function() {
-      this.$router.go(-1);
+      this.$router.push({path: '/user/role'})
     },
     saveAuth: function() {
       var array = this.$refs.tree.getCheckedNodes();
       for (var i = 0; i < array.length; i++) {
         this.selectAuth.push(array[i].id);
       }
-      this.$http.post("/auth", {
+      this.$http.post("/auth/save", {
         role_id: this.role_id,
         sys_id: this.sysid,
         selectauth: this.selectAuth.join(",")
@@ -67,18 +67,6 @@ export default {
           });
         })
         .catch(err => {
-          if (err.response.status == 403) {
-            this.$notify({
-              title: '错误',
-              message: '登录超时,请重新登录',
-              type: 'error',
-              offset: 50,
-              duration:2000,
-              onClose: function () {
-                this.$router.push("/member/login");
-              }
-            });
-          }else{
             this.$notify({
               title: '错误',
               message: '网络错误,请稍后再试',
@@ -87,12 +75,10 @@ export default {
               duration:2000,
             });
             this.selectAuth = [];
-          }
-
         });
     },
     queryTree: function() {
-      this.$http.put("/auth", {
+      this.$http.post("/auth/query", {
         sys_id: this.sysid,
         role_id: this.role_id
       })
@@ -113,12 +99,9 @@ export default {
             }
           ];
         })
-        .catch(err => {
-          // this.$router.push("/member/login");
-        });
     },
     querySys: function() {
-      this.$http.post("/base",{})
+      this.$http.post("/base/getsystems",{})
         .then(res => {
           this.datalist = res;
           if (this.datalist.length > 0) {
@@ -127,18 +110,6 @@ export default {
           }
         })
         .catch(err => {
-          if (err.response.status == 403) {
-            this.$notify({
-              title: '错误',
-              message: '登录超时,请重新登录',
-              type: 'error',
-              offset: 50,
-              duration:2000,
-              onClose: function () {
-                this.$router.push("/member/login");
-              }
-            });
-          }else{
             this.$notify({
               title: '错误',
               message: '网络错误,请稍后再试',
@@ -146,7 +117,6 @@ export default {
               offset: 50,
               duration:2000,
             });
-          }
         });
     }
   }

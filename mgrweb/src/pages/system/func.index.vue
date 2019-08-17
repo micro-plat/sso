@@ -624,12 +624,11 @@ export default {
     initData() {
       let routerParams = this.$route.query;
       this.id = routerParams.id;
-      console.log(this.id,"编号")
+      
       this.$http.get("/sys/func", { id: this.id })
         .then(res => {
           if (res.length != 0) {
             this.ztreeDataSource = res;
-            console.log(this.ztreeDataSource,"数据")
             return;
           }
           this.ztreeDataSource.push({
@@ -644,68 +643,45 @@ export default {
           })
         })
         .catch(err => {
-          if (err.response) {
-            if (err.response.status == 403) {
-              this.$router.push("/login");
-            }else{
-              this.$notify({
-                title: '错误',
-                message: '网络错误,请稍后再试',
-                type: 'error',
-                offset: 50,
-                duration:2000,
-              });
-            }
-          }
+          this.$notify({
+            title: '错误',
+            message: '网络错误,请稍后再试',
+            type: 'error',
+            offset: 50,
+            duration:2000,
+          });
         });
     },
     editFunc() {
       let data = this.currentData;
-      let icon;
-      if (data.iconTemp == ""){
-          icon = data.icon
-      }else{
-          icon = data.iconTemp + " " + data.color
+      let icon = data.icon;
+      if (data.iconTemp != "") {
+        icon = data.iconTemp + " " + data.color
       }
-          this.$http.put("/sys/func", {
-            id: data.id,
-            name: data.name,
-            sortrank:data.sortrank,
-            icon: icon,
-            path: data.path,
-            is_open: data.is_open,
-          })
-            .then(res => {
-              this.initData();
-              this.cancel();
-            })
-            .catch(err => {
-              if (err.response) {
-                if (err.response.status == 403) {
-                  this.$notify({
-                    title: '错误',
-                    message: '登录超时,请重新登录',
-                    type: 'error',
-                    offset: 50,
-                    duration:2000,
-                    onClose: () => {
-                      this.$router.push("/login");
-                    }
-                  });
-                }else{
-                  this.$notify({
-                    title: '错误',
-                    message: '网络错误,请稍后再试',
-                    type: 'error',
-                    offset: 50,
-                    duration:2000,
-                  });
-                }
-              }
-            });
+      this.$http.post("/sys/func/edit", {
+        id: data.id,
+        name: data.name,
+        sortrank:data.sortrank,
+        icon: icon,
+        path: data.path,
+        is_open: data.is_open,
+      })
+      .then(res => {
+        this.initData();
+        this.cancel();
+      })
+      .catch(err => {
+        this.$notify({
+          title: '错误',
+          message: '网络错误,请稍后再试',
+          type: 'error',
+          offset: 50,
+          duration:2000,
+        });
+      });
     },
     addFunc() {
-      this.$http.post("/sys/func", {
+      this.$http.post("/sys/func/add", {
         parentid: this.currentData.parentId,
         parentlevel: this.currentData.parentLevel,
         sysid: this.id,
@@ -715,35 +691,21 @@ export default {
         path: this.currentData.path,
         is_open: this.currentData.is_open
       })
-        .then(res => {
-          this.initData();
-          this.cancel();
-        })
-        .catch(err => {
-          if (err.response) {
-            if (err.response.status == 403) {
-              this.$notify({
-                title: '错误',
-                message: '登录超时,请重新登录',
-                type: 'error',
-                offset: 50,
-                duration:2000,
-                onClose: () => {
-                  this.$router.push("/login");
-                }
-              });
-            }else{
-              this.$notify({
-                title: '错误',
-                message: '网络错误,请稍后再试',
-                type: 'error',
-                offset: 50,
-                duration:2000,
-              });
-            }
-          }
-        });
+      .then(res => {
+        this.initData();
+        this.cancel();
+      })
+      .catch(err => {
+          this.$notify({
+            title: '错误',
+            message: '网络错误,请稍后再试',
+            type: 'error',
+            offset: 50,
+            duration:2000,
+          });
+      });
     },
+
     // 点击节点
     nodeClick: function(d) {
       /*排序 */
@@ -810,27 +772,7 @@ export default {
 
           setTimeout(() => {
             m.loadNode = 2; // 节点加载完毕
-
             m.isFolder = !m.isFolder;
-
-            // m.children.push({
-            //   id:+new Date(),
-            //   name:"动态加载节点1",
-            //   path:"",
-            //   clickNode:false,
-            //   isFolder:false,
-            //   isExpand:false,
-            //   loadNode:0,
-            //   children:[{
-            //     id:+new Date()+1,
-            //     name:"动态加载末节点",
-            //     path:"",
-            //     clickNode:false,
-            //     isExpand:false,
-            //     isFolder:false,
-            //     loadNode:0
-            //   }]
-            // })
           }, 500);
         }
       }

@@ -2,7 +2,6 @@ package sso
 
 import (
 	"fmt"
-	"strings"
 	"time"
 
 	"github.com/micro-plat/lib4go/net"
@@ -28,8 +27,8 @@ func (u *userLogic) getUserInfoByName(userName string) (info *User, err error) {
 	values.Set("timestamp", types.GetString(time.Now().Unix()))
 
 	values = values.Sort()
-	raw := values.Join("=", "&") + "&key=" + u.cfg.secret
-	values.Set("sign", strings.ToUpper(md5.Encrypt(raw)))
+	raw := values.Join("", "") + u.cfg.secret
+	values.Set("sign", md5.Encrypt(raw))
 
 	user := &User{}
 	result, err := remoteRequest(u.cfg.host, userInfoUrl, values.Join("=", "&"), user)
@@ -48,8 +47,9 @@ func (u *userLogic) checkCodeLogin(code string) (res *LoginState, err error) {
 	values.Set("timestamp", types.GetString(time.Now().Unix()))
 
 	values = values.Sort()
-	raw := values.Join("=", "&") + "&key=" + u.cfg.secret
-	values.Set("sign", strings.ToUpper(md5.Encrypt(raw)))
+	raw := values.Join("", "") + u.cfg.secret
+	fmt.Println(raw)
+	values.Set("sign", md5.Encrypt(raw))
 
 	lgState := &LoginState{}
 	result, err := remoteRequest(u.cfg.host, codeLoginUrl, values.Join("=", "&"), lgState)
@@ -67,9 +67,9 @@ func (u *userLogic) getUserMenu(userID int) (*[]*Menu, error) {
 	values.Set("timestamp", types.GetString(time.Now().Unix()))
 
 	values = values.Sort()
-	raw := values.Join("=", "&") + "&key=" + u.cfg.secret
+	raw := values.Join("", "") + u.cfg.secret
 	fmt.Println(raw)
-	values.Set("sign", strings.ToUpper(md5.Encrypt(raw)))
+	values.Set("sign", md5.Encrypt(raw))
 
 	menu := &[]*Menu{}
 	result, err := remoteRequest(u.cfg.host, userMenuUrl, values.Join("=", "&"), menu)

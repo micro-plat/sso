@@ -70,34 +70,10 @@
           :current-page="pi"
           :page-size="ps"
           :page-sizes="pageSizeList"
-          layout="total, sizes, prev, pager, next, jumper"
+          layout="total, sizes, prev, pager, jumper"
           :total="datacount">
         </el-pagination>
       </div>
-
-    <bootstrap-modal ref="theModal" :need-header="true" :need-footer="true" >
-      <div slot="title">
-        删除系统
-      </div>
-      <div slot="body">
-        确定删除系统？
-      </div>
-      <div slot="footer">
-        <a class="btn btn-sm btn-danger" @click="ok">确定</a>
-        <a class="btn btn-sm btn-primary" @click="cancel">取消</a>
-      </div>
-    </bootstrap-modal>
-    <bootstrap-modal ref="deletOkModal" :need-header="true" :need-footer="false" >
-      <div slot="title">
-        提示
-      </div>
-      <div slot="body">
-        删除成功
-      </div>
-      <div slot="footer">
-        <a class="btn btn-sm btn-primary" @click="cancel">确定</a>
-      </div>
-    </bootstrap-modal>
     <bootstrap-modal ref="editModal" :need-header="true" :need-footer="true">
       <div slot="title">
         编辑系统
@@ -477,32 +453,8 @@
         <a class="btn btn-sm btn-primary" @click="cancel">取消</a>
       </div>
     </bootstrap-modal>
-    <bootstrap-modal ref="msgModal" :need-header="true" :need-footer="true">
-      <div slot="title">
-        提示
-      </div>
-      <div slot="body">
-        不能删除该系统
-      </div>
-      <div slot="footer">
-        <button class="btn btn-sm btn-primary" @click="cancel">确定</button>
-      </div>
-    </bootstrap-modal>
-    <bootstrap-modal ref="msg2Modal" :need-header="true" :need-footer="true">
-      <div slot="title">
-        提示
-      </div>
-      <div slot="body">
-        确定修改当前状态？
-      </div>
-      <div slot="footer">
-        <button class="btn btn-sm btn-danger" @click="enableOk">确定</button>
-        <button class="btn btn-sm btn-primary" @click="cancel">取消</button>
-      </div>
-    </bootstrap-modal>
     <add-modal ref="addModal" v-on:refresh-data="querySearch"></add-modal>
   </div>
-
   </div>
 </template>
 
@@ -520,7 +472,6 @@ export default {
   data() {
     return {
       options: {
-        // 可通过 https://github.com/simple-uploader/Uploader/tree/develop/samples/Node.js 示例启动服务
         target: process.env.service.apiHost+'/img/upload',   //上传地址
         testChunks: false,
         withCredentials:true,   //携带jwt
@@ -603,36 +554,7 @@ export default {
         });
     },
     Add() {
-            this.$refs.addModal.setModal()
-        },
-    next(){
-      let pi =this.pi;
-      this.pi = pi + 1;
-      this.$http.get("/sys/manage", { pi: this.pi ,ps:this.ps,name: this.sysname,status: this.selected})
-        .then(res => {
-          if(res.list.length <= 0){
-            this.pi=pi;
-            return false
-          }
-          this.datalist = this.datalist.concat(res.list);
-          this.datacount = res.count;
-          this.totalPage = Math.ceil(res.count / 10);
-        })
-        .catch(err => {
-          if (err.response) {
-            if (err.response.status == 403) {
-              this.$router.push("/member/login");
-            }else{
-              this.$notify({
-                title: '错误',
-                message: '网络错误,请稍后再试',
-                type: 'error',
-                offset: 50,
-                duration:2000,
-              });
-            }
-          }
-        });
+      this.$refs.addModal.setModal()
     },
     handleSizeChange(val){
       this.ps =val;
@@ -650,7 +572,7 @@ export default {
     },
 
     query() {
-      this.$http.get("/sys/manage", {
+      this.$http.post("/sys/getall", {
         pi: this.pi,
         ps:this.ps,
         name: this.sysname,
@@ -662,9 +584,6 @@ export default {
           this.totalPage = Math.ceil(res.count / 10);
         })
         .catch(err => {
-          if (err.response.status == 403) {
-            this.$router.push("/member/login");
-          }else{
             this.$notify({
               title: '错误',
               message: '网络错误,请稍后再试',
@@ -672,94 +591,44 @@ export default {
               offset: 50,
               duration:2000,
             });
-          }
         });
     },
     openAdd() {
       this.$refs.addModal.open();
-    },
-    addNew() {
-      let str = "";
-      this.addData.style.forEach((item, index) => {
-        str += item + " ";
-      });
-      this.$http.post("/sys/manage", {
-        name: this.addData.name,
-        addr: this.addData.addr,
-        time_out: this.addData.time_out,
-        logo: this.addData.logo,
-        style: str,
-        theme: this.addData.theme,
-        ident: this.addData.ident,
-        secret:this.addData.secret,
-        wechat_status: this.addData.wechat_status,
-        callbackurl: this.addData.callbackurl
-      })
-        .then(res => {
-          this.$refs.addModal.close();
-          this.goPage({ page: this.pi });
-            this.$notify({
-              title: '成功',
-              message: '添加成功',
-              type: 'success',
-              offset: 50,
-              duration:2000,
-            });
-        })
-        .catch(err => {
-          if (err.response.status == 403) {
-            this.$router.push("/member/login");
-          }else{
-            this.$notify({
-              title: '错误',
-              message: '网络错误,请稍后再试',
-              type: 'error',
-              offset: 50,
-              duration:2000,
-            });
-          }
-        });
-    },
+     },
     deleteById(id) {
-      this.sysid = id;
-      if (this.sysid == 0 || this.sysid == 100) {
-        this.$refs.msgModal.open();
-        return false;
-      }
-      this.$refs.theModal.open();
-    },
-    cancel() {
-      this.$refs.theModal.close();
-      this.$refs.msgModal.close();
-      this.$refs.editModal.close();
-      this.$refs.msg2Modal.close();
-    },
-    ok() {
-      this.$http.del("/sys/manage", { data: { id: this.sysid } })
+      this.$confirm("确定执行此操作?, 是否继续?", "提示", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        type: "warning"
+      }).then(() => {
+        this.$http.post("/sys/del", { id: id } )
         .then(res => {
-          this.cancel();
-          this.querySearch();
-            this.$notify({
-              title: '成功',
-              message: '删除成功',
-              type: 'success',
-              offset: 50,
-              duration:2000
-            });
+          this.goPage(this.pi);
+          this.$notify({
+            title: '成功',
+            message: '删除成功',
+            type: 'success',
+            offset: 50,
+            duration:2000,
+          });
         })
         .catch(err => {
-            console.log(err);
-            this.$notify({
-              title: '错误',
-              message: '网络错误,请稍后再试',
-              type: 'error',
-              offset: 50,
-              duration:2000,
-            });
+          this.$notify({
+            title: '错误',
+            message: '网络错误,请稍后再试',
+            type: 'error',
+            offset: 50,
+            duration:2000,
+          });
         });
+      });
+    },
+
+    cancel() {
+      this.$refs.editModal.close();
     },
     enable(id, status) {
-
       this.enableData.id = id;
       this.enableData.status = status;
 
@@ -768,7 +637,7 @@ export default {
         cancelButtonText: "取消",
         type: "warning"
       }).then(() => {
-        this.$http.put("/sys/manage", {
+        this.$http.post("/sys/changestatus", {
           id: this.enableData.id,
           status: this.enableData.status
         })
@@ -783,7 +652,6 @@ export default {
           });
         })
         .catch(err => {
-          console.log(err);
           this.$notify({
             title: '错误',
             message: '网络错误,请稍后再试',
@@ -791,21 +659,10 @@ export default {
             offset: 50,
             duration:2000,
           });
-
         });
-
-      }).catch(() => {
-        this.$message({
-          type: "info",
-          message: "已取消删除"
-        });
-      });
-
-
+      })
     },
-    enableOk() {
 
-    },
     edit(id) {
       this.datalist.forEach((item, index) => {
         if (item.id == id) {
@@ -813,7 +670,6 @@ export default {
           if (a == "string") {
             item.layout = item.layout.split(" ");
           }
-          console.log(item);
           this.editData = item;
           this.$refs.editModal.open();
         }
@@ -838,7 +694,7 @@ export default {
             });
         return;
       }
-      this.$http.post("/sys/manage/edit", edit)
+      this.$http.post("/sys/edit", edit)
         .then(res => {
           this.$refs.editModal.close();
           this.goPage({ page: this.pi });
@@ -851,26 +707,13 @@ export default {
             });
         })
         .catch(err => {
-          if (err.response.status == 403) {
-            this.$notify({
-              title: '错误',
-              message: '登录超时，请重新登录',
-              type: 'error',
-              offset: 50,
-              duration:2000,
-              onClose: ()=> {
-                this.$router.push("/member/login");
-              }
-            });
-          }else{
-            this.$notify({
-              title: '错误',
-              message: '网络错误,请稍后再试',
-              type: 'error',
-              offset: 50,
-              duration:2000,
-            });
-          }
+          this.$notify({
+            title: '错误',
+            message: '网络错误,请稍后再试',
+            type: 'error',
+            offset: 50,
+            duration:2000,
+          });
         });
     },
     manage(id) {
@@ -881,6 +724,7 @@ export default {
         }
       });
     },
+    
     checkBeforeSave(editData) {
       if (!editData.name) {
         return "系统名称不能为空";

@@ -4,7 +4,7 @@
         <div class="modal-content">
             <div class="modal-header">
               <button type="button" class="close" data-dismiss="modal" aria-label="Close" @click="close()">&times;</button>
-                <h4 class="modal-title" align="center"添加系统</h4>
+                <h4 class="modal-title" align="center">添加系统</h4>
             </div>
            
             <div class="modal-body" >
@@ -397,7 +397,6 @@ export default {
             },
             addData: {
                 name: "",
-                //time_out: "",
                 logo: "",
                 theme: "",
                 style: [],
@@ -467,7 +466,7 @@ export default {
                 });
               return;
             }
-            this.$http.post("/sys/manage", {
+            this.$http.post("/sys/add", {
                 name: this.addData.name,
                 callbackurl: this.addData.callbackurl,
                 logo: this.addData.logo,
@@ -482,7 +481,6 @@ export default {
             this.isSubmit = true
             this.isOpen = false
             this.$emit('refresh-data')
-            //this.goPage({ page: this.pi });
                 this.$notify({
                 title: '成功',
                 message: '添加成功',

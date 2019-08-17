@@ -265,7 +265,7 @@
       // 删除节点
       delNode(nodeModel) {
         if (nodeModel) {
-          this.$http.del("/sys/func", {data: {id: nodeModel.id}})
+          this.$http.post("/sys/func/del", {id: nodeModel.id})
             .then(res => {
               if (this.parentNodeModel.hasOwnProperty("children")) {
                 this.parentNodeModel.children.splice(this.parentNodeModel.children.indexOf(nodeModel), 1);
@@ -310,13 +310,12 @@
       },
       enable(nodeModel) {
         if (nodeModel) {
-          let status;
+          let status = 1;
           if (nodeModel.enable == 1) {
             status = 0
-          } else {
-            status = 1
-          }
-          this.$http.post("/sys/func/enable", {id: nodeModel.id, status: status})
+          } 
+
+          this.$http.post("/sys/func/changestatus", {id: nodeModel.id, status: status})
             .then(res => {
               nodeModel.enable = status;
               this.$notify({
@@ -327,28 +326,14 @@
               });
             })
             .catch(err => {
-              if (err.response.status == 403) {
-                this.$notify({
-                  title: '错误',
-                  message: '登录超时,请重新登录',
-                  type: 'error',
-                  offset: 50,
-                  duration: 2000,
-                  onClose: function () {
-                    this.$router.push("/login");
-                  }
-                });
-              } else {
-                this.$notify({
-                  title: '错误',
-                  message: '网络错误,请稍后再试',
-                  type: 'error',
-                  offset: 50,
-                  duration: 2000,
-                });
-              }
+              this.$notify({
+                title: '错误',
+                message: '网络错误,请稍后再试',
+                type: 'error',
+                offset: 50,
+                duration: 2000,
+              });
             });
-
         } else {
           return false;
         }
@@ -356,7 +341,7 @@
 
       upNode(nodeModel) {
         nodeModel.is_up = 2;
-        this.$http.post("/sys/manage/exchange",nodeModel).then(res =>{
+        this.$http.post("/sys/exchange",nodeModel).then(res =>{
             this.$notify({
               title: '成功',
               message: '上移成功',
@@ -369,7 +354,7 @@
       },
       downNode(nodeModel) {
         nodeModel.is_up = 1;
-        this.$http.post("/sys/manage/exchange",nodeModel).then(res =>{
+        this.$http.post("/sys/exchange",nodeModel).then(res =>{
             this.$notify({
               title: '成功',
               message: '下移成功',
@@ -402,22 +387,15 @@
           })
         })
         .catch(err => {
-          if (err.response) {
-            if (err.response.status == 403) {
-              this.$router.push("/login");
-            }else{
-              this.$notify({
-                title: '错误',
-                message: '网络错误,请稍后再试',
-                type: 'error',
-                offset: 50,
-                duration:2000,
-              });
-            }
-          }
+          this.$notify({
+            title: '错误',
+            message: '网络错误,请稍后再试',
+            type: 'error',
+            offset: 50,
+            duration:2000,
+          });
         });
       }
-
     },
     computed: {
       rootClass() {

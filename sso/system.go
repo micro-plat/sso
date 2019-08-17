@@ -1,7 +1,6 @@
 package sso
 
 import (
-	"strings"
 	"time"
 
 	"github.com/micro-plat/lib4go/net"
@@ -27,8 +26,8 @@ func (s *SystemLogic) getSystemInfo() (data *System, err error) {
 	values.Set("timestamp", types.GetString(time.Now().Unix()))
 
 	values = values.Sort()
-	raw := values.Join("=", "&") + "&key=" + s.conf.secret
-	values.Set("sign", strings.ToUpper(md5.Encrypt(raw)))
+	raw := values.Join("", "") + s.conf.secret
+	values.Set("sign", md5.Encrypt(raw))
 
 	sys := &System{}
 	result, err := remoteRequest(s.conf.host, systemInfoUrl, values.Join("=", "&"), sys)

@@ -1,29 +1,29 @@
 <template>
     <div class="container">
-        <h1 class="title">能源业务中心运营管理系统</h1>
+        <h1 class="sso-title">能源业务中心运营管理系统</h1>
         <div>
             <div class="content">
-                <div class="title_text">修改密码</div>
-                <div class="tips_text">
-                    <i><img class="tips_image" src="../../img/password.png"></i>
+                <div class="title-text">修改密码</div>
+                <div class="tips-text">
+                    <i><img class="tips-image" src="../../img/password.png"></i>
                     <span>原密码</span>
                 </div>
-                <input  type="password" v-model="expassword"  placeholder="请输入原密码">
-                <div class="tips_text">
-                    <i><img class="tips_image" src="../../img/password.png"></i>
+                <input class="tips-input" type="password" v-model="expassword"  placeholder="请输入原密码">
+                <div class="tips-text">
+                    <i><img class="tips-image" src="../../img/password.png"></i>
                     <span>新密码</span>
                 </div>
-                <input type="password" v-model="password1" placeholder="请输入新密码">
-                <div class="tips_text">
-                    <i><img class="tips_image" src="../../img/password.png"></i>
+                <input class="tips-input" type="password" v-model="password1" placeholder="请输入新密码">
+                <div class="tips-text">
+                    <i><img class="tips-image" src="../../img/password.png"></i>
                     <span>确认新密码</span>
                 </div>
-                <input  @keyup.enter="changePwd" type="password" v-model="password2" placeholder="请再次输入新密码">
+                <input class="tips-input" @keyup.enter="changePwd" type="password" v-model="password2" placeholder="请再次输入新密码">
                 
                 <div style="font-size:14px;color:#F7296F;">
                     {{errorMsg}}
                 </div>
-                <div class="confirm">
+                <div class="but">
                     <span><button type="button" @click="changePwd"  class="btn blue-btn">确定</button></span>
                     <span><button style="background: #b4b4b4;" type="button" @click="signOut" class="btn blue-btn">取消</button></span>
                 </div>
@@ -37,9 +37,8 @@
   import {trimError} from "@/services/utils"
   import VueCookies from 'vue-cookies'
   import {jumpLogin} from '@/services/utils'
-
   export default {
-    name: '',
+    name: 'changePassword',
     data () {
       return {
         ident:"",
@@ -51,36 +50,31 @@
     },
     created() {
         this.ident = this.$route.params.ident ? this.$route.params.ident : "";
-        if (!VueCookies.isKey("__sso_jwt__")) {
+        var isExists = VueCookies.isKey("__sso_jwt__");
+        if(!isExists) {
             this.$router.push({path:jumpLogin(this.ident), query :{ changepwd: 1 }});
         }
     },
-
     mounted(){
       document.title = "修改密码-能源业务中心运营管理系统";
     },
-
     methods:{
       signOut() {
           this.$router.push({path:jumpLogin(this.ident)});
       },
-
       check() {
             if (!this.expassword) {
                 this.errorMsg = '旧密码不能为空';
                 return;
             }
-
             if (!this.password1 || !this.password2) {
                 this.errorMsg = '新密码不能为空';
                 return;
             }
-
             if (this.password1.trim() != this.password2.trim()) {
                 this.errorMsg = '两个新密码不一致';
                 return;
             }
-
             if (this.password1.length > 20 || this.password2.length > 20) {
                 this.errorMsg = '密码长度不能超过20个字符';
                 return;
@@ -118,13 +112,18 @@
 </script>
 
 <style>
-
 .container{ height:100%;}
 body{font-family: "\9ED1\4F53";background:url(../../img/background.png); background-size: cover; font-size:12px; margin:0;padding:0;}
 li{	list-style:none;}
 .input{ border:none;}
 .input{ border:none;font-family: "\9ED1\4F53"; width:100%;	}
-
+.title{
+	font-size: 60px;
+    padding: 80px 0;
+    font-weight: 500;
+    text-align: center;
+    font-weight: bold;
+}
 .list{
 	width: 900px;
     margin: 0 auto;
@@ -142,7 +141,6 @@ li{	list-style:none;}
 	border-top-left-radius: 10px;
     border-top-right-radius: 10px
 }
-
 .list .text{
 	font-size: 30px;
 	color: #fff;
@@ -151,7 +149,6 @@ li{	list-style:none;}
     border-bottom-left-radius: 10px;
     border-bottom-right-radius: 10px
 }
-
 .content{
     width: 440px;
     margin:0 auto;
@@ -161,25 +158,23 @@ li{	list-style:none;}
     padding: 60px 100px;
     
 }
-.title_text{
+.title-text{
 	font-size: 22px;
     text-align: center;
     color: #fff;
     padding-bottom: 40px;
 }
-.tips_text{
+.tips-text{
 	font-size: 14px;
     font-weight: 500;
 	color: #FFFFFF;
 	padding-bottom: 10px;
 }
-
-.tips_image {
+.tips-image {
     width: 11px;
     height: 11px;
     margin-right: 4px;
 }
-
 .content input{
 	width: 92%;
     padding: 15px;
@@ -188,7 +183,7 @@ li{	list-style:none;}
     margin-bottom: 24px;
     border:0
 }
-.confirm button{
+.but button{
 	width: 36%;
     padding: 16px 0;
     font-size: 16px;
@@ -198,15 +193,13 @@ li{	list-style:none;}
     margin: 0 10px;
     border-radius: 10px;
 }
-.confirm{
+.but{
 	text-align: center;
 	margin-top: 16px;
 }
-
 .footer{
     margin: 4vw .3vw 2vw;
 }
-
 .footer p {
     font-size: 14px;
     color: #fff;
@@ -214,8 +207,7 @@ li{	list-style:none;}
     text-align: center;
     line-height: 1.8;
 }
-
-title {
+.sso-title {
     font-size: 2.8vw;
     color: #fff;
     letter-spacing: 3px;
@@ -223,31 +215,18 @@ title {
     margin: 3vw 1vw;
     font-family: Josefin Sans,sans-serif;
 }
-
  ::-webkit-input-placeholder {
     color: #333;
   }
-
   :-moz-placeholder {
     /* Firefox 18- */
     color: #333;
   }
-
   ::-moz-placeholder {
     /* Firefox 19+ */
     color: #333;
   }
-
   :-ms-input-placeholder {
     color: #333;
   }
-
-  /* .title{
-	font-size: 60px;
-    padding: 80px 0;
-    font-weight: 500;
-    text-align: center;
-    font-weight: bold;
-} */
-
 </style>
