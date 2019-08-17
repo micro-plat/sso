@@ -22,7 +22,7 @@ func (s *SSO) install() {
 
 	s.Conf.API.SetAuthes(
 		conf.NewAuthes().WithJWT(
-			conf.NewJWT("__jwt__", "HS512", "bf8f3171946d8d5a13cca23aa6080c8e", 36000, "/sso/login/user").WithHeaderStore()))
+			conf.NewJWT("__jwt__", "HS512", "bf8f3171946d8d5a13cca23aa6080c8e", 36000, "/login/user", "/img/upload").WithHeaderStore()))
 
 	s.Conf.API.SetApp(model.Conf{
 		PicHost:    "http://sso.sinopecscsy.com",

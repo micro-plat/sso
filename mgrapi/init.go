@@ -50,15 +50,13 @@ func (r *SSO) init() {
 		return nil
 	})
 
-	r.Micro("/login", member.NewLoginHandler)       //调用sso登录
-	r.Micro("/menu", menu.NewMenuHandler)           //菜单相关接口
-	//r.Micro("/ident", system.NewSystemIdentHandler) //系统信息获取
-	//r.Micro("/member", member.NewQueryHandler)      //查询登录用户信息
-	r.Micro("/base", base.NewBaseUserHandler)         
+	r.Micro("/login", member.NewLoginHandler)       	//调用sso登录
+	r.Micro("/menu", menu.NewMenuHandler)           	//菜单相关接口
+	r.Micro("/base", base.NewBaseUserHandler)       	//基础数据
 	r.Micro("/user", user.NewUserHandler)               //用户相关接口
 	r.Micro("/auth", role.NewRoleAuthHandler)           //权限管理
 	r.Micro("/role", role.NewRoleHandler)               //角色管理相关接口
-	r.Micro("/sys/manage", system.NewSystemHandler)     //系统管理相关接口
+	r.Micro("/sys", system.NewSystemHandler)            //系统管理相关接口
 	r.Micro("/sys/func", function.NewSystemFuncHandler) //系统功能相关接口
 	r.Micro("/img/upload", image.NewImageHandler("static/img"))  //图片上传
 }

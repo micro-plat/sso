@@ -24,8 +24,8 @@ func NewRoleHandler(container component.IContainer) (u *RoleHandler) {
 	}
 }
 
-//GetHandle 查询角色信息数据
-func (u *RoleHandler) GetHandle(ctx *context.Context) (r interface{}) {
+//GetAllHandle 查询角色信息数据
+func (u *RoleHandler) GetAllHandle(ctx *context.Context) (r interface{}) {
 
 	ctx.Log.Info("--------查询角色信息数据--------")
 
@@ -48,8 +48,8 @@ func (u *RoleHandler) GetHandle(ctx *context.Context) (r interface{}) {
 	}
 }
 
-//PostHandle 编辑/添加角色信息
-func (u *RoleHandler) PostHandle(ctx *context.Context) (r interface{}) {
+//SaveHandle 编辑/添加角色信息
+func (u *RoleHandler) SaveHandle(ctx *context.Context) (r interface{}) {
 
 	ctx.Log.Info("--------编辑/添加角色信息--------")
 	ctx.Log.Info("1.参数校验")
@@ -64,11 +64,7 @@ func (u *RoleHandler) PostHandle(ctx *context.Context) (r interface{}) {
 	}
 
 	ctx.Log.Info("3.记录行为")
-	if err := u.op.RoleOperate(
-		member.Query(ctx, u.container),
-		"编辑/添加角色",
-		"role_name", &inputData.RoleName, "role_id", &inputData.RoleID, "status", &inputData.Status, "IsAdd", &inputData.IsAdd,
-	); err != nil {
+	if err := u.op.RoleOperate(member.Get(ctx), "编辑/添加角色", "role_name", &inputData.RoleName, "role_id", &inputData.RoleID, "status", &inputData.Status, "IsAdd", &inputData.IsAdd); err != nil {
 		return err
 	}
 
@@ -76,8 +72,8 @@ func (u *RoleHandler) PostHandle(ctx *context.Context) (r interface{}) {
 	return "success"
 }
 
-//PutHandle 修改角色状态
-func (u *RoleHandler) PutHandle(ctx *context.Context) (r interface{}) {
+//ChangeStatusHandle 修改角色状态
+func (u *RoleHandler) ChangeStatusHandle(ctx *context.Context) (r interface{}) {
 	ctx.Log.Info("--------修改角色状态--------")
 	ctx.Log.Info("1.参数校验")
 	if err := ctx.Request.Check("role_id", "status"); err != nil {
@@ -89,24 +85,17 @@ func (u *RoleHandler) PutHandle(ctx *context.Context) (r interface{}) {
 		return context.NewError(context.ERR_NOT_IMPLEMENTED, err)
 	}
 	ctx.Log.Info("3.记录行为")
-	if err := u.op.RoleOperate(
-		member.Query(ctx, u.container),
-		"修改角色状态",
-		"user_id",
-		ctx.Request.GetString("role_id"),
-		"status",
-		ctx.Request.GetInt("status"),
-	); err != nil {
+	if err := u.op.RoleOperate(member.Get(ctx), "修改角色状态", "user_id", ctx.Request.GetString("role_id"), "status", ctx.Request.GetInt("status")); err != nil {
 		return err
 	}
 	ctx.Log.Info("3.返回结果")
 	return "success"
 }
 
-//DeleteHandle 删除角色
-func (u *RoleHandler) DeleteHandle(ctx *context.Context) (r interface{}) {
-
+//DelHandle 删除角色
+func (u *RoleHandler) DelHandle(ctx *context.Context) (r interface{}) {
 	ctx.Log.Info("--------删除角色--------")
+
 	ctx.Log.Info("1.参数校验")
 	if err := ctx.Request.Check("role_id"); err != nil {
 		return context.NewError(context.ERR_NOT_ACCEPTABLE, err)
@@ -116,15 +105,12 @@ func (u *RoleHandler) DeleteHandle(ctx *context.Context) (r interface{}) {
 	if err := u.roleLib.Delete(ctx.Request.GetInt("role_id")); err != nil {
 		return context.NewError(context.ERR_NOT_IMPLEMENTED, err)
 	}
+
 	ctx.Log.Info("3.记录行为")
-	if err := u.op.RoleOperate(
-		member.Query(ctx, u.container),
-		"删除角色",
-		"role_id",
-		ctx.Request.GetInt("role_id"),
-	); err != nil {
+	if err := u.op.RoleOperate(member.Get(ctx), "删除角色", "role_id", ctx.Request.GetInt("role_id")); err != nil {
 		return err
 	}
-	ctx.Log.Info("3.返回结果。")
+
+	ctx.Log.Info("4.返回结果。")
 	return "success"
 }

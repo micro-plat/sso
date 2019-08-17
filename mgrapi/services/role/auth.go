@@ -3,7 +3,6 @@ package role
 import (
 	"github.com/micro-plat/hydra/component"
 	"github.com/micro-plat/hydra/context"
-	"github.com/micro-plat/sso/mgrapi/modules/access/member"
 	"github.com/micro-plat/sso/mgrapi/modules/logic"
 	"github.com/micro-plat/sso/mgrapi/modules/model"
 )
@@ -40,8 +39,8 @@ func NewRoleAuthHandler(container component.IContainer) (u *RoleAuthHandler) {
 // 	return data
 // }
 
-//PostHandle 角色授权
-func (u *RoleAuthHandler) PostHandle(ctx *context.Context) (r interface{}) {
+//SaveHandle 角色授权
+func (u *RoleAuthHandler) SaveHandle(ctx *context.Context) (r interface{}) {
 	ctx.Log.Info("--------角色授权--------")
 
 	ctx.Log.Info("1.参数校验")
@@ -59,27 +58,17 @@ func (u *RoleAuthHandler) PostHandle(ctx *context.Context) (r interface{}) {
 	return "success"
 }
 
-//PutHandle 角色授权菜单
-func (u *RoleAuthHandler) PutHandle(ctx *context.Context) (r interface{}) {
-
+//QueryHandle 角色授权菜单数据
+func (u *RoleAuthHandler) QueryHandle(ctx *context.Context) (r interface{}) {
 	ctx.Log.Info("--------角色授权菜单--------")
+
 	ctx.Log.Info("1.参数校验")
-	l := member.Query(ctx, u.container)
-	if l == nil {
-		return context.NewError(context.ERR_FORBIDDEN, "code not be null")
-	}
-	if err := ctx.Request.Check("role_id"); err != nil {
+	if err := ctx.Request.Check("role_id", "sys_id"); err != nil {
 		return context.NewError(context.ERR_NOT_ACCEPTABLE, err)
-	}
-	var sysID int64
-	if l.SystemID == 0 {
-		sysID = ctx.Request.GetInt64("sys_id")
-	} else {
-		sysID = int64(l.SystemID)
 	}
 
 	ctx.Log.Info("2.执行操作")
-	res, err := u.roleLib.QueryAuthMenu(sysID, ctx.Request.GetInt64("role_id"))
+	res, err := u.roleLib.QueryAuthMenu(ctx.Request.GetInt64("sys_id"), ctx.Request.GetInt64("role_id"))
 	if err != nil {
 		return context.NewError(context.ERR_NOT_IMPLEMENTED, err)
 	}

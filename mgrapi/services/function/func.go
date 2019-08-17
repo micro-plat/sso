@@ -25,16 +25,17 @@ func NewSystemFuncHandler(container component.IContainer) (u *SystemFuncHandler)
 	}
 }
 
-//GetHandle 查询系统功能数据
+//GetHandle 查询系统模块数据
 func (u *SystemFuncHandler) GetHandle(ctx *context.Context) (r interface{}) {
-	ctx.Log.Info("------查询系统功能数据------")
-	ctx.Log.Info("1. 参数检查")
-	if err := ctx.Request.Bind(""); err != nil {
+	ctx.Log.Info("------查询系统模块数据------")
+
+	ctx.Log.Info("1.参数检查")
+	if err := ctx.Request.Bind("id"); err != nil {
 		return context.NewError(context.ERR_NOT_ACCEPTABLE, err)
 	}
-	sysid := ctx.Request.GetInt("id")
-	ctx.Log.Info("2.丛数据库获取数据")
-	data, err := u.subLib.Get(sysid)
+
+	ctx.Log.Info("2.获取数据")
+	data, err := u.subLib.Get(ctx.Request.GetInt("id"))
 	if err != nil {
 		return err
 	}
@@ -42,14 +43,16 @@ func (u *SystemFuncHandler) GetHandle(ctx *context.Context) (r interface{}) {
 	return data
 }
 
-//PostHandle 添加系统功能
-func (u *SystemFuncHandler) PostHandle(ctx *context.Context) (r interface{}) {
+//AddHandle 添加系统功能
+func (u *SystemFuncHandler) AddHandle(ctx *context.Context) (r interface{}) {
 	ctx.Log.Info("------添加系统功能------")
+
 	ctx.Log.Info("1. 参数检查")
 	var input model.SystemFuncAddInput
 	if err := ctx.Request.Bind(&input); err != nil {
 		return context.NewError(context.ERR_NOT_ACCEPTABLE, err)
 	}
+
 	/*验证当没有根节点时，不能增加子节点*/
 	if input.Parentid == 0 && input.ParentLevel != 0 {
 		return context.NewError(context.ERR_BAD_REQUEST, "请先保存根节点")
@@ -60,65 +63,60 @@ func (u *SystemFuncHandler) PostHandle(ctx *context.Context) (r interface{}) {
 	if err != nil {
 		return err
 	}
+
 	ctx.Log.Info("3.记录行为")
 	data, _ := types.Struct2Map(&input)
-	if err := u.op.MenuOperate(
-		member.Query(ctx, u.container),
-		"添加菜单",
-		data,
-	); err != nil {
+	if err := u.op.MenuOperate(member.Get(ctx), "添加菜单", data); err != nil {
 		return err
 	}
+
 	ctx.Log.Info("3.返回数据")
 	return "success"
 }
 
-//PutHandle 编辑系统功能
-func (u *SystemFuncHandler) PutHandle(ctx *context.Context) (r interface{}) {
+//EditHandle 编辑系统功能
+func (u *SystemFuncHandler) EditHandle(ctx *context.Context) (r interface{}) {
 	ctx.Log.Info("------编辑系统功能------")
+
 	ctx.Log.Info("1. 参数检查")
 	var input model.SystemFuncEditInput
 	if err := ctx.Request.Bind(&input); err != nil {
 		return context.NewError(context.ERR_NOT_ACCEPTABLE, err)
 	}
+
 	ctx.Log.Info("2.更新数据库数据--------")
 	err := u.subLib.Edit(&input)
 	if err != nil {
 		return err
 	}
+
 	ctx.Log.Info("3.记录行为")
 	data, _ := types.Struct2Map(&input)
-	if err := u.op.MenuOperate(
-		member.Query(ctx, u.container),
-		"编辑菜单",
-		data,
-	); err != nil {
+	if err := u.op.MenuOperate(member.Get(ctx), "编辑菜单", data); err != nil {
 		return err
 	}
+
 	ctx.Log.Info("3.返回数据")
 	return "success"
 }
 
-//DeleteHandle 删除系统功能
-func (u *SystemFuncHandler) DeleteHandle(ctx *context.Context) (r interface{}) {
+//DelHandle 删除系统功能
+func (u *SystemFuncHandler) DelHandle(ctx *context.Context) (r interface{}) {
 	ctx.Log.Info("------删除系统功能------")
+
 	ctx.Log.Info("1. 参数检查")
 	if err := ctx.Request.Check("id"); err != nil {
 		return context.NewError(context.ERR_NOT_ACCEPTABLE, err)
 	}
 
-	id := ctx.Request.GetInt("id")
 	ctx.Log.Info("2.更新数据库数据--------")
-	err := u.subLib.Delete(id)
+	err := u.subLib.Delete(ctx.Request.GetInt("id"))
 	if err != nil {
 		return err
 	}
+
 	ctx.Log.Info("3.记录行为")
-	if err := u.op.MenuOperate(
-		member.Query(ctx, u.container),
-		"删除菜单",
-		"id", ctx.Request.GetInt("id"),
-	); err != nil {
+	if err := u.op.MenuOperate(member.Get(ctx), "删除菜单", "id", ctx.Request.GetInt("id")); err != nil {
 		return err
 	}
 
@@ -126,26 +124,26 @@ func (u *SystemFuncHandler) DeleteHandle(ctx *context.Context) (r interface{}) {
 	return "success"
 }
 
-//EnableHandle 修改系统功能状态
-func (u *SystemFuncHandler) EnableHandle(ctx *context.Context) (r interface{}) {
+//ChangeStatusHandle 修改系统功能状态
+func (u *SystemFuncHandler) ChangeStatusHandle(ctx *context.Context) (r interface{}) {
 	ctx.Log.Info("------修改系统功能状态------")
+
 	ctx.Log.Info("1. 参数检查")
 	if err := ctx.Request.Check("id", "status"); err != nil {
 		return context.NewError(context.ERR_NOT_ACCEPTABLE, err)
 	}
+
 	ctx.Log.Info("2.更新数据库数据--------")
 	err := u.subLib.ChangeStatus(ctx.Request.GetInt("id"), ctx.Request.GetInt("status"))
 	if err != nil {
 		return err
 	}
+
 	ctx.Log.Info("3.记录行为")
-	if err := u.op.MenuOperate(
-		member.Query(ctx, u.container),
-		"修改菜单状态",
-		"id", ctx.Request.GetInt("id"), "status", ctx.Request.GetInt("status"),
-	); err != nil {
+	if err := u.op.MenuOperate(member.Get(ctx), "修改菜单状态", "id", ctx.Request.GetInt("id"), "status", ctx.Request.GetInt("status")); err != nil {
 		return err
 	}
+
 	ctx.Log.Info("3.返回数据")
 	return "success"
 }

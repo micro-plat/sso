@@ -8,8 +8,6 @@ import (
 
 // IOperateLogic xx
 type IOperateLogic interface {
-	// 登录行为
-	LoginOperate(m *model.LoginState) (err error) //这个外api在用
 	// 系统数据操作
 	SysOperate(m *model.LoginState, method string, r ...interface{}) (err error)
 	// 角色数据操作
@@ -32,11 +30,6 @@ func NewOperateLogic(c component.IContainer) *OperateLogic {
 		c:  c,
 		db: operate.NewDbOperate(c),
 	}
-}
-
-// LoginOperate 登录行为
-func (o *OperateLogic) LoginOperate(m *model.LoginState) (err error) {
-	return o.db.LoginOperate(m)
 }
 
 // SysOperate 系统数据操作
