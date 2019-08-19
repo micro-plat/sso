@@ -11,6 +11,7 @@ import (
 type IDBMember interface {
 	QueryByUserName(u string, ident string) (info db.QueryRow, err error)
 	QueryByID(uid int, ident string) (s *model.MemberState, err error)
+	QueryUserSystem(userID int, ident string) (s db.QueryRows, err error)
 }
 
 //DBMember 控制用户登录
@@ -53,6 +54,19 @@ func (l *DBMember) QueryByUserName(u string, ident string) (info db.QueryRow, er
 	return userData, err
 }
 
+//QueryUserSystem 查询用户可用的子系统
+func (l *DBMember) QueryUserSystem(userID int, ident string) (s db.QueryRows, err error) {
+	db := l.c.GetRegularDB()
+	data, _, _, err := db.Query(sqls.QueryUserSystem, map[string]interface{}{
+		"user_id": userID,
+		"ident":   ident,
+	})
+	if err != nil {
+		return nil, err
+	}
+	return data, nil
+}
+
 // QueryByID 根据userid查询用户信息
 func (l *DBMember) QueryByID(uid int, ident string) (s *model.MemberState, err error) {
 	db := l.c.GetRegularDB()
@@ -83,14 +97,10 @@ func (l *DBMember) QueryByID(uid int, ident string) (s *model.MemberState, err e
 		return nil, context.NewError(context.ERR_UNSUPPORTED_MEDIA_TYPE, "用户没有相关系统权限")
 	}
 
-	if !roles.IsEmpty() {
-		s.RoleID = roles.Get(0).GetInt("role_id")
-		s.RoleName = roles.Get(0).GetString("role_name")
-		s.IndexURL = roles.Get(0).GetString("index_url")
-		s.LoginURL = roles.Get(0).GetString("login_url")
-		s.SystemID = roles.Get(0).GetInt("sys_id")
-	}
-
+	s.RoleID = roles.Get(0).GetInt("role_id")
+	s.RoleName = roles.Get(0).GetString("role_name")
+	s.IndexURL = roles.Get(0).GetString("index_url")
+	s.SystemID = roles.Get(0).GetInt("sys_id")
 	s.UserID = data.Get(0).GetInt64("user_id", -1)
 	s.Status = data.Get(0).GetInt("status")
 	s.Password = data.Get(0).GetString("password")

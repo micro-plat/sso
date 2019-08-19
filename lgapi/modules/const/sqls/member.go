@@ -8,6 +8,9 @@ from sso_user_info
 where user_name=@user_name
 limit 1;`
 
+//UnLockMember 解锁被锁定的用户
+const UnLockMember = `update sso_user_info set status = 0 where status = 1 and user_name = @user_name;`
+
 //AddUserOpenID 给用户绑定openid
 const AddUserOpenID = `
 update sso_user_info set 

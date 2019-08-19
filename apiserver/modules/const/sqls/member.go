@@ -18,6 +18,24 @@ where u.user_id=@user_id
 limit 1
 `
 
+//QueryUserSystem 查询用户可用的子系统
+const QueryUserSystem = `
+select
+	sys.id,
+	sys.name,
+	sys.index_url,
+	sys.logo
+from sso_system_info sys
+inner join sso_user_role ur on ur.sys_id = sys.id
+inner join sso_role_info role on role.role_id = ur.role_id
+where role.status = 0 AND
+  ur.enable=1 and 
+  sys.index_url is not null and
+  sys.index_url <> '' and
+  sys.ident <> @ident and
+  ur.user_id = @user_id; 
+`
+
 //QueryUserInfoByOpenID 查询用户信息
 const QueryUserInfoByOpenID = `
 select 
@@ -31,17 +49,15 @@ where
 const QueryUserRole = `
 select 
 	r.role_id,i.name role_name,s.index_url,s.login_url,s.login_timeout,r.sys_id 
-from 
-	sso_user_role r
-inner join 
-	sso_system_info s on r.sys_id=s.id
-inner join 
-	sso_role_info i on i.role_id=r.role_id 
+from sso_user_role r
+inner join sso_system_info s on r.sys_id=s.id
+inner join sso_role_info i on i.role_id=r.role_id 
 where 
 	r.user_id=@user_id 
 	and s.ident=@ident 
-	and r.enable=1 
-	and s.enable=1`
+	and r.enable=1	  
+	and s.enable=1	
+	and i.status=0`
 
 //QueryUserByUserName 根据用户名获取用户信息
 const QueryUserByUserName = `

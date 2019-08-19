@@ -10,10 +10,6 @@ func (s *SSO) install() {
 	s.Conf.SetInput(`#redis_string`, `redis连接串`, ``)
 	s.Conf.SetInput(`#mysql_db_string`, `mysql数据库连接串`, `username:password@tcp(host)/sso?charset=utf8`)
 
-	s.Conf.SetInput(`#wx_appid`, `微信公众号appid`, ``)
-	s.Conf.SetInput(`#wx_secret`, `微信公众号secret`, ``)
-	s.Conf.SetInput(`#sendcode_key`, `调用其他部门发微信验证码的key`, ``)
-
 	s.Conf.API.SetMain(conf.NewAPIServerConf(":6687"))
 	s.Conf.API.SetHeaders(conf.NewHeader().WithCrossDomain())
 	s.Conf.Plat.SetDB(conf.NewMysqlConfForProd("#mysql_db_string"))
@@ -21,4 +17,6 @@ func (s *SSO) install() {
 
 	s.Conf.API.SetAuthes(conf.NewAuthes().WithJWT(
 		conf.NewJWT("__sso_jwt__", "HS512", "f0abd74b09bcc61449d66ae5d8128c18", 36000, "/system/get", "/member/login")))
+
+	s.Conf.CRON.SetSubConf("task", `{"tasks":[{"cron":"@daily","service":"/member/unlock"}]}`)
 }

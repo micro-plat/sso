@@ -41,3 +41,9 @@ func (client *Client) GetSystemInfo() (data *System, err error) {
 	s := NewSystem(client.cfg)
 	return s.getSystemInfo()
 }
+
+//GetUserOtherSystems 获取用户可用的其他子系统
+func (client *Client) GetUserOtherSystems(userID int) (*[]*System, error) {
+	s := newUser(client.cfg)
+	return u.getUserOtherSystems(userID)
+}

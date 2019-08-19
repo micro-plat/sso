@@ -29,20 +29,25 @@ func (u *LoginHandler) Handle(ctx *context.Context) (r interface{}) {
 		return context.NewError(context.ERR_NOT_ACCEPTABLE, "用户名和密码不能为空")
 	}
 
-	ctx.Log.Info("2:处理用户账号登录")
+	ctx.Log.Info("2: 判断用户是否被锁定, 锁定时间过期后要解锁")
+	if err := u.m.CheckUserIsLocked(ctx.Request.GetString("username")); err != nil {
+		return err
+	}
+
+	ctx.Log.Info("3:处理用户账号登录")
 	ident := ctx.Request.GetString("ident")
 	member, err := u.m.Login(ctx.Request.GetString("username"), ctx.Request.GetString("password"), ident)
 	if err != nil {
 		return err
 	}
 
-	ctx.Log.Info("3:生成返回给子系统的Code")
+	ctx.Log.Info("4:生成返回给子系统的Code")
 	result, err := u.m.GenerateCodeAndSysInfo(ident, member.UserID)
 	if err != nil {
 		return err
 	}
 
-	ctx.Log.Info("4: 设置jwt数据")
+	ctx.Log.Info("5: 设置jwt数据")
 	ctx.Response.SetJWT(member)
 
 	return result

@@ -5,7 +5,6 @@ import (
 	"strings"
 
 	"github.com/micro-plat/hydra/component"
-	"github.com/micro-plat/hydra/context"
 	"github.com/micro-plat/lib4go/db"
 	"github.com/micro-plat/lib4go/security/md5"
 	"github.com/micro-plat/lib4go/types"
@@ -13,8 +12,6 @@ import (
 	"github.com/micro-plat/sso/mgrapi/modules/const/sqls"
 	"github.com/micro-plat/sso/mgrapi/modules/model"
 )
-
-var _ IDbUser = &DbUser{}
 
 type IDbUser interface {
 	Query(input *model.QueryUserInput) (data db.QueryRows, total int, err error)
@@ -24,12 +21,8 @@ type IDbUser interface {
 	Delete(userID int) (err error)
 	Edit(input *model.UserInputNew) (err error)
 	Add(input *model.UserInputNew) (err error)
-	CheckPWD(oldPwd string, userID int64) (err error)
 	EditInfo(username string, tel string, email string) (err error)
-	ChangePwd(user_id int, expassword string, newpassword string) (err error)
 	ResetPwd(user_id int64) (err error)
-	Bind(email string, openID string) (err error)
-	IsSendEmail(input *model.UserInputNew) (b bool, err error)
 }
 
 type DbUser struct {
@@ -74,8 +67,6 @@ func (u *DbUser) Query(input *model.QueryUserInput) (data db.QueryRows, total in
 		params["user_id_string"] = strings.Join(userids, ",")
 	}
 
-	fmt.Println("user_id_string", params["user_id_string"])
-
 	sysRoles, q, a, err := db.Query(sqls.QueryUserRoleList, params)
 	if err != nil {
 		return nil, 0, fmt.Errorf("获取用户信息列表发生错误(err:%v),sql:%s,输入参数:%v", err, q, a)
@@ -108,16 +99,11 @@ func (u *DbUser) Query(input *model.QueryUserInput) (data db.QueryRows, total in
 //ChangeStatus 修改用户状态
 func (u *DbUser) ChangeStatus(userID int, status int) (err error) {
 	db := u.c.GetRegularDB()
-	input := map[string]interface{}{
+	_, q, a, err := db.Execute(sqls.UpdateUserStatus, map[string]interface{}{
 		"user_id": userID,
-	}
-	switch status {
-	case enum.Disabled:
-		input["status"] = enum.Disabled
-	case enum.Normal, enum.Unlock:
-		input["status"] = enum.Normal
-	}
-	_, q, a, err := db.Execute(sqls.UpdateUserStatus, input)
+		"status":  status,
+	})
+
 	if err != nil {
 		return fmt.Errorf("修改用户状态发生错误(err:%v),sql:%s,输入参数:%v", err, q, a)
 	}
@@ -226,35 +212,6 @@ func (u *DbUser) Edit(input *model.UserInputNew) (err error) {
 	return nil
 }
 
-func (u *DbUser) IsSendEmail(input *model.UserInputNew) (b bool, err error) {
-	db := u.c.GetRegularDB()
-
-	// 判断用户是否已经绑定微信,已绑定则不需要发邮件
-	if input.UserName != "" {
-		datas, q, a, err := db.Query(sqls.QueryUserByName, map[string]interface{}{
-			"user_name": input.UserName,
-		})
-		if err == nil && datas.Get(0).GetString("wx_openid") == "" {
-			goto NEXT
-		} else {
-			return false, fmt.Errorf("用户已绑定微信或获取系统微信登录状态发生错误(err:%v),sql:%s,输入参数:%v", err, q, a)
-		}
-	}
-NEXT:
-	as := strings.Split(input.Auth, "|")
-	for i := 0; i < len(as)-1; i++ {
-		as1 := strings.Split(as[i], ",")
-		sys_id := as1[0]
-		datas, _, _, _ := db.Query(sqls.QuerySystemWechantStatus, map[string]interface{}{
-			"sys_id": sys_id,
-		})
-		if err == nil && datas.Get(0).GetInt("wechat_status") == 1 {
-			return true, nil
-		}
-	}
-	return false, nil
-}
-
 //Add 添加用户
 func (u *DbUser) Add(input *model.UserInputNew) (err error) {
 	params, err := types.Struct2Map(input)
@@ -292,22 +249,7 @@ func (u *DbUser) Add(input *model.UserInputNew) (err error) {
 	return nil
 }
 
-//CheckPWD 检查用户原密码是否匹配
-func (u *DbUser) CheckPWD(oldPWD string, userID int64) (err error) {
-	db := u.c.GetRegularDB()
-	row, q, a, err := db.Scalar(sqls.QueryUserPswd, map[string]interface{}{
-		"password": md5.Encrypt(oldPWD),
-		"user_id":  userID,
-	})
-	if err != nil {
-		return context.NewError(406, fmt.Errorf("查询用户信息发生错误(err:%v),sql:%s,输入参数:%v", err, q, a))
-	}
-	if fmt.Sprint(row) != "1" {
-		return context.NewError(403, fmt.Errorf("输入的原密码不正确"))
-	}
-	return nil
-}
-
+//EditInfo EditInfo
 func (u *DbUser) EditInfo(username string, tel string, email string) (err error) {
 	db := u.c.GetRegularDB()
 	params := map[string]interface{}{
@@ -323,35 +265,7 @@ func (u *DbUser) EditInfo(username string, tel string, email string) (err error)
 
 }
 
-func (u *DbUser) ChangePwd(user_id int, expassword string, newpassword string) (err error) {
-	db := u.c.GetRegularDB()
-
-	//获取旧密码
-	data, q, a, err := db.Query(sqls.QueryOldPwd, map[string]interface{}{
-		"user_id": user_id,
-	})
-	if err != nil || data.Get(0).GetInt("changepwd_times") >= 3 {
-		return fmt.Errorf("获取数据错误或密码修改超过限制(err:%v),sql:%s,参数：%v", err, q, a)
-	}
-	if strings.ToLower(md5.Encrypt(expassword)) != strings.ToLower(data.Get(0).GetString("password")) {
-		return fmt.Errorf("原密码错误")
-	}
-	dbTrans, err := db.Begin()
-	if err != nil {
-		return fmt.Errorf("开启DB事务出错(err:%v)", err)
-	}
-	_, q, a, err = dbTrans.Execute(sqls.SetNewPwd, map[string]interface{}{
-		"user_id":  user_id,
-		"password": md5.Encrypt(newpassword),
-	})
-	if err != nil {
-		dbTrans.Rollback()
-		return fmt.Errorf("设置密码错误(err:%v),sql:%s,参数：%v", err, q, a)
-	}
-	dbTrans.Commit()
-	return nil
-}
-
+//ResetPwd ResetPwd
 func (u *DbUser) ResetPwd(user_id int64) (err error) {
 	db := u.c.GetRegularDB()
 	_, q, a, err := db.Execute(sqls.SetNewPwd, map[string]interface{}{
@@ -361,35 +275,5 @@ func (u *DbUser) ResetPwd(user_id int64) (err error) {
 	if err != nil {
 		return fmt.Errorf("重置用户密码发生错误(err:%v),sql:%s,参数：%v", err, q, a)
 	}
-	return nil
-}
-
-func (u *DbUser) Bind(email string, openID string) (err error) {
-	db := u.c.GetRegularDB()
-	//判断邮箱是否已经绑定
-	data, q, a, err := db.Query(sqls.QueryUserBind, map[string]interface{}{
-		"email": email,
-	})
-	if err != nil || data.IsEmpty() {
-		return fmt.Errorf("查询绑定信息发生错误(err:%v),sql:%s,输入参数:%v", err, q, a)
-	}
-	if data.Get(0).GetString("wx_openid") != "" {
-		return fmt.Errorf("邮箱已经绑定过了，邮箱：%s", email)
-	}
-	//绑定邮箱
-	dbTrans, err := db.Begin()
-	if err != nil {
-		return fmt.Errorf("开启DB事务出错(err:%v)", err)
-	}
-	_, q, a, err = dbTrans.Execute(sqls.ExecUserBind, map[string]interface{}{
-		"email":     email,
-		"wx_openid": openID,
-	})
-
-	if err != nil {
-		dbTrans.Rollback()
-		return fmt.Errorf("绑定邮箱出现错误(err:%v),sql:%s,参数：%v", err, q, a)
-	}
-	dbTrans.Commit()
 	return nil
 }

@@ -16,6 +16,7 @@ import (
 //IMemberLogic 用户登录
 type IMemberLogic interface {
 	CreateLoginUserCode(userID int64) (code string, err error)
+	CheckUserIsLocked(userName string) error
 	Login(userName, password, ident string) (*model.LoginState, error)
 	ChangePwd(userID int, expassword string, newpassword string) (err error)
 	CheckHasRoles(userID int64, ident string) error
@@ -40,13 +41,29 @@ func NewMemberLogic(c component.IContainer) *MemberLogic {
 	}
 }
 
-//CreateLoginUserCode 验证用户是否已登录
-func (m *MemberLogic) CreateLoginUserCode(userID int64) (code string, err error) {
-	guid := utility.GetGUID()
-	if err = m.cache.CreateUserInfoByCode(guid, userID); err != nil {
-		return "", err
+//CheckUserIsLocked 检查用户是否被锁定
+func (m *MemberLogic) CheckUserIsLocked(userName string) error {
+	count, err := m.cache.GetLoginFailCnt(userName)
+	if err != nil {
+		return err
 	}
-	return guid, nil
+	//用户是否被锁定
+	if count >= model.UserLoginFailCount {
+		//解锁时间是否过期
+		if exists := m.cache.ExistsUnLockTime(userName); exists {
+			return context.NewError(context.ERR_BAD_REQUEST, "用户被锁定,请联系管理员")
+		} else {
+			if err := m.unLockUser(userName); err != nil {
+				return err
+			}
+		}
+	}
+	return nil
+}
+
+// ChangePwd 修改密码
+func (m *MemberLogic) ChangePwd(userID int, expassword string, newpassword string) (err error) {
+	return m.db.ChangePwd(userID, expassword, newpassword)
 }
 
 //Login 登录系统
@@ -67,11 +84,6 @@ func (m *MemberLogic) Login(userName, password, ident string) (s *model.LoginSta
 	}
 
 	return (*model.LoginState)(ls), err
-}
-
-// ChangePwd 修改密码
-func (m *MemberLogic) ChangePwd(userID int, expassword string, newpassword string) (err error) {
-	return m.db.ChangePwd(userID, expassword, newpassword)
 }
 
 //GenerateCodeAndSysInfo 生成登录后的Code
@@ -107,12 +119,11 @@ func (m *MemberLogic) CheckSystemStatus(ident string) error {
 
 //CheckUserInfo 检查用户
 func (m *MemberLogic) checkUserInfo(userName, password string, state *model.MemberState) error {
-	if state.Status == enum.UserLock {
-		return context.NewError(context.ERR_BAD_REQUEST, "用户被锁定，暂时无法登录")
-	}
-
 	if state.Status == enum.UserDisable {
-		return context.NewError(context.ERR_BAD_REQUEST, "用户被禁用，暂时无法登录")
+		return context.NewError(context.ERR_BAD_REQUEST, "用户被禁用，请联系管理员")
+	}
+	if state.Status == enum.UserLock {
+		return context.NewError(context.ERR_BAD_REQUEST, "用户被锁定，请联系管理员")
 	}
 
 	if strings.ToLower(state.Password) != strings.ToLower(password) {
@@ -122,12 +133,22 @@ func (m *MemberLogic) checkUserInfo(userName, password string, state *model.Memb
 		}
 		if count >= model.UserLoginFailCount {
 			m.db.UpdateUserStatus(state.UserID, enum.UserLock)
+			m.cache.SetUnLockTime(userName, model.UserLockTime)
 		}
 		return context.NewError(context.ERR_BAD_REQUEST, "用户名或密码错误")
 	}
 	m.cache.SetLoginSuccess(userName)
 
 	return nil
+}
+
+//CreateLoginUserCode 生成用户登录的标识保存到缓存中(code)
+func (m *MemberLogic) CreateLoginUserCode(userID int64) (code string, err error) {
+	guid := utility.GetGUID()
+	if err = m.cache.CreateUserInfoByCode(guid, userID); err != nil {
+		return "", err
+	}
+	return guid, nil
 }
 
 //CheckHasRoles 检查用户是否有相应的角色
@@ -147,4 +168,10 @@ func (m *MemberLogic) CheckHasRoles(userID int64, ident string) error {
 	}
 
 	return m.db.CheckUserHasAuth(ident, userID)
+}
+
+//unLockUser 解锁用户
+func (m *MemberLogic) unLockUser(userName string) error {
+	m.cache.SetLoginSuccess(userName)
+	return m.db.UnLock(userName)
 }

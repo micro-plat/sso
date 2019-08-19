@@ -68,7 +68,6 @@ func (u *userLogic) getUserMenu(userID int) (*[]*Menu, error) {
 
 	values = values.Sort()
 	raw := values.Join("", "") + u.cfg.secret
-	fmt.Println(raw)
 	values.Set("sign", md5.Encrypt(raw))
 
 	menu := &[]*Menu{}
@@ -77,4 +76,23 @@ func (u *userLogic) getUserMenu(userID int) (*[]*Menu, error) {
 		return nil, err
 	}
 	return result.(*[]*Menu), nil
+}
+
+//getUserSystems 返回用户可用的子系统列表(有权限,除当前系统外)
+func (u *userLogic) getUserOtherSystems(userID int) (*[]*System, error) {
+	values := net.NewValues()
+	values.Set("user_id", types.GetString(userID))
+	values.Set("ident", u.cfg.ident)
+	values.Set("timestamp", types.GetString(time.Now().Unix()))
+
+	values = values.Sort()
+	raw := values.Join("", "") + u.cfg.secret
+	values.Set("sign", md5.Encrypt(raw))
+
+	sysList := &[]*System{}
+	result, err := remoteRequest(u.cfg.host, userSysUrl, values.Join("=", "&"), sysList)
+	if err != nil {
+		return nil, err
+	}
+	return result.(*[]*System), nil
 }

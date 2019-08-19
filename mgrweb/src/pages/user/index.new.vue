@@ -190,8 +190,7 @@
 
           <el-table-column align="center" width="80" prop="status" label="状态">
             <template slot-scope="scope">
-              <el-tag type="success" v-if="scope.row.status == 0">{{scope.row.status_label}}</el-tag>
-              <el-tag type="info" v-if="scope.row.status == 2">{{scope.row.status_label}}</el-tag>
+              <el-tag :type="scope.row.status == '0' ? 'success' : 'info'" >{{scope.row.status_label}}</el-tag>
             </template>
           </el-table-column>
 
@@ -210,21 +209,9 @@
           <el-table-column align="center" label="操作">
             <template slot-scope="scope">
               <el-button plain type="primary" size="mini" @click="showModal(2,scope.row)">编辑</el-button>
-              <el-button
-                plain
-                type="success"
-                size="mini"
-                @click="userChange(0,scope.row.user_id)"
-                v-if="scope.row.status == 2"
-              >启用</el-button>
-              <el-button
-                plain
-                type="info"
-                size="mini"
-                @click="userChange(2,scope.row.user_id)"
-                v-if="scope.row.status == 0"
-              >禁用</el-button>
-
+              <el-button plain type="success" size="mini" @click="userChange(0,scope.row.user_id)" v-if="scope.row.status == 2">启用</el-button>
+              <el-button plain type="info" size="mini" @click="userChange(2,scope.row.user_id)" v-if="scope.row.status == 0">禁用</el-button>
+              <el-button plain type="success" size="mini" @click="userChange(0,scope.row.user_id)" v-if="scope.row.status == 1">解锁</el-button>
               <el-button plain type="danger" size="mini" @click="userDel(scope.row.user_id)">删除</el-button>
             </template>
           </el-table-column>
@@ -408,39 +395,35 @@ export default {
       }
       this.$refs.editModal.open();
     },
-    userChange: function(ests, userid) {
+    userChange: function(status, userid) {
       var r;
       this.$confirm("确认执行该操作吗?", "提示", {
         confirmButtonText: "确定",
         cancelButtonText: "取消",
         type: "warning"
       })
-        .then(() => {
-          var user = {
-            status: ests,
-            user_id: userid
-          };
-          this.$http.post("/user/changestatus", user)
-            .then(res => {
-              this.queryData();
-              this.$notify({
-                title: "成功",
-                message: "修改状态成功",
-                type: "success",
-                offset: 50,
-                duration: 2000
-              });
-            })
-            .catch(err => {
-                this.$notify({
-                  title: "错误",
-                  message: "网络错误,请稍后再试",
-                  type: "error",
-                  offset: 50,
-                  duration: 2000
-                });
-            });
+      .then(() => {
+        this.$http.post("/user/changestatus", {user_id: userid, status: status})
+        .then(res => {
+          this.queryData();
+          this.$notify({
+            title: "成功",
+            message: "修改状态成功",
+            type: "success",
+            offset: 50,
+            duration: 2000
+          });
         })
+        .catch(err => {
+            this.$notify({
+              title: "错误",
+              message: "网络错误,请稍后再试",
+              type: "error",
+              offset: 50,
+              duration: 2000
+            });
+        });
+      })
     },
     userDel: function(userid) {
       var user = {

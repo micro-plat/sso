@@ -19,4 +19,5 @@ func (s *SSO) install() {
 		conf.NewAuthes().WithJWT(
 			conf.NewJWT("__sso_jwt__", "HS512", "bf8f3171946d8d5a13cca23aa6080c8e", 36000, "/system/get", "/member/login")))
 
+	s.Conf.CRON.SetSubConf("task", `{"tasks":[{"cron":"@daily","service":"/member/unlock"}]}`)
 }

@@ -1,6 +1,8 @@
 package member
 
 import (
+	"time"
+
 	"github.com/micro-plat/hydra/component"
 	"github.com/micro-plat/lib4go/transform"
 	"github.com/micro-plat/lib4go/types"
@@ -13,6 +15,8 @@ type ICacheMember interface {
 	SetLoginFail(userName string) (int, error)
 	GetLoginFailCnt(userName string) (int, error)
 	SetLoginSuccess(userName string) error
+	SetUnLockTime(userName string, hours int) error
+	ExistsUnLockTime(userName string) bool
 }
 
 //CacheMember 控制用户登录
@@ -66,4 +70,18 @@ func (l *CacheMember) SetLoginSuccess(u string) error {
 	cache := l.c.GetRegularCache()
 	key := transform.Translate(cachekey.CacheLoginFailCount, "user_name", u)
 	return cache.Delete(key)
+}
+
+//SetUnLockTime 设置解锁过期时间
+func (l *CacheMember) SetUnLockTime(userName string, hours int) error {
+	cache := l.c.GetRegularCache()
+	key := transform.Translate(cachekey.CacheLoginFailUnLockTime, "user_name", userName)
+	return cache.Set(key, time.Now().Add(time.Hour*time.Duration(hours)).Format("2006-01-02 15:04:05"), hours*60*60)
+}
+
+//ExistsUnLockTime 解锁时间是否过期
+func (l *CacheMember) ExistsUnLockTime(userName string) bool {
+	cache := l.c.GetRegularCache()
+	key := transform.Translate(cachekey.CacheLoginFailUnLockTime, "user_name", userName)
+	return cache.Exists(key)
 }

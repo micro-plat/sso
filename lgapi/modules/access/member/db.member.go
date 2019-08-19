@@ -20,6 +20,7 @@ type IDBMember interface {
 	CheckUserHasAuth(ident string, userID int64) error
 	GetUserInfo(u string) (db.QueryRows, error)
 	UpdateUserStatus(userID int64, status int) error
+	UnLock(userName string) error
 }
 
 //DBMember 控制用户登录
@@ -32,6 +33,13 @@ func NewDBMember(c component.IContainer) *DBMember {
 	return &DBMember{
 		c: c,
 	}
+}
+
+//UnLock 解锁被锁定的用户
+func (l *DBMember) UnLock(userName string) error {
+	db := l.c.GetRegularDB()
+	_, _, _, err := db.Execute(sqls.UnLockMember, map[string]interface{}{"user_name": userName})
+	return err
 }
 
 //Query 用户登录时从数据库获取信息
@@ -65,13 +73,10 @@ func (l *DBMember) Query(u, p, ident string) (s *model.MemberState, err error) {
 		return nil, context.NewError(context.ERR_UNSUPPORTED_MEDIA_TYPE, "用户没有相关系统权限,请联系管理员")
 	}
 
-	if ident != "" {
-		s.SysIdent = ident
-		s.SystemID = roles.Get(0).GetInt("sys_id")
-		s.RoleName = roles.Get(0).GetString("role_name")
-		s.IndexURL = roles.Get(0).GetString("index_url")
-		s.LoginURL = roles.Get(0).GetString("login_url")
-	}
+	s.SysIdent = ident
+	s.SystemID = roles.Get(0).GetInt("sys_id")
+	s.RoleName = roles.Get(0).GetString("role_name")
+	s.IndexURL = roles.Get(0).GetString("index_url")
 
 	return s, err
 }

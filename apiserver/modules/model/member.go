@@ -8,7 +8,7 @@ import (
 
 //MemberState 用户信息
 type MemberState struct {
-	Password       string `json:"password,omitempty"`
+	Password       string `json:"-"`
 	UserID         int64  `json:"user_id" m2s:"user_id"`
 	UserName       string `json:"user_name" m2s:"user_name"`
 	RoleName       string `json:"role_name" m2s:"role_name"`
