@@ -21,21 +21,3 @@ func Get(ctx *context.Context) *model.LoginState {
 	}
 	return v.(*model.LoginState)
 }
-
-// // Query Query
-// func Query(ctx *context.Context, container component.IContainer) *model.LoginState {
-// 	m := &model.LoginState{}
-// 	err := ctx.Request.GetJWT(m)
-// 	if m.UserName != "" && err == nil {
-// 		return m
-// 	}
-// 	if err := ctx.Request.Check("code"); err != nil {
-// 		return nil
-// 	}
-// 	codeMemberLib := NewCodeMember(container)
-// 	m, err = codeMemberLib.Query(ctx.Request.GetString("code"))
-// 	if err != nil {
-// 		return nil
-// 	}
-// 	return m
-// }
