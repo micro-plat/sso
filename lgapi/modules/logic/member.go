@@ -120,7 +120,7 @@ func (m *MemberLogic) checkUserInfo(userName, password string, state *model.Memb
 		if err != nil {
 			return err
 		}
-		if count >= 5 {
+		if count >= model.UserLoginFailCount {
 			m.db.UpdateUserStatus(state.UserID, enum.UserLock)
 		}
 		return context.NewError(context.ERR_BAD_REQUEST, "用户名或密码错误")
