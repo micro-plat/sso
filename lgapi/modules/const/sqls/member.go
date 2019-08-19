@@ -23,6 +23,10 @@ select
 from sso_user_info u
 where u.user_id=@user_id;`
 
+//UpdateUserStatus 更新用户状态
+const UpdateUserStatus = `
+update sso_user_info set status = @status where user_id = @user_id limit 1;`
+
 //QueryUserInfoByOpenID 查询用户信息
 const QueryUserInfoByOpenID = `
 select 

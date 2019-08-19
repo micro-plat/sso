@@ -3,10 +3,8 @@
     <login-with-up
       :copyright="copyright"
       :systemName="systemName"
-      :wxlg="wxLogin"
       :requireWxLogin="requireWxLogin"
       :requireCode="requireCode"
-      :sendCode="getCodeCall"
       :loginCallBack="loginsubmit"
 
       :loginTitle="loginTitle"
@@ -54,7 +52,8 @@
         codeLabel:"微信验证码",
         codeHolder:"请输入微信验证码",
         sendBtnLabel:"获取微信验证码",
-
+        requireWxLogin:false,
+        requireCode:false
       }
     },
     components:{ 

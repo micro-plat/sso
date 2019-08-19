@@ -40,7 +40,7 @@
                 <!--<label>logo</label>-->
                 <input class="form-control" placeholder="logo地址" name="logo" v-model="addData.logo"  readonly>
                 <div class="form-height text-danger"> <span v-show="errors.first('logo')">logo地址不能为空</span> </div>
-                <uploader :options="options" class="uploader-example" :file-status-text="statusText"   ref="uploader" @file-success="fileSuccess" @file-error="fileError">
+                <uploader :options="options" class="uploader-example" :file-status-text="statusText" :headers="headers"  ref="uploader" @file-success="fileSuccess" @file-error="fileError">
                   <uploader-unsupport></uploader-unsupport>
                   <uploader-drop>
                     <p>上传logo</p>
@@ -411,8 +411,15 @@ export default {
             lastKnownBodyStyle: {
                 overflow: 'auto'
             },
-
         }
+    },
+
+    computed:{
+      headers(){
+        return {
+          "__jwt__": localStorage.getItem("__jwt__")
+        }
+      }
     },
     
     methods:{

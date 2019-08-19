@@ -19,6 +19,7 @@ type IDBMember interface {
 	QueryByID(uid int64) (db.QueryRow, error)
 	CheckUserHasAuth(ident string, userID int64) error
 	GetUserInfo(u string) (db.QueryRows, error)
+	UpdateUserStatus(userID int64, status int) error
 }
 
 //DBMember 控制用户登录
@@ -128,7 +129,6 @@ func (l *DBMember) GetUserInfo(u string) (db.QueryRows, error) {
 //QueryByID 根据用户编号获取用户信息
 func (l *DBMember) QueryByID(uid int64) (db.QueryRow, error) {
 	db := l.c.GetRegularDB()
-
 	data, _, _, err := db.Query(sqls.QueryUserInfoByUID, map[string]interface{}{
 		"user_id": uid,
 	})
@@ -136,4 +136,14 @@ func (l *DBMember) QueryByID(uid int64) (db.QueryRow, error) {
 		return nil, err
 	}
 	return data.Get(0), nil
+}
+
+//UpdateUserStatus 更新用户状态
+func (l *DBMember) UpdateUserStatus(userID int64, status int) error {
+	db := l.c.GetRegularDB()
+	_, _, _, err := db.Execute(sqls.UpdateUserStatus, map[string]interface{}{
+		"user_id": userID,
+		"status":  status,
+	})
+	return err
 }

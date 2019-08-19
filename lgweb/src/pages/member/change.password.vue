@@ -2,7 +2,7 @@
     <div class="container">
         <h1 class="sso-title">能源业务中心运营管理系统</h1>
         <div>
-            <div class="content">
+            <div class="changepwd_content">
                 <div class="title-text">修改密码</div>
                 <div class="tips-text">
                     <i><img class="tips-image" src="../../img/password.png"></i>
@@ -128,13 +128,6 @@ li{	list-style:none;}
 	width: 900px;
     margin: 0 auto;
 }
-.everyone{
-    width: 45%;
-    text-align: center;
-    display: inline-grid;
-    margin: 20px;
-    float: left;
-}
 .list .icon{
 	background-color: #fff;
 	padding: 60px 0;
@@ -149,7 +142,7 @@ li{	list-style:none;}
     border-bottom-left-radius: 10px;
     border-bottom-right-radius: 10px
 }
-.content{
+.changepwd_content{
     width: 440px;
     margin:0 auto;
 	margin-top:7%;
@@ -175,7 +168,7 @@ li{	list-style:none;}
     height: 11px;
     margin-right: 4px;
 }
-.content input{
+.changepwd_content input{
 	width: 92%;
     padding: 15px;
     font-size: 14px;
