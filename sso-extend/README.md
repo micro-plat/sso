@@ -2,10 +2,11 @@
 
 #### 1. 引入(导入到本地)
 
-在main.js中注入(需要导入三个js文件 都放在:github.com/micro-plat/sso/sso-extend中)
+在main.js中注入(需要导入三个js文件 npm 包名: qianxing-sso)
 
 ``` js
-import {ssoHttpConfig} from './xx/sso.js';
+import {ssoHttpConfig} from 'qianxing-sso';
+
 var config = process.env.service;
 var ssocfg = ssoHttpConfig(config.apiHost, "localStorage", config.ssoWebHost, config.Ident);
 
