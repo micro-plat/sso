@@ -2,6 +2,7 @@ package logic
 
 import (
 	"github.com/micro-plat/hydra/component"
+	"github.com/micro-plat/hydra/context"
 	"github.com/micro-plat/lib4go/db"
 	"github.com/micro-plat/sso/mgrapi/modules/access/role"
 	"github.com/micro-plat/sso/mgrapi/modules/model"
@@ -80,13 +81,28 @@ func (r *RoleLogic) Delete(roleID int) (err error) {
 
 //Save 编辑角色信息
 func (r *RoleLogic) Save(input *model.RoleEditInput) (err error) {
-	if err := r.cache.Delete(); err != nil {
+	data, err := r.db.QueryRoleInfoByName(input.RoleName)
+	if err != nil {
 		return err
 	}
 	if input.IsAdd == 1 {
-		return r.db.Add(input)
+		if data != nil {
+			return context.NewError(context.ERR_BAD_REQUEST, "角色名称已被使用")
+		}
+		err = r.db.Add(input)
+	} else {
+		if data != nil && data.GetInt64("role_id") != input.RoleID {
+			return context.NewError(context.ERR_BAD_REQUEST, "角色名称已被使用")
+		}
+		err = r.db.Edit(input)
 	}
-	return r.db.Edit(input)
+	if err != nil {
+		return
+	}
+	if err := r.cache.Delete(); err != nil {
+		return err
+	}
+	return nil
 }
 
 //Auth 用户授权

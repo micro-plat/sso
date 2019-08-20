@@ -527,21 +527,9 @@ export default {
     }
   },
   methods: {
-    //上传成功的事件
-    fileSuccess (rootFile, file, message, chunk) {
-      let data =JSON.parse(message);
-      this.addData.logo=data.url;
-        this.$notify({
-          title: '成功',
-          message: '上传成功',
-          type: 'success',
-          offset: 50,
-          duration:2000,
-        });
-    },
     fileEditSuccess (rootFile, file, message, chunk) {
       let data =JSON.parse(message);
-      this.editData.logo=data.url
+      this.editData.logo=data.data;
     },
     //上传失败事件
     fileError(rootFile, file, message, chunk){

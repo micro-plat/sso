@@ -22,7 +22,8 @@ type IDbUser interface {
 	Edit(input *model.UserInputNew) (err error)
 	Add(input *model.UserInputNew) (err error)
 	EditInfo(username string, tel string, email string) (err error)
-	ResetPwd(user_id int64) (err error)
+	ResetPwd(userID int) (err error)
+	GetUserInfoByName(userName string) (data db.QueryRow, err error)
 }
 
 type DbUser struct {
@@ -266,14 +267,27 @@ func (u *DbUser) EditInfo(username string, tel string, email string) (err error)
 }
 
 //ResetPwd ResetPwd
-func (u *DbUser) ResetPwd(user_id int64) (err error) {
+func (u *DbUser) ResetPwd(userID int) (err error) {
 	db := u.c.GetRegularDB()
 	_, q, a, err := db.Execute(sqls.SetNewPwd, map[string]interface{}{
-		"user_id":  user_id,
+		"user_id":  userID,
 		"password": md5.Encrypt(enum.UserDefaultPassword),
 	})
 	if err != nil {
 		return fmt.Errorf("重置用户密码发生错误(err:%v),sql:%s,参数：%v", err, q, a)
 	}
 	return nil
+}
+
+//GetUserInfoByName 根据用户名查询用户信息
+func (u *DbUser) GetUserInfoByName(userName string) (data db.QueryRow, err error) {
+	db := u.c.GetRegularDB()
+	result, _, _, err := db.Query(sqls.GetUserInfoByName, map[string]interface{}{"user_name": userName})
+	if err != nil {
+		return nil, err
+	}
+	if result.IsEmpty() {
+		return nil, nil
+	}
+	return result.Get(0), nil
 }

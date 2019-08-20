@@ -254,3 +254,10 @@ where
 limit 
 	#pageSize offset #currentPage
 `
+
+const GetUserInfoByName = `
+select 
+	user_id, user_name, email, status, mobile, 
+	wx_openid, changepwd_times, ext_params 
+from sso_user_info 
+where user_name=@user_name;`

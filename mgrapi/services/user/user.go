@@ -53,12 +53,12 @@ func (u *UserHandler) ChangeStatusHandle(ctx *context.Context) (r interface{}) {
 
 	ctx.Log.Info("--------修改用户状态--------")
 	ctx.Log.Info("1.参数校验")
-	if err := ctx.Request.Check("user_id", "status"); err != nil {
+	if err := ctx.Request.Check("user_id", "status", "user_name"); err != nil {
 		return context.NewError(context.ERR_NOT_ACCEPTABLE, err)
 	}
 
 	ctx.Log.Info("2.执行操作")
-	if err := u.userLib.ChangeStatus(ctx.Request.GetInt("user_id"), ctx.Request.GetInt("status")); err != nil {
+	if err := u.userLib.ChangeStatus(ctx.Request.GetInt("user_id"), ctx.Request.GetInt("status"), ctx.Request.GetString("user_name")); err != nil {
 		return context.NewError(context.ERR_NOT_IMPLEMENTED, err)
 	}
 
@@ -105,7 +105,7 @@ func (u *UserHandler) EditHandle(ctx *context.Context) (r interface{}) {
 
 	ctx.Log.Info("3.执行操作")
 	if err := u.userLib.Save(&input); err != nil {
-		return context.NewError(context.ERR_NOT_IMPLEMENTED, err)
+		return err
 	}
 
 	ctx.Log.Info("4.返回结果")
@@ -114,7 +114,6 @@ func (u *UserHandler) EditHandle(ctx *context.Context) (r interface{}) {
 
 //AddHandle 添加用户信息
 func (u *UserHandler) AddHandle(ctx *context.Context) (r interface{}) {
-
 	ctx.Log.Info("--------添加用户信息--------")
 
 	ctx.Log.Info("1.参数校验")
@@ -125,9 +124,25 @@ func (u *UserHandler) AddHandle(ctx *context.Context) (r interface{}) {
 
 	ctx.Log.Info("2.执行操作")
 	if err := u.userLib.Add(&inputData); err != nil {
-		return context.NewError(context.ERR_NOT_IMPLEMENTED, err)
+		return err
 	}
 
 	ctx.Log.Info("3.返回结果")
+	return "success"
+}
+
+//SetPwdHandle 重置用户密码(123456)
+func (u *UserHandler) SetPwdHandle(ctx *context.Context) (r interface{}) {
+	ctx.Log.Info("--------重置用户密码--------")
+
+	ctx.Log.Info("1.参数校验")
+	if err := ctx.Request.Check("user_id"); err != nil {
+		return context.NewError(context.ERR_NOT_ACCEPTABLE, err)
+	}
+
+	ctx.Log.Info("2: 重置密码")
+	if err := u.userLib.SetDefaultPwd(ctx.Request.GetInt("user_id")); err != nil {
+		return err
+	}
 	return "success"
 }

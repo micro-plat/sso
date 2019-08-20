@@ -19,10 +19,10 @@ type ICacheUser interface {
 	SaveUser(userID int, data db.QueryRow) error
 	QueryUser(userID int) (data db.QueryRow, err error)
 	DeleteUser() error
-	SetEmail(Guid string, email string) (err error)
-	GetEmail(Guid string) (email string, err error)
 	QueryUserBySys(sysID, pi, ps int) (data db.QueryRows, counr int, err error)
 	SaveUserBySys(sysID, pi, ps int, data db.QueryRows, count int) (err error)
+
+	DeleteLockUserInfo(userName string) error
 }
 
 //CacheUser 控制用户登录
@@ -37,6 +37,13 @@ func NewCacheUser(c component.IContainer) *CacheUser {
 		c:         c,
 		cacheTime: 3600 * 24,
 	}
+}
+
+//DeleteLockUserInfo 解锁用户(删除缓存key)
+func (l *CacheUser) DeleteLockUserInfo(userName string) error {
+	cache := l.c.GetRegularCache()
+	key := transform.Translate(cacheConst.CacheLoginFailCount, "user_name", userName)
+	return cache.Delete(key)
 }
 
 func (l *CacheUser) QueryUserBySys(sysID, pi, ps int) (data db.QueryRows, counr int, err error) {
@@ -162,19 +169,4 @@ func (l *CacheUser) QueryUser(userID int) (data db.QueryRow, err error) {
 func (l *CacheUser) DeleteUser() error {
 	cache := l.c.GetRegularCache()
 	return cache.Delete(cacheConst.CacheUserDeleteFormat)
-}
-
-// SetEmail 发送邮件
-func (l *CacheUser) SetEmail(Guid string, email string) (err error) {
-	cache := l.c.GetRegularCache()
-	key := transform.Translate(cacheConst.CacheEmail, "guid", Guid)
-	return cache.Set(key, email, cacheConst.CacheEamilOutTime)
-}
-
-// GetEmail 获取邮件
-func (l *CacheUser) GetEmail(Guid string) (email string, err error) {
-	cache := l.c.GetRegularCache()
-	key := transform.Translate(cacheConst.CacheEmail, "guid", Guid)
-	email, err = cache.Get(key)
-	return
 }

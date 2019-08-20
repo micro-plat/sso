@@ -200,19 +200,14 @@
               <span style="margin-left: 10px">{{ scope.row.create_time }}</span>
             </template>
           </el-table-column>
-          <el-table-column align="center" prop="create_time" label="扩展参数">
-            <template slot-scope="scope">
-              <span style="margin-left: 10px">{{ scope.row.ext_params | RemarkFilter}}</span>
-            </template>
-          </el-table-column>
-
           <el-table-column align="center" label="操作">
             <template slot-scope="scope">
               <el-button plain type="primary" size="mini" @click="showModal(2,scope.row)">编辑</el-button>
-              <el-button plain type="success" size="mini" @click="userChange(0,scope.row.user_id)" v-if="scope.row.status == 2">启用</el-button>
-              <el-button plain type="info" size="mini" @click="userChange(2,scope.row.user_id)" v-if="scope.row.status == 0">禁用</el-button>
-              <el-button plain type="success" size="mini" @click="userChange(0,scope.row.user_id)" v-if="scope.row.status == 1">解锁</el-button>
+              <el-button plain type="success" size="mini" @click="userChange(0,scope.row.user_id, scope.row.user_name)" v-if="scope.row.status == 2">启用</el-button>
+              <el-button plain type="info" size="mini" @click="userChange(2,scope.row.user_id,scope.row.user_name)" v-if="scope.row.status == 0">禁用</el-button>
+              <el-button plain type="success" size="mini" @click="userChange(0,scope.row.user_id,scope.row.user_name)" v-if="scope.row.status == 1">解锁</el-button>
               <el-button plain type="danger" size="mini" @click="userDel(scope.row.user_id)">删除</el-button>
+              <el-button plain type="danger" size="mini" @click="setDefaultPwd(scope.row.user_id)">重置密码</el-button>
             </template>
           </el-table-column>
         </el-table>
@@ -236,6 +231,7 @@
 <script>
 import pager from "vue-simple-pager";
 import PullTo from "vue-pull-to";
+import {trimError} from '@/services/util'
 export default {
   components: {
     "bootstrap-modal": require("vue2-bootstrap-modal"),
@@ -395,7 +391,7 @@ export default {
       }
       this.$refs.editModal.open();
     },
-    userChange: function(status, userid) {
+    userChange: function(status, userid,user_name) {
       var r;
       this.$confirm("确认执行该操作吗?", "提示", {
         confirmButtonText: "确定",
@@ -403,7 +399,7 @@ export default {
         type: "warning"
       })
       .then(() => {
-        this.$http.post("/user/changestatus", {user_id: userid, status: status})
+        this.$http.post("/user/changestatus", {user_id: userid, status: status, user_name:user_name})
         .then(res => {
           this.queryData();
           this.$notify({
@@ -426,37 +422,62 @@ export default {
       })
     },
     userDel: function(userid) {
-      var user = {
-        user_id: userid
-      };
-
       this.$confirm("此操作将永久删除该数据, 是否继续?", "提示", {
         confirmButtonText: "确定",
         cancelButtonText: "取消",
         type: "warning"
       })
-        .then(() => {
-          this.$http.post("/user/del", user)
-            .then(res => {
-              this.queryData();
-              this.$notify({
-                title: "成功",
-                message: "成功删除用户",
-                type: "success",
-                offset: 50,
-                duration: 2000
-              });
-            })
-            .catch(err => {
-              this.$notify({
-                title: "错误",
-                message: "网络错误,请稍后再试",
-                type: "error",
-                offset: 50,
-                duration: 2000
-              });
+      .then(() => {
+        this.$http.post("/user/del", {user_id: userid})
+          .then(res => {
+            this.queryData();
+            this.$notify({
+              title: "成功",
+              message: "成功删除用户",
+              type: "success",
+              offset: 50,
+              duration: 2000
             });
-        })
+          })
+          .catch(err => {
+            this.$notify({
+              title: "错误",
+              message: "网络错误,请稍后再试",
+              type: "error",
+              offset: 50,
+              duration: 2000
+            });
+          });
+      })
+    },
+    //重置密码
+    setDefaultPwd(userid) {
+      this.$confirm("是否要重置用户密码?", "提示", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        type: "warning"
+      })
+      .then(() => {
+        this.$http.post("/user/setpwd", {user_id: userid})
+          .then(res => {
+            this.$notify({
+              title: "成功",
+              message: "重置成功",
+              type: "success",
+              offset: 50,
+              duration: 2000
+            });
+          })
+          .catch(err => {
+            this.$notify({
+              title: "错误",
+              message: "网络错误,请稍后再试",
+              type: "error",
+              offset: 50,
+              duration: 2000
+            });
+          });
+      })
     },
     add() {
       this.userInfo.lists.push({
@@ -550,15 +571,30 @@ export default {
                   offset: 50,
                   duration: 2000
                 });
+                this.onClose();
               })
               .catch(err => {
-                  this.$notify({
-                    title: "错误",
-                    message: "网络错误,请稍后再试",
-                    type: "error",
-                    offset: 50,
-                    duration: 2000
-                  });
+                if (err.response) {
+                  switch (err.response.status) {
+                    case 400:
+                      this.$notify({
+                        title: "错误",
+                        message: trimError(err),
+                        type: "error",
+                        offset: 50,
+                        duration: 2000
+                      });
+                    break;
+                    default:
+                      this.$notify({
+                        title: "错误",
+                        message: "网络错误,请稍后再试",
+                        type: "error",
+                        offset: 50,
+                        duration: 2000
+                      });
+                  }
+                }
               });
           } else if (this.isAdd == 2) {
             this.$http.post("/user/edit", this.userInfo)
@@ -571,32 +607,32 @@ export default {
                   offset: 50,
                   duration: 2000
                 });
+                this.onClose();
               })
               .catch(err => {
-                if (err.response.status == 403) {
-                  this.$notify({
-                    title: "错误",
-                    message: "登录超时,请重新登录",
-                    type: "error",
-                    offset: 50,
-                    duration: 2000,
-                    onClose: () => {
-                      this.$router.push("/login");
-                    }
-                  });
-                } else {
-                  this.$notify({
-                    title: "错误",
-                    message: "网络错误,请稍后再试",
-                    type: "error",
-                    offset: 50,
-                    duration: 2000
-                  });
+                if (err.response) {
+                  switch (err.response.status) {
+                    case 400:
+                      this.$notify({
+                        title: "错误",
+                        message: trimError(err),
+                        type: "error",
+                        offset: 50,
+                        duration: 2000
+                      });
+                    break;
+                    default:
+                      this.$notify({
+                        title: "错误",
+                        message: "网络错误,请稍后再试",
+                        type: "error",
+                        offset: 50,
+                        duration: 2000
+                      });
+                  }
                 }
               });
           }
-
-          this.onClose();
         }
       });
     },

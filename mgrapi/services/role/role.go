@@ -60,7 +60,7 @@ func (u *RoleHandler) SaveHandle(ctx *context.Context) (r interface{}) {
 
 	ctx.Log.Info("2.执行操作")
 	if err := u.roleLib.Save(&inputData); err != nil {
-		return context.NewError(context.ERR_NOT_IMPLEMENTED, err)
+		return err
 	}
 
 	ctx.Log.Info("3.记录行为")

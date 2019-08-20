@@ -124,3 +124,6 @@ where t1.parent = (select id from sso_system_menu where path=@path)
 	and t2.sys_id=@sys_id 
 	and t2.role_id=@role_id
 `
+
+//QueryRoleInfoByName 通过名称查询角色信息
+const QueryRoleInfoByName = `select role_id, name, status, create_time from sso_role_info where name=@role_name`

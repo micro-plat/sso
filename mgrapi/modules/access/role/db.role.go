@@ -21,6 +21,7 @@ type IDbRole interface {
 	Add(input *model.RoleEditInput) (err error)
 	Auth(input *model.RoleAuthInput) (err error)
 	QueryAuthMenu(sysID int64, roleID int64) (results []map[string]interface{}, err error)
+	QueryRoleInfoByName(roleName string) (data db.QueryRow, err error)
 }
 
 type DbRole struct {
@@ -33,7 +34,20 @@ func NewDbRole(c component.IContainer) *DbRole {
 	}
 }
 
-//获取页面授权信息
+//QueryRoleInfoByName 通过名称查询角色信息
+func (r *DbRole) QueryRoleInfoByName(roleName string) (data db.QueryRow, err error) {
+	db := r.c.GetRegularDB()
+	result, _, _, err := db.Query(sqls.QueryRoleInfoByName, map[string]interface{}{"role_name": roleName})
+	if err != nil {
+		return nil, err
+	}
+	if result.IsEmpty() {
+		return nil, nil
+	}
+	return result.Get(0), nil
+}
+
+//Get 获取页面授权信息
 func (r *DbRole) Get(sysID int, roleID int, path string) (data db.QueryRows, err error) {
 	db := r.c.GetRegularDB()
 	data, q, a, err := db.Query(sqls.GetPageAuth, map[string]interface{}{

@@ -434,7 +434,7 @@ export default {
         },
         fileSuccess (rootFile, file, message, chunk) {
             let data =JSON.parse(message);
-            this.addData.logo=data.url;
+            this.addData.logo=data.data;
                 this.$notify({
                 title: '成功',
                 message: '上传成功',
@@ -442,10 +442,6 @@ export default {
                 offset: 50,
                 duration:2000,
                 });
-        },
-        fileEditSuccess (rootFile, file, message, chunk) {
-            let data =JSON.parse(message);
-            this.editData.logo=data.url
         },
         //上传失败事件
         fileError(rootFile, file, message, chunk){

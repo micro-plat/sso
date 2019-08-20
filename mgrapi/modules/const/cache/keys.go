@@ -19,4 +19,6 @@ const (
 	CacheUserAll             = "{sso}:user:info:*"
 	CacheEmail               = "{sso}:email:{@guid}"
 	CacheEamilOutTime        = 60 * 5
+
+	CacheLoginFailCount = "{sso}:login:failcount-user:{@user_name}"
 )

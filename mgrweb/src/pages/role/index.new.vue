@@ -70,7 +70,7 @@
             </form>
             <div slot="footer" class="dialog-footer">
                 <el-button size="small" @click="dialogFormVisible = false">取消</el-button>
-                <el-button type="success" size="small" @click="submitUser">提交</el-button>
+                <el-button type="success" size="small" @click="submitRole">提交</el-button>
             </div>
         </el-dialog>
 
@@ -87,6 +87,7 @@
 <script>
 import pager from "vue-simple-pager";
 import PullTo from 'vue-pull-to';
+import {trimError} from '@/services/util'
 export default {
     components: {
         "bootstrap-modal": require("vue2-bootstrap-modal"),
@@ -272,7 +273,7 @@ export default {
 
             })
         },
-        submitUser() {
+        submitRole() {
             this.$validator.validate().then(result => {
                 if (!result) {
                     return false;
@@ -290,13 +291,27 @@ export default {
                             this.queryData();
                         })
                         .catch(err => {
-                            this.$notify({
-                                title: '错误',
-                                message: '网络错误,请稍后再试',
-                                type: 'error',
-                                offset: 50,
-                                duration: 2000,
-                            });
+                            if (err.response) {
+                                switch (err.response.status) {
+                                    case 400:
+                                    this.$notify({
+                                        title: "错误",
+                                        message: trimError(err),
+                                        type: "error",
+                                        offset: 50,
+                                        duration: 2000
+                                    });
+                                    break;
+                                    default:
+                                    this.$notify({
+                                        title: "错误",
+                                        message: "网络错误,请稍后再试",
+                                        type: "error",
+                                        offset: 50,
+                                        duration: 2000
+                                    });
+                                }
+                            }
                         });
                 }
             });

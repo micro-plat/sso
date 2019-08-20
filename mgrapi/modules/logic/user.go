@@ -2,20 +2,23 @@ package logic
 
 import (
 	"github.com/micro-plat/hydra/component"
+	"github.com/micro-plat/hydra/context"
 	"github.com/micro-plat/lib4go/db"
 	"github.com/micro-plat/sso/mgrapi/modules/access/user"
+	"github.com/micro-plat/sso/mgrapi/modules/const/enum"
 	"github.com/micro-plat/sso/mgrapi/modules/model"
 )
 
 type IUserLogic interface {
 	Query(input *model.QueryUserInput) (data db.QueryRows, count int, err error)
-	ChangeStatus(userID int, status int) (err error)
+	ChangeStatus(userID int, status int, userName string) (err error)
 	Delete(userID int) (err error)
 	Get(userID int) (data db.QueryRow, err error)
 	GetAll(sysID, pi, ps int) (data db.QueryRows, count int, err error)
 	Save(input *model.UserInputNew) (err error)
 	Add(input *model.UserInputNew) (err error)
 	Edit(username string, tel string, email string) (err error)
+	SetDefaultPwd(userID int) error
 }
 
 type UserLogic struct {
@@ -48,9 +51,12 @@ func (u *UserLogic) Query(input *model.QueryUserInput) (data db.QueryRows, count
 }
 
 //ChangeStatus 修改用户状态
-func (u *UserLogic) ChangeStatus(userID int, status int) (err error) {
+func (u *UserLogic) ChangeStatus(userID int, status int, userName string) (err error) {
 	if err := u.cache.Delete(); err != nil {
 		return err
+	}
+	if status == enum.UserNormal {
+		u.cache.DeleteLockUserInfo(userName)
 	}
 	return u.db.ChangeStatus(userID, status)
 }
@@ -93,22 +99,45 @@ func (u *UserLogic) GetAll(sysID, pi, ps int) (data db.QueryRows, count int, err
 
 //Save 保存要编辑的用户信息
 func (u *UserLogic) Save(input *model.UserInputNew) (err error) {
+	info, err := u.db.GetUserInfoByName(input.UserName)
+	if err != nil {
+		return err
+	}
+	if info != nil && info.GetInt64("user_id") != input.UserID {
+		return context.NewError(context.ERR_BAD_REQUEST, "此用户名已被使用")
+	}
+
 	if err := u.cache.Delete(); err != nil {
 		return err
 	}
 	return u.db.Edit(input)
 }
 
+//Add 新增用户
 func (u *UserLogic) Add(input *model.UserInputNew) (err error) {
+	info, err := u.db.GetUserInfoByName(input.UserName)
+	if err != nil {
+		return err
+	}
+	if info != nil {
+		return context.NewError(context.ERR_BAD_REQUEST, "此用户名已被使用")
+	}
+
 	if err := u.cache.Delete(); err != nil {
 		return err
 	}
 	return u.db.Add(input)
 }
 
+//Edit 修改用户信息
 func (u *UserLogic) Edit(username string, tel string, email string) (err error) {
 	if err := u.cache.Delete(); err != nil {
 		return err
 	}
 	return u.db.EditInfo(username, tel, email)
+}
+
+//SetDefaultPwd  重置密码
+func (u *UserLogic) SetDefaultPwd(userID int) error {
+	return u.db.ResetPwd(userID)
 }
