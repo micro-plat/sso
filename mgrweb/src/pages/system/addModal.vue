@@ -483,14 +483,15 @@ export default {
             this.resetForm()
             this.isSubmit = true
             this.isOpen = false
+            this.isShow = false;
             this.$emit('refresh-data')
-                this.$notify({
-                title: '成功',
-                message: '添加成功',
-                type: 'success',
-                offset: 50,
-                duration:2000,
-                });
+            this.$notify({
+              title: '成功',
+              message: '添加成功',
+              type: 'success',
+              offset: 50,
+              duration:2000,
+            });
             })
             .catch(err => {
               console.log(err);
@@ -519,7 +520,6 @@ export default {
             if (this.isShow) {
                 return
             }
-            console.log("编号",this.isOpen)
             this.isShow = true
             this.$nextTick(() => {
                 this.isOpen = true
@@ -586,7 +586,7 @@ export default {
           if(!this.addData.theme) {
             return "请选择主题样式";
           }
-          if(!this.addData.style) {
+          if(!this.addData.style.length) {
             return "请选择页面布局样式";
           }
           return ""

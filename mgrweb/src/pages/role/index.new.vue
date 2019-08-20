@@ -75,7 +75,7 @@
         </el-dialog>
 
         <div class="page-pagination">
-            <el-pagination @size-change="handleSizeChange" @current-change="pageChange" :current-page="paging.pi" :page-size="paging.ps" :page-sizes="pageSizes" layout="total, sizes, prev, pager, next, jumper" :total="totalpage">
+            <el-pagination @size-change="handleSizeChange" @current-change="pageChange" :current-page="paging.pi" :page-size="paging.ps" :page-sizes="pageSizes" layout="total, sizes, prev, pager, jumper" :total="totalpage">
             </el-pagination>
         </div>
 
@@ -139,29 +139,29 @@ export default {
                 }, 1000);
             });
         },
-        next() {
-            let pi = this.paging.pi
-            this.paging.pi = pi + 1;
-            this.$http.post("/role", this.paging)
-                .then(res => {
-                    if (res.list.length <= 0) {
-                        this.paging.pi = pi
-                        return false
-                    }
-                    this.datalist.items = this.datalist.items.concat(res.list);
-                    this.datalist.count = new Number(res.count);
-                    this.totalpage = Math.ceil(this.datalist.count / this.paging.ps);
-                })
-                .catch(err => {
-                    this.$notify({
-                        title: '错误',
-                        message: '网络错误,请稍后再试',
-                        type: 'error',
-                        offset: 50,
-                        duration: 2000,
-                    });
-                });
-        },
+        // next() {
+        //     let pi = this.paging.pi
+        //     this.paging.pi = pi + 1;
+        //     this.$http.post("/role", this.paging)
+        //         .then(res => {
+        //             if (res.list.length <= 0) {
+        //                 this.paging.pi = pi
+        //                 return false
+        //             }
+        //             this.datalist.items = this.datalist.items.concat(res.list);
+        //             this.datalist.count = new Number(res.count);
+        //             this.totalpage = Math.ceil(this.datalist.count / this.paging.ps);
+        //         })
+        //         .catch(err => {
+        //             this.$notify({
+        //                 title: '错误',
+        //                 message: '网络错误,请稍后再试',
+        //                 type: 'error',
+        //                 offset: 50,
+        //                 duration: 2000,
+        //             });
+        //         });
+        // },
         queryData: function () {
             if (this.paging.pi == 0) {
                 this.paging.pi = 1;
