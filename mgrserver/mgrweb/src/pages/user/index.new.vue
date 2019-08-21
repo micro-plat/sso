@@ -552,6 +552,7 @@ export default {
         if (!result) {
           return false;
         } else {
+          //note 检查电话号码
           if (this.isAdd == 1) {
             // 添加用户
             this.userInfo.is_add = 1;

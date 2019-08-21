@@ -28,8 +28,8 @@ func NewUserHandler(container component.IContainer) (u *UserHandler) {
 
 //GetAllHandle 查询用户信息数据
 func (u *UserHandler) GetAllHandle(ctx *context.Context) (r interface{}) {
-
 	ctx.Log.Info("--------查询用户信息数据--------")
+
 	ctx.Log.Info("1.参数校验")
 	var inputData model.QueryUserInput
 	if err := ctx.Request.Bind(&inputData); err != nil {
@@ -50,8 +50,8 @@ func (u *UserHandler) GetAllHandle(ctx *context.Context) (r interface{}) {
 
 //ChangeStatusHandle 修改用户状态
 func (u *UserHandler) ChangeStatusHandle(ctx *context.Context) (r interface{}) {
-
 	ctx.Log.Info("--------修改用户状态--------")
+
 	ctx.Log.Info("1.参数校验")
 	if err := ctx.Request.Check("user_id", "status", "user_name"); err != nil {
 		return context.NewError(context.ERR_NOT_ACCEPTABLE, err)
@@ -73,8 +73,8 @@ func (u *UserHandler) ChangeStatusHandle(ctx *context.Context) (r interface{}) {
 
 //DelHandle 删除用户
 func (u *UserHandler) DelHandle(ctx *context.Context) (r interface{}) {
-
 	ctx.Log.Info("--------删除用户--------")
+
 	ctx.Log.Info("1.参数校验")
 	if err := ctx.Request.Check("user_id"); err != nil {
 		return context.NewError(context.ERR_NOT_ACCEPTABLE, err)
@@ -145,4 +145,21 @@ func (u *UserHandler) SetPwdHandle(ctx *context.Context) (r interface{}) {
 		return err
 	}
 	return "success"
+}
+
+//GetOtherSysHandle 获取用户可用的其他系统
+func (u *UserHandler) GetOtherSysHandle(ctx *context.Context) (r interface{}) {
+	ctx.Log.Info("--------获取用户可用的其他系统--------")
+
+	ctx.Log.Info("1.获取用户信息")
+	mem := member.Get(ctx)
+
+	ctx.Log.Info("2.获取数据")
+	data, err := model.GetSSOClient(u.container).GetUserOtherSystems(int(mem.UserID))
+	if err != nil {
+		return err
+	}
+
+	ctx.Log.Info("3.返回结果")
+	return data
 }

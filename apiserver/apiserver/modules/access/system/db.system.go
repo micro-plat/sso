@@ -35,7 +35,7 @@ func (l *DbSystem) Get(ident string) (s db.QueryRow, err error) {
 		return nil, err
 	}
 	if data.IsEmpty() {
-		return nil, errors.New("ident 不存在")
+		return nil, errors.New("系统不存在或则系统被禁用")
 	}
 	return data.Get(0), err
 }

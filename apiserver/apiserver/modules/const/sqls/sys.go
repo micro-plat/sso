@@ -14,10 +14,9 @@ select
 	t.login_url,
 	t.secret,
 	t.enable 
-from 
-	sso_system_info t
-where 
-	t.ident=@ident
+from sso_system_info t
+where t.ident=@ident and
+	  t.enable=1
 `
 
 //QuerySystemWechantStatus 获取系统微信登录状态

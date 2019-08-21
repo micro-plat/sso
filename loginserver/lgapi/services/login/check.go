@@ -26,16 +26,16 @@ func (u *LoginCheckHandler) Handle(ctx *context.Context) (r interface{}) {
 	ctx.Log.Info("-------检查已登录用户是否有相应系统的权限---------")
 
 	ctx.Log.Info("1: 获取登录用户信息")
-	m := member.Get(ctx)
+	mem := member.Get(ctx)
 
 	ctx.Log.Info("2:判断当前用户是否有子系统的权限")
 	ident := ctx.Request.GetString("ident")
-	if err := u.m.CheckHasRoles(m.UserID, ident); err != nil {
+	if err := u.m.CheckHasRoles(mem.UserID, ident); err != nil {
 		return err
 	}
 
 	ctx.Log.Info("3:生成返回给子系统的Code")
-	result, err := u.m.GenerateCodeAndSysInfo(ident, m.UserID)
+	result, err := u.m.GenerateCodeAndSysInfo(ident, mem.UserID)
 	if err != nil {
 		return err
 	}

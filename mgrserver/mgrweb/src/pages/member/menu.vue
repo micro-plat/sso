@@ -7,6 +7,7 @@
       :logo="logo"
       :systemName="systemName"
       :userinfo="userinfo"
+      :items="items"
       :pwd="pwd"
       :signOut="signOutM"
       ref="NewTap"
@@ -28,6 +29,7 @@
         systemName: "用户权限系统",  //系统名称
         userinfo: {name:'wule',role:"管理员"},
         indexUrl: "/user/index",
+        items:[]
       }
     },
     components:{ //注册插件
@@ -51,29 +53,8 @@
         this.$http.get("/menu")
           .then(res => {
             this.menus = res;
-
-            /*
-            //这是处理登录后的回调
-            var oldPath = localStorage.getItem("beforeLoginUrl");
-            localStorage.removeItem("beforeLoginUrl");
-
-            //如果登录过的(不会跳转到sso登录,直接就会加载了)就要在当前地址中找
-            var loginedPath = window.location.pathname;
-            if (!oldPath) {
-              oldPath = loginedPath;
-            }
-
-            if (oldPath  && oldPath != "/") {    
-              var name = this.getOneMenuName(oldPath, res);
-              if (name == "") {
-                name = "未知";
-              }
-              this.$refs.NewTap.add(name, oldPath ,{});
-            } else {
-              this.$refs.NewTap.add("首页", this.indexUrl ,{});
-            }
-            */
             this.$refs.NewTap.open("首页", this.indexUrl);
+            this.getUserOtherSys();
           })
           .catch(err => {
             console.log(err)
@@ -91,6 +72,25 @@
             }
           }
         }
+      },
+      //用户可用的其他系统
+      getUserOtherSys() {
+        this.$http.get("/user/getothersys")
+        .then(res => {
+          console.log(res);
+          if (res && res.length > 0) {
+            res.forEach(element => {
+              this.items.push({
+                name: element.name,
+                path: element.index_url.substr(0, element.index_url.lastIndexOf("/")),
+                type: "blank"
+              })
+            });
+          }
+        })
+        .catch(err => {
+          console.log(err);
+        })
       }
 
     }

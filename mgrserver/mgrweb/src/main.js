@@ -17,14 +17,6 @@ import 'element-ui/lib/theme-chalk/index.css';
 Vue.use(ElementUI);
 
 const config = {fieldsBagName: 'vee-fields'}
-// Validator.extend('phone', {
-//   messages: {
-//     cn:field => field + '请输入正确的11位手机号！',
-//   },
-//   validate: value => {
-//     return value.length == 11 && /^((13|14|15|16|17|18)[0-9]{1}\d{8})$/.test(value)
-//   }
-// });
 
 
 import VueCookies from 'vue-cookies'

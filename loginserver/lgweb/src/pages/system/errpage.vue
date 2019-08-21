@@ -3,7 +3,7 @@
     <div class="content">
       <i><img style="margin: auto; width:300px" src="../../img/wrong.png"></i>
       <div class="message">{{msg}}</div>
-      <div class="btn"><button @click="signOut">登录</button></div>
+      <!-- <div class="btn"><button @click="signOut">登录</button></div> -->
     </div>
   </div>
 </template>

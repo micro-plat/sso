@@ -33,6 +33,7 @@ where role.status = 0 AND
   sys.index_url is not null and
   sys.index_url <> '' and
   sys.ident <> @ident and
+  sys.enable=1 and
   ur.user_id = @user_id; 
 `
 

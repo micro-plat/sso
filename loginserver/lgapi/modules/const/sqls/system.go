@@ -13,7 +13,8 @@ where role.status = 0 AND
     ur.enable=1 and 
     sys.index_url is not null and
     sys.index_url <> '' and
-	  ur.user_id = @user_id; 
+    ur.user_id = @user_id and
+    sys.enable=1;
 `
 const QuerySysInfoByIdent = `
 select 

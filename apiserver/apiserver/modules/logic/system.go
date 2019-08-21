@@ -26,14 +26,8 @@ func NewSystemLogic(c component.IContainer) *SystemLogic {
 
 //Get 从数据库中获取系统信息
 func (u *SystemLogic) Get(ident string) (s db.QueryRow, err error) {
-	s, err = u.cache.Query(ident)
-	if s == nil || err != nil {
-		if s, err = u.db.Get(ident); err != nil {
-			return nil, err
-		}
-		if err = u.cache.Save(s); err != nil {
-			return nil, err
-		}
+	if s, err = u.db.Get(ident); err != nil {
+		return nil, err
 	}
 	return s, err
 }
