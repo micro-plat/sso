@@ -1,6 +1,7 @@
 package main
 
 import (
+	"github.com/micro-plat/hydra/conf"
 	"github.com/micro-plat/hydra/hydra"
 )
 

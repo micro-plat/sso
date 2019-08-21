@@ -57,7 +57,7 @@
                     name="mobile1"
                     type="text"
                     class="form-control"
-                    v-validate="'required|phone'"
+                    v-validate="'required|numeric'"
                     v-model="userInfo.mobile"
                     placeholder="请输入电话"
                     maxlength="11"
