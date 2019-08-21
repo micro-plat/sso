@@ -28,18 +28,18 @@ if [ $publishenv != "dev" ]; then
 fi
 
 echo "----------1:生成apiserver数据-----------"
-cd apiserver/
-CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build  $tags -o "../out/sso_apiserver/api/bin/sso_apiserver"
+cd apiserver/apiserver/
+CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build  $tags -o "../out/sso/apiserver/bin/apiserver_sso"
 if [ $? -ne 0 ]; then
 	echo "apiserver 项目编译出错,请检查"
 	exit 1
 fi
-cd ../
+cd ../../
 
 
 echo "----------2:生成lgapi数据------------"
-cd lgapi/
-CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build $tags -o "../out/sso_login/api/bin/sso_lgapi"
+cd logingserver/lgapi/
+CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build $tags -o "../out/sso/logingserver/bin/lgapi_sso"
 if [ $? -ne 0 ]; then
 	echo "lgapi 项目编译出错,请检查"
 	exit 1
@@ -48,7 +48,7 @@ cd ../
 
 echo "----------3:生成lgweb数据-----------"
 cd lgweb/
-CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build $tags -o "../out/sso_login/web/sso_lgweb"
+CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build $tags -o "../out/sso/logingserver/bin/lgweb_sso"
 if [ $? -ne 0 ]; then
 	echo "lgweb golang 项目编译出错,请检查"
 	exit 1
@@ -63,16 +63,15 @@ if [ $? -ne 0 ]; then
 	exit 1
 fi
 
-#mkdir -p ../out/sso_login/web/web/static/ && cp -r ./dist/static/ "$_"
-cp -r ./dist/static/ ../out/sso_login/web/static/
+cp -r ./dist/static/ ../out/sso/logingserver/bin/static/
 
 echo "--------------------------------------"
-cd ../
+cd ../../
 
 
 echo "----------4:生成mgrapi数据----------"
-cd mgrapi/
-CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build  $tags -o "../out/sso_mgr/api/bin/sso_mgrapi"
+cd mgrserver/mgrapi/
+CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build  $tags -o "../out/sso/mgrserver/bin/mgrapi_sso"
 if [ $? -ne 0 ]; then
 	echo "mgrapi 项目编译出错,请检查"
 	exit 1
@@ -80,11 +79,11 @@ fi
 cd ../
 
 echo "-------创建mgrapi图片临时目录--------"
-mkdir -p ./out/sso_mgr/api/bin/static/img
+mkdir -p ./out/sso/mgrserver/bin/image
 
 echo "----------5:生成mgrweb数据------------"
 cd mgrweb/
-CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build  $tags -o "../out/sso_mgr/web/sso_mgrweb"
+CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build  $tags -o "../out/sso/mgrserver/bin/mgrweb_sso"
 if [ $? -ne 0 ]; then
 	echo "mgrweb golang 项目编译出错,请检查"
 	exit
@@ -97,33 +96,34 @@ if [ $? -ne 0 ]; then
 	echo "mgrweb vue项目编译出错,请检查"
 	exit
 fi
-cp -r ./dist/static/ ../out/sso_mgr/web/static/
+cp -r ./dist/static/ ../out/sso/mgrserver/bin/static/
 echo "--------------------------------------"
 
 cd ../
 echo "-----------6:生成数据完成--------------"
+echo "-----------都放在out目录中-------------"
 
 
-cd out/
-echo "-----------打包相关文件(zip)-----------"
-zip -r sso_apiserver sso_apiserver
-if [ $? -ne 0 ]; then
-	echo "打包ssoapi调用(sso_apiserver)出错,请检查"
-	exit
-fi
+# cd out/
+# echo "-----------打包相关文件(zip)-----------"
+# zip -r sso_apiserver sso_apiserver
+# if [ $? -ne 0 ]; then
+# 	echo "打包ssoapi调用(sso_apiserver)出错,请检查"
+# 	exit
+# fi
 
-zip -r sso_login sso_login
-if [ $? -ne 0 ]; then
-	echo "打包登录中心(sso_login)出错,请检查"
-	exit
-fi
+# zip -r sso_login sso_login
+# if [ $? -ne 0 ]; then
+# 	echo "打包登录中心(sso_login)出错,请检查"
+# 	exit
+# fi
 
-zip -r sso_mgr sso_mgr
-if [ $? -ne 0 ]; then
-	echo "打包用户管理系统(sso_mgr)出错,请检查"
-	exit
-fi
+# zip -r sso_mgr sso_mgr
+# if [ $? -ne 0 ]; then
+# 	echo "打包用户管理系统(sso_mgr)出错,请检查"
+# 	exit
+# fi
 
-echo "-----------------------------------"
-echo "sso_login里面包含api,web | sso_mgr里面包含api,web"
-echo "-----------打包完成(zip)-------------"
+# echo "-----------------------------------"
+# echo "sso_login里面包含api,web | sso_mgr里面包含api,web"
+# echo "-----------打包完成(zip)-------------"
