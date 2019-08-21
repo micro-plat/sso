@@ -1,42 +1,42 @@
-./mgrweb/.DS_Store
+
 *node_modules/
 *dist/
 .vscode/
-./mgrweb/dist/
-./mgrweb/npm-debug.log*
-./mgrweb/yarn-debug.log*
-./mgrweb/yarn-error.log*
+./mgrserver/mgrweb/dist/
+./mgrserver/mgrweb/npm-debug.log*
+./mgrserver/mgrweb/yarn-debug.log*
+./mgrserver/mgrweb/yarn-error.log*
 
-./lgweb/dist/
-./lgweb/npm-debug.log*
-./lgweb/yarn-debug.log*
-./lgweb/yarn-error.log*
+./loginserver/lgweb/dist/
+./loginserver/lgweb/npm-debug.log*
+./loginserver/lgweb/yarn-debug.log*
+./loginserver/lgweb/yarn-error.log*
 .
 # Editor directories and files
-./mgrweb/.idea
-./mgrweb/.vscode
-./mgrweb/*.suo
-./mgrweb/*.ntvs*
-./mgrweb/*.njsproj
-./mgrweb/*.sln
+./mgrserver/mgrweb/.idea
+./mgrserver/mgrweb/.vscode
+./mgrserver/mgrweb/*.suo
+./mgrserver/mgrweb/*.ntvs*
+./mgrserver/mgrweb/*.njsproj
+./mgrserver/mgrweb/*.sln
 
-./lgweb/.idea
-./lgweb/.vscode
-./lgweb/*.suo
-./lgweb/*.ntvs*
-./lgweb/*.njsproj
-./lgweb/*.sln
+./loginserver/lgweb/.idea
+./loginserver/lgweb/.vscode
+./loginserver/lgweb/*.suo
+./loginserver/lgweb/*.ntvs*
+./loginserver/lgweb/*.njsproj
+./loginserver/lgweb/*.sln
 
 logs/
 conf/
 
-./mgrapi/static/
-./lgapi/static/
+./mgrserver/mgrapi/static/
+./loginserver/lgapi/static/
 
-apiserver/apiserver
-mgrapi/mgrapi
-mgrweb/mgrweb
-lgapi/lgapi
-lgweb/lgweb
+apiserver/apiserver/apiserver
+mgrserver/mgrapi/mgrapi
+mgrserver/mgrweb/mgrweb
+loginserver/lgapi/lgapi
+loginserver/lgweb/lgweb
 
 out/
