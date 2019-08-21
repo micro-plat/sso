@@ -625,7 +625,7 @@ export default {
       let routerParams = this.$route.query;
       this.id = routerParams.id;
       
-      this.$http.get("/sys/func", { id: this.id })
+      this.$http.get("/system/func", { id: this.id })
         .then(res => {
           if (res.length != 0) {
             this.ztreeDataSource = res;
@@ -658,7 +658,7 @@ export default {
       if (data.iconTemp != "") {
         icon = data.iconTemp + " " + data.color
       }
-      this.$http.post("/sys/func/edit", {
+      this.$http.post("/system/func/edit", {
         id: data.id,
         name: data.name,
         sortrank:data.sortrank,
@@ -681,7 +681,7 @@ export default {
       });
     },
     addFunc() {
-      this.$http.post("/sys/func/add", {
+      this.$http.post("/system/func/add", {
         parentid: this.currentData.parentId,
         parentlevel: this.currentData.parentLevel,
         sysid: this.id,

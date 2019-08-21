@@ -379,7 +379,7 @@ export default {
     data(){
         return{
             options: {
-                target: process.env.service.apiHost+'/img/upload',   //上传地址
+                target: process.env.service.apiHost+'/image/upload',   //上传地址
                 testChunks: false,
                 withCredentials:true,   //携带jwt
                 singleFile:true,        //单文件上传
@@ -469,7 +469,7 @@ export default {
                 });
               return;
             }
-            this.$http.post("/sys/add", {
+            this.$http.post("/system/info/add", {
                 name: this.addData.name,
                 callbackurl: this.addData.callbackurl,
                 logo: this.addData.logo,

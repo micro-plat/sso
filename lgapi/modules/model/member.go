@@ -6,14 +6,6 @@ import (
 	"github.com/micro-plat/lib4go/utility"
 )
 
-const (
-	//UserLoginFailCount 用户可以输入几次错误密码,之后用户被锁定
-	UserLoginFailCount = 5
-
-	//UserLockTime 用户锁定时间(默认24小时)
-	UserLockTime = 24
-)
-
 //MemberState 用户信息
 type MemberState struct {
 	Password       string `json:"password,omitempty"`

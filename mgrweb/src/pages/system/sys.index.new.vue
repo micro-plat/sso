@@ -472,7 +472,7 @@ export default {
   data() {
     return {
       options: {
-        target: process.env.service.apiHost+'/img/upload',   //上传地址
+        target: process.env.service.apiHost+'/image/upload',   //上传地址
         testChunks: false,
         withCredentials:true,   //携带jwt
         singleFile:true,        //单文件上传
@@ -560,7 +560,7 @@ export default {
     },
 
     query() {
-      this.$http.post("/sys/getall", {
+      this.$http.post("/system/info/getall", {
         pi: this.pi,
         ps:this.ps,
         name: this.sysname,
@@ -590,7 +590,7 @@ export default {
         cancelButtonText: "取消",
         type: "warning"
       }).then(() => {
-        this.$http.post("/sys/del", { id: id } )
+        this.$http.post("/system/info/del", { id: id } )
         .then(res => {
           this.goPage(this.pi);
           this.$notify({
@@ -625,7 +625,7 @@ export default {
         cancelButtonText: "取消",
         type: "warning"
       }).then(() => {
-        this.$http.post("/sys/changestatus", {
+        this.$http.post("/system/info/changestatus", {
           id: this.enableData.id,
           status: this.enableData.status
         })
@@ -682,7 +682,7 @@ export default {
             });
         return;
       }
-      this.$http.post("/sys/edit", edit)
+      this.$http.post("/system/info/edit", edit)
         .then(res => {
           this.$refs.editModal.close();
           this.goPage({ page: this.pi });

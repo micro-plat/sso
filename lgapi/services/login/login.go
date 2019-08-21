@@ -4,6 +4,7 @@ import (
 	"github.com/micro-plat/hydra/component"
 	"github.com/micro-plat/hydra/context"
 	"github.com/micro-plat/sso/lgapi/modules/logic"
+	"github.com/micro-plat/sso/lgapi/modules/model"
 )
 
 //LoginHandler 用户登录对象
@@ -30,13 +31,14 @@ func (u *LoginHandler) Handle(ctx *context.Context) (r interface{}) {
 	}
 
 	ctx.Log.Info("2: 判断用户是否被锁定, 锁定时间过期后要解锁")
-	if err := u.m.CheckUserIsLocked(ctx.Request.GetString("username")); err != nil {
+	appCfg := model.GetConf(u.c)
+	if err := u.m.CheckUserIsLocked(ctx.Request.GetString("username"), appCfg.UserLoginFailCount); err != nil {
 		return err
 	}
 
 	ctx.Log.Info("3:处理用户账号登录")
 	ident := ctx.Request.GetString("ident")
-	member, err := u.m.Login(ctx.Request.GetString("username"), ctx.Request.GetString("password"), ident)
+	member, err := u.m.Login(ctx.Request.GetString("username"), ctx.Request.GetString("password"), ident, appCfg.UserLoginFailCount, appCfg.UserLockTime)
 	if err != nil {
 		return err
 	}

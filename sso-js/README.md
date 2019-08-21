@@ -5,7 +5,7 @@
 在main.js中注入(需要导入三个js文件 npm 包名: qianxing-sso)
 
 ``` js
-import {ssoHttpConfig} from 'qianxing-sso';
+import {ssoHttpConfig} from 'qxnw-sso';
 
 var config = process.env.service;
 var ssocfg = ssoHttpConfig(config.apiHost, "localStorage", config.ssoWebHost, config.Ident);
@@ -14,12 +14,12 @@ var ssocfg = ssoHttpConfig(config.apiHost, "localStorage", config.ssoWebHost, co
 Vue.prototype.$sso = ssocfg.sso; 
 Vue.prototype.$http = ssocfg.http;
 ```
-| 参数         |  类型  |                                                    说明 |
-| ------------ | :----: | ------------------------------------------------------: |
-| apiHost      | string |                                           子系统apihost |
-| storagePlace | string | jwt存储方式 [localStorage, sessionStorage],cookie请传空 |
-| ssoWebHost   | string |                                       sso web系统的host |
-| ident        | string |                                             子系统ident |
+参数|类型|说明
+--|:--:|--:
+apiHost|string| 子系统apihost
+storagePlace |string|jwt存储方式 [localStorage, sessionStorage],cookie请传空
+ssoWebHost |string| sso web系统的host
+ident|string|子系统ident
 
 ```
 说明: 由于将原来的get,post进行了包装,因此要将main.js文件中原来http的方法及引用去掉【切记】如: Vue.prototype.$post等

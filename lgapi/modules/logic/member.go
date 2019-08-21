@@ -16,8 +16,8 @@ import (
 //IMemberLogic 用户登录
 type IMemberLogic interface {
 	CreateLoginUserCode(userID int64) (code string, err error)
-	CheckUserIsLocked(userName string) error
-	Login(userName, password, ident string) (*model.LoginState, error)
+	CheckUserIsLocked(userName string, failCount int) error
+	Login(userName, password, ident string, failCount,userLockTime int) (*model.LoginState, error)
 	ChangePwd(userID int, expassword string, newpassword string) (err error)
 	CheckHasRoles(userID int64, ident string) error
 	GenerateCodeAndSysInfo(ident string, userID int64) (map[string]string, error)
@@ -42,20 +42,23 @@ func NewMemberLogic(c component.IContainer) *MemberLogic {
 }
 
 //CheckUserIsLocked 检查用户是否被锁定
-func (m *MemberLogic) CheckUserIsLocked(userName string) error {
+func (m *MemberLogic) CheckUserIsLocked(userName string, failCount int) error {
 	count, err := m.cache.GetLoginFailCnt(userName)
 	if err != nil {
 		return err
 	}
+
 	//用户是否被锁定
-	if count >= model.UserLoginFailCount {
-		//解锁时间是否过期
-		if exists := m.cache.ExistsUnLockTime(userName); exists {
-			return context.NewError(context.ERR_BAD_REQUEST, "用户被锁定,请联系管理员")
-		} else {
-			if err := m.unLockUser(userName); err != nil {
-				return err
-			}
+	if count < failCount {
+		return nil
+	}
+
+	//解锁时间是否过期
+	if exists := m.cache.ExistsUnLockTime(userName); exists {
+		return context.NewError(context.ERR_BAD_REQUEST, "用户被锁定,请联系管理员")
+	} else {
+		if err := m.unLockUser(userName); err != nil {
+			return err
 		}
 	}
 	return nil
@@ -67,7 +70,7 @@ func (m *MemberLogic) ChangePwd(userID int, expassword string, newpassword strin
 }
 
 //Login 登录系统
-func (m *MemberLogic) Login(userName, password, ident string) (s *model.LoginState, err error) {
+func (m *MemberLogic) Login(userName, password, ident string, failCount,userLockTime int) (s *model.LoginState, err error) {
 	if !strings.EqualFold(ident, "") {
 		if err := m.CheckSystemStatus(ident); err != nil {
 			return nil, err
@@ -79,7 +82,7 @@ func (m *MemberLogic) Login(userName, password, ident string) (s *model.LoginSta
 		return nil, err
 	}
 
-	if err = m.checkUserInfo(userName, password, ls); err != nil {
+	if err = m.checkUserInfo(userName, password, ls, failCount,userLockTime); err != nil {
 		return nil, err
 	}
 
@@ -118,7 +121,7 @@ func (m *MemberLogic) CheckSystemStatus(ident string) error {
 }
 
 //CheckUserInfo 检查用户
-func (m *MemberLogic) checkUserInfo(userName, password string, state *model.MemberState) error {
+func (m *MemberLogic) checkUserInfo(userName, password string, state *model.MemberState, failCount,userLockTime int) (err error) {
 	if state.Status == enum.UserDisable {
 		return context.NewError(context.ERR_BAD_REQUEST, "用户被禁用，请联系管理员")
 	}
@@ -126,20 +129,31 @@ func (m *MemberLogic) checkUserInfo(userName, password string, state *model.Memb
 		return context.NewError(context.ERR_BAD_REQUEST, "用户被锁定，请联系管理员")
 	}
 
-	if strings.ToLower(state.Password) != strings.ToLower(password) {
-		count, err := m.cache.SetLoginFail(userName)
-		if err != nil {
-			return err
-		}
-		if count >= model.UserLoginFailCount {
-			m.db.UpdateUserStatus(state.UserID, enum.UserLock)
-			m.cache.SetUnLockTime(userName, model.UserLockTime)
-		}
-		return context.NewError(context.ERR_BAD_REQUEST, "用户名或密码错误")
+	if strings.ToLower(state.Password) == strings.ToLower(password) {
+		m.cache.SetLoginSuccess(userName)
+		return nil
 	}
-	m.cache.SetLoginSuccess(userName)
 
-	return nil
+	count, err := m.cache.SetLoginFail(userName)
+	if err != nil {
+		return err
+	}
+
+	err = context.NewError(context.ERR_BAD_REQUEST, "用户名或密码错误")
+	if count < failCount {
+		return err
+	}
+
+	//更新用户状态
+	if err := m.db.UpdateUserStatus(state.UserID, enum.UserLock); err != nil {
+		return err
+	}
+	//设置解锁过期时间
+	if err := m.cache.SetUnLockTime(userName, userLockTime); err != nil {
+		return err
+	}
+
+	return err
 }
 
 //CreateLoginUserCode 生成用户登录的标识保存到缓存中(code)

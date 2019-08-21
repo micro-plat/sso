@@ -15,7 +15,7 @@ type ICacheMember interface {
 	SetLoginFail(userName string) (int, error)
 	GetLoginFailCnt(userName string) (int, error)
 	SetLoginSuccess(userName string) error
-	SetUnLockTime(userName string, hours int) error
+	SetUnLockTime(userName string, expire int) error
 	ExistsUnLockTime(userName string) bool
 }
 
@@ -73,10 +73,10 @@ func (l *CacheMember) SetLoginSuccess(u string) error {
 }
 
 //SetUnLockTime 设置解锁过期时间
-func (l *CacheMember) SetUnLockTime(userName string, hours int) error {
+func (l *CacheMember) SetUnLockTime(userName string, expire int) error {
 	cache := l.c.GetRegularCache()
 	key := transform.Translate(cachekey.CacheLoginFailUnLockTime, "user_name", userName)
-	return cache.Set(key, time.Now().Add(time.Hour*time.Duration(hours)).Format("2006-01-02 15:04:05"), hours*60*60)
+	return cache.Set(key, time.Now().Add(time.Second*time.Duration(expire)).Format("2006-01-02 15:04:05"), expire)
 }
 
 //ExistsUnLockTime 解锁时间是否过期

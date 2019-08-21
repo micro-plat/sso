@@ -641,21 +641,17 @@
             sessionStorage.setItem("user", JSON.stringify(res))
           })
           .catch(err => {
-            if (err.response.status == 403) {
-              this.$router.push('/member/login')
-            } else {
-              this.$notify({
-                title: '错误',
-                message: '网络错误,请稍后再试',
-                type: 'error',
-                offset: 50,
-                duration: 2000,
-              });
-            }
+            this.$notify({
+              title: '错误',
+              message: '网络错误,请稍后再试',
+              type: 'error',
+              offset: 50,
+              duration: 2000,
+            });
           });
       },
       loadSysInfo: function () {
-        this.$http.get("/sys/get", {ident: this.ident})
+        this.$http.get("/system/info/get", {ident: this.ident})
           .then(res => {
             this.sys = res;
             document.title = res.name;

@@ -2,7 +2,10 @@
 
 package main
 
-import "github.com/micro-plat/hydra/conf"
+import (
+	"github.com/micro-plat/hydra/conf"
+	"github.com/micro-plat/sso/lgapi/modules/model"
+)
 
 //bindConf 绑定启动配置， 启动时检查注册中心配置是否存在，不存在则引导用户输入配置参数并自动创建到注册中心
 func (s *SSO) install() {
@@ -19,5 +22,8 @@ func (s *SSO) install() {
 		conf.NewAuthes().WithJWT(
 			conf.NewJWT("__sso_jwt__", "HS512", "bf8f3171946d8d5a13cca23aa6080c8e", 36000, "/system/get", "/member/login")))
 
-	s.Conf.CRON.SetSubConf("task", `{"tasks":[{"cron":"@daily","service":"/member/unlock"}]}`)
+	s.Conf.API.SetApp(model.Conf{
+		UserLoginFailCount: 5,
+		UserLockTime:       24 * 60 * 60,
+	})
 }
