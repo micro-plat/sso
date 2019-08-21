@@ -1,6 +1,7 @@
 package main
 
 import (
+	"github.com/micro-plat/hydra/conf"
 	"github.com/micro-plat/hydra/hydra"
 )
 
@@ -17,6 +18,7 @@ func main() {
 			hydra.WithServerTypes("web"),
 		),
 	}
+	app.Conf.WEB.SetStatic(conf.NewWebServerStaticConf().WithArchive("./static.zip"))
 	app.install()
 	app.Start()
 }

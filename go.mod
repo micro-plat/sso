@@ -13,6 +13,6 @@ require (
 	github.com/jordan-wright/email v0.0.0-20190218024454-3ea4d25e7cf8
 	github.com/json-iterator/go v1.1.6
 	github.com/mattn/go-isatty v0.0.7
-	github.com/micro-plat/hydra v0.10.6
-	github.com/micro-plat/lib4go v0.1.4
+	github.com/micro-plat/hydra v0.10.8
+	github.com/micro-plat/lib4go v0.1.5
 )
