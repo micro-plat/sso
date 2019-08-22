@@ -74,5 +74,5 @@ func (ch *ImageHandler) saveImg(extName string, ctx *context.Context) (picURL st
 		return "", context.NewError(500, err)
 	}
 
-	return model.GetConf(ch.container).GetWebHostName() + "/static/img/" + name, nil
+	return model.GetConf(ch.container).GetWebHostName() + "/sso/" + name, nil
 }

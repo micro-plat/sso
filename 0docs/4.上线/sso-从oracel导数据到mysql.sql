@@ -6,12 +6,12 @@
 */
 
 /*oracle*/ 导出文件的语句
-SELECT * from sso_system_info;
-select role_id, name, status, TO_CHAR(create_time, 'YYYY-MM-DD HH:MM:SS') create_time from sso_role_info;
-select user_id, user_name, password, email, status, to_char(mobile) mobile, wx_openid, to_char(create_time, 'YYYY-MM-DD HH:MM:SS') create_time, changepwd_times, ext_params from sso_user_info;
-select id, name, parent, sys_id, level_id, icon, path, enable, to_char(create_time, 'YYYY-MM-DD HH:MM:SS') create_time, sortrank, is_open  from sso_system_menu;
-select sys_id, role_id,menu_id, enable, to_char(create_time, 'YYYY-MM-DD HH:MM:SS') create_time, sortrank from sso_role_menu;
-select user_id, sys_id, role_id, enable from sso_user_role;
+SELECT * from sso_system_info; 
+select role_id, name, status, TO_CHAR(create_time, 'YYYY-MM-DD HH:MM:SS') create_time from sso_role_info; 
+select user_id, user_name, password, email, status, to_char(mobile) mobile, wx_openid, to_char(create_time, 'YYYY-MM-DD HH:MM:SS') create_time, changepwd_times, ext_params from sso_user_info; 
+select id, name, parent, sys_id, level_id, icon, path, enable, to_char(create_time, 'YYYY-MM-DD HH:MM:SS') create_time, sortrank, is_open  from sso_system_menu; 
+select id,sys_id, role_id,menu_id, enable, to_char(create_time, 'YYYY-MM-DD HH:MM:SS') create_time, sortrank from sso_role_menu; 
+select id,user_id, sys_id, role_id, enable from sso_user_role; 
 
 
 

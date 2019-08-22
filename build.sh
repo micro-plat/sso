@@ -82,7 +82,7 @@ fi
 cd ../
 
 echo "-------创建mgrapi图片临时目录--------"
-mkdir -p ../out/sso/mgrserver/bin/image
+mkdir -p ../out/sso/mgrserver/image
 
 echo "----------5:生成mgrweb数据------------"
 cd mgrweb/

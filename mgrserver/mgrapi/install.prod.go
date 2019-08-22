@@ -13,9 +13,9 @@ func (s *SSO) install() {
 
 	s.Conf.SetInput(`#mysql_db_string`, `mysql数据库连接串`, `username:password@tcp(host)/sso?charset=utf8`)
 	s.Conf.SetInput(`#redis_string`, `redis连接串`, ``)
-	s.Conf.SetInput(`#secret`, `用户管理系统的secret`, ``)
+	//s.Conf.SetInput(`#secret`, `用户管理系统的secret`, ``)
 
-	s.Conf.API.SetMain(conf.NewAPIServerConf(":6677"))
+	s.Conf.API.SetMain(conf.NewAPIServerConf(":80"))
 	s.Conf.API.SetHeaders(conf.NewHeader().WithCrossDomain())
 	s.Conf.Plat.SetDB(conf.NewMysqlConfForProd("#mysql_db_string"))
 	s.Conf.Plat.SetCache(conf.NewRedisCacheConfForProd(1, "#redis_string"))
@@ -25,9 +25,9 @@ func (s *SSO) install() {
 			conf.NewJWT("__jwt__", "HS512", "bf8f3171946d8d5a13cca23aa6080c8e", 36000, "/login/user", "/image/upload").WithHeaderStore()))
 
 	s.Conf.API.SetApp(model.Conf{
-		PicHost:    "http://sso.sinopecscsy.com",
+		PicHost:    "http://bj.images.cdqykj.cn",
 		Secret:     "#secret",
-		SsoApiHost: "http://api.sso.18jiayou.com:6689",
+		SsoApiHost: "http://api.sso.18jiayou.com:80",
 		Ident:      "sso",
 	})
 }

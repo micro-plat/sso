@@ -56,5 +56,5 @@ func (r *SSO) init() {
 	r.Micro("/role", role.NewRoleHandler)                         //角色管理相关接口
 	r.Micro("/system/info", system.NewSystemHandler)              //系统管理相关接口
 	r.Micro("/system/func", function.NewSystemFuncHandler)        //系统功能相关接口
-	r.Micro("/image/upload", image.NewImageHandler("image")) //图片上传
+	r.Micro("/image/upload", image.NewImageHandler("../image")) //图片上传
 }
