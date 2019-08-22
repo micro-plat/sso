@@ -15,7 +15,8 @@ func (s *SSO) install() {
 	s.Conf.SetInput(`#redis_string`, `redis连接串`, ``)
 	//s.Conf.SetInput(`#secret`, `用户管理系统的secret`, ``)
 
-	s.Conf.API.SetMain(conf.NewAPIServerConf(":80"))
+	//s.Conf.API.SetMain(conf.NewAPIServerConf(":80"))
+	s.Conf.API.SetMain(conf.NewAPIServerConf(":6677"))
 	s.Conf.API.SetHeaders(conf.NewHeader().WithCrossDomain())
 	s.Conf.Plat.SetDB(conf.NewMysqlConfForProd("#mysql_db_string"))
 	s.Conf.Plat.SetCache(conf.NewRedisCacheConfForProd(1, "#redis_string"))
