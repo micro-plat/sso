@@ -538,6 +538,17 @@ export default {
         });
         return false;
       }
+      
+      if (!(/^1[3456789]\d{9}$/.test(this.userInfo.mobile))) {
+        this.$notify({
+          title: "警告",
+          message: "请输入正确的电话号码",
+          type: "warning",
+          offset: 50
+        });
+        return false;
+      }
+
       var s = "";
       for (var i = 0; i < this.userInfo.lists.length; i++) {
         s =
