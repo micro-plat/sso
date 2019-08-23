@@ -98,9 +98,8 @@
                         case 403:
                             this.$router.push({path:jumpLogin(this.ident), query :{ changepwd: 1 }});
                             break;
-                        case 406:
-                        case 400:
-                            this.errorMsg = trimError(err);
+                        case 908:
+                            this.errorMsg = "原密码错误";
                             break;
                         default:
                             this.errorMsg = "网络错误,请稍后再试";

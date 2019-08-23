@@ -696,13 +696,26 @@ export default {
         this.cancel();
       })
       .catch(err => {
-          this.$notify({
-            title: '错误',
-            message: '网络错误,请稍后再试',
-            type: 'error',
-            offset: 50,
-            duration:2000,
-          });
+        if (err.response) {
+            switch (err.response.status) {
+              case 909:
+                this.$notify({
+                  title: '错误',
+                  message: '请先保存系统根节点',
+                  type: 'error',
+                  offset: 50,
+                  duration:2000,
+                });
+              return;
+            }
+            this.$notify({
+                  title: '错误',
+                  message: '系统错误, 稍后再试',
+                  type: 'error',
+                  offset: 50,
+                  duration:2000,
+                });
+        }
       });
     },
 

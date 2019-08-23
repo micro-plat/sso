@@ -588,10 +588,10 @@ export default {
               .catch(err => {
                 if (err.response) {
                   switch (err.response.status) {
-                    case 400:
+                    case 909:
                       this.$notify({
                         title: "错误",
-                        message: trimError(err),
+                        message: "此用户名已被使用",
                         type: "error",
                         offset: 50,
                         duration: 2000
@@ -624,10 +624,10 @@ export default {
               .catch(err => {
                 if (err.response) {
                   switch (err.response.status) {
-                    case 400:
+                    case 909:
                       this.$notify({
                         title: "错误",
-                        message: trimError(err),
+                        message: "此用户名已被使用",
                         type: "error",
                         offset: 50,
                         duration: 2000

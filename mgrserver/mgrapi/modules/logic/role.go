@@ -87,12 +87,12 @@ func (r *RoleLogic) Save(input *model.RoleEditInput) (err error) {
 	}
 	if input.IsAdd == 1 {
 		if data != nil {
-			return context.NewError(context.ERR_BAD_REQUEST, "角色名称已被使用")
+			return context.NewError(model.ERR_ROLE_NAMEEXISTS, "角色名称已被使用")
 		}
 		err = r.db.Add(input)
 	} else {
 		if data != nil && data.GetInt64("role_id") != input.RoleID {
-			return context.NewError(context.ERR_BAD_REQUEST, "角色名称已被使用")
+			return context.NewError(model.ERR_ROLE_NAMEEXISTS, "角色名称已被使用")
 		}
 		err = r.db.Edit(input)
 	}

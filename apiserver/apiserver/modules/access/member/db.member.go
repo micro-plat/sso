@@ -78,7 +78,7 @@ func (l *DBMember) QueryByID(uid int, ident string) (s *model.MemberState, err e
 		return nil, context.NewError(context.ERR_SERVICE_UNAVAILABLE, "暂时无法登录系统")
 	}
 	if data.IsEmpty() {
-		return nil, context.NewError(context.ERR_SERVICE_UNAVAILABLE, "用户不存在")
+		return nil, context.NewError(model.ERR_USER_NOTEXISTS, "用户不存在")
 	}
 
 	s = &model.MemberState{}
@@ -94,7 +94,7 @@ func (l *DBMember) QueryByID(uid int, ident string) (s *model.MemberState, err e
 	}
 
 	if roles.IsEmpty() {
-		return nil, context.NewError(context.ERR_UNSUPPORTED_MEDIA_TYPE, "用户没有相关系统权限")
+		return nil, context.NewError(model.ERR_USER_HASNOROLES, "用户没有相关系统权限")
 	}
 
 	s.RoleID = roles.Get(0).GetInt("role_id")

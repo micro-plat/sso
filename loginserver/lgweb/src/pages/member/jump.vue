@@ -40,14 +40,17 @@
                 this.$router.push({ path: '/choose'});   
             }).catch(err => {
                 switch (err.response.status) {
-                    case 423:
-                      this.$router.push({ path: '/errpage', query: {type: 2}});
+                    case 901:
+                      this.$router.push({ path: '/errpage', query: {type: 8}});
                       break;
-                    case 415:
-                      this.$router.push({ path: '/errpage', query: {type: 1}});
+                    case 902:
+                      this.$router.push({ path: '/errpage', query: {type: 3}});
                       break;
-                    case 400:
-                      this.$router.push({ path: '/errpage', query: {type: 8}})
+                    case 903:
+                      this.$router.push({ path: '/errpage', query: {type: 4}})
+                      break;
+                    case 906:
+                      this.$router.push({ path: '/errpage', query: {type: 1}})
                       break;
                     case 403:
                       this.$router.push({ path: jumpLogin(this.ident), query:{callback: this.callback}});

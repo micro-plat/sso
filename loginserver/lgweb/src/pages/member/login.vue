@@ -113,17 +113,27 @@
             }, 300);
           })
           .catch(err => {
+              var msg = "登录失败";
               switch (err.response.status) {
-                case 400:
-                case 401:
-                case 423:
-                case 405:
-                case 415:
-                  this.$refs.LoginUp.showError(trimError(err))
+                case 901:
+                  msg = "系统被锁定,不能登录"
                   break;
+                case 902:
+                  msg = "用户被锁定,不能登录"
+                  break;
+                case 903:
+                  msg = "用户被禁用,不能登录";
+                  break;
+                case 906:
+                  msg = "没有相关系统权限,不能登录";
+                  break;
+                case 907:
+                  msg = "用户名或密码错误";
+                  break;    
                 default:
-                  this.$refs.LoginUp.showError("登录失败")
+                  msg = "登录失败,稍后再试";
               }
+              this.$refs.LoginUp.showError(msg)
           });
       }
 

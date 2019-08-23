@@ -126,7 +126,7 @@ func (u *UserLogic) Add(input *model.UserInputNew) (err error) {
 		return err
 	}
 	if info != nil {
-		return context.NewError(context.ERR_BAD_REQUEST, "此用户名已被使用")
+		return context.NewError(model.ERR_USER_NAMEEXISTS, "此用户名已被使用")
 	}
 
 	if err := u.cache.Delete(); err != nil {

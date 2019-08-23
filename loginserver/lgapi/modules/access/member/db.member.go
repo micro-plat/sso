@@ -52,7 +52,7 @@ func (l *DBMember) Query(u, p, ident string) (s *model.MemberState, err error) {
 		return nil, context.NewError(context.ERR_SERVICE_UNAVAILABLE, "暂时无法登录系统")
 	}
 	if data.IsEmpty() {
-		return nil, context.NewError(context.ERR_BAD_REQUEST, "用户名或密码错误")
+		return nil, context.NewError(model.ERR_USER_PWDWRONG, "用户名或密码错误")
 	}
 
 	row := data.Get(0)
@@ -70,7 +70,7 @@ func (l *DBMember) Query(u, p, ident string) (s *model.MemberState, err error) {
 	})
 
 	if erro != nil || roles.IsEmpty() {
-		return nil, context.NewError(context.ERR_UNSUPPORTED_MEDIA_TYPE, "用户没有相关系统权限,请联系管理员")
+		return nil, context.NewError(model.ERR_USER_HASNOROLES, "用户没有相关系统权限,请联系管理员")
 	}
 
 	s.SysIdent = ident
@@ -94,7 +94,7 @@ func (l *DBMember) ChangePwd(userID int, expassword string, newpassword string) 
 	}
 
 	if strings.ToLower(md5.Encrypt(expassword)) != strings.ToLower(data.Get(0).GetString("password")) {
-		return context.NewError(context.ERR_BAD_REQUEST, "原密码错误")
+		return context.NewError(model.ERR_USER_OLDPWDWRONG, "原密码错误")
 	}
 	_, _, _, err = db.Execute(sqls.SetNewPwd, map[string]interface{}{
 		"user_id":  userID,
@@ -117,7 +117,7 @@ func (l *DBMember) CheckUserHasAuth(ident string, userID int64) error {
 		return context.NewError(context.ERR_SERVER_ERROR, fmt.Sprintf("出现错误，等会在登录: %s", err))
 	}
 	if types.GetInt(count, 0) <= 0 {
-		return context.NewError(context.ERR_UNSUPPORTED_MEDIA_TYPE, "没有相应权限，请联系管理员")
+		return context.NewError(model.ERR_USER_HASNOROLES, "没有相应权限，请联系管理员")
 	}
 	return nil
 }

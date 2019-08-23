@@ -40,10 +40,10 @@
                     this.msg = '用户被禁用或者被锁,请联系管理员';
                     break;
                 case 3:
-                    this.msg = '用户被锁定或被禁用，暂时无法登录';
+                    this.msg = '用户被锁定，暂时无法登录';
                     break;
                 case 4:
-                    this.msg = '微信登录过程中有些参数丢失,请正常登录';
+                    this.msg = '用户被禁用，暂时无法登录';
                     break;
                 case 5:
                     this.msg = '微信登录标识过期,请重新登录';
@@ -57,6 +57,7 @@
                 case 8:
                     this.msg = '系统被禁用,暂时不能登录';
                     break;
+
                 default:
                   this.msg = '登录出错,等会再试';
            }

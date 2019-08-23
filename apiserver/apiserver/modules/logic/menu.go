@@ -6,6 +6,7 @@ import (
 	"github.com/micro-plat/sso/apiserver/apiserver/modules/access/menu"
 	"github.com/micro-plat/sso/apiserver/apiserver/modules/access/system"
 	"github.com/micro-plat/sso/apiserver/apiserver/modules/const/enum"
+	"github.com/micro-plat/sso/apiserver/apiserver/modules/model"
 )
 
 // IMenuLogic interface
@@ -36,7 +37,7 @@ func (m *MenuLogic) Query(uid int64, ident string) ([]map[string]interface{}, er
 		return nil, err
 	}
 	if status == enum.SystemDisable {
-		return nil, context.NewError(context.ERR_BAD_REQUEST, "系统被禁用")
+		return nil, context.NewError(model.ERR_SYS_LOCKED, "系统被禁用")
 	}
 
 	return m.db.Query(uid, ident)

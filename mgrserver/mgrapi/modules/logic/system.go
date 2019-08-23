@@ -81,7 +81,7 @@ func (u *SystemLogic) Add(input *model.AddSystemInput) (err error) {
 		return err
 	}
 	if count > 0 {
-		return context.NewError(context.ERR_BAD_REQUEST, "系统名称和英文名称已存在")
+		return context.NewError(model.ERR_SYS_NAMEORIDENTEXISTS, "系统名称和英文名称已存在")
 	}
 
 	if err = u.db.Add(input); err != nil {

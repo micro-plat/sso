@@ -1,6 +1,6 @@
 package enum
 
-const UserDefaultPassword = `123456`
+const UserDefaultPassword = `1qaz2wsx`
 
 const (
 	Normal   = 0

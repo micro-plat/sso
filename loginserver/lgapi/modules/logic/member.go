@@ -17,7 +17,7 @@ import (
 type IMemberLogic interface {
 	CreateLoginUserCode(userID int64) (code string, err error)
 	CheckUserIsLocked(userName string, failCount int) error
-	Login(userName, password, ident string, failCount,userLockTime int) (*model.LoginState, error)
+	Login(userName, password, ident string, failCount, userLockTime int) (*model.LoginState, error)
 	ChangePwd(userID int, expassword string, newpassword string) (err error)
 	CheckHasRoles(userID int64, ident string) error
 	GenerateCodeAndSysInfo(ident string, userID int64) (map[string]string, error)
@@ -55,7 +55,7 @@ func (m *MemberLogic) CheckUserIsLocked(userName string, failCount int) error {
 
 	//解锁时间是否过期
 	if exists := m.cache.ExistsUnLockTime(userName); exists {
-		return context.NewError(context.ERR_BAD_REQUEST, "用户被锁定,请联系管理员")
+		return context.NewError(model.ERR_USER_LOCKED, "用户被锁定,请联系管理员")
 	} else {
 		if err := m.unLockUser(userName); err != nil {
 			return err
@@ -70,7 +70,7 @@ func (m *MemberLogic) ChangePwd(userID int, expassword string, newpassword strin
 }
 
 //Login 登录系统
-func (m *MemberLogic) Login(userName, password, ident string, failCount,userLockTime int) (s *model.LoginState, err error) {
+func (m *MemberLogic) Login(userName, password, ident string, failCount, userLockTime int) (s *model.LoginState, err error) {
 	if !strings.EqualFold(ident, "") {
 		if err := m.CheckSystemStatus(ident); err != nil {
 			return nil, err
@@ -82,7 +82,7 @@ func (m *MemberLogic) Login(userName, password, ident string, failCount,userLock
 		return nil, err
 	}
 
-	if err = m.checkUserInfo(userName, password, ls, failCount,userLockTime); err != nil {
+	if err = m.checkUserInfo(userName, password, ls, failCount, userLockTime); err != nil {
 		return nil, err
 	}
 
@@ -115,18 +115,18 @@ func (m *MemberLogic) CheckSystemStatus(ident string) error {
 		return err
 	}
 	if data.GetInt("enable") == enum.SystemDisable {
-		return context.NewError(context.ERR_BAD_REQUEST, "系统被禁用,不能登录")
+		return context.NewError(model.ERR_SYS_LOCKED, "系统被禁用,不能登录")
 	}
 	return nil
 }
 
 //CheckUserInfo 检查用户
-func (m *MemberLogic) checkUserInfo(userName, password string, state *model.MemberState, failCount,userLockTime int) (err error) {
+func (m *MemberLogic) checkUserInfo(userName, password string, state *model.MemberState, failCount, userLockTime int) (err error) {
 	if state.Status == enum.UserDisable {
-		return context.NewError(context.ERR_BAD_REQUEST, "用户被禁用，请联系管理员")
+		return context.NewError(model.ERR_USER_FORBIDDEN, "用户被禁用，请联系管理员")
 	}
 	if state.Status == enum.UserLock {
-		return context.NewError(context.ERR_BAD_REQUEST, "用户被锁定，请联系管理员")
+		return context.NewError(model.ERR_USER_LOCKED, "用户被锁定，请联系管理员")
 	}
 
 	if strings.ToLower(state.Password) == strings.ToLower(password) {
@@ -139,7 +139,7 @@ func (m *MemberLogic) checkUserInfo(userName, password string, state *model.Memb
 		return err
 	}
 
-	err = context.NewError(context.ERR_BAD_REQUEST, "用户名或密码错误")
+	err = context.NewError(model.ERR_USER_PWDWRONG, "用户名或密码错误")
 	if count < failCount {
 		return err
 	}
@@ -177,8 +177,11 @@ func (m *MemberLogic) CheckHasRoles(userID int64, ident string) error {
 	}
 
 	status := user.GetInt("status")
-	if status == enum.UserLock || status == enum.UserDisable {
-		return context.NewError(context.ERR_LOCKED, "用户被锁定或被禁用，暂时无法登录")
+	if status == enum.UserLock {
+		return context.NewError(model.ERR_USER_LOCKED, "用户被锁定,暂时无法登录")
+	}
+	if status == enum.UserDisable {
+		return context.NewError(model.ERR_USER_FORBIDDEN, "用户被禁用，暂时无法登录")
 	}
 
 	return m.db.CheckUserHasAuth(ident, userID)

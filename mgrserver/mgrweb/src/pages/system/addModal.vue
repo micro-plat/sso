@@ -496,10 +496,10 @@ export default {
             .catch(err => {
               console.log(err);
 
-            if (err.response.status == 400) {
+            if (err.response.status == 911) {
                 this.$notify({
                 title: '失败',
-                message: trimError(err),
+                message: "系统名称或英文名称已存在",
                 type: 'error',
                 offset: 50,
                 duration:2000,
