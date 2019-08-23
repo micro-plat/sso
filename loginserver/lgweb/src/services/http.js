@@ -5,12 +5,21 @@ axios.defaults.withCredentials = true;
 axios.defaults.baseURL = process.env.service.url;
 
 
+let GetTocken = (function () {
+    return window.localStorage.getItem("__sso_jwt__");
+});
+
+function SetToken(response) {
+    window.localStorage.setItem("__sso_jwt__", response.headers.__sso_jwt__);
+}
+
 //http request 拦截器
 axios.interceptors.request.use(
     config => {
 
         config.headers = {
-          'Content-Type': 'application/x-www-form-urlencoded'
+          'Content-Type': 'application/x-www-form-urlencoded',
+          '__sso_jwt__': GetTocken()
         };
 
         return config;
@@ -23,6 +32,9 @@ axios.interceptors.request.use(
 //http response 拦截器
 axios.interceptors.response.use(
     response => {
+        if (response.headers.__sso_jwt__) {
+            SetToken(response);
+        }
         return response;
     },
     error => {

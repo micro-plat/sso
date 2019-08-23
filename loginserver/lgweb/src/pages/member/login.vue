@@ -61,8 +61,9 @@
     },
 
     mounted(){
-      VueCookies.remove("__sso_jwt__");
-      
+      //VueCookies.remove("__sso_jwt__");
+      window.localStorage.removeItem("__sso_jwt__");
+
       document.title = "登录-能源业务中心运营管理系统";
       this.callback = this.$route.query.callback;
       this.changePwd = this.$route.query.changepwd;

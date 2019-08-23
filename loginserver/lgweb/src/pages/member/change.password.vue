@@ -50,8 +50,7 @@
     },
     created() {
         this.ident = this.$route.params.ident ? this.$route.params.ident : "";
-        var isExists = VueCookies.isKey("__sso_jwt__");
-        if(!isExists) {
+        if (!window.localStorage.getItem("__sso_jwt__")) {
             this.$router.push({path:jumpLogin(this.ident), query :{ changepwd: 1 }});
         }
     },

@@ -12,12 +12,12 @@ func (s *SSO) install() {
 	s.Conf.SetInput(`#mysql_db_string`, `mysql数据库连接串`, `username:password@tcp(host)/sso?charset=utf8`)
 
 	s.Conf.API.SetMain(conf.NewAPIServerConf(":6687"))
-	s.Conf.API.SetHeaders(conf.NewHeader().WithCrossDomain())
+	s.Conf.API.SetHeaders(conf.NewHeader().WithCrossDomain().WithAllowHeaders("X-Requested-With", "Content-Type", "__sso_jwt__"))
 	s.Conf.Plat.SetDB(conf.NewMysqlConfForProd("#mysql_db_string"))
 	s.Conf.Plat.SetCache(conf.NewRedisCacheConfForProd(1, "#redis_string"))
 
 	s.Conf.API.SetAuthes(conf.NewAuthes().WithJWT(
-		conf.NewJWT("__sso_jwt__", "HS512", "f0abd74b09bcc61449d66ae5d8128c18", 36000, "/system/get", "/member/login")))
+		conf.NewJWT("__sso_jwt__", "HS512", "f0abd74b09bcc61449d66ae5d8128c18", 36000, "/system/get", "/member/login").WithHeaderStore()))
 
 	s.Conf.API.SetApp(model.Conf{
 		UserLoginFailCount: 5,

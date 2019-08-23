@@ -16,6 +16,7 @@
         refreshToken() {
             this.$post("/member/refresh", {})
         }
+        
     }
   }
 </script>
