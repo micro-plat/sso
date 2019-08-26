@@ -2,7 +2,6 @@ package logic
 
 import (
 	"github.com/micro-plat/hydra/component"
-	"github.com/micro-plat/lib4go/logger"
 	"github.com/micro-plat/sso/mgrserver/mgrapi/modules/access/function"
 	"github.com/micro-plat/sso/mgrserver/mgrapi/modules/model"
 )
@@ -12,7 +11,7 @@ type ISystemFuncLogic interface {
 	ChangeStatus(id int, status int) (err error)
 	Delete(id int) (err error)
 	Edit(input *model.SystemFuncEditInput) (err error)
-	Add(input *model.SystemFuncAddInput, log logger.ILogger) (err error)
+	Add(input *model.SystemFuncAddInput) (err error)
 }
 
 type SystemFuncLogic struct {
@@ -63,7 +62,7 @@ func (u *SystemFuncLogic) Edit(input *model.SystemFuncEditInput) (err error) {
 }
 
 //Add 添加功能
-func (u *SystemFuncLogic) Add(input *model.SystemFuncAddInput, log logger.ILogger) (err error) {
+func (u *SystemFuncLogic) Add(input *model.SystemFuncAddInput) (err error) {
 	if err = u.db.Add(input); err != nil {
 		return
 	}

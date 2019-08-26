@@ -61,6 +61,17 @@
           });
       },
 
+      //用户可用的其他系统
+      getUserOtherSys() {
+        this.$http.get("/user/getothersys")
+        .then(res => {
+         this.items = this.$sso.transformSysInfo(res);
+        })
+        .catch(err => {
+          console.log(err);
+        })
+      },
+      
       //查询某个url对应的菜单
       getOneMenuName(url, menus) {
         for (var i = 0; i < menus.length; i++) { 
@@ -72,27 +83,8 @@
             }
           }
         }
-      },
-      //用户可用的其他系统
-      getUserOtherSys() {
-        this.$http.get("/user/getothersys")
-        .then(res => {
-          console.log(res);
-          if (res && res.length > 0) {
-            res.forEach(element => {
-              this.items.push({
-                name: element.name,
-                path: element.index_url.substr(0, element.index_url.lastIndexOf("/")),
-                type: "blank"
-              })
-            });
-          }
-        })
-        .catch(err => {
-          console.log(err);
-        })
       }
-
+    
     }
   }
 </script>

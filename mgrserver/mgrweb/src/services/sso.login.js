@@ -18,7 +18,8 @@ export function ssoConfig(loginWebHost, ident) {
         changeRouteAfterLogin:changeRouteAfterLogin,
         signOut:signOut,
         changePwd:changePwd,
-        errPage:errPage
+        errPage:errPage,
+        transformSysInfo:transformSysInfo
     };
     return sso;
 }
@@ -110,4 +111,24 @@ function errPage(errType) {
         errType = 0
     }
     window.location.href = window.ssoconfig.loginWebHost + "/errpage?type=" + errType;
+}
+
+
+/**
+ * 转换系统地址
+ * @param {*} systems 
+ */
+function transformSysInfo(systems) {
+    if (!systems || !systems.length) {
+        return []
+    }
+    var items = [];
+    systems.forEach(element => {
+        items.push({
+          name: element.name,
+          path: element.index_url.substr(0, element.index_url.lastIndexOf("/")),
+          type: "blank"
+        })
+    });
+    return items;
 }

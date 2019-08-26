@@ -29,10 +29,28 @@ return c.Get("__SsoClient__").(*sso.Client)
 ###### 1.3 使⽤sso client 实例
 ``` go
 //验证用户登录的真实性并获取用户信息
-data, err := model.GetSSOClient(u.c).CheckCodeLogin(code)
+//前端回调后的api,验证用户登录的合法性, 传入回调给子系统的code
+//如果验证通过就返回用户信息(子系统要生成自己的jwt)
+ctx.Log.Info("-------sso登录后去取登录用户---------")
+if err := ctx.Request.Check("code"); err != nil {
+    return context.NewError(context.ERR_NOT_ACCEPTABLE, fmt.Errorf("code不能为空"))
+}
+ctx.Log.Info("调用sso api 用code取用户信息")
+data, err := model.GetSSOClient(u.c).CheckCodeLogin(ctx.Request.GetString("code"))
+if err != nil {
+    return err
+}
+ctx.Log.Info("设置用户的登录jwt")
+ctx.Response.SetJWT(data)
+return data
+
 
 //获取用户的菜单数据
-//获取子系统信息
+data, err := model.GetSSOClient(u.c).GetUserMenu(userID)
+
+//获取子系统 系统信息
+data, err := model.GetSSOClient(u.c).GetSystemInfo()
+
 ```
 ---
 
@@ -137,6 +155,21 @@ GetSystemInfo()
 |Ident |string |系统ident(英⽂名称)
 |Name |string |系统名称
 |Theme |string |主题样式
-|IndexUrl |string |sso登录后⼦系统回调地址
 |Layout |string |⻚⾯布局样式
 |Logo |string |系统图标地址
+
+
+###### 2.6 获取当前用户可访问的其他子系统
+``` go
+GetUserOtherSystems()
+```
+输⼊参数(无)
+
+输出
+
+|参数 |类型|说明|
+| -------------|:--------------:|:--------------:|
+|ID |string |系统标识
+|Ident |string |系统ident(英⽂名称)
+|Name |string |系统名称
+|IndexUrl |string |⼦系统地址 host
