@@ -2,7 +2,7 @@
 
 #### 1. 引入(导入到本地)
 
-在main.js中注入(需要导入三个js文件 npm 包名: qianxing-sso)
+在main.js中注入(需要导入三个js文件 npm 包名: qxnw-sso)
 
 ``` js
 import {ssoHttpConfig} from 'qxnw-sso';
@@ -31,12 +31,13 @@ ident|string|子系统ident
 ``` js
 在vue页面中使用时有点变化，要调整成这样, 原来都是 $post,$patch,$fetch,$put,$del(这些都要替换)
 
-this.$http.get("/sso/role", {pageIndex:1, pageSize:10})
+this.$post => this.$http.post;
+this.$put => this.$http.put;
+this.$get => this.$http.del;
+this.$del => this.$http.del;
+this.$fetch => this.$http.get
 
-//其他方法类似
-this.$http.post();
-this.$http.put();
-this.$http.del();
+原则就是在前面加一个http
 ```
 ---
 
@@ -45,6 +46,8 @@ this.$http.del();
 ##### 3.1 增加一个回调页面
 ``` js
 登录后sso要回调子系统,同时也要验证刚登录用户的合法性
+<template>
+</template>
 <script>
   export default {
     data () {
@@ -84,6 +87,7 @@ this.$http.del();
 退出：this.$sso.signOut();
 ```
 
+##### 3.4 去除多余的代码
 
 
 
