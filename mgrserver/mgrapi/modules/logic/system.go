@@ -36,18 +36,10 @@ func NewSystemLogic(c component.IContainer) *SystemLogic {
 
 //Get 从数据库中获取系统信息
 func (u *SystemLogic) Get(ident string) (s db.QueryRow, err error) {
-	//从缓存中获取用户信息，不存在时从数据库中获取
-	s, err = u.cache.Query(ident)
-	if s == nil || err != nil {
-		if s, err = u.db.Get(ident); err != nil {
-			return nil, err
-		}
-		//保存用户数据到缓存
-		if err = u.cache.Save(s); err != nil {
-			return nil, err
-		}
+	if s, err = u.db.Get(ident); err != nil {
+		return nil, err
 	}
-	return s, err
+	return s, nil
 }
 
 func (u *SystemLogic) GetAll(userId int64) (s db.QueryRows, err error) {
@@ -68,8 +60,7 @@ func (u *SystemLogic) Delete(id int) (err error) {
 	if err = u.db.Delete(id); err != nil {
 		return
 	}
-	//更新缓存
-	return u.cache.FreshSysInfo()
+	return nil
 }
 
 //Add 添加系统
@@ -87,9 +78,7 @@ func (u *SystemLogic) Add(input *model.AddSystemInput) (err error) {
 	if err = u.db.Add(input); err != nil {
 		return
 	}
-	//更新缓存
-	return u.cache.FreshSysInfo()
-
+	return nil
 }
 
 //ChangeStatus 修改系统状态
@@ -97,8 +86,7 @@ func (u *SystemLogic) ChangeStatus(sysID int, status int) (err error) {
 	if err = u.db.ChangeStatus(sysID, status); err != nil {
 		return
 	}
-	//更新缓存
-	return u.cache.FreshSysInfo()
+	return nil
 }
 
 //Edit 编辑系统
@@ -106,17 +94,15 @@ func (u *SystemLogic) Edit(input *model.SystemEditInput) (err error) {
 	if err = u.db.Edit(input); err != nil {
 		return
 	}
-	//更新缓存
-	return u.cache.FreshSysInfo()
-
+	return nil
 }
 
-// Up 对菜单功能排序
+// Sort 对菜单功能排序
 func (u *SystemLogic) Sort(sysID, sortrank, levelID, id, parentId int, isUp bool) (err error) {
 	if err = u.db.Sort(sysID, sortrank, levelID, id, parentId, isUp); err != nil {
 		return
 	}
-	return u.cache.FreshSysInfo()
+	return nil
 }
 
 //GetUsers 获取系统下所有用户
