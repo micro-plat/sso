@@ -11,7 +11,7 @@ import (
 func (s *SSO) install() {
 	s.IsDebug = true
 
-	s.Conf.API.SetMain(conf.NewAPIServerConf(":6687"))
+	s.Conf.API.SetMain(conf.NewAPIServerConf(":6687").WithDNS("loginapi.sso.18jiayou1.com"))
 	s.Conf.API.SetHeaders(conf.NewHeader().WithCrossDomain().WithAllowHeaders("X-Requested-With", "Content-Type", "__sso_jwt__"))
 	s.Conf.Plat.SetDB(conf.NewMysqlConf("root", "rTo0CesHi2018Qx", "192.168.0.36:3306", "sso").WithConnect(20, 10, 600))
 	s.Conf.Plat.SetCache(conf.NewRedisCacheConf(1, "192.168.0.111:6379",
