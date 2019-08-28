@@ -1,10 +1,8 @@
 package model
 
 type SystemEditInput struct {
-	Enable string `form:"enable" json:"enable" valid:"required"`
-	Id     string `form:"id" json:"id" valid:"required"`
-	//Index_url     string `form:"index_url" json:"index_url" valid:"required"`
-	//Login_timeout string `form:"login_timeout" json:"login_timeout" valid:"required"`
+	Enable        string `form:"enable" json:"enable" valid:"required"`
+	Id            string `form:"id" json:"id" valid:"required"`
 	Logo          string `form:"logo" json:"logo" valid:"required"`
 	Name          string `form:"name" json:"name" valid:"required"`
 	Theme         string `form:"theme" json:"theme"`
@@ -16,9 +14,7 @@ type SystemEditInput struct {
 }
 
 type AddSystemInput struct {
-	Name string `form:"name" json:"name" valid:"required"`
-	//Addr     string `form:"addr" json:"addr" valid:"required"`
-	//Time_out string `form:"time_out" json:"time_out" valid:"required"`
+	Name          string `form:"name" json:"name" valid:"required"`
 	Logo          string `form:"logo" json:"logo" valid:"required"`
 	Style         string `form:"style" json:"style" valid:"required"`
 	Theme         string `form:"theme" json:"theme"`

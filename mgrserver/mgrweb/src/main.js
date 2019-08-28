@@ -18,14 +18,13 @@ Vue.use(ElementUI);
 
 const config = {fieldsBagName: 'vee-fields'}
 
-
 import VueCookies from 'vue-cookies'
 Vue.use(VueCookies);
-
 Vue.use(VTree);
 Vue.use(VeeValidate,config);
 
-import {ssoHttpConfig} from './services/sso';
+
+import {ssoHttpConfig} from 'qxnw-sso';
 var conf = process.env.service;
 var ssocfg =  ssoHttpConfig(conf.apiHost, "localStorage", conf.ssoWebHost, conf.ident);
 
