@@ -25,7 +25,7 @@ Vue.prototype.$http = ssocfg.http;
 参数|类型|说明
 --|:--:|--:
 apiHost|string| 子系统apihost
-storagePlace |string|jwt存储方式 [localStorage, sessionStorage],cookie请传空
+storagePlace |string|jwt存储方式 [localStorage, sessionStorage],cookie请传空, 最好用 localStorage
 ssoWebHost |string| sso web系统的host
 ident|string|子系统ident
 
@@ -51,9 +51,11 @@ this.$fetch => this.$http.get
 
 #### 3. sso web对接相关
 
-##### 3.1 增加一个回调页面
+##### 3.1 增加一个回调页面 如: ssocallback.vue
+同时要增加一个路由: /ssocallback (顶级，不能在menu路由下面)
+原来登录路由 /login 就不需要了
+
 ``` js
-登录后sso要回调子系统,同时也要验证刚登录用户的合法性
 <template>
 </template>
 <script>
@@ -96,6 +98,40 @@ this.$fetch => this.$http.get
 ```
 
 ##### 3.4 去除多余的代码
+
+#####3.5 跨系统调用，而且只显示那个系统的子页面
+```
+首先要在被调用系统增加一个菜单,必须为最顶级(要与 / menu 同一个级次)如：
+    {
+      path: '/external/other',
+      name: 'other',
+      component: roleindex,
+    },
+    {
+    path: '/',
+    name: 'menu',
+    component: menu,
+    meta:{
+      name:"用户权限系统"
+    },
+    children: [{
+      path: 'user/index',
+      name: 'userindex',
+      component: userindex
+    }]
+
+而且要以 /external开头 如: /external/other
+说明: component 要指向 系统中真正的 vue页面
+
+-------------------------------------------------------------------
+在要展示的系统中 通过后台用户系统增加一个功能菜单,这个菜单很特殊，它指向的是其他
+系统的地址，如: http://web.sso.18jiayou.com/external/other
+```
+![avatar](./external.png)
+
+```
+http://web.sso.18jiayou.com/external/other 前面是host, 要加上http,  /external/other就是被调用系统的路由地址
+```
 
 
 
