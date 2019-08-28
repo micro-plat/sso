@@ -28,8 +28,9 @@ return c.Get("__SsoClient__").(*sso.Client)
 
 ###### 1.3 使⽤sso client 实例
 ``` go
+//此代码就是前端ssocallback页面调用的api
 //验证用户登录的真实性并获取用户信息
-//前端回调后的api,验证用户登录的合法性, 传入回调给子系统的code
+//验证用户登录的合法性, 传入回调给子系统的code
 //如果验证通过就返回用户信息(子系统要生成自己的jwt)
 ctx.Log.Info("-------sso登录后去取登录用户---------")
 if err := ctx.Request.Check("code"); err != nil {
@@ -45,10 +46,10 @@ ctx.Response.SetJWT(data)
 return data
 
 
-//获取用户的菜单数据
+//获取用户的菜单数据(将原来自己的http调用改成下面的方式)
 data, err := model.GetSSOClient(u.c).GetUserMenu(userID)
 
-//获取子系统 系统信息
+//获取子系统 系统信息(将原来自己的http调用改成下面的方式)
 data, err := model.GetSSOClient(u.c).GetSystemInfo()
 
 ```

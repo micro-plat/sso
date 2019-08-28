@@ -107,7 +107,9 @@
                 return;
               }
               if (this.ident && res.callback) {
-                window.location.href = JoinUrlParams(decodeURIComponent(res.callback),{code:res.code});
+                var url = JoinUrlParams(decodeURIComponent(res.callback),{code:res.code});
+                console.log("denglutiaozhuan: url: ", url)
+                window.location.href = url;
                 return;
               }
               this.$router.push({ path: '/choose'});

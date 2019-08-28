@@ -2,9 +2,16 @@
 
 #### 1. 引入(导入到本地)
 
-在main.js中注入(需要导入三个js文件 npm 包名: qxnw-sso)
+要重新安装菜单组件,相关使用说明请看github.com/micro-plat/nav-menu
+npm install nav-menu@latest
 
+安装与sso对接的js
+npm install qxnw-sso@latest
+
+
+在main.js中引入 如下
 ``` js
+
 import {ssoHttpConfig} from 'qxnw-sso';
 
 var config = process.env.service;
@@ -14,6 +21,7 @@ var ssocfg = ssoHttpConfig(config.apiHost, "localStorage", config.ssoWebHost, co
 Vue.prototype.$sso = ssocfg.sso; 
 Vue.prototype.$http = ssocfg.http;
 ```
+
 参数|类型|说明
 --|:--:|--:
 apiHost|string| 子系统apihost
