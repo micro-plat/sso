@@ -1,6 +1,6 @@
 ## sso sdk使用说明
 
-在跳转登录返回后,子系统需要验证登录用户、获取菜单、获取系统信息等，为了降低使用接口的复杂度,将这些接口调用包装成sdk
+在跳转登录返回后,子系统需要验证登录用户、获取菜单、获取系统信息等，为了降低使用接口的复杂度,将这些接口调用包装成sdk(请看完所有说明)
 
 ####1 子系统服务端修改点
 ###### 1.1 在init()⽅法中注⼊sso client
@@ -13,6 +13,11 @@ return err
 }
 model.SaveSSOClient(c, ssoCleint) //将sso client 保存起来
 ```
+参数|类型|说明
+--|:--:|--:
+SsoApiHost |string| 线下:http://api.sso.18jiayou1.com:6689, 线上：http://api.sso.18jiayou.com
+ident|string|子系统ident
+secret|string|子子系统秘钥, 在【用户系统】-> 【系统管理】中能找到
 
 ###### 1.2 保存和获取 sso client 实例
 ``` go
@@ -174,3 +179,15 @@ GetUserOtherSystems()
 |Ident |string |系统ident(英⽂名称)
 |Name |string |系统名称
 |IndexUrl |string |⼦系统地址 host
+
+
+##### 3 需要注意的地方
+###### 3.1 去掉原来不用的代码
+###### 3.2 新增sso回调的api接口,代码已在上面
+###### 3.3 将这个回调的api地址要配置在auth中，它相当于登录，不需要验证(403)
+###### 3.4 修改原来app的配置, sso_api_host改成新的地址
+```
+线下:http://api.sso.18jiayou1.com:6689
+线上：http://api.sso.18jiayou.com
+```
+###### 3.5 将原来调用 sso apiserver的菜单，系统信息,都改成新的方式

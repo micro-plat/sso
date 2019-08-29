@@ -26,7 +26,7 @@ Vue.prototype.$http = ssocfg.http;
 --|:--:|--:
 apiHost|string| 子系统apihost
 storagePlace |string|jwt存储方式 [localStorage, sessionStorage],cookie请传空, 最好用 localStorage
-ssoWebHost |string| sso web系统的host
+ssoWebHost |string| 线下:http://login.sso.18jiayou1.com:8091, 线上：http://login.sso.18jiayou.com
 ident|string|子系统ident
 
 ```
