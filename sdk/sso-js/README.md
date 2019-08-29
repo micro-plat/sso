@@ -90,11 +90,87 @@ this.$fetch => this.$http.get
 然后处理自己的业务，同时生成子系统的jwt
 ```
 
-##### 3.3 处理修改密码和退出
+##### 3.3 处理修改密码和退出,以及菜单控件的修改 (一般是 menu.vue)
 ``` js
-找到要修改密码和退出的地方，一般都在menu.vue文件中
-修改密码: this.$sso.changePwd();
-退出：this.$sso.signOut();
+这个页面去除的代码有点多，关于修改密码都要去掉,要升级nav-menu控件，前面提过
+修改后大概如下, 要根据子系统情况而定, 结构差不多一致就可以了:
+<template>
+  <div id="app">
+    <nav-menu
+      :menus="menus"
+      :copyright="copyright"
+      :themes="themes"
+      :logo="logo"
+      :systemName="systemName"
+      :userinfo="userinfo"
+      :pwd="pwd"
+      :signOut="signOut"
+      ref="NewTap"
+    >
+    </nav-menu>
+  </div>
+</template>
+
+<script>
+  import navMenu from 'nav-menu'; // 引入
+  export default {
+    name: 'app',
+    data () {
+      return {
+        logo: "http://sso2.100bm.cn:6888/static/img/d663155de6dc8e060415bbcd891cb9d4.png",
+        copyright: "2018 admin-web", //版权信息
+        themes: "bg-danger|bg-danger|bg-dark light-danger", //顶部左侧背景颜色,顶部右侧背景颜色,右边菜单背景颜色
+        menus: [{}],  //菜单数据
+        systemName: "用户权限系统",  //系统名称
+        userinfo: {name:'wule',role:"管理员"},
+        indexUrl: "/user/index",  这个是进入系统后默认加载的页面
+      }
+    },
+    components:{ //注册插件
+      navMenu
+    },
+    created(){
+      this.getMenu();
+    },
+    mounted(){
+      document.title = "用户权限系统";
+      this.userinfo = JSON.parse(localStorage.getItem("userinfo"));
+    },
+    methods:{
+      pwd(){
+        this.$sso.changePwd();
+      },
+      signOut() {
+        this.$sso.signOut();
+      },
+      getMenu(){
+        this.$http.get("/menu")
+          .then(res => {
+            this.menus = res;
+            this.$refs.NewTap.open("首页", this.indexUrl);
+            this.getSystemInfo();
+          })
+          .catch(err => {
+            console.log(err)
+          });
+      },
+      getSystemInfo() {
+        this.$http.get("/system/info/get")
+        .then(res => {
+          this.themes = res.themes;
+          this.systemName = res.systemName;
+          this.logo = res.logo;
+        }).catch(err => {
+          console.log(err);
+        })
+      }
+    }
+  }
+</script>
+
+<style scoped>
+
+</style>
 ```
 
 ##### 3.4 去除多余的代码
