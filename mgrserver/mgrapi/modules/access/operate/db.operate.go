@@ -5,18 +5,18 @@ import (
 
 	"github.com/micro-plat/hydra/component"
 	"github.com/micro-plat/sso/mgrserver/mgrapi/modules/const/sqls"
-	"github.com/micro-plat/sso/mgrserver/mgrapi/modules/model"
+	"github.com/micro-plat/sso/sdk/sso"
 )
 
 type IDbOperate interface {
 	// 系统数据操作
-	SysOperate(m *model.LoginState, method string, r ...interface{}) (err error)
+	SysOperate(m *sso.LoginState, method string, r ...interface{}) (err error)
 	// 角色数据操作
-	RoleOperate(m *model.LoginState, method string, r ...interface{}) (err error)
+	RoleOperate(m *sso.LoginState, method string, r ...interface{}) (err error)
 	// 菜单数据操作
-	MenuOperate(m *model.LoginState, method string, r ...interface{}) (err error)
+	MenuOperate(m *sso.LoginState, method string, r ...interface{}) (err error)
 	// 用户数据操作
-	UserOperate(m *model.LoginState, method string, r ...interface{}) (err error)
+	UserOperate(m *sso.LoginState, method string, r ...interface{}) (err error)
 }
 
 type DbOperate struct {
@@ -30,7 +30,7 @@ func NewDbOperate(c component.IContainer) *DbOperate {
 }
 
 //SysOperate 系统数据操作
-func (d *DbOperate) SysOperate(m *model.LoginState, method string, r ...interface{}) (err error) {
+func (d *DbOperate) SysOperate(m *sso.LoginState, method string, r ...interface{}) (err error) {
 	db := d.c.GetRegularDB()
 	params := map[string]interface{}{
 		"type":    20,
@@ -46,7 +46,7 @@ func (d *DbOperate) SysOperate(m *model.LoginState, method string, r ...interfac
 }
 
 //RoleOperate 角色数据操作
-func (d *DbOperate) RoleOperate(m *model.LoginState, method string, r ...interface{}) (err error) {
+func (d *DbOperate) RoleOperate(m *sso.LoginState, method string, r ...interface{}) (err error) {
 	db := d.c.GetRegularDB()
 	params := map[string]interface{}{
 		"type":    30,
@@ -62,7 +62,7 @@ func (d *DbOperate) RoleOperate(m *model.LoginState, method string, r ...interfa
 }
 
 //MenuOperates 菜单数据操作
-func (d *DbOperate) MenuOperate(m *model.LoginState, method string, r ...interface{}) (err error) {
+func (d *DbOperate) MenuOperate(m *sso.LoginState, method string, r ...interface{}) (err error) {
 	db := d.c.GetRegularDB()
 	params := map[string]interface{}{
 		"type":    40,
@@ -78,7 +78,7 @@ func (d *DbOperate) MenuOperate(m *model.LoginState, method string, r ...interfa
 }
 
 //UserOperate 用户数据操作
-func (d *DbOperate) UserOperate(m *model.LoginState, method string, r ...interface{}) (err error) {
+func (d *DbOperate) UserOperate(m *sso.LoginState, method string, r ...interface{}) (err error) {
 	db := d.c.GetRegularDB()
 	params := map[string]interface{}{
 		"type":    50,

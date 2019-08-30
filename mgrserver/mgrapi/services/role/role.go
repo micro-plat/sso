@@ -3,9 +3,9 @@ package role
 import (
 	"github.com/micro-plat/hydra/component"
 	"github.com/micro-plat/hydra/context"
-	"github.com/micro-plat/sso/mgrserver/mgrapi/modules/access/member"
 	"github.com/micro-plat/sso/mgrserver/mgrapi/modules/logic"
 	"github.com/micro-plat/sso/mgrserver/mgrapi/modules/model"
+	"github.com/micro-plat/sso/sdk/sso"
 )
 
 //RoleHandler is
@@ -26,7 +26,6 @@ func NewRoleHandler(container component.IContainer) (u *RoleHandler) {
 
 //GetAllHandle 查询角色信息数据
 func (u *RoleHandler) GetAllHandle(ctx *context.Context) (r interface{}) {
-
 	ctx.Log.Info("--------查询角色信息数据--------")
 
 	ctx.Log.Info("1.参数校验")
@@ -64,7 +63,7 @@ func (u *RoleHandler) SaveHandle(ctx *context.Context) (r interface{}) {
 	}
 
 	ctx.Log.Info("3.记录行为")
-	if err := u.op.RoleOperate(member.Get(ctx), "编辑/添加角色", "role_name", &inputData.RoleName, "role_id", &inputData.RoleID, "status", &inputData.Status, "IsAdd", &inputData.IsAdd); err != nil {
+	if err := u.op.RoleOperate(sso.GetMember(ctx), "编辑/添加角色", "role_name", &inputData.RoleName, "role_id", &inputData.RoleID, "status", &inputData.Status, "IsAdd", &inputData.IsAdd); err != nil {
 		return err
 	}
 
@@ -85,7 +84,7 @@ func (u *RoleHandler) ChangeStatusHandle(ctx *context.Context) (r interface{}) {
 		return context.NewError(context.ERR_NOT_IMPLEMENTED, err)
 	}
 	ctx.Log.Info("3.记录行为")
-	if err := u.op.RoleOperate(member.Get(ctx), "修改角色状态", "user_id", ctx.Request.GetString("role_id"), "status", ctx.Request.GetInt("status")); err != nil {
+	if err := u.op.RoleOperate(sso.GetMember(ctx), "修改角色状态", "user_id", ctx.Request.GetString("role_id"), "status", ctx.Request.GetInt("status")); err != nil {
 		return err
 	}
 	ctx.Log.Info("3.返回结果")
@@ -107,7 +106,7 @@ func (u *RoleHandler) DelHandle(ctx *context.Context) (r interface{}) {
 	}
 
 	ctx.Log.Info("3.记录行为")
-	if err := u.op.RoleOperate(member.Get(ctx), "删除角色", "role_id", ctx.Request.GetInt("role_id")); err != nil {
+	if err := u.op.RoleOperate(sso.GetMember(ctx), "删除角色", "role_id", ctx.Request.GetInt("role_id")); err != nil {
 		return err
 	}
 

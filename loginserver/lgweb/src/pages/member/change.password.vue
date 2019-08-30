@@ -29,7 +29,7 @@
                 </div>
             </div>
         </div>
-        <div class="footer"><p>四川千行你我科技有限公司Copyright© 2018 版权所有</p></div>
+        <div class="footer"><p>{{copyRight}}</p></div>
     </div>
 </template>
 
@@ -45,7 +45,8 @@
         expassword: "",
         password1: "",
         password2: "",
-        errorMsg: ""
+        errorMsg: "",
+        copyRight: "四川千行你我科技有限公司Copyright©" + new Date().getFullYear() +" 版权所有"
       }
     },
     created() {

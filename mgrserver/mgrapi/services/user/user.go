@@ -3,9 +3,10 @@ package user
 import (
 	"github.com/micro-plat/hydra/component"
 	"github.com/micro-plat/hydra/context"
-	"github.com/micro-plat/sso/mgrserver/mgrapi/modules/access/member"
+	//"github.com/micro-plat/sso/mgrserver/mgrapi/modules/access/member"
 	"github.com/micro-plat/sso/mgrserver/mgrapi/modules/logic"
 	"github.com/micro-plat/sso/mgrserver/mgrapi/modules/model"
+	"github.com/micro-plat/sso/sdk/sso"
 )
 
 //UserHandler is
@@ -63,7 +64,7 @@ func (u *UserHandler) ChangeStatusHandle(ctx *context.Context) (r interface{}) {
 	}
 
 	ctx.Log.Info("3.记录行为")
-	if err := u.op.UserOperate(member.Get(ctx), "修改用户状态", "user_id", ctx.Request.GetInt("user_id"), "status", ctx.Request.GetInt("status")); err != nil {
+	if err := u.op.UserOperate(sso.GetMember(ctx), "修改用户状态", "user_id", ctx.Request.GetInt("user_id"), "status", ctx.Request.GetInt("status")); err != nil {
 		return err
 	}
 
@@ -85,7 +86,7 @@ func (u *UserHandler) DelHandle(ctx *context.Context) (r interface{}) {
 		return context.NewError(context.ERR_NOT_IMPLEMENTED, err)
 	}
 	ctx.Log.Info("3.记录行为")
-	if err := u.op.UserOperate(member.Get(ctx), "删除用户", "user_id", ctx.Request.GetInt("user_id")); err != nil {
+	if err := u.op.UserOperate(sso.GetMember(ctx), "删除用户", "user_id", ctx.Request.GetInt("user_id")); err != nil {
 		return err
 	}
 
@@ -131,7 +132,7 @@ func (u *UserHandler) AddHandle(ctx *context.Context) (r interface{}) {
 	return "success"
 }
 
-//SetPwdHandle 重置用户密码(123456)
+//SetPwdHandle 重置用户密码(1qaz2wsx)
 func (u *UserHandler) SetPwdHandle(ctx *context.Context) (r interface{}) {
 	ctx.Log.Info("--------重置用户密码--------")
 
@@ -145,21 +146,4 @@ func (u *UserHandler) SetPwdHandle(ctx *context.Context) (r interface{}) {
 		return err
 	}
 	return "success"
-}
-
-//GetOtherSysHandle 获取用户可用的其他系统
-func (u *UserHandler) GetOtherSysHandle(ctx *context.Context) (r interface{}) {
-	ctx.Log.Info("--------获取用户可用的其他系统--------")
-
-	ctx.Log.Info("1.获取用户信息")
-	mem := member.Get(ctx)
-
-	ctx.Log.Info("2.获取数据")
-	data, err := model.GetSSOClient(u.container).GetUserOtherSystems(int(mem.UserID))
-	if err != nil {
-		return err
-	}
-
-	ctx.Log.Info("3.返回结果")
-	return data
 }

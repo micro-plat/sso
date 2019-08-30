@@ -7,9 +7,9 @@ import (
 
 	"github.com/micro-plat/hydra/component"
 	"github.com/micro-plat/hydra/context"
-	"github.com/micro-plat/sso/mgrserver/mgrapi/modules/access/member"
 	"github.com/micro-plat/sso/mgrserver/mgrapi/modules/logic"
 	"github.com/micro-plat/sso/mgrserver/mgrapi/modules/model"
+	"github.com/micro-plat/sso/sdk/sso"
 )
 
 // SystemHandler 子系统信息
@@ -64,7 +64,7 @@ func (u *SystemHandler) AddHandle(ctx *context.Context) (r interface{}) {
 
 	ctx.Log.Info("3.记录行为")
 	data, _ := types.Struct2Map(&input)
-	if err := u.op.SysOperate(member.Get(ctx), "添加系统", data); err != nil {
+	if err := u.op.SysOperate(sso.GetMember(ctx), "添加系统", data); err != nil {
 		return err
 	}
 
@@ -87,7 +87,7 @@ func (u *SystemHandler) DelHandle(ctx *context.Context) (r interface{}) {
 		return err
 	}
 	ctx.Log.Info("3.记录行为")
-	if err := u.op.SysOperate(member.Get(ctx), "删除系统", "id", ctx.Request.GetInt("id")); err != nil {
+	if err := u.op.SysOperate(sso.GetMember(ctx), "删除系统", "id", ctx.Request.GetInt("id")); err != nil {
 		return err
 	}
 
@@ -108,7 +108,7 @@ func (u *SystemHandler) ChangeStatusHandle(ctx *context.Context) (r interface{})
 		return err
 	}
 	ctx.Log.Info("3.记录行为")
-	if err := u.op.SysOperate(member.Get(ctx), "修改系统状态", "id", ctx.Request.GetInt("id"), "status", ctx.Request.GetInt("status")); err != nil {
+	if err := u.op.SysOperate(sso.GetMember(ctx), "修改系统状态", "id", ctx.Request.GetInt("id"), "status", ctx.Request.GetInt("status")); err != nil {
 		return err
 	}
 
@@ -131,7 +131,7 @@ func (u *SystemHandler) EditHandle(ctx *context.Context) (r interface{}) {
 	}
 	ctx.Log.Info("3.记录行为")
 	data, _ := types.Struct2Map(&input)
-	if err := u.op.SysOperate(member.Get(ctx), "编辑系统数据", data); err != nil {
+	if err := u.op.SysOperate(sso.GetMember(ctx), "编辑系统数据", data); err != nil {
 		return err
 	}
 	return "success"
@@ -156,7 +156,7 @@ func (u *SystemHandler) ExchangeHandle(ctx *context.Context) (r interface{}) {
 	}
 
 	ctx.Log.Info("3.记录行为")
-	if err := u.op.SysOperate(member.Get(ctx), "菜单移动", "sys_id", request.GetInt("sys_id"), "sortrank", request.GetInt("sortrank"), "level_id", request.GetInt("level_id"), "id", request.GetInt("id")); err != nil {
+	if err := u.op.SysOperate(sso.GetMember(ctx), "菜单移动", "sys_id", request.GetInt("sys_id"), "sortrank", request.GetInt("sortrank"), "level_id", request.GetInt("level_id"), "id", request.GetInt("id")); err != nil {
 		return err
 	}
 
@@ -180,7 +180,7 @@ func (u *SystemHandler) ChangeSecretHandle(ctx *context.Context) (r interface{})
 	}
 
 	ctx.Log.Info("3.记录行为")
-	if err := u.op.SysOperate(member.Get(ctx), "更新秘钥", "sys_id", request.GetInt("id"), "secret", request.GetString("secret")); err != nil {
+	if err := u.op.SysOperate(sso.GetMember(ctx), "更新秘钥", "sys_id", request.GetInt("id"), "secret", request.GetString("secret")); err != nil {
 		return err
 	}
 

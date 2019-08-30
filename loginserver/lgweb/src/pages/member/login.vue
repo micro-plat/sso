@@ -39,7 +39,7 @@
     data () {
       return {
         systemName: "能源业务中心运营管理系统",
-        copyright:"四川千行你我科技有限公司Copyright© 2018 版权所有",
+        copyright:"四川千行你我科技有限公司Copyright©" + new Date().getFullYear() +" 版权所有",
         callback:"",
         changePwd:0,
         ident: "",

@@ -50,7 +50,7 @@
         this.$sso.signOut();
       },
       getMenu(){
-        this.$http.get("/menu")
+        this.$http.get("/sso/member/menus/get")
           .then(res => {
             this.menus = res;
             this.$refs.NewTap.open("首页", this.indexUrl);
@@ -63,7 +63,7 @@
 
       //用户可用的其他系统
       getUserOtherSys() {
-        this.$http.get("/user/getothersys")
+        this.$http.get("sso/member/systems/get")
         .then(res => {
          this.items = this.$sso.transformSysInfo(res);
         })

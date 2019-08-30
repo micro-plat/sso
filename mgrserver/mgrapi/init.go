@@ -6,8 +6,6 @@ import (
 	"github.com/micro-plat/sso/mgrserver/mgrapi/services/base"
 	"github.com/micro-plat/sso/mgrserver/mgrapi/services/function"
 	"github.com/micro-plat/sso/mgrserver/mgrapi/services/image"
-	"github.com/micro-plat/sso/mgrserver/mgrapi/services/member"
-	"github.com/micro-plat/sso/mgrserver/mgrapi/services/menu"
 	"github.com/micro-plat/sso/mgrserver/mgrapi/services/role"
 	"github.com/micro-plat/sso/mgrserver/mgrapi/services/system"
 	"github.com/micro-plat/sso/mgrserver/mgrapi/services/user"
@@ -40,16 +38,14 @@ func (r *SSO) init() {
 			return err
 		}
 
-		ssoCleint, err := ssoSdk.New(conf.SsoApiHost, "sso", conf.Secret)
+		ssoCleint, err := ssoSdk.New(conf.SsoApiHost, conf.Ident, conf.Secret)
 		if err != nil {
 			return err
 		}
-		model.SaveSSOClient(c, ssoCleint)
+		ssoSdk.Bind(r.MicroApp,ssoCleint)
 		return nil
 	})
 
-	r.Micro("/login", member.NewLoginHandler)                     //调用sso登录
-	r.Micro("/menu", menu.NewMenuHandler)                         //菜单相关接口
 	r.Micro("/base", base.NewBaseUserHandler)                     //基础数据
 	r.Micro("/user", user.NewUserHandler)                         //用户相关接口
 	r.Micro("/auth", role.NewRoleAuthHandler)                     //权限管理

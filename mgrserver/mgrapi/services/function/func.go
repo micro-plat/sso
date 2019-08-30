@@ -4,9 +4,9 @@ import (
 	"github.com/micro-plat/hydra/component"
 	"github.com/micro-plat/hydra/context"
 	"github.com/micro-plat/lib4go/types"
-	"github.com/micro-plat/sso/mgrserver/mgrapi/modules/access/member"
 	"github.com/micro-plat/sso/mgrserver/mgrapi/modules/logic"
 	"github.com/micro-plat/sso/mgrserver/mgrapi/modules/model"
+	"github.com/micro-plat/sso/sdk/sso"
 )
 
 //SystemFuncHandler is
@@ -66,7 +66,7 @@ func (u *SystemFuncHandler) AddHandle(ctx *context.Context) (r interface{}) {
 
 	ctx.Log.Info("3.记录行为")
 	data, _ := types.Struct2Map(&input)
-	if err := u.op.MenuOperate(member.Get(ctx), "添加菜单", data); err != nil {
+	if err := u.op.MenuOperate(sso.GetMember(ctx), "添加菜单", data); err != nil {
 		return err
 	}
 
@@ -92,7 +92,7 @@ func (u *SystemFuncHandler) EditHandle(ctx *context.Context) (r interface{}) {
 
 	ctx.Log.Info("3.记录行为")
 	data, _ := types.Struct2Map(&input)
-	if err := u.op.MenuOperate(member.Get(ctx), "编辑菜单", data); err != nil {
+	if err := u.op.MenuOperate(sso.GetMember(ctx), "编辑菜单", data); err != nil {
 		return err
 	}
 
@@ -116,7 +116,7 @@ func (u *SystemFuncHandler) DelHandle(ctx *context.Context) (r interface{}) {
 	}
 
 	ctx.Log.Info("3.记录行为")
-	if err := u.op.MenuOperate(member.Get(ctx), "删除菜单", "id", ctx.Request.GetInt("id")); err != nil {
+	if err := u.op.MenuOperate(sso.GetMember(ctx), "删除菜单", "id", ctx.Request.GetInt("id")); err != nil {
 		return err
 	}
 
@@ -140,7 +140,7 @@ func (u *SystemFuncHandler) ChangeStatusHandle(ctx *context.Context) (r interfac
 	}
 
 	ctx.Log.Info("3.记录行为")
-	if err := u.op.MenuOperate(member.Get(ctx), "修改菜单状态", "id", ctx.Request.GetInt("id"), "status", ctx.Request.GetInt("status")); err != nil {
+	if err := u.op.MenuOperate(sso.GetMember(ctx), "修改菜单状态", "id", ctx.Request.GetInt("id"), "status", ctx.Request.GetInt("status")); err != nil {
 		return err
 	}
 
