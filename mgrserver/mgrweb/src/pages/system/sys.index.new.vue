@@ -38,24 +38,22 @@
               <el-tag type="success" v-if="scope.row.enable == 1">启用</el-tag>
             </template>
           </el-table-column>
-          <el-table-column width="200" prop="logo" label="logo" >
+          <el-table-column width="250" prop="logo" label="logo" >
             <template slot-scope="scope">
               <img v-if="scope.row.theme" :class="scope.row.theme.split('|')[0]"
                    :src="scope.row.logo" :onerror="errorImg" alt="">
             </template>
           </el-table-column>
-          <el-table-column width="300" prop="secret" label="secret" ></el-table-column>
-          <el-table-column width="320" prop="callbackurl" label="登录回调地址" ></el-table-column>
+          <!-- <el-table-column width="300" prop="secret" label="secret" ></el-table-column> -->
+          <el-table-column width="350" prop="callbackurl" label="登录回调地址" ></el-table-column>
 
           <el-table-column  label="操作">
             <template slot-scope="scope">
               <el-button plain type="primary" size="mini" @click="edit(scope.row.id)">编辑</el-button>
               <el-button plain type="success" size="mini" @click="enable(scope.row.id,1)" v-if="scope.row.enable == 0" >启用</el-button>
-
               <el-button plain type="info" size="mini" @click="enable(scope.row.id,0)" v-if="scope.row.enable == 1">禁用</el-button>
-
+              <el-button plain type="primary" size="mini" @click="setSecret(scope.row.id)">设置秘钥</el-button>
               <el-button plain  type="danger" size="mini" @click="deleteById(scope.row.id)">删除</el-button>
-
               <el-button plain  type="warning" size="mini" @click="manage(scope.row.id)">管理</el-button>
 
             </template>
@@ -74,6 +72,30 @@
           :total="datacount">
         </el-pagination>
       </div>
+      <bootstrap-modal ref="secretModal" :need-header="true" :need-footer="true">
+        <div slot="title">
+          密钥设置
+        </div>
+        <div slot="body">
+          <div class="panel panel-default">
+            <div class="panel-body">
+              <form role="form" class="ng-pristine ng-valid ng-submitted">
+                <div style="display:none">
+                  <input v-model="secrectData.id" name="id">
+                </div>
+                <div class="form-group">
+                  <label>秘钥</label>
+                  <input class="form-control" placeholder="请输入秘钥"  v-model="secrectData.secret" name="secret"  type="text">
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+        <div slot="footer">
+          <a class="btn btn-sm btn-danger" @click="saveSecret">提交</a>
+          <a class="btn btn-sm btn-primary" @click="secretCancel">取消</a>
+        </div>
+    </bootstrap-modal>
     <bootstrap-modal ref="editModal" :need-header="true" :need-footer="true">
       <div slot="title">
         编辑系统
@@ -100,11 +122,11 @@
                   </div>
                  </el-col>
                </el-row>
-              <div class="form-group">
+              <!-- <div class="form-group">
                 <label>secret</label>
                 <input class="form-control" placeholder="系统签名的secret" v-model="editData.secret" name="secret"  type="text">
                 <div class="form-height text-danger"><span v-show="errors.first('secret')">secret不能为空</span> </div>
-              </div>
+              </div> -->
               <div class="form-group">
                 <label>sso登录后回调子系统的地址(如:http://www.123.com/abc)</label>
                 <input class="form-control" placeholder="请输入回调地址"  v-model="editData.callbackurl" name="callbackurl"  type="text">
@@ -508,6 +530,7 @@ export default {
         callbackurl:""
       },
       editData: {},
+      secrectData : {id:0, secret:""},
       enableData: { id: null, status: null },
       pi: 1,
       ps:10,
@@ -616,6 +639,9 @@ export default {
     cancel() {
       this.$refs.editModal.close();
     },
+    secretCancel() {
+      this.$refs.secretModal.close();
+    },
     enable(id, status) {
       this.enableData.id = id;
       this.enableData.status = status;
@@ -649,6 +675,50 @@ export default {
           });
         });
       })
+    },
+
+    //修改秘钥
+    setSecret(id) {
+      this.secrectData = {
+        id :id,
+        secret: ""
+      }
+      this.$refs.secretModal.open();
+    },
+
+    saveSecret() {
+      let secretInfo = this.secrectData;
+      let msg = this.checkSecretInfo(this.secrectData);
+      if (msg) {
+        this.$notify({
+          title: '错误',
+          message: msg,
+          type: 'error',
+          offset: 50,
+          duration:2000
+        });
+        return;
+      }
+      this.$http.post("/system/info/changesecret", secretInfo)
+      .then(res => {
+        this.$refs.secretModal.close();
+        this.$notify({
+              title: '成功',
+              message: '秘钥修改成功',
+              type: 'success',
+              offset: 50,
+              duration:2000
+            });
+      })
+      .catch( err => {
+        this.$notify({
+            title: '错误',
+            message: '网络错误,请稍后再试',
+            type: 'error',
+            offset: 50,
+            duration:2000,
+          });
+      });
     },
 
     edit(id) {
@@ -720,9 +790,9 @@ export default {
       if(!editData.ident) {
         return "系统英文名称不能为空";
       }
-      if(!editData.secret) {
-        return "secret不能为空";
-      }
+      // if(!editData.secret) {
+      //   return "secret不能为空";
+      // }
       if (!editData.logo) {
         return "logo图片必须上传";
       }
@@ -733,6 +803,12 @@ export default {
         return "请选择页面布局样式";
       }
       return ""
+    },
+
+    checkSecretInfo(secretInfo) {
+      if (!secretInfo.secret) {
+        return "秘钥不能为空";
+      }
     }
 
   }

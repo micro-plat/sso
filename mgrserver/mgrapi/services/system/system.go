@@ -162,3 +162,27 @@ func (u *SystemHandler) ExchangeHandle(ctx *context.Context) (r interface{}) {
 
 	return "success"
 }
+
+//ChangeSecretHandle 修改秘钥
+func (u *SystemHandler) ChangeSecretHandle(ctx *context.Context) (r interface{}) {
+	ctx.Log.Info("------修改系统秘钥------")
+
+	ctx.Log.Info("1.参数校验")
+	request := ctx.Request
+	if err := request.Check("id", "secret"); err != nil {
+		return context.NewError(context.ERR_NOT_ACCEPTABLE, err)
+	}
+
+	ctx.Log.Info("2.更新秘钥")
+	err := u.subLib.ChangeSecret(request.GetInt("id"), request.GetString("secret"))
+	if err != nil {
+		return err
+	}
+
+	ctx.Log.Info("3.记录行为")
+	if err := u.op.SysOperate(member.Get(ctx), "更新秘钥", "sys_id", request.GetInt("id"), "secret", request.GetString("secret")); err != nil {
+		return err
+	}
+
+	return "success"
+}

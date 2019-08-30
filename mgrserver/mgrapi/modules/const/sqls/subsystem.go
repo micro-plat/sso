@@ -25,7 +25,7 @@ where
 const QuerySubSystemPageList = `
 select 
   id, name, index_url as callbackurl, enable, login_timeout, 
-  logo, theme, layout, ident, login_url, wechat_status, secret 
+  logo, theme, layout, ident, login_url, wechat_status 
 from 
   sso_system_info t 
 where 1 = 1 
@@ -99,8 +99,7 @@ set
   t.theme = @theme,
   t.layout = @layout,
   t.ident = @ident,
-  t.wechat_status = @wechat_status,
-  t.secret = @secret
+  t.wechat_status = @wechat_status
 where 
   t.id = @id
 `
@@ -154,3 +153,6 @@ where
 order by 
   r.user_id
 `
+
+//ChangeSecret 修改秘钥
+const ChangeSecret = `update sso_system_info set secret = @secret  where id = @id limit 1`

@@ -18,6 +18,7 @@ type ISystemLogic interface {
 	Edit(input *model.SystemEditInput) (err error)
 	Sort(sysID, sortrank, levelID, id, parentId int, isUp bool) (err error)
 	GetUsers(systemName string) (user db.QueryRows, allUser db.QueryRows, err error)
+	ChangeSecret(id int, secret string) error
 }
 
 type SystemLogic struct {
@@ -108,4 +109,9 @@ func (u *SystemLogic) Sort(sysID, sortrank, levelID, id, parentId int, isUp bool
 //GetUsers 获取系统下所有用户
 func (u *SystemLogic) GetUsers(systemName string) (user db.QueryRows, allUser db.QueryRows, err error) {
 	return u.db.GetUsers(systemName)
+}
+
+//ChangeSecret 修改secret
+func (u *SystemLogic) ChangeSecret(id int, secret string) error {
+	return u.db.ChangeSecret(id, secret)
 }

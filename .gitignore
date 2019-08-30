@@ -30,6 +30,7 @@
 logs/
 conf/
 
+./mgrserver/image/*
 ./mgrserver/mgrapi/static/
 ./loginserver/lgapi/static/
 

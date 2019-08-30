@@ -21,6 +21,7 @@ type IDbSystem interface {
 	Edit(input *model.SystemEditInput) (err error)
 	Sort(sysID, sortRank, levelID, id, parentId int, isUp bool) (err error)
 	GetUsers(systemName string) (user db.QueryRows, allUser db.QueryRows, err error)
+	ChangeSecret(id int, secret string) error
 }
 
 type DbSystem struct {
@@ -151,7 +152,6 @@ func (u *DbSystem) Edit(input *model.SystemEditInput) (err error) {
 		"theme":         input.Theme,
 		"ident":         input.Ident,
 		"wechat_status": input.Wechat_status,
-		"secret":        input.Secret,
 	}
 	_, q, a, err := db.Execute(sqls.UpdateEdit, params)
 	if err != nil {
@@ -240,4 +240,14 @@ func (u *DbSystem) GetUsers(systemName string) (user db.QueryRows, allUser db.Qu
 	}
 	return data, datas, nil
 
+}
+
+//ChangeSecret 修改秘钥
+func (u *DbSystem) ChangeSecret(id int, secret string) error {
+	db := u.c.GetRegularDB()
+	_, _, _, err := db.Execute(sqls.ChangeSecret, map[string]interface{}{
+		"id":     id,
+		"secret": secret,
+	})
+	return err
 }

@@ -9,7 +9,7 @@ type SystemEditInput struct {
 	Layout        string `form:"layout" json:"layout"`
 	Ident         string `form:"ident" json:"ident"`
 	Wechat_status string `form:"wechat_status" json:"wechat_status"`
-	Secret        string `form:"secret" json:"secret" valid:"required"`
+	Secret        string `form:"secret" json:"secret"`
 	CallBackUrl   string `form:"callbackurl" json:"callbackurl"`
 }
 
