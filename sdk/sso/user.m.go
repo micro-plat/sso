@@ -26,8 +26,14 @@ type LoginState struct {
 }
 
 //SaveSSOClient  保存sso client
-func saveSSOClient(m *Client) {
-	ssoClient = m
+func saveSSOClient(ssoApiHost, ident, secret string) error {
+	client, err := New(ssoApiHost, ident, secret)
+	if err != nil {
+		return err
+	}
+
+	ssoClient = client
+	return nil
 }
 
 //GetSSOClient  获取sso client

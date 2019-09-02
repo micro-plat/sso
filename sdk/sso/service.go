@@ -8,13 +8,17 @@ import (
 )
 
 //Bind 自动生成相关的api接口(登录回调验证、获取菜单、获取系统信息)
-func Bind(app *hydra.MicroApp, ssoClient *Client) {
-	saveSSOClient(ssoClient)
+func Bind(app *hydra.MicroApp, ssoApiHost, ident, secret string) error {
+	if err := saveSSOClient(ssoApiHost, ident, secret); err != nil {
+		return err
+	}
 
 	app.Micro("/sso/login/verify", loginVerify)
 	app.Micro("/sso/member/menus/get", userMenus)
 	app.Micro("/sso/member/systems/get", userSystems)
 	app.Micro("/sso/system/info/get", systemInfo)
+
+	return nil
 }
 
 //loginVerify 登录验证，如果成功了写子系统jwt

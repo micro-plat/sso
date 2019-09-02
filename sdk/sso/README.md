@@ -2,8 +2,47 @@
 
 在跳转登录返回后,子系统需要验证登录用户、获取菜单、获取系统信息等，为了降低使用接口的复杂度,将这些接口调用包装成sdk(请看完所有说明)
 
+现在支持两种方案对接
+1: 直接使用bind，sdk做api的调用以及服务的生成(写代码少，缺少灵活)
+2: 自己管理ssoclient,以及相应sdk(api)的调用
+
+
+### 方案一
+``` go
+在init中 增加
+import "github.com/micro-plat/sso/sdk/sso"
+
+if err := sso.Bind(r.MicroApp,conf.SsoApiHost, conf.Ident, conf.Secret); err != nil {
+	return err
+}
+
+sdk生成了四个接口(前端对接接口)
+"/sso/login/verify": 登录回调后验证
+"/sso/member/menus/get"：获取用户菜单
+"/sso/member/systems/get":获取登录用户有权限的其他系统信息
+"/sso/system/info/get": 获取当前系统信息
+
+
+handling.go中修改
+将原来的jwt验证，和登录用户状态的保存都放到了sdk中, 现在只需要加上
+import "github.com/micro-plat/sso/sdk/sso"
+
+if err := sso.CheckAndSetMember(ctx); err != nil {
+    return err
+}
+
+获取登录信息统一用sso sdk这边的方法(原来的就不用了)
+import "github.com/micro-plat/sso/sdk/sso"
+
+member := sso.GetMember(ctx)
+```
+
+
+### 方案二
+
 ####1 子系统服务端修改点
 ###### 1.1 在init()⽅法中注⼊sso client
+
 
 ``` go
 import "github.com/micro-plat/sso/sdk/sso"
