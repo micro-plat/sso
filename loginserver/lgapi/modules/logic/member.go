@@ -1,12 +1,18 @@
 package logic
 
 import (
+	"fmt"
+	"time"
 	"strings"
+	"encoding/json"
 
 	"github.com/micro-plat/hydra/component"
 	"github.com/micro-plat/hydra/context"
 	"github.com/micro-plat/lib4go/utility"
-
+	"github.com/micro-plat/lib4go/net"
+	"github.com/micro-plat/lib4go/types"
+	"github.com/micro-plat/lib4go/security/md5"
+	"github.com/micro-plat/lib4go/net/http"
 	"github.com/micro-plat/sso/loginserver/lgapi/modules/access/member"
 	"github.com/micro-plat/sso/loginserver/lgapi/modules/access/system"
 	"github.com/micro-plat/sso/loginserver/lgapi/modules/const/enum"
@@ -21,6 +27,10 @@ type IMemberLogic interface {
 	ChangePwd(userID int, expassword string, newpassword string) (err error)
 	CheckHasRoles(userID int64, ident string) error
 	GenerateCodeAndSysInfo(ident string, userID int64) (map[string]string, error)
+	CheckUerInfo(userID int64, sign, timestamp string) error
+	GenerateWxStateCode(userID int64) (string, error)
+	ValidStateAndGetOpenID(stateCode, wxCode string) (map[string]string,error)
+	SaveUserOpenID(data map[string]string) error
 }
 
 //MemberLogic 用户登录管理
@@ -191,4 +201,104 @@ func (m *MemberLogic) CheckHasRoles(userID int64, ident string) error {
 func (m *MemberLogic) unLockUser(userName string) error {
 	m.cache.SetLoginSuccess(userName)
 	return m.db.UnLock(userName)
+}
+
+//CheckUerInfo 验证要绑定的用户信息
+func (m *MemberLogic) CheckUerInfo(userID int64, sign, timestamp string) error {
+	//验证签名
+	values := net.NewValues()
+	values.Set("user_id", string(userID))
+	values.Set("timestamp", timestamp)
+
+	values = values.Sort()
+	raw := values.Join("", "") + model.WxBindSecrect
+	if !strings.EqualFold(sign, md5.Encrypt(raw)) {
+		return context.NewError(model.ERR_BIND_INFOWRONG, "绑定信息错误,请重新去用户系统扫码")
+	}
+
+	//查询用户
+	data, err := m.db.QueryByID(userID)
+	if err != nil {
+		return err
+	}
+
+	//验证用户状态
+	status := data.GetInt("status")
+	if status == enum.UserLock {
+		return context.NewError(model.ERR_USER_LOCKED, "用户被禁用")
+	}
+	if status == enum.UserDisable {
+		return context.NewError(model.ERR_USER_LOCKED, "用户被锁定")
+	}
+
+	if data.GetString("wx_openid") != "" {
+		return context.NewError(model.ERR_USER_EXISTSWX, "用户已绑定微信")
+	}
+
+	return nil
+}
+
+//GenerateWxStateCode 生成微信stateCode凭证
+func (m *MemberLogic) GenerateWxStateCode(userID int64) (string, error) {
+	stateCode := utility.GetGUID()
+	if err := m.cache.SaveWxStateCode(stateCode, string(userID)); err != nil {
+		return "", err
+	}
+	return stateCode, nil
+}
+
+//ValidStateAndGetOpenID 验证state信息并获取openid
+func (m *MemberLogic) ValidStateAndGetOpenID(stateCode, wxCode string) (map[string]string, error) {
+	userID, err := m.cache.GetWxStateCodeUserId(stateCode)
+	if err != nil {
+		return nil,err
+	}
+	if userID == "" {
+		return nil, context.NewError(model.ERR_BIND_TIMEOUT, "绑定超时")
+	}
+
+	config := model.GetConf(m.c)
+	url := config.WxTokenURL + "?appid=" + config.WxAppID + "&secret=" + config.WxSecret + "&code=" + wxCode + "&grant_type=authorization_code"
+	openID, err := m.GetWxUserOpID(url)
+	if err != nil {
+		return nil, err
+	}
+	return map[string]string {
+		"openid": openID,
+		"userid": userID,
+	}, nil
+}
+
+//SaveUserOpenID 保存用户的openid
+func (m *MemberLogic) SaveUserOpenID(data map[string]string) error {
+	return m.db.SaveUserOpenID(data)
+}
+
+// GetWxUserOpID xx
+func (m *MemberLogic) GetWxUserOpID(url string) (string, error) {
+	fmt.Println(url)
+	client, err := http.NewHTTPClient(http.WithRequestTimeout(5 * time.Second))
+	if err != nil {
+		return "", err
+	}
+	body, statusCode, err := client.Get(url)
+	if err != nil {
+		return "", err
+	}
+	if statusCode != 200 {
+		return "", context.NewErrorf(statusCode, "读取系统信息失败,HttpStatus:%d, body:%s", statusCode, body)
+	}
+
+	data := make(map[string]interface{})
+	err = json.Unmarshal([]byte(body), &data)
+	if err != nil {
+		return "", fmt.Errorf("字符串转json发生错误，err：%v", err)
+	}
+
+	//wx返回全是200,只有通过errcode去判断
+	if errcode, ok := data["errcode"]; ok && errcode != 0 {
+		return "", context.NewError(context.ERR_NOT_EXTENDED, fmt.Errorf("微信返回错误：%s", types.GetString(data["errmsg"])))
+	}
+
+	return types.GetString(data["openid"]), nil
 }

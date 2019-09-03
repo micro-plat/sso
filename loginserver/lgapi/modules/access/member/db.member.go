@@ -21,6 +21,8 @@ type IDBMember interface {
 	GetUserInfo(u string) (db.QueryRows, error)
 	UpdateUserStatus(userID int64, status int) error
 	UnLock(userName string) error
+
+	SaveUserOpenID(data map[string]string) error
 }
 
 //DBMember 控制用户登录
@@ -140,6 +142,9 @@ func (l *DBMember) QueryByID(uid int64) (db.QueryRow, error) {
 	if err != nil {
 		return nil, err
 	}
+	if data.IsEmpty() {
+		return nil, context.NewError(model.ERR_USER_NOTEXISTS, "用户不存在")
+	}
 	return data.Get(0), nil
 }
 
@@ -149,6 +154,16 @@ func (l *DBMember) UpdateUserStatus(userID int64, status int) error {
 	_, _, _, err := db.Execute(sqls.UpdateUserStatus, map[string]interface{}{
 		"user_id": userID,
 		"status":  status,
+	})
+	return err
+}
+
+//SaveUserOpenID 保存用户的openId信息
+func (l *DBMember) SaveUserOpenID(data map[string]string) error {
+	db := l.c.GetRegularDB()
+	_, _, _, err := db.Execute(sqls.AddUserOpenID, map[string]interface{}{
+		"user_id": data["userid"],
+		"openid":  data["openid"],
 	})
 	return err
 }

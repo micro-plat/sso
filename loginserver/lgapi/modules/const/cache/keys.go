@@ -9,4 +9,7 @@ const (
 
 	//CacheLoginFailUnLockTime 自动解锁时间
 	CacheLoginFailUnLockTime = "{sso}:login:failunlocktime-user:{@user_name}"
+
+	//微信手机扫码登录,绑定用到(主要是一个凭证,传给weixin,然后又传回, 里面存的是user_id)
+	CacheWxStateCode = "{sso}:wx:state-code:{@code}"
 )

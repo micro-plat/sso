@@ -7,6 +7,9 @@ import (
 	"github.com/micro-plat/hydra/component"
 )
 
+//WxBindSecrect 微信绑定的加密串
+const WxBindSecrect = `qwertyuiop`
+
 //Conf 应用程序配置
 type Conf struct {
 	//UserLoginFailCount 用户可以输入几次错误密码,之后用户被锁定
@@ -14,6 +17,21 @@ type Conf struct {
 
 	//UserLockTime 用户锁定时间(默认为秒数)
 	UserLockTime int `json:"user_lock_time" valid:"required"`
+
+	//WxPhoneLoginURL 微信手机登录地址
+	WxPhoneLoginURL string `json:"wx_phone_login_url" valid:"required"`
+
+	//WxAppID WxAppID
+	WxAppID string `json:"wx_app_id" valid:"required"`
+
+	//WxSecret WxSecret
+	WxSecret string `json:"wx_secret" valid:"required"`
+
+	//RefreshWxTokenURl 刷新微信token的url
+	RefreshWxTokenURl string `json:"refresh_wx_token_url" valid:"required"`
+
+	//WxGetTokenURL 获取微信token
+	WxTokenURL string `json:"wx_get_token_url" valid:"required"`
 }
 
 //Valid 验证配置参数是否合法

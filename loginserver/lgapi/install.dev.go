@@ -20,7 +20,7 @@ func (s *SSO) install() {
 
 	s.Conf.API.SetAuthes(
 		conf.NewAuthes().WithJWT(
-			conf.NewJWT("__sso_jwt__", "HS512", "bf8f3171946d8d5a13cca23aa6080c8e", 36000, "/system/get", "/member/login").WithHeaderStore()))
+			conf.NewJWT("__sso_jwt__", "HS512", "bf8f3171946d8d5a13cca23aa6080c8e", 36000, "/system/get", "/member/login", "/member/bind/check").WithHeaderStore()))
 
 	s.Conf.API.SetApp(model.Conf{
 		UserLoginFailCount: 5,

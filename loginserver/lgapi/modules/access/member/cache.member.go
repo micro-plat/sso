@@ -17,6 +17,9 @@ type ICacheMember interface {
 	SetLoginSuccess(userName string) error
 	SetUnLockTime(userName string, expire int) error
 	ExistsUnLockTime(userName string) bool
+
+	SaveWxStateCode(stateCode, userid string) error
+	GetWxStateCodeUserId(stateCode string) (string, error)
 }
 
 //CacheMember 控制用户登录
@@ -84,4 +87,22 @@ func (l *CacheMember) ExistsUnLockTime(userName string) bool {
 	cache := l.c.GetRegularCache()
 	key := transform.Translate(cachekey.CacheLoginFailUnLockTime, "user_name", userName)
 	return cache.Exists(key)
+}
+
+//SaveWxStateCode 保存微信凭证
+func (l *CacheMember) SaveWxStateCode(stateCode, userid string) error {
+	cache := l.c.GetRegularCache()
+	cachekey := transform.Translate(cachekey.CacheWxStateCode, "code", stateCode)
+	return cache.Set(cachekey, userid, 60*5)
+}
+
+//GetWxStateCodeUserId 获取wxstatecode中存的user_id
+func (l *CacheMember) GetWxStateCodeUserId(stateCode string) (string, error) {
+	cache := l.c.GetRegularCache()
+	cachekey := transform.Translate(cachekey.CacheWxStateCode, "code", stateCode)
+	value, err := cache.Get(cachekey)
+	if err != nil {
+		return "", err
+	}
+	return value, nil
 }

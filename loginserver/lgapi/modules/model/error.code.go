@@ -24,4 +24,13 @@ const (
 
 	//用户原密码错误
 	ERR_USER_OLDPWDWRONG = 908
+
+	//绑定信息错误(绑定用户微信账号)
+	ERR_BIND_INFOWRONG = 909
+
+	//用户已绑定微信
+	ERR_USER_EXISTSWX = 910
+
+	//绑定超时(微信绑定)
+	ERR_BIND_TIMEOUT = 911
 )

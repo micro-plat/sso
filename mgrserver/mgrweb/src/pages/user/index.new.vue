@@ -445,7 +445,7 @@ export default {
         .then(res => {
           //console.log(process.env.service.ssoWebHost + "/wxbind?userid=" + res.user_id + "&sign=" + res.sign + "&timestamp=" + res.timestamp);
         
-          jQuery('#qrcodeTable').qrcode(process.env.service.ssoWebHost + "/wxbind?user_id=" + res.user_id + "&sign=" + res.sign + "&timestamp=" + res.timestamp);
+          jQuery('#qrcodeTable').qrcode(process.env.service.ssoWebHost + "/bindwx?userid=" + res.user_id + "&sign=" + res.sign + "&timestamp=" + res.timestamp);
           this.$refs.qrCodeModal.open();
         })
         .catch(err => {

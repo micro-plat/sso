@@ -3,6 +3,8 @@ import Router from 'vue-router';
 import login from '@/pages/member/login';
 import jump from '@/pages/member/jump.vue';
 import changepwd from '@/pages/member/change.password.vue';
+import bindwx from '@/pages/member/bind.weixin.vue';
+import wxcallback from '@/pages/member/weixin.callback.vue';
 import choose from '@/pages/system/choose.vue';
 import errpage from '@/pages/system/errpage.vue';
 import refresh from '@/pages/system/refresh.token.vue'
@@ -38,6 +40,16 @@ export default new Router({
       path: '/:ident?/changepwd',
       name: 'changepwd',
       component: changepwd
+    }, 
+    {
+      path: '/bindwx',
+      name: 'bindwx',
+      component: bindwx
+    },
+    {
+      path: '/wxcallback/:type',
+      name: 'wxcallback',
+      component: wxcallback
     },
     {
       path: '/errpage',

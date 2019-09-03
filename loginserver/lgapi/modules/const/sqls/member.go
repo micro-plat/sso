@@ -15,7 +15,7 @@ const UnLockMember = `update sso_user_info set status = 0 where status = 1 and u
 const AddUserOpenID = `
 update sso_user_info set 
 	wx_openid = @openid 
-where user_name = @username and 
+where user_id = @user_id and 
 	  wx_openid is not null 
 limit 1;`
 
