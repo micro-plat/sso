@@ -449,6 +449,37 @@ export default {
           this.$refs.qrCodeModal.open();
         })
         .catch(err => {
+          if (err.response) {
+            switch (err.response.status) {
+              case 905:
+                this.$notify({
+                  title: "错误",
+                  message: "用户不存在",
+                  type: "error",
+                  offset: 50,
+                  duration: 2000
+                });
+                break;
+              case 903:
+                this.$notify({
+                  title: "错误",
+                  message: "用户被禁用",
+                  type: "error",
+                  offset: 50,
+                  duration: 2000
+                });
+                break;
+              case 902:
+                this.$notify({
+                  title: "错误",
+                  message: "用户被锁定",
+                  type: "error",
+                  offset: 50,
+                  duration: 2000
+                });
+                break;
+            }
+          }
           console.log(err)
         });
     },
