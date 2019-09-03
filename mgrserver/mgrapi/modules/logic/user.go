@@ -1,9 +1,13 @@
 package logic
 
 import (
+	"time"
 	"github.com/micro-plat/hydra/component"
 	"github.com/micro-plat/hydra/context"
 	"github.com/micro-plat/lib4go/db"
+	"github.com/micro-plat/lib4go/net"
+	"github.com/micro-plat/lib4go/types"
+	"github.com/micro-plat/lib4go/security/md5"
 	"github.com/micro-plat/sso/mgrserver/mgrapi/modules/access/user"
 	"github.com/micro-plat/sso/mgrserver/mgrapi/modules/const/enum"
 	"github.com/micro-plat/sso/mgrserver/mgrapi/modules/model"
@@ -19,6 +23,7 @@ type IUserLogic interface {
 	Add(input *model.UserInputNew) (err error)
 	Edit(username string, tel string, email string) (err error)
 	SetDefaultPwd(userID int) error
+	GenerateQrcodeInfo(userID int) (map[string]interface{}, error)
 }
 
 type UserLogic struct {
@@ -105,4 +110,35 @@ func (u *UserLogic) Edit(username string, tel string, email string) (err error) 
 //SetDefaultPwd  重置密码
 func (u *UserLogic) SetDefaultPwd(userID int) error {
 	return u.db.ResetPwd(userID)
+}
+
+//GenerateQrcodeInfo 生成用户绑定二维码的信息
+func (u *UserLogic) GenerateQrcodeInfo(userID int) (map[string]interface{}, error) {
+	//1 验证用户s
+	data, err := u.db.Get(userID)
+	if err != nil {
+		return nil, err
+	}
+	status := data.GetInt("status")
+	if status == enum.UserLock {
+		return nil, context.NewError(model.ERR_USER_LOCKED, "用户被锁定")
+	}
+	if status == enum.UserDisable {
+		return nil, context.NewError(model.ERR_USER_FORBIDDEN, "用户被禁用")
+	}
+
+	//生成二维码数据
+	timestamp := types.GetString(time.Now().Unix())
+	values := net.NewValues()
+	values.Set("user_id", string(userID))
+	values.Set("timestamp", timestamp)
+
+	values = values.Sort()
+	raw := values.Join("", "") + model.WxBindSecrect
+
+	return map[string]interface{}{
+		"user_id": userID,
+		"timestamp":timestamp,
+		"sign":md5.Encrypt(raw),
+	}, nil
 }

@@ -9,6 +9,7 @@ select
 	t.mobile,
 	t.create_time,
 	t.email,
+	t.wx_openid,
 	t.ext_params
 from sso_user_info t
 left join sso_user_role r on r.user_id = t.user_id
@@ -99,7 +100,8 @@ select
 	t.user_id,
 	t.user_name,
 	t.mobile,
-	t.email 
+	t.email,
+	t.status 
 from 
 	sso_user_info t 
 where 

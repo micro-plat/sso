@@ -29,6 +29,16 @@
           </form>
         </div>
       </div>
+      <bootstrap-modal ref="qrCodeModal" :need-header="true" :closed="resetSys">
+        <div slot="title">绑定微信账号</div>
+        <div slot="body">
+          <div class="panel panel-default">
+          <div class="panel-body">
+            <div id="qrcodeTable"></div>
+          </div>
+          </div>
+        </div>
+      </bootstrap-modal>
       <bootstrap-modal ref="editModal" :need-header="true" :need-footer="true" :closed="resetSys">
         <div slot="title">{{isAdd == 1 ? "添加用户" : "编辑用户信息"}}</div>
         <div slot="body">
@@ -207,6 +217,7 @@
               <el-button plain type="info" size="mini" @click="userChange(2,scope.row.user_id,scope.row.user_name)" v-if="scope.row.status == 0">禁用</el-button>
               <el-button plain type="success" size="mini" @click="userChange(0,scope.row.user_id,scope.row.user_name)" v-if="scope.row.status == 1">解锁</el-button>
               <el-button plain type="danger" size="mini" @click="userDel(scope.row.user_id)">删除</el-button>
+              <el-button plain type="danger" size="mini" v-if="!scope.row.wx_openid" @click="bindWx(scope.row.user_id)">绑定微信</el-button>
               <el-button plain type="danger" size="mini" @click="setDefaultPwd(scope.row.user_id)">重置密码</el-button>
             </template>
           </el-table-column>
@@ -232,6 +243,8 @@
 import pager from "vue-simple-pager";
 import PullTo from "vue-pull-to";
 import {trimError} from '@/services/util'
+import "@/services/qrcode.min.js"
+
 export default {
   components: {
     "bootstrap-modal": require("vue2-bootstrap-modal"),
@@ -391,7 +404,7 @@ export default {
       }
       this.$refs.editModal.open();
     },
-    userChange: function(status, userid,user_name) {
+    userChange(status, userid,user_name) {
       var r;
       this.$confirm("确认执行该操作吗?", "提示", {
         confirmButtonText: "确定",
@@ -421,7 +434,27 @@ export default {
         });
       })
     },
-    userDel: function(userid) {
+
+    bindWx(userid) {
+      this.$http.post("/user/generateqrcode", {user_id: userid})
+        .then(res => {
+          console.log(process.env.service.ssoWebHost + "/wxbind?userid=" + res.user_id + "&sign=" + res.sign + "&timestamp=" + res.timestamp);
+        
+          jQuery('#qrcodeTable').qrcode({
+            render:"table",
+            width:250,
+            height:250,
+            text:process.env.service.ssoWebHost + "/wxbind?user_id=" + res.user_id + "&sign=" + res.sign
+          });
+          //text:process.env.service.ssoWebHost + "/wxbind?user_id=" + res.user_id + "&sign=" + res.sign + "&timestamp=" + res.timestamp	
+          this.$refs.qrCodeModal.open();
+        })
+        .catch(err => {
+          console.log(err)
+        });
+    },
+
+    userDel(userid) {
       this.$confirm("此操作将永久删除该数据, 是否继续?", "提示", {
         confirmButtonText: "确定",
         cancelButtonText: "取消",

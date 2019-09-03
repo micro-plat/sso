@@ -3,7 +3,6 @@ package user
 import (
 	"github.com/micro-plat/hydra/component"
 	"github.com/micro-plat/hydra/context"
-	//"github.com/micro-plat/sso/mgrserver/mgrapi/modules/access/member"
 	"github.com/micro-plat/sso/mgrserver/mgrapi/modules/logic"
 	"github.com/micro-plat/sso/mgrserver/mgrapi/modules/model"
 	"github.com/micro-plat/sso/sdk/sso"
@@ -146,4 +145,21 @@ func (u *UserHandler) SetPwdHandle(ctx *context.Context) (r interface{}) {
 		return err
 	}
 	return "success"
+}
+
+//GenerateQrcodeHandle 生成绑定微信信息
+func (u *UserHandler) GenerateQrcodeHandle(ctx *context.Context) (r interface{}) {
+	ctx.Log.Info("--------生成绑定微信信息--------")
+
+	ctx.Log.Info("1.参数校验")
+	if err := ctx.Request.Check("user_id"); err != nil {
+		return context.NewError(context.ERR_NOT_ACCEPTABLE, err)
+	}
+
+	ctx.Log.Info("2: 生成二维码信息")
+	data, err := u.userLib.GenerateQrcodeInfo(ctx.Request.GetInt("user_id")) 
+	if err != nil {
+		return err
+	}
+	return data
 }

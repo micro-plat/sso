@@ -5,6 +5,7 @@ import (
 	"strings"
 
 	"github.com/micro-plat/hydra/component"
+	"github.com/micro-plat/hydra/context"
 	"github.com/micro-plat/lib4go/db"
 	"github.com/micro-plat/lib4go/security/md5"
 	"github.com/micro-plat/lib4go/types"
@@ -147,6 +148,10 @@ func (u *DbUser) Get(userID int) (data db.QueryRow, err error) {
 	})
 	if err != nil {
 		return nil, fmt.Errorf("查询用户信息发生错误(err:%v),sql:%s,输入参数:%v", err, q, a)
+	}
+
+	if result.IsEmpty() {
+		return nil, context.NewError(model.ERR_USER_NOTEXISTS, "用户不存在")
 	}
 
 	return result.Get(0), nil
