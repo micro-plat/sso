@@ -29,7 +29,7 @@
           </form>
         </div>
       </div>
-      <bootstrap-modal ref="qrCodeModal" :need-header="true" :closed="resetSys">
+      <bootstrap-modal ref="qrCodeModal" :need-header="true" :need-footer="true">
         <div slot="title">绑定微信账号</div>
         <div slot="body">
           <div class="panel panel-default">
@@ -37,6 +37,9 @@
             <div id="qrcodeTable"></div>
           </div>
           </div>
+        </div>
+        <div slot="footer">
+          <el-button size="small" @click="onQrCodeClose">取消</el-button>
         </div>
       </bootstrap-modal>
       <bootstrap-modal ref="editModal" :need-header="true" :need-footer="true" :closed="resetSys">
@@ -217,7 +220,7 @@
               <el-button plain type="info" size="mini" @click="userChange(2,scope.row.user_id,scope.row.user_name)" v-if="scope.row.status == 0">禁用</el-button>
               <el-button plain type="success" size="mini" @click="userChange(0,scope.row.user_id,scope.row.user_name)" v-if="scope.row.status == 1">解锁</el-button>
               <el-button plain type="danger" size="mini" @click="userDel(scope.row.user_id)">删除</el-button>
-              <el-button plain type="danger" size="mini" v-if="!scope.row.wx_openid" @click="bindWx(scope.row.user_id)">绑定微信</el-button>
+              <el-button plain type="danger" size="mini" v-if="!scope.row.wx_openid && scope.row.status == 0" @click="bindWx(scope.row.user_id)">绑定微信</el-button>
               <el-button plain type="danger" size="mini" @click="setDefaultPwd(scope.row.user_id)">重置密码</el-button>
             </template>
           </el-table-column>
@@ -436,17 +439,13 @@ export default {
     },
 
     bindWx(userid) {
+      jQuery('#qrcodeTable canvas').remove();
+
       this.$http.post("/user/generateqrcode", {user_id: userid})
         .then(res => {
-          console.log(process.env.service.ssoWebHost + "/wxbind?userid=" + res.user_id + "&sign=" + res.sign + "&timestamp=" + res.timestamp);
+          //console.log(process.env.service.ssoWebHost + "/wxbind?userid=" + res.user_id + "&sign=" + res.sign + "&timestamp=" + res.timestamp);
         
-          jQuery('#qrcodeTable').qrcode({
-            render:"table",
-            width:250,
-            height:250,
-            text:process.env.service.ssoWebHost + "/wxbind?user_id=" + res.user_id + "&sign=" + res.sign
-          });
-          //text:process.env.service.ssoWebHost + "/wxbind?user_id=" + res.user_id + "&sign=" + res.sign + "&timestamp=" + res.timestamp	
+          jQuery('#qrcodeTable').qrcode(process.env.service.ssoWebHost + "/wxbind?user_id=" + res.user_id + "&sign=" + res.sign + "&timestamp=" + res.timestamp);
           this.$refs.qrCodeModal.open();
         })
         .catch(err => {
@@ -530,6 +529,10 @@ export default {
     },
     onClose() {
       this.$refs.editModal.close();
+    },
+    onQrCodeClose() {
+      jQuery('#qrcodeTable canvas').remove();
+      this.$refs.qrCodeModal.close();
     },
     resetSys() {
       this.selectSys = [];
