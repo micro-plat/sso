@@ -5,6 +5,7 @@ import (
 	"time"
 	"strings"
 	"strconv"
+	"math/rand"
 	"encoding/json"
 
 	"github.com/micro-plat/hydra/component"
@@ -32,6 +33,8 @@ type IMemberLogic interface {
 	GenerateWxStateCode(userID int64) (string, error)
 	ValidStateAndGetOpenID(stateCode, wxCode string) (map[string]string,error)
 	SaveUserOpenID(data map[string]string) error
+	ValidUserInfo(userName string) (string,error)
+	SendWxValidCode(userName, openID string) error
 }
 
 //MemberLogic 用户登录管理
@@ -302,4 +305,123 @@ func (m *MemberLogic) GetWxUserOpID(url string) (string, error) {
 	}
 
 	return types.GetString(data["openid"]), nil
+}
+
+//ValidUserInfo 验证用户信息openid
+func (m *MemberLogic) ValidUserInfo(userName string) (string, error) {
+	datas, err := m.db.GetUserInfo(userName)
+	if err != nil {
+		return "",err
+	}
+	if datas.IsEmpty() {
+		return "", context.NewError(model.ERR_USER_NOTEXISTS, "用户不存在")
+	}
+	if datas.Get(0).GetString("wx_openid") == "" {
+		return "", context.NewError(model.ERR_USER_NOTBINDWX, "用户还未绑定微信账户")
+	}
+	return datas.Get(0).GetString("wx_openid"), nil
+}
+
+//SendWxValidCode 发送微信验证码
+func (m *MemberLogic) SendWxValidCode(userName,openID string) error {
+	//1: 发送微信验证码
+	token, err := m.GetFreshToken()
+	if err != nil {
+		return err
+	}
+	randd := rand.New(rand.NewSource(time.Now().UnixNano()))
+	validcode := fmt.Sprintf("%06v", randd.Int31n(1000000))
+
+	m.SendCode(openID, token, validcode)
+	return nil
+
+	
+	//2:保存到redis中
+}
+
+//GetFreshToken 动态获取token
+func (m *MemberLogic) GetFreshToken() (string,error) {
+	cfg := model.GetConf(m.c)
+	url := fmt.Sprintf("%s/%s/wechat/token/get", cfg.RefreshWxTokenHost, cfg.WxAppID)
+	client, err := http.NewHTTPClient(http.WithRequestTimeout(5 * time.Second))
+	if err != nil {
+		return "", err
+	}
+	body, statusCode, err := client.Get(url)
+	if err != nil {
+		return "", err
+	}
+	if statusCode != 200 {
+		return "", context.NewErrorf(statusCode, "获取token信息失败,HttpStatus:%d, body:%s", statusCode, body)
+	}
+
+	data := make(map[string]interface{})
+	err = json.Unmarshal([]byte(body), &data)
+	if err != nil {
+		return "", fmt.Errorf("字符串转json发生错误，err：%v", err)
+	}
+
+	if errcode, ok := data["errcode"]; ok && errcode != 0 {
+		return "", context.NewError(context.ERR_NOT_EXTENDED, fmt.Errorf("获取token失败: %s", types.GetString(data["errmsg"])))
+	}
+
+	return types.GetString(data["access_token"]), nil
+}
+
+//SendCode 调用微信接口发验证码
+func (m *MemberLogic) SendCode(openID, accessToken, validCode string) error {
+	cfg := model.GetConf(m.c)
+	data := model.TemplateMsg{
+		Touser: openID,
+		TemplateID: cfg.LoginValidCodeTemplateID,
+		Data: &model.TemplateData{
+			First: model.KeyWordData{
+				Value: "你好,本次需要进行验证码验证,请无泄露",
+				Color: "#173177",
+			},
+			Keyword1: model.KeyWordData{
+				Value: validCode,
+				Color: "#173177",
+			},
+			Keyword2: model.KeyWordData{
+				Value: "5分钟",
+				Color: "#173177",
+			},
+			Keyword3: model.KeyWordData{
+				Value: time.Now().Format("2006-01-02 15:04:05"),
+				Color: "#173177",
+			},
+			Remark: model.KeyWordData{
+				Value: "若非本人操作,可能你的账号存在安全风险,请及时修改密码",
+				Color: "#173177",
+			},
+		},
+	}
+	dataJSON, err := json.Marshal(data)
+	if err != nil {
+		return err
+	}
+
+	url := fmt.Sprintf("%s?access_token=%s", cfg.WxSendTemplateMsgURL, accessToken)
+	client, err := http.NewHTTPClient(http.WithRequestTimeout(5 * time.Second))	
+	content, statusCode, err := client.Post(url, string(dataJSON))
+
+	if err != nil {
+		return err
+	}
+	if statusCode != 200 {
+		return context.NewErrorf(statusCode, "发送验证码信息失败,HttpStatus:%d, body:%s", statusCode, content)
+	}
+
+	sendResult := make(map[string]interface{})
+	err = json.Unmarshal([]byte(content), &sendResult)
+	if err != nil {
+		return fmt.Errorf("字符串转json发生错误，err：%v", err)
+	}
+
+	if errcode, ok := sendResult["errcode"]; ok && errcode != 0 {
+		return context.NewError(context.ERR_NOT_EXTENDED, fmt.Errorf("发送验证码信息失败: %s", types.GetString(sendResult["errmsg"])))
+	}
+
+	return nil
 }

@@ -16,8 +16,6 @@
         document.title = "微信绑定";
         this.code = this.$route.query.code;
         this.state = this.$route.query.state;
-        console.log(this.code);
-        console.log(this.state);
         this.bind()
     },
 

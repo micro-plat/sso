@@ -27,11 +27,17 @@ type Conf struct {
 	//WxSecret WxSecret
 	WxSecret string `json:"wx_secret" valid:"required"`
 
-	//RefreshWxTokenURl 刷新微信token的url
-	RefreshWxTokenURl string `json:"refresh_wx_token_url" valid:"required"`
+	//RefreshWxTokenHost 刷新微信token的host(我们内部的接口)
+	RefreshWxTokenHost string `json:"refresh_wx_token_host" valid:"required"`
 
 	//WxGetTokenURL 获取微信token
 	WxTokenURL string `json:"wx_get_token_url" valid:"required"`
+
+	//LoginValidCodeTemplateID 登录验证码模板
+	LoginValidCodeTemplateID string `json:"login_validcode_template_id" valid:"required"`
+
+	//WxSendTemplateMsgURL 发送微信模板消息的接口
+	WxSendTemplateMsgURL string `json:"wx_send_template_msg_url" valid:"required"`
 }
 
 //Valid 验证配置参数是否合法

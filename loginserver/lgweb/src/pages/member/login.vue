@@ -5,6 +5,7 @@
       :systemName="systemName"
       :requireWxLogin="requireWxLogin"
       :requireCode="requireCode"
+      :sendCode="getCodeCall"
       :loginCallBack="loginsubmit"
 
       :loginTitle="loginTitle"
@@ -17,10 +18,6 @@
       :sendBtnLabel="sendBtnLabel"
       ref="LoginUp">
     </login-with-up>
-    <div v-if="requireWxLogin">
-      <div id="qrcodeTable"></div>
-      <input type="button" @click="generateQrCode" value="二维码" />
-    </div>
   </div>
   
 </template>
@@ -53,7 +50,7 @@
         codeHolder:"请输入微信验证码",
         sendBtnLabel:"获取微信验证码",
         requireWxLogin:false,
-        requireCode:false
+        requireCode:true
       }
     },
     components:{ 
@@ -61,7 +58,6 @@
     },
 
     mounted(){
-      //VueCookies.remove("__sso_jwt__");
       window.localStorage.removeItem("__sso_jwt__");
 
       document.title = "登录-能源业务中心运营管理系统";
@@ -84,6 +80,27 @@
         .catch(err => {
             this.$refs.LoginUp.showError("获取系统信息失败");
         }); 
+      },
+
+      //发送微信验证码
+      getCodeCall(e){
+         this.$refs.LoginUp.showError("发送验证码中...");
+
+         this.$post("/member/sendcode", e)
+          .then(res=>{
+            this.$refs.LoginUp.showError("微信验证码发送成功");
+            this.$refs.LoginUp.countDown(this.sendBtnLabel);
+          })
+          .catch(error=>{
+            switch(error.response.status) {
+              case 401:
+              case 400:
+                this.$refs.LoginUp.showError(trimError(error));
+                break;
+              default:
+                this.$refs.LoginUp.showError("系统繁忙");
+            }
+          })
       },
 
       //用户名密码登录

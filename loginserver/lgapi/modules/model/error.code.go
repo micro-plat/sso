@@ -33,4 +33,7 @@ const (
 
 	//绑定超时(微信绑定)
 	ERR_BIND_TIMEOUT = 911
+
+	//用户还未绑定微信账户
+	ERR_USER_NOTBINDWX = 912
 )

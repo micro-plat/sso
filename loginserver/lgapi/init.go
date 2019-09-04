@@ -42,9 +42,10 @@ func (r *SSO) init() {
 
 	r.API("/login/check", login.NewLoginCheckHandler)       //验证用户是否已登录
 	r.API("/member/login", login.NewLoginHandler)           //用户登录相关
+	r.API("/member/bind", member.NewBindWxHandler)          //绑定微信
 	r.API("/member/changepwd", member.NewChangePwdHandler)  //修改密码
 	r.API("/member/refresh", member.NewRefleshTokenHandler) //刷新用户token
-	r.API("/member/bind", member.NewBindWxHandler)          //绑定微信
+	r.API("/member/sendcode", member.NewSendCodeHandler)    //发送验证码
 	r.API("/member/system/get", member.NewUserSysHandler)   //获取用户可进的系统信息
 	r.API("/system/get", system.NewSystemHandler)           //获取系统信息
 }
