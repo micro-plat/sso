@@ -14,9 +14,9 @@ const UnLockMember = `update sso_user_info set status = 0 where status = 1 and u
 //AddUserOpenID 给用户绑定openid
 const AddUserOpenID = `
 update sso_user_info set 
-	wx_openid = @openid 
+	wx_openid = @openid
 where user_id = @user_id and 
-	  wx_openid is not null 
+	  (wx_openid is null or  wx_openid = '') 
 limit 1;`
 
 //QueryUserInfoByUID 查询用户信息

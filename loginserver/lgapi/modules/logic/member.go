@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"time"
 	"strings"
+	"strconv"
 	"encoding/json"
 
 	"github.com/micro-plat/hydra/component"
@@ -241,7 +242,7 @@ func (m *MemberLogic) CheckUerInfo(userID int64, sign, timestamp string) error {
 //GenerateWxStateCode 生成微信stateCode凭证
 func (m *MemberLogic) GenerateWxStateCode(userID int64) (string, error) {
 	stateCode := utility.GetGUID()
-	if err := m.cache.SaveWxStateCode(stateCode, string(userID)); err != nil {
+	if err := m.cache.SaveWxStateCode(stateCode, strconv.FormatInt(userID,10)); err != nil {
 		return "", err
 	}
 	return stateCode, nil

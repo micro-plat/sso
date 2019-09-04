@@ -18,7 +18,7 @@ func main() {
 			hydra.WithServerTypes("web"),
 		),
 	}
-	app.Conf.WEB.SetStatic(conf.NewWebServerStaticConf().WithArchive("./static.zip"))
+	//app.Conf.WEB.SetStatic(conf.NewWebServerStaticConf().WithArchive("./static.zip"))
 	app.install()
 	app.Start()
 }

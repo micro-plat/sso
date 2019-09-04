@@ -1,6 +1,10 @@
 <template>
   <div>
-      <span>{{notice}}</span>
+      <div>
+        <span>绑定用户：</span>{{userName}}
+      </div>
+      <div><input type="button" value="绑定" @click="checkUserInfo" v-bind:disabled="disabled" /></div>
+      <div><span>{{notice}}</span></div>
   </div>
 </template>
 
@@ -9,27 +13,30 @@
     name: 'bindwx',
     data () {
       return {
-        notice: "页面调转中...",
-        userid:0,
+        notice: "",
+        userName:"",
+        userId:0,
         sign:"",
-        timestamp:0
+        timestamp:0,
+        disabled:false
       }
     },
     mounted(){
       document.title = "绑定微信账号";
-      this.userid = this.$route.query.userid;
+      this.userId = this.$route.query.userid;
       this.sign = this.$route.query.sign;
+      this.userName = this.$route.query.name;
       this.timestamp = this.$route.query.timestamp;
-      this.checkUserInfo();
     },
 
     methods:{
         checkUserInfo() {
-            this.$post("/member/bind/check",{user_id:this.userid, sign:this.sign, timestamp:this.timestamp})
+            this.$post("/member/bind/check",{user_id:this.userId, sign:this.sign, timestamp:this.timestamp})
             .then(res =>{
                 var url = res.wxlogin_url + "?" + "appid=" + res.appid + "&state=" + res.state + "&redirect_uri=" +
                         encodeURIComponent(process.env.service.wxcallbackhost + process.env.service.wxcallbackurl + "/bind") +
                         "&response_type=code&scope=snsapi_base#wechat_redirect"; 
+                console.log(url);
                 window.location.href = url;  
 
             }).catch(err => {
@@ -49,6 +56,7 @@
                     default:
                       this.notice = "系统错误,稍后在试"
                 }
+                this.disabled = true;
             });
         }
     }

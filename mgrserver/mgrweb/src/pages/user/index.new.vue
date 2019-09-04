@@ -220,7 +220,7 @@
               <el-button plain type="info" size="mini" @click="userChange(2,scope.row.user_id,scope.row.user_name)" v-if="scope.row.status == 0">禁用</el-button>
               <el-button plain type="success" size="mini" @click="userChange(0,scope.row.user_id,scope.row.user_name)" v-if="scope.row.status == 1">解锁</el-button>
               <el-button plain type="danger" size="mini" @click="userDel(scope.row.user_id)">删除</el-button>
-              <el-button plain type="danger" size="mini" v-if="!scope.row.wx_openid && scope.row.status == 0" @click="bindWx(scope.row.user_id)">绑定微信</el-button>
+              <el-button plain type="danger" size="mini" v-if="!scope.row.wx_openid && scope.row.status == 0" @click="bindWx(scope.row.user_id, scope.row.user_name)">绑定微信</el-button>
               <el-button plain type="danger" size="mini" @click="setDefaultPwd(scope.row.user_id)">重置密码</el-button>
             </template>
           </el-table-column>
@@ -438,14 +438,14 @@ export default {
       })
     },
 
-    bindWx(userid) {
+    bindWx(userid, userName) {
       jQuery('#qrcodeTable canvas').remove();
 
       this.$http.post("/user/generateqrcode", {user_id: userid})
         .then(res => {
           //console.log(process.env.service.ssoWebHost + "/wxbind?userid=" + res.user_id + "&sign=" + res.sign + "&timestamp=" + res.timestamp);
         
-          jQuery('#qrcodeTable').qrcode(process.env.service.ssoWebHost + "/bindwx?userid=" + res.user_id + "&sign=" + res.sign + "&timestamp=" + res.timestamp);
+          jQuery('#qrcodeTable').qrcode(process.env.service.ssoWebHost + "/bindwx?userid=" + res.user_id + "&sign=" + res.sign + "&timestamp=" + res.timestamp + "&name=" + userName);
           this.$refs.qrCodeModal.open();
         })
         .catch(err => {
