@@ -1,15 +1,19 @@
 package logic
 
 import (
+	"strings"
+
 	"github.com/micro-plat/hydra/component"
 	"github.com/micro-plat/lib4go/db"
 	"github.com/micro-plat/sso/loginserver/lgapi/modules/access/system"
+	"github.com/micro-plat/sso/loginserver/lgapi/modules/model"
 )
 
 // ISystemLogic xx
 type ISystemLogic interface {
 	QueryUserSystem(userId int64) (db.QueryRows, error)
 	QuerySysInfoByIdent(ident string) (db.QueryRow, error)
+	GetSystemConfig(ident string) (map[string]interface{}, error)
 }
 
 // SystemLogic 操作日志
@@ -24,6 +28,20 @@ func NewSystemLogic(c component.IContainer) *SystemLogic {
 		c:     c,
 		dbSys: system.NewDbSystem(c),
 	}
+}
+
+//GetSystemConfig 获取系统配置信息
+func (s *SystemLogic) GetSystemConfig(ident string) (map[string]interface{}, error) {
+	result := map[string]interface{}{"system_name": "用户登录", "require_wx_code": model.GetConf(s.c).RequireWxCode}
+	if strings.EqualFold(ident, "") {
+		return result, nil
+	}
+	data, err := s.dbSys.QuerySysInfoByIdent(ident)
+	if err != nil {
+		return nil, err
+	}
+	result["system_name"] = data.GetString("name")
+	return result, nil
 }
 
 // QueryUserSystem 返回用户可用的子系统信息

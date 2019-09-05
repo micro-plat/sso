@@ -3,7 +3,6 @@
     <login-with-up
       :copyright="copyright"
       :systemName="systemName"
-      :requireWxLogin="requireWxLogin"
       :requireCode="requireCode"
       :sendCode="getCodeCall"
       :loginCallBack="loginsubmit"
@@ -49,8 +48,7 @@
         codeLabel:"微信验证码",
         codeHolder:"请输入微信验证码",
         sendBtnLabel:"获取微信验证码",
-        requireWxLogin:false,
-        requireCode:true
+        requireCode:false
       }
     },
     components:{ 
@@ -70,12 +68,10 @@
 
     methods:{
       controlLoginType() {
-        if (! this.ident){
-          return;
-        }
-        this.$post("/system/get", {ident: this.ident})
+        this.$post("/system/config/get", {ident: this.ident})
         .then(res => {
-            this.loginTitle = "登录到【" + res.name + "】";
+            this.loginTitle = "登录到【" + res.system_name + "】";
+            this.requireCode = res.require_wx_code;
         })
         .catch(err => {
             this.$refs.LoginUp.showError("获取系统信息失败");
@@ -84,21 +80,23 @@
 
       //发送微信验证码
       getCodeCall(e){
+         e.ident = this.ident;
          this.$refs.LoginUp.showError("发送验证码中...");
-
          this.$post("/member/sendcode", e)
           .then(res=>{
-            this.$refs.LoginUp.showError("微信验证码发送成功");
+            this.$refs.LoginUp.showError("微信验证码发送成功,【运维云管家】中查看");
             this.$refs.LoginUp.countDown(this.sendBtnLabel);
           })
           .catch(error=>{
             switch(error.response.status) {
-              case 401:
-              case 400:
-                this.$refs.LoginUp.showError(trimError(error));
+              case 905:
+                this.$refs.LoginUp.showError("用户不存在");
+                break;
+              case 912:
+                this.$refs.LoginUp.showError("请先绑定微信账户,并且关注【运维云管家】");
                 break;
               default:
-                this.$refs.LoginUp.showError("系统繁忙");
+                this.$refs.LoginUp.showError("系统繁忙,稍后再试");
             }
           })
       },
@@ -108,13 +106,12 @@
         var req = {
           ident: this.ident,
           password: $.md5(e.password),
-          username:e.username
+          username:e.username,
+          wxcode:e.wxcode
         }
-
         this.$post("/member/login", req)
           .then(res => {
             setTimeout(() => {
-
               if (this.changePwd == 1) {
                 this.$router.push({ path: '/changepwd'});   
                 return;
@@ -125,7 +122,6 @@
               }
               if (this.ident && res.callback) {
                 var url = JoinUrlParams(decodeURIComponent(res.callback),{code:res.code});
-                console.log("denglutiaozhuan: url: ", url)
                 window.location.href = url;
                 return;
               }
@@ -149,7 +145,16 @@
                   break;
                 case 907:
                   msg = "用户名或密码错误";
-                  break;    
+                  break;  
+                case 913:
+                  msg = "验证码不能为空";
+                  break;
+                case 914:
+                  msg = "验证码过期或不存在,重新发送验证码";
+                  break;
+                case 915:
+                  msg = "验证码错误";
+                  break;
                 default:
                   msg = "登录失败,稍后再试";
               }

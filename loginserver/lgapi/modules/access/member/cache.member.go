@@ -1,13 +1,15 @@
 package member
 
 import (
+	"strings"
 	"time"
 
 	"github.com/micro-plat/hydra/component"
+	"github.com/micro-plat/hydra/context"
 	"github.com/micro-plat/lib4go/transform"
 	"github.com/micro-plat/lib4go/types"
-
 	cachekey "github.com/micro-plat/sso/loginserver/lgapi/modules/const/cache"
+	"github.com/micro-plat/sso/loginserver/lgapi/modules/model"
 )
 
 type ICacheMember interface {
@@ -20,6 +22,8 @@ type ICacheMember interface {
 
 	SaveWxStateCode(stateCode, userid string) error
 	GetWxStateCodeUserId(stateCode string) (string, error)
+	SetLoginValidateCode(validateCode, userName string) error
+	CheckLoginValidateCode(userName, wxCode string) error
 }
 
 //CacheMember 控制用户登录
@@ -105,4 +109,45 @@ func (l *CacheMember) GetWxStateCodeUserId(stateCode string) (string, error) {
 		return "", err
 	}
 	return value, nil
+}
+
+//SetLoginValidateCode 保存用户登录验证码
+func (l *CacheMember) SetLoginValidateCode(validateCode, userName string) error {
+	cache := l.c.GetRegularCache()
+	cachekey := transform.Translate(cachekey.CacheLoginValidateCode, "user_name", userName)
+	return cache.Set(cachekey, validateCode, 60*5)
+}
+
+//CheckLoginValidateCode 验证用户登录验证码
+func (l *CacheMember) CheckLoginValidateCode(userName, wxCode string) error {
+	cache := l.c.GetRegularCache()
+	validateCodeKey := transform.Translate(cachekey.CacheLoginValidateCode, "user_name", userName)
+	value, err := cache.Get(validateCodeKey)
+	if err != nil {
+		return err
+	}
+	if strings.EqualFold(value, "") {
+		return context.NewError(model.ERR_VALIDATECODE_TIMEOUT, "验证码过期,重新发送验证码")
+	}
+
+	if !strings.EqualFold(value, wxCode) {
+		cacheCountKey := transform.Translate(cachekey.CacheLoginValidateCodeFaildCount, "user_name", userName)
+
+		var newval int64 = 1
+		if flag := cache.Exists(cacheCountKey); !flag {
+			cache.Set(cacheCountKey, types.GetString(newval), 60*5)
+		} else {
+			newval, err = cache.Increment(cacheCountKey, 1)
+			if err != nil {
+				return err
+			}
+		}
+		if newval >= 5 {
+			cache.Delete(validateCodeKey)
+			cache.Delete(cacheCountKey)
+		}
+		return context.NewError(model.ERR_VALIDATECODE_WRONG, "验证码错误")
+	}
+	cache.Delete(validateCodeKey)
+	return nil
 }

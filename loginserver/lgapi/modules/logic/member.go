@@ -23,18 +23,20 @@ import (
 
 //IMemberLogic 用户登录
 type IMemberLogic interface {
+	CheckSystemStatus(ident string) error
 	CreateLoginUserCode(userID int64) (code string, err error)
-	CheckUserIsLocked(userName string, failCount int) error
-	Login(userName, password, ident string, failCount, userLockTime int) (*model.LoginState, error)
+	CheckUserIsLocked(userName string) error
+	SendWxValidCode(userName, openID, ident string) error
+	CheckWxValidCode(userName, wxCode string) error
+	Login(userName, password, ident string) (*model.LoginState, error)
 	ChangePwd(userID int, expassword string, newpassword string) (err error)
 	CheckHasRoles(userID int64, ident string) error
 	GenerateCodeAndSysInfo(ident string, userID int64) (map[string]string, error)
 	CheckUerInfo(userID int64, sign, timestamp string) error
 	GenerateWxStateCode(userID int64) (string, error)
 	ValidStateAndGetOpenID(stateCode, wxCode string) (map[string]string,error)
-	SaveUserOpenID(data map[string]string) error
+	UpdateUserOpenID(data map[string]string) error
 	ValidUserInfo(userName string) (string,error)
-	SendWxValidCode(userName, openID string) error
 }
 
 //MemberLogic 用户登录管理
@@ -55,8 +57,23 @@ func NewMemberLogic(c component.IContainer) *MemberLogic {
 	}
 }
 
+//CheckWxValidCode 验证微信验证码是否正确
+func (m *MemberLogic) CheckWxValidCode(userName,wxCode string) error {
+	if !model.GetConf(m.c).RequireWxCode {
+		return nil
+	}
+	if strings.EqualFold(wxCode, "") {
+		context.NewError(model.ERR_USER_EMPTY_VALIDATECODE, "验证码不能为空")
+	}
+	if err := m.cache.CheckLoginValidateCode(userName, wxCode);err != nil {
+		return err
+	}
+	return nil
+}
+
 //CheckUserIsLocked 检查用户是否被锁定
-func (m *MemberLogic) CheckUserIsLocked(userName string, failCount int) error {
+func (m *MemberLogic) CheckUserIsLocked(userName string) error {
+	failCount := model.GetConf(m.c).UserLoginFailCount
 	count, err := m.cache.GetLoginFailCnt(userName)
 	if err != nil {
 		return err
@@ -84,19 +101,13 @@ func (m *MemberLogic) ChangePwd(userID int, expassword string, newpassword strin
 }
 
 //Login 登录系统
-func (m *MemberLogic) Login(userName, password, ident string, failCount, userLockTime int) (s *model.LoginState, err error) {
-	if !strings.EqualFold(ident, "") {
-		if err := m.CheckSystemStatus(ident); err != nil {
-			return nil, err
-		}
-	}
-
+func (m *MemberLogic) Login(userName, password, ident string) (s *model.LoginState, err error) {
 	var ls *model.MemberState
 	if ls, err = m.db.Query(userName, password, ident); err != nil {
 		return nil, err
 	}
 
-	if err = m.checkUserInfo(userName, password, ls, failCount, userLockTime); err != nil {
+	if err = m.checkUserInfo(userName, password, ls); err != nil {
 		return nil, err
 	}
 
@@ -124,6 +135,9 @@ func (m *MemberLogic) GenerateCodeAndSysInfo(ident string, userID int64) (map[st
 
 //CheckSystemStatus 检查系统的状态
 func (m *MemberLogic) CheckSystemStatus(ident string) error {
+	if strings.EqualFold(ident, "") {
+		return nil
+	}
 	data, err := m.sysDB.QuerySysInfoByIdent(ident)
 	if err != nil {
 		return err
@@ -135,7 +149,7 @@ func (m *MemberLogic) CheckSystemStatus(ident string) error {
 }
 
 //CheckUserInfo 检查用户
-func (m *MemberLogic) checkUserInfo(userName, password string, state *model.MemberState, failCount, userLockTime int) (err error) {
+func (m *MemberLogic) checkUserInfo(userName, password string, state *model.MemberState) (err error) {
 	if state.Status == enum.UserDisable {
 		return context.NewError(model.ERR_USER_FORBIDDEN, "用户被禁用，请联系管理员")
 	}
@@ -153,8 +167,9 @@ func (m *MemberLogic) checkUserInfo(userName, password string, state *model.Memb
 		return err
 	}
 
+	conf := model.GetConf(m.c)
 	err = context.NewError(model.ERR_USER_PWDWRONG, "用户名或密码错误")
-	if count < failCount {
+	if count < conf.UserLoginFailCount {
 		return err
 	}
 
@@ -163,7 +178,7 @@ func (m *MemberLogic) checkUserInfo(userName, password string, state *model.Memb
 		return err
 	}
 	//设置解锁过期时间
-	if err := m.cache.SetUnLockTime(userName, userLockTime); err != nil {
+	if err := m.cache.SetUnLockTime(userName, conf.UserLockTime); err != nil {
 		return err
 	}
 
@@ -181,10 +196,6 @@ func (m *MemberLogic) CreateLoginUserCode(userID int64) (code string, err error)
 
 //CheckHasRoles 检查用户是否有相应的角色
 func (m *MemberLogic) CheckHasRoles(userID int64, ident string) error {
-	if err := m.CheckSystemStatus(ident); err != nil {
-		return err
-	}
-
 	user, err := m.db.QueryByID(userID)
 	if err != nil {
 		return err
@@ -273,9 +284,9 @@ func (m *MemberLogic) ValidStateAndGetOpenID(stateCode, wxCode string) (map[stri
 	}, nil
 }
 
-//SaveUserOpenID 保存用户的openid
-func (m *MemberLogic) SaveUserOpenID(data map[string]string) error {
-	return m.db.SaveUserOpenID(data)
+//UpdateUserOpenID 保存用户的openid
+func (m *MemberLogic) UpdateUserOpenID(data map[string]string) error {
+	return m.db.UpdateUserOpenID(data)
 }
 
 // GetWxUserOpID xx
@@ -323,7 +334,7 @@ func (m *MemberLogic) ValidUserInfo(userName string) (string, error) {
 }
 
 //SendWxValidCode 发送微信验证码
-func (m *MemberLogic) SendWxValidCode(userName,openID string) error {
+func (m *MemberLogic) SendWxValidCode(userName, openID, ident string) error {
 	//1: 发送微信验证码
 	token, err := m.GetFreshToken()
 	if err != nil {
@@ -331,12 +342,13 @@ func (m *MemberLogic) SendWxValidCode(userName,openID string) error {
 	}
 	randd := rand.New(rand.NewSource(time.Now().UnixNano()))
 	validcode := fmt.Sprintf("%06v", randd.Int31n(1000000))
+	m.sendCode(openID, token, validcode, ident)
 
-	m.SendCode(openID, token, validcode)
-	return nil
-
-	
 	//2:保存到redis中
+	if err := m.cache.SetLoginValidateCode(validcode, userName); err != nil {
+		return err
+	}
+	return nil
 }
 
 //GetFreshToken 动态获取token
@@ -361,7 +373,7 @@ func (m *MemberLogic) GetFreshToken() (string,error) {
 		return "", fmt.Errorf("字符串转json发生错误，err：%v", err)
 	}
 
-	if errcode, ok := data["errcode"]; ok && errcode != 0 {
+	if errcode, ok := data["errcode"]; ok && types.GetInt(errcode) != 0 {
 		return "", context.NewError(context.ERR_NOT_EXTENDED, fmt.Errorf("获取token失败: %s", types.GetString(data["errmsg"])))
 	}
 
@@ -369,34 +381,9 @@ func (m *MemberLogic) GetFreshToken() (string,error) {
 }
 
 //SendCode 调用微信接口发验证码
-func (m *MemberLogic) SendCode(openID, accessToken, validCode string) error {
+func (m *MemberLogic) sendCode(openID, accessToken, validCode, ident string) error {
 	cfg := model.GetConf(m.c)
-	data := model.TemplateMsg{
-		Touser: openID,
-		TemplateID: cfg.LoginValidCodeTemplateID,
-		Data: &model.TemplateData{
-			First: model.KeyWordData{
-				Value: "你好,本次需要进行验证码验证,请无泄露",
-				Color: "#173177",
-			},
-			Keyword1: model.KeyWordData{
-				Value: validCode,
-				Color: "#173177",
-			},
-			Keyword2: model.KeyWordData{
-				Value: "5分钟",
-				Color: "#173177",
-			},
-			Keyword3: model.KeyWordData{
-				Value: time.Now().Format("2006-01-02 15:04:05"),
-				Color: "#173177",
-			},
-			Remark: model.KeyWordData{
-				Value: "若非本人操作,可能你的账号存在安全风险,请及时修改密码",
-				Color: "#173177",
-			},
-		},
-	}
+	data := m.constructSendData(openID,validCode,ident,cfg.LoginValidCodeTemplateID)
 	dataJSON, err := json.Marshal(data)
 	if err != nil {
 		return err
@@ -424,4 +411,43 @@ func (m *MemberLogic) SendCode(openID, accessToken, validCode string) error {
 	}
 
 	return nil
+}
+
+//构造发送验证码的实体数据
+func (m *MemberLogic) constructSendData(openID, validCode, ident, templateID string) model.TemplateMsg {
+	sendTitle := "用户系统"
+	if !strings.EqualFold(ident, "") {
+		system, _ := m.sysDB.QuerySysInfoByIdent(ident)
+		if system != nil {
+			sendTitle = system.GetString("name")
+		}
+	}
+
+	data := model.TemplateMsg{
+		Touser: openID,
+		TemplateID: templateID,
+		Data: &model.TemplateData{
+			First: model.KeyWordData{
+				Value: fmt.Sprintf("你好,登录到[%s]需要进行验证码验证,请无泄露", sendTitle),
+				Color: "#173177",
+			},
+			Keyword1: model.KeyWordData{
+				Value: validCode,
+				Color: "#173177",
+			},
+			Keyword2: model.KeyWordData{
+				Value: "5分钟",
+				Color: "#173177",
+			},
+			Keyword3: model.KeyWordData{
+				Value: time.Now().Format("2006-01-02 15:04:05"),
+				Color: "#173177",
+			},
+			Remark: model.KeyWordData{
+				Value: "若非本人操作,可能你的账号存在安全风险,请及时修改密码",
+				Color: "#173177",
+			},
+		},
+	}
+	return data
 }

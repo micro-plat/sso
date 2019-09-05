@@ -22,7 +22,7 @@ type IDBMember interface {
 	UpdateUserStatus(userID int64, status int) error
 	UnLock(userName string) error
 
-	SaveUserOpenID(data map[string]string) error
+	UpdateUserOpenID(data map[string]string) error
 }
 
 //DBMember 控制用户登录
@@ -158,8 +158,8 @@ func (l *DBMember) UpdateUserStatus(userID int64, status int) error {
 	return err
 }
 
-//SaveUserOpenID 保存用户的openId信息
-func (l *DBMember) SaveUserOpenID(data map[string]string) error {
+//UpdateUserOpenID 保存用户的openId信息
+func (l *DBMember) UpdateUserOpenID(data map[string]string) error {
 	db := l.c.GetRegularDB()
 	_, _, _, err := db.Execute(sqls.AddUserOpenID, map[string]interface{}{
 		"user_id": data["userid"],

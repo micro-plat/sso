@@ -12,6 +12,10 @@ const WxBindSecrect = `qwertyuiop`
 
 //Conf 应用程序配置
 type Conf struct {
+
+	//登录是否需要验证码
+	RequireWxCode bool `json:"require_wx_code"`
+
 	//UserLoginFailCount 用户可以输入几次错误密码,之后用户被锁定
 	UserLoginFailCount int `json:"user_login_failcount" valid:"required"`
 

@@ -4,7 +4,6 @@ import (
 	"github.com/micro-plat/hydra/component"
 	"github.com/micro-plat/hydra/context"
 	"github.com/micro-plat/sso/loginserver/lgapi/modules/logic"
-	"github.com/micro-plat/sso/loginserver/lgapi/modules/model"
 )
 
 //LoginHandler 用户登录对象
@@ -30,26 +29,36 @@ func (u *LoginHandler) Handle(ctx *context.Context) (r interface{}) {
 		return context.NewError(context.ERR_NOT_ACCEPTABLE, "用户名和密码不能为空")
 	}
 
-	ctx.Log.Info("2: 判断用户是否被锁定, 锁定时间过期后要解锁")
-	appCfg := model.GetConf(u.c)
-	if err := u.m.CheckUserIsLocked(ctx.Request.GetString("username"), appCfg.UserLoginFailCount); err != nil {
+	ctx.Log.Info("2: 判断系统是否被禁用")
+	ident := ctx.Request.GetString("ident")
+	if err := u.m.CheckSystemStatus(ident); err != nil {
 		return err
 	}
 
-	ctx.Log.Info("3:处理用户账号登录")
-	ident := ctx.Request.GetString("ident")
-	member, err := u.m.Login(ctx.Request.GetString("username"), ctx.Request.GetString("password"), ident, appCfg.UserLoginFailCount, appCfg.UserLockTime)
+	ctx.Log.Info("3: 判断用户是否被锁定, 锁定时间过期后要解锁")
+	userName := ctx.Request.GetString("username")
+	if err := u.m.CheckUserIsLocked(userName); err != nil {
+		return err
+	}
+
+	ctx.Log.Info("4: 判断用户输入的验证码")
+	if err := u.m.CheckWxValidCode(userName, ctx.Request.GetString("wxcode")); err != nil {
+		return err
+	}
+
+	ctx.Log.Info("5:处理用户账号登录")
+	member, err := u.m.Login(userName, ctx.Request.GetString("password"), ident)
 	if err != nil {
 		return err
 	}
 
-	ctx.Log.Info("4:生成返回给子系统的Code")
+	ctx.Log.Info("6:生成返回给子系统的Code")
 	result, err := u.m.GenerateCodeAndSysInfo(ident, member.UserID)
 	if err != nil {
 		return err
 	}
 
-	ctx.Log.Info("5: 设置jwt数据")
+	ctx.Log.Info("7: 设置jwt数据")
 	ctx.Response.SetJWT(member)
 
 	return result

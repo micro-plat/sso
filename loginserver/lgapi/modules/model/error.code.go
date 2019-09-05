@@ -36,4 +36,13 @@ const (
 
 	//用户还未绑定微信账户
 	ERR_USER_NOTBINDWX = 912
+
+	//验证码为空
+	ERR_USER_EMPTY_VALIDATECODE = 913
+
+	//验证码过期
+	ERR_VALIDATECODE_TIMEOUT = 914
+
+	//验证码错误
+	ERR_VALIDATECODE_WRONG = 915
 )

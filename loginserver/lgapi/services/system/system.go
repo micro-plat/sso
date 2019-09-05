@@ -1,8 +1,6 @@
 package system
 
 import (
-	"fmt"
-
 	"github.com/micro-plat/hydra/component"
 	"github.com/micro-plat/hydra/context"
 	"github.com/micro-plat/sso/loginserver/lgapi/modules/logic"
@@ -25,13 +23,12 @@ func NewSystemHandler(container component.IContainer) (u *SystemHandler) {
 func (u *SystemHandler) Handle(ctx *context.Context) (r interface{}) {
 	ctx.Log.Info("-------获取系统信息配置---------")
 
-	if err := ctx.Request.Check("ident"); err != nil {
-		return fmt.Errorf("参数错误：%v", err)
-	}
-
-	data, err := u.sys.QuerySysInfoByIdent(ctx.Request.GetString("ident"))
+	ctx.Log.Info("1: 获取系统信息配置参数")
+	data, err := u.sys.GetSystemConfig(ctx.Request.GetString("ident"))
 	if err != nil {
 		return err
 	}
+
+	ctx.Log.Info("2: 返回数据")
 	return data
 }

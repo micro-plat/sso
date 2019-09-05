@@ -68,7 +68,7 @@ func (u *BindWxHandler) SaveHandle(ctx *context.Context) (r interface{}) {
 
 	ctx.Log.Info("3: 保存用户的openid")
 	ctx.Log.Infof("data: %v+", data)
-	if err := u.mem.SaveUserOpenID(data); err != nil {
+	if err := u.mem.UpdateUserOpenID(data); err != nil {
 		return err
 	}
 	return "success"

@@ -36,7 +36,7 @@ func (u *SendCodeHandler) Handle(ctx *context.Context) (r interface{}) {
 	}
 
 	ctx.Log.Info("3: 发送微信验证码")
-	if err := u.mem.SendWxValidCode(ctx.Request.GetString("username"), openID); err != nil {
+	if err := u.mem.SendWxValidCode(ctx.Request.GetString("username"), openID, ctx.Request.GetString("ident")); err != nil {
 		return err
 	}
 
