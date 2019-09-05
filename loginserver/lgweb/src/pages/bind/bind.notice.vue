@@ -2,7 +2,7 @@
 <div class="notice-container">
     <div class="bind-info">
         <div class="info-ico">
-            <i :class="type==1? 'iconfont icon-success':'iconfont icon-fail1f'"></i>
+            <i :class="type==1? 'iconfont icon-success':'iconfont icon-fail'"></i>
             <div v-if="type==1" class="info-text">绑定成功</div>
             <div v-if="type==0" class="info-text">绑定失败</div>
             <div :class="type==1? 'info-notice': 'info-notice color-black'">{{msg}}</div>
@@ -74,7 +74,7 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
-.icon-fail1f:before {
+.icon-fail:before {
   content: "\e6d9";
 }
 
@@ -87,7 +87,7 @@
 .bind-info{ padding:10% 10px 10px 10px;}
 .info-ico{ text-align:center; padding:10px;}
 .info-ico i{ font-size:54px; color:#4bc065;}
-.icon-fail1f{ color:#F00 !important;}
+.icon-fail{ color:#F00 !important;}
 .info-text{ padding:10px; font-size:20px; color:#333; text-align:center;}
 .info-notice{ padding:15px 10px 10px 10px; color:#aeaeae; text-align:center; line-height:20px;}
 </style>
