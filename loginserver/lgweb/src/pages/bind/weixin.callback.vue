@@ -24,14 +24,11 @@
             this.notice = "绑定中...";
             this.$post("/member/bind/save",{code:this.code, state: this.state})
             .then(res =>{
-                this.notice = "绑定成功...";
+                this.$router.push({path:"/bindnotice", query :{ type: 1, errorcode:0 }});
             }).catch(err => {
-                switch (err.response.status) {
-                    case 911:
-                        this.notice = "绑定超时,请重新扫码绑定";
-                        break;
-                    default:
-                        this.notice = "绑定失败,稍后再试";
+                console.log(err);
+                if (err.response.status) {
+                    this.$router.push({path:"/bindnotice", query :{ type: 0, errorcode:err.response.status }});
                 }
             });
         }
