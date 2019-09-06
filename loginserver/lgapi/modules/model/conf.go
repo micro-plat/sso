@@ -13,7 +13,10 @@ const WxBindSecrect = `qwertyuiop`
 //Conf 应用程序配置
 type Conf struct {
 
-	//登录是否需要验证码
+	//BindTimeOut 后台发送二维图片(绑定微信账户)  过期时间(秒)
+	BindTimeOut int `json:"bind_timeout" valid:"required"`
+
+	//RequireWxCode 登录是否需要验证码
 	RequireWxCode bool `json:"require_wx_code"`
 
 	//UserLoginFailCount 用户可以输入几次错误密码,之后用户被锁定

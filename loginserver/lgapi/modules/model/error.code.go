@@ -45,4 +45,7 @@ const (
 
 	//验证码错误
 	ERR_VALIDATECODE_WRONG = 915
+
+	//二维码超时(用户系统生成的二维码时间过期)
+	ERR_QRCODE_TIMEOUT = 916
 )

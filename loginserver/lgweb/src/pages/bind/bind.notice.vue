@@ -48,6 +48,9 @@
                 case 911:
                     this.msg = "绑定超时,请重新扫码绑定";
                     break;
+                case 916:
+                    this.msg = "二维码过期,请联系管理员重新生成"
+                    break;
                 default:
                     this.msg = "系统错误,稍后再试"
             }

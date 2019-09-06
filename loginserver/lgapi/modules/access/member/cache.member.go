@@ -130,9 +130,8 @@ func (l *CacheMember) CheckLoginValidateCode(userName, wxCode string) error {
 		return context.NewError(model.ERR_VALIDATECODE_TIMEOUT, "验证码过期,重新发送验证码")
 	}
 
+	cacheCountKey := transform.Translate(cachekey.CacheLoginValidateCodeFaildCount, "user_name", userName)
 	if !strings.EqualFold(value, wxCode) {
-		cacheCountKey := transform.Translate(cachekey.CacheLoginValidateCodeFaildCount, "user_name", userName)
-
 		var newval int64 = 1
 		if flag := cache.Exists(cacheCountKey); !flag {
 			cache.Set(cacheCountKey, types.GetString(newval), 60*5)
@@ -149,5 +148,6 @@ func (l *CacheMember) CheckLoginValidateCode(userName, wxCode string) error {
 		return context.NewError(model.ERR_VALIDATECODE_WRONG, "验证码错误")
 	}
 	cache.Delete(validateCodeKey)
+	cache.Delete(cacheCountKey)
 	return nil
 }

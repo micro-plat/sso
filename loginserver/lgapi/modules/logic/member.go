@@ -220,24 +220,23 @@ func (m *MemberLogic) unLockUser(userName string) error {
 
 //CheckUerInfo 验证要绑定的用户信息
 func (m *MemberLogic) CheckUerInfo(userID int64, sign, timestamp string) error {
-	//验证签名
 	values := net.NewValues()
 	values.Set("user_id", string(userID))
 	values.Set("timestamp", timestamp)
-
 	values = values.Sort()
 	raw := values.Join("", "") + model.WxBindSecrect
 	if !strings.EqualFold(sign, md5.Encrypt(raw)) {
 		return context.NewError(model.ERR_BIND_INFOWRONG, "绑定信息错误,请重新去用户系统扫码")
 	}
+	sendTime, _ := strconv.ParseInt(timestamp, 10, 64)
+	if time.Now().Unix()- sendTime > int64(model.GetConf(m.c).BindTimeOut) {
+		return context.NewError(model.ERR_QRCODE_TIMEOUT, "二维码过期,请联系管理员重新生成")
+	}
 
-	//查询用户
 	data, err := m.db.QueryByID(userID)
 	if err != nil {
 		return err
 	}
-
-	//验证用户状态
 	status := data.GetInt("status")
 	if status == enum.UserLock {
 		return context.NewError(model.ERR_USER_LOCKED, "用户被禁用")
@@ -245,7 +244,6 @@ func (m *MemberLogic) CheckUerInfo(userID int64, sign, timestamp string) error {
 	if status == enum.UserDisable {
 		return context.NewError(model.ERR_USER_LOCKED, "用户被锁定")
 	}
-
 	if data.GetString("wx_openid") != "" {
 		return context.NewError(model.ERR_USER_EXISTSWX, "用户已绑定微信")
 	}
