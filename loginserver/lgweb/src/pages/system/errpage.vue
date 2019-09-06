@@ -14,10 +14,16 @@
     data () {
       return {
           msg: "",
-          errorType: 0
+          errorType: 0,
+          errorTemplate:{
+            0: "登录出错了,等会再试",
+            901: "系统被禁用,暂时不能登录",
+            902: "用户被锁定，暂时无法登录",
+            903: "用户被禁用，暂时无法登录",
+            906: "没有相应的系统权限,请联系管理员"          
+          }
       }
     },
-
     mounted(){
       document.title = "登录出错-能源业务中心运营管理系统";
       if (this.$route.query.type) {
@@ -28,41 +34,7 @@
 
     methods:{
         showMsg() {
-           switch (this.errorType) {
-               case 0 :
-                   this.msg = '登录出错了,等会再试';
-                   break;
-                case 1:
-                    this.msg = '没有相应的系统权限,请联系管理员';
-                    break;
-                case 2:
-                    this.msg = '用户被禁用或者被锁,请联系管理员';
-                    break;
-                case 3:
-                    this.msg = '用户被锁定，暂时无法登录';
-                    break;
-                case 4:
-                    this.msg = '用户被禁用，暂时无法登录';
-                    break;
-                case 5:
-                    this.msg = '微信登录标识过期,请重新登录';
-                    break;
-                case 6:
-                    this.msg = '调用微信失败，稍后再登录';
-                    break;
-                case 7:
-                    this.msg = '请先关注公众号,并且绑定后才能使用微信登录';
-                    break;
-                case 8:
-                    this.msg = '系统被禁用,暂时不能登录';
-                    break;
-
-                default:
-                  this.msg = '登录出错,等会再试';
-           }
-        },
-        signOut() {
-            this.$router.push({ path: '/login'});
+          this.msg = this.errorTemplate[this.errorType] || "登录出错,等会再试"
         }
     }
   }

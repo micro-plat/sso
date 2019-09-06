@@ -48,7 +48,20 @@
         codeLabel:"微信验证码",
         codeHolder:"请输入微信验证码",
         sendBtnLabel:"获取微信验证码",
-        requireCode:false
+        requireCode:false,
+
+        errorTemplate:{
+            901: "系统被锁定,不能登录",
+            902: "用户被锁定,不能登录",
+            903: "用户被禁用,不能登录",
+            905: "用户不存在",
+            906: "没有相关系统权限,不能登录",
+            907: "用户名或密码错误",
+            912: "请先绑定微信账户,并且关注【运维云管家】",
+            913: "验证码不能为空",
+            914: "验证码过期或不存在,重新发送验证码",
+            915: "验证码错误"
+          }
       }
     },
     components:{ 
@@ -87,17 +100,12 @@
             this.$refs.LoginUp.showError("微信验证码发送成功,【运维云管家】中查看");
             this.$refs.LoginUp.countDown(this.sendBtnLabel);
           })
-          .catch(error=>{
-            switch(error.response.status) {
-              case 905:
-                this.$refs.LoginUp.showError("用户不存在");
-                break;
-              case 912:
-                this.$refs.LoginUp.showError("请先绑定微信账户,并且关注【运维云管家】");
-                break;
-              default:
-                this.$refs.LoginUp.showError("系统繁忙,稍后再试");
-            }
+          .catch(err=>{
+              var msg = "登录失败,稍后再试";
+              if (err.response) {
+                msg = this.errorTemplate[err.response.status] || msg
+              }
+              this.$refs.LoginUp.showError(msg);
           })
       },
 
@@ -129,34 +137,9 @@
             }, 300);
           })
           .catch(err => {
-              var msg = "登录失败";
-              switch (err.response.status) {
-                case 901:
-                  msg = "系统被锁定,不能登录"
-                  break;
-                case 902:
-                  msg = "用户被锁定,不能登录"
-                  break;
-                case 903:
-                  msg = "用户被禁用,不能登录";
-                  break;
-                case 906:
-                  msg = "没有相关系统权限,不能登录";
-                  break;
-                case 907:
-                  msg = "用户名或密码错误";
-                  break;  
-                case 913:
-                  msg = "验证码不能为空";
-                  break;
-                case 914:
-                  msg = "验证码过期或不存在,重新发送验证码";
-                  break;
-                case 915:
-                  msg = "验证码错误";
-                  break;
-                default:
-                  msg = "登录失败,稍后再试";
+              var msg = "登录失败,稍后再试";
+              if (err.response) {
+                msg = this.errorTemplate[err.response.status] || msg
               }
               this.$refs.LoginUp.showError(msg)
           });

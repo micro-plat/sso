@@ -39,24 +39,12 @@
                 }
                 this.$router.push({ path: '/choose'});   
             }).catch(err => {
-                switch (err.response.status) {
-                    case 901:
-                      this.$router.push({ path: '/errpage', query: {type: 8}});
-                      break;
-                    case 902:
-                      this.$router.push({ path: '/errpage', query: {type: 3}});
-                      break;
-                    case 903:
-                      this.$router.push({ path: '/errpage', query: {type: 4}})
-                      break;
-                    case 906:
-                      this.$router.push({ path: '/errpage', query: {type: 1}})
-                      break;
-                    case 403:
-                      this.$router.push({ path: jumpLogin(this.ident), query:{callback: this.callback}});
-                      break;
-                    default:
-                      this.$router.push({ path: '/errpage', query: {type: 0}});
+                if (err.response.status) {
+                  if (err.response.status == 403){
+                    this.$router.push({ path: jumpLogin(this.ident), query:{callback: this.callback}});
+                    return;
+                  }
+                  this.$router.push({ path: '/errpage', query: {type: err.response.status}});
                 }
             });
         }

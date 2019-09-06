@@ -17,7 +17,15 @@
       return {
           type:1, //1表示成功, 0表示失败
           errorCode: 0, //错误码 
-          msg: ""
+          msg: "",
+          errorTemplate:{
+            902: "用户被锁定",
+            903: "用户被禁用",
+            909: "绑定信息错误,请重新去用户系统扫码",
+            910: "用户已绑定微信",
+            911: "绑定超时,请重新扫码绑定",
+            916: "二维码过期,请联系管理员重新生成"
+          }
       }
     },
     created() {
@@ -32,29 +40,8 @@
                 this.msg = "您已成功绑定微信账户,请关注【运维云管家】";
                 return
             }
-            switch(this.errorCode) {
-                case 902:
-                    this.msg = "用户被锁定"
-                    break;
-                case 903:
-                    this.msg = "用户被禁用"
-                    break;
-                case 909:
-                    this.msg = "绑定信息错误,请重新去用户系统扫码"
-                    break;
-                case 910:
-                    this.msg = "用户已绑定微信"
-                    break;
-                case 911:
-                    this.msg = "绑定超时,请重新扫码绑定";
-                    break;
-                case 916:
-                    this.msg = "二维码过期,请联系管理员重新生成"
-                    break;
-                default:
-                    this.msg = "系统错误,稍后再试"
-            }
             console.log(this.msg);
+            this.msg = this.errorTemplate[this.errorCode] || "系统错误,稍后再试";
         }
     }
   }
