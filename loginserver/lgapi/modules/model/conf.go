@@ -8,7 +8,7 @@ import (
 )
 
 //WxBindSecrect 微信绑定的加密串
-const WxBindSecrect = `qwertyuiop`
+const WxBindSecrect = `f19179a06954edd0`
 
 //Conf 应用程序配置
 type Conf struct {

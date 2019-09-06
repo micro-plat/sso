@@ -443,8 +443,7 @@ export default {
 
       this.$http.post("/user/generateqrcode", {user_id: userid})
         .then(res => {
-          //console.log(process.env.service.ssoWebHost + "/wxbind?userid=" + res.user_id + "&sign=" + res.sign + "&timestamp=" + res.timestamp);
-        
+          console.log(process.env.service.ssoWebHost + "/bindwx?userid=" + res.user_id + "&sign=" + res.sign + "&timestamp=" + res.timestamp + "&name=" + userName);
           jQuery('#qrcodeTable').qrcode(process.env.service.ssoWebHost + "/bindwx?userid=" + res.user_id + "&sign=" + res.sign + "&timestamp=" + res.timestamp + "&name=" + userName);
           this.$refs.qrCodeModal.open();
         })
