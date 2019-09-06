@@ -161,6 +161,15 @@ func (l *DBMember) UpdateUserStatus(userID int64, status int) error {
 //UpdateUserOpenID 保存用户的openId信息
 func (l *DBMember) UpdateUserOpenID(data map[string]string) error {
 	db := l.c.GetRegularDB()
+	exists, _, _, err1 := db.Scalar(sqls.OpenIDIsExists, map[string]interface{}{
+		"openid": data["openid"],
+	})
+	if err1 != nil {
+		return err1
+	}
+	if types.GetInt(exists, 0) == 1 {
+		return context.NewError(model.ERR_OPENID_ONLY_BIND_Once, "一个微信只能绑定一个账户")
+	}
 	_, _, _, err := db.Execute(sqls.AddUserOpenID, map[string]interface{}{
 		"user_id": data["userid"],
 		"openid":  data["openid"],

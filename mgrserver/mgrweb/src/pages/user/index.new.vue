@@ -29,7 +29,7 @@
           </form>
         </div>
       </div>
-      <bootstrap-modal ref="qrCodeModal" :need-header="true" :need-footer="true">
+      <bootstrap-modal ref="qrCodeModal" :need-header="true" size="small">
         <div slot="title">绑定微信账号</div>
         <div slot="body">
           <div class="panel panel-default">
@@ -37,9 +37,6 @@
             <div id="qrcodeTable"></div>
           </div>
           </div>
-        </div>
-        <div slot="footer">
-          <el-button size="small" @click="onQrCodeClose">取消</el-button>
         </div>
       </bootstrap-modal>
       <bootstrap-modal ref="editModal" :need-header="true" :need-footer="true" :closed="resetSys">
@@ -443,8 +440,12 @@ export default {
 
       this.$http.post("/user/generateqrcode", {user_id: userid})
         .then(res => {
-          console.log(process.env.service.ssoWebHost + "/bindwx?userid=" + res.user_id + "&sign=" + res.sign + "&timestamp=" + res.timestamp + "&name=" + userName);
-          jQuery('#qrcodeTable').qrcode(process.env.service.ssoWebHost + "/bindwx?userid=" + res.user_id + "&sign=" + res.sign + "&timestamp=" + res.timestamp + "&name=" + userName);
+          //console.log(process.env.service.ssoWebHost + "/bindwx?userid=" + res.user_id + "&sign=" + res.sign + "&timestamp=" + res.timestamp + "&name=" + userName);
+          //jQuery('#qrcodeTable').qrcode(process.env.service.ssoWebHost + "/bindwx?userid=" + res.user_id + "&sign=" + res.sign + "&timestamp=" + res.timestamp + "&name=" + userName);
+
+          console.log("http://192.168.5.78:8091" + "/bindwx?userid=" + res.user_id + "&sign=" + res.sign + "&timestamp=" + res.timestamp + "&name=" + userName);
+          jQuery('#qrcodeTable').qrcode("http://192.168.5.78:8091" + "/bindwx?userid=" + res.user_id + "&sign=" + res.sign + "&timestamp=" + res.timestamp + "&name=" + userName);
+
           this.$refs.qrCodeModal.open();
         })
         .catch(err => {
@@ -748,4 +749,4 @@ export default {
   padding: 10px 15px;
   text-align: right;
 }
-</style>
+ </style>

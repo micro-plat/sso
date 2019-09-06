@@ -19,6 +19,9 @@ where user_id = @user_id and
 	  (wx_openid is null or  wx_openid = '') 
 limit 1;`
 
+//OpenIDIsExists 判断当前的openid是否已绑定过用户
+const OpenIDIsExists = `SELECT 1 FROM sso_user_info u WHERE u.wx_openid = @openid limit 1;`
+
 //QueryUserInfoByUID 查询用户信息
 const QueryUserInfoByUID = `
 select 

@@ -48,4 +48,7 @@ const (
 
 	//二维码超时(用户系统生成的二维码时间过期)
 	ERR_QRCODE_TIMEOUT = 916
+
+	//一个微信只能绑定一个账户
+	ERR_OPENID_ONLY_BIND_Once = 917
 )
