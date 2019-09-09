@@ -29,10 +29,10 @@
           </form>
         </div>
       </div>
-      <bootstrap-modal ref="qrCodeModal" :need-header="true" size="small">
+      <bootstrap-modal id ="qrCodeModal" ref="qrCodeModal" :need-header="true" size="small">
         <div slot="title">绑定微信账号</div>
         <div slot="body">
-          <div class="panel panel-default">
+          <div>
           <div class="panel-body">
             <div id="qrcodeTable"></div>
           </div>
@@ -748,5 +748,9 @@ export default {
 .page-pagination {
   padding: 10px 15px;
   text-align: right;
+}
+
+#qrCodeModal .modal-footer {
+  display: none;
 }
  </style>

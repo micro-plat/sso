@@ -8,6 +8,9 @@
             <div :class="type==1? 'info-notice': 'info-notice color-black'">{{msg}}</div>
         </div>
     </div>
+    <div v-if="type==1"  class="cloud-manager">
+      <img src="../../img/cloud_manager.jpg" />
+    </div>
 </div>
 </template>
 <script>
@@ -22,10 +25,10 @@
             902: "用户被锁定",
             903: "用户被禁用",
             909: "绑定信息错误,请重新去用户系统扫码",
-            910: "用户已绑定微信",
+            910: "账号已绑定微信",
             911: "绑定超时,请重新扫码绑定",
             916: "二维码过期,请联系管理员重新生成",
-            917: "一个微信只能绑定一个账户"
+            917: "一个微信只能绑定一个账号"
           }
       }
     },
@@ -38,7 +41,7 @@
     methods:{
         showMsg(){
             if (this.type == 1) {
-                this.msg = "您已成功绑定微信账户,请关注【运维云管家】";
+                this.msg = "已绑定微信账户,请关注【运维云管家】";
                 return
             }
             console.log(this.msg);
@@ -81,4 +84,5 @@
 .icon-fail{ color:#F00 !important;}
 .info-text{ padding:10px; font-size:20px; color:#333; text-align:center;}
 .info-notice{ padding:15px 10px 10px 10px; color:#aeaeae; text-align:center; line-height:20px;}
+.cloud-manager {text-align: center}
 </style>

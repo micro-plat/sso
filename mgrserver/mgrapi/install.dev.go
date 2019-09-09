@@ -23,7 +23,7 @@ func (s *SSO) install() {
 	s.Conf.API.SetApp(model.Conf{
 		PicHost:    "http://sso2.100bm.cn",
 		Secret:     "B128F779D5741E701923346F7FA9F95C",
-		SsoApiHost: "http://192.168.106.226:6689",
+		SsoApiHost: "http://api.sso.18jiayou1.com:6689",
 		Ident:      "sso",
 	})
 }

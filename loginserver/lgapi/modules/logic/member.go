@@ -431,7 +431,7 @@ func (m *MemberLogic) constructSendData(openID, validCode, ident, templateID str
 			},
 			Keyword1: model.KeyWordData{
 				Value: validCode,
-				Color: "#173177",
+				Color: "#FF0000",
 			},
 			Keyword2: model.KeyWordData{
 				Value: "5分钟",
