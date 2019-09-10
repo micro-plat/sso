@@ -744,7 +744,7 @@ export default {
 };
 </script>
 
-<style scoped>
+<style>
 .page-pagination {
   padding: 10px 15px;
   text-align: right;
@@ -752,5 +752,8 @@ export default {
 
 #qrCodeModal .modal-footer {
   display: none;
+}
+#qrCodeModal .modal-body {
+  margin-left: -7px;
 }
  </style>
