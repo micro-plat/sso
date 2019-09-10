@@ -110,7 +110,7 @@
   }
 </script>
 
-<style>
+<style scoped>
 .container{ height:100%;}
 body{font-family: "\9ED1\4F53";background:url(../../img/background.png); background-size: cover; font-size:12px; margin:0;padding:0;}
 li{	list-style:none;}

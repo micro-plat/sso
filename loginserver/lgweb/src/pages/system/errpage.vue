@@ -40,7 +40,7 @@
   }
 </script>
 
-<style>
+<style scoped>
 .main {
   margin-top:200px;
 }

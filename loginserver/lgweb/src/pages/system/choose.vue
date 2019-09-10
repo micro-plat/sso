@@ -54,7 +54,7 @@
   }
 </script>
 
-<style>
+<style scoped>
 .container{ height:100%;}
 
 body{font-family:"黑体";background:#f5f5f5; font-size:12px; margin:0;padding:0;}
