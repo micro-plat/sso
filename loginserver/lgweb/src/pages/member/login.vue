@@ -98,7 +98,7 @@
          this.$post("/member/sendcode", e)
           .then(res=>{
             this.$refs.LoginUp.showError("微信验证码发送成功,【运维云管家】中查看");
-            this.$refs.LoginUp.countDown(this.sendBtnLabel);
+            this.$refs.LoginUp.countDown();
           })
           .catch(err=>{
               var msg = "登录失败,稍后再试";
@@ -140,6 +140,9 @@
               var msg = "登录失败,稍后再试";
               if (err.response) {
                 msg = this.errorTemplate[err.response.status] || msg
+                if (err.response.status == 907) {
+                  this.$refs.LoginUp.reSendCode();
+                }
               }
               this.$refs.LoginUp.showError(msg)
           });

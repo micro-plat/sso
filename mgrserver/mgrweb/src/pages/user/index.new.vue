@@ -440,11 +440,11 @@ export default {
 
       this.$http.post("/user/generateqrcode", {user_id: userid})
         .then(res => {
-          //console.log(process.env.service.ssoWebHost + "/bindwx?userid=" + res.user_id + "&sign=" + res.sign + "&timestamp=" + res.timestamp + "&name=" + userName);
-          //jQuery('#qrcodeTable').qrcode(process.env.service.ssoWebHost + "/bindwx?userid=" + res.user_id + "&sign=" + res.sign + "&timestamp=" + res.timestamp + "&name=" + userName);
+          console.log(process.env.service.ssoWebHost + "/bindwx?userid=" + res.user_id + "&sign=" + res.sign + "&timestamp=" + res.timestamp + "&name=" + userName);
+          jQuery('#qrcodeTable').qrcode(process.env.service.ssoWebHost + "/bindwx?userid=" + res.user_id + "&sign=" + res.sign + "&timestamp=" + res.timestamp + "&name=" + userName);
 
-          console.log("http://192.168.5.78:8091" + "/bindwx?userid=" + res.user_id + "&sign=" + res.sign + "&timestamp=" + res.timestamp + "&name=" + userName);
-          jQuery('#qrcodeTable').qrcode("http://192.168.5.78:8091" + "/bindwx?userid=" + res.user_id + "&sign=" + res.sign + "&timestamp=" + res.timestamp + "&name=" + userName);
+          // console.log("http://192.168.5.78:8091" + "/bindwx?userid=" + res.user_id + "&sign=" + res.sign + "&timestamp=" + res.timestamp + "&name=" + userName);
+          // jQuery('#qrcodeTable').qrcode("http://192.168.5.78:8091" + "/bindwx?userid=" + res.user_id + "&sign=" + res.sign + "&timestamp=" + res.timestamp + "&name=" + userName);
 
           this.$refs.qrCodeModal.open();
         })
