@@ -69,7 +69,7 @@ this.$fetch => this.$http.get
     },
     methods:{
       validSsoLogin(){
-          this.$http.post("xxx/xxx/xxx",{code: this.$route.query.code})
+          this.$http.post("/sso/login/verify",{code: this.$route.query.code})
             .then(res =>{
                 this.$sso.changeRouteAfterLogin(this.$router, res.user_name, res.role_name);
             }).catch(err => {
@@ -104,6 +104,7 @@ this.$fetch => this.$http.get
       :systemName="systemName"
       :userinfo="userinfo"
       :pwd="pwd"
+      :items="items"
       :signOut="signOut"
       ref="NewTap"
     >
@@ -123,6 +124,7 @@ this.$fetch => this.$http.get
         menus: [{}],  //菜单数据
         systemName: "用户权限系统",  //系统名称
         userinfo: {name:'wule',role:"管理员"},
+        items:[], //用户有权限的其他子系统
         indexUrl: "/user/index",  这个是进入系统后默认加载的页面
       }
     },
@@ -144,18 +146,19 @@ this.$fetch => this.$http.get
         this.$sso.signOut();
       },
       getMenu(){
-        this.$http.get("/menu")
+        this.$http.get("/sso/member/menus/get")
           .then(res => {
             this.menus = res;
             this.$refs.NewTap.open("首页", this.indexUrl);
             this.getSystemInfo();
+            this.getUserOtherSys();
           })
           .catch(err => {
             console.log(err)
           });
       },
       getSystemInfo() {
-        this.$http.get("/system/info/get")
+        this.$http.get("/sso/system/info/get")
         .then(res => {
           this.themes = res.themes;
           this.systemName = res.systemName;
@@ -163,7 +166,16 @@ this.$fetch => this.$http.get
         }).catch(err => {
           console.log(err);
         })
-      }
+      },
+      getUserOtherSys() {
+        this.$http.get("sso/member/systems/get")
+        .then(res => {
+         this.items = this.$sso.transformSysInfo(res);
+        })
+        .catch(err => {
+          console.log(err);
+        })
+      },
     }
   }
 </script>

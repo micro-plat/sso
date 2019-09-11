@@ -6,7 +6,7 @@
     <span class="user-name"><a class="name">登录账号</a><a class="notice-info">{{userName}}</a></span>
   </div>
   <div class="notice">您正在绑定微信账户,绑定后请关注微信公众号【运维云管家】,登录验证码会通过此公众号发送</div>
-  <div class="button"><button class="btn" @click="checkUserInfo">确认</button></div>
+  <div class="button"><button class="btn" @click="checkUserInfo" :disabled="disabled">{{btnMsg}}</button></div>
 </div>
 </template>
 
@@ -18,7 +18,9 @@
         userName:"",
         userId:0,
         sign:"",
-        timestamp:0
+        timestamp:0,
+        disabled: false,
+        btnMsg:"确认"
       }
     },
     mounted(){
@@ -27,9 +29,22 @@
       this.sign = this.$route.query.sign;
       this.userName = this.$route.query.name;
       this.timestamp = this.$route.query.timestamp;
+      this.getUserInfo();
     },
 
     methods:{
+        getUserInfo() {
+          this.$post("/member/bind/info",{user_id:this.userId})
+          .then(res => {
+            if (res.wx_openid) {
+              this.disabled = true;
+              this.btnMsg = "账号已绑定过微信";
+            }
+          })
+          .catch(err => {
+            console.log(err);
+          })
+        },
         checkUserInfo() {
             this.$post("/member/bind/check",{user_id:this.userId, sign:this.sign, timestamp:this.timestamp})
             .then(res =>{
@@ -51,10 +66,10 @@
 </script>
 
 <style scoped>
-*{margin:0;padding:0;}
-html,body{height:100%; }
+/* *{margin:0;padding:0;}
+html,body{height:100%; } */
 li{	list-style:none;}
-body{font-family:"黑体";	background:#f5f5f5; font-size:14px; }
+/* body{font-family:"黑体";	background:#f5f5f5; font-size:14px; } */
 a:visited {	text-decoration: none;}
 a:hover {	text-decoration: none;}
 a:active {	text-decoration: none;}
@@ -74,5 +89,5 @@ input:disabled,input[disabled],button:disabled,button[disabled]{ border: 1px sol
 .notice{ padding:0 20px; color:#acabab; font-size:14px; line-height:26px; letter-spacing:1px; }
 .button{ position:absolute; width:100%; bottom:40px;text-align:center; left: 0;}
 .btn{ width:90%; border:0px; background:#4bc065; padding:15px 0; font-size:16px; color:#fff; font-weight:bold;}
-#vapp{ height: 100%;}
+/* #vapp{ height: 100%;} */
 </style>

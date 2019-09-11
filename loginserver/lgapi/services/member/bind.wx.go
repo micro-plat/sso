@@ -21,6 +21,20 @@ func NewBindWxHandler(container component.IContainer) (u *BindWxHandler) {
 	}
 }
 
+//InfoHandle 获取要绑定的用户信息
+func (u *BindWxHandler) InfoHandle(ctx *context.Context) (r interface{}) {
+	ctx.Log.Info("-------获取要绑定的用户信息---------")
+
+	ctx.Log.Info("1: 获取用户信息")
+	data, err := u.mem.QueryUserInfoByID(ctx.Request.GetInt64("user_id"))
+	if err != nil {
+		return err
+	}
+
+	ctx.Log.Info("2: 返回数据")
+	return data
+}
+
 //CheckHandle 验证用户信息
 func (u *BindWxHandler) CheckHandle(ctx *context.Context) (r interface{}) {
 	ctx.Log.Info("-------验证要绑定的用户信息---------")

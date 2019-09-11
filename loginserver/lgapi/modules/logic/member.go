@@ -13,6 +13,7 @@ import (
 	"github.com/micro-plat/lib4go/utility"
 	"github.com/micro-plat/lib4go/net"
 	"github.com/micro-plat/lib4go/types"
+	"github.com/micro-plat/lib4go/db"
 	"github.com/micro-plat/lib4go/security/md5"
 	"github.com/micro-plat/lib4go/net/http"
 	"github.com/micro-plat/sso/loginserver/lgapi/modules/access/member"
@@ -37,6 +38,7 @@ type IMemberLogic interface {
 	ValidStateAndGetOpenID(stateCode, wxCode string) (map[string]string,error)
 	UpdateUserOpenID(data map[string]string) error
 	ValidUserInfo(userName string) (string,error)
+	QueryUserInfoByID(uid int64) (db.QueryRow, error)
 }
 
 //MemberLogic 用户登录管理
@@ -285,6 +287,11 @@ func (m *MemberLogic) ValidStateAndGetOpenID(stateCode, wxCode string) (map[stri
 //UpdateUserOpenID 保存用户的openid
 func (m *MemberLogic) UpdateUserOpenID(data map[string]string) error {
 	return m.db.UpdateUserOpenID(data)
+}
+
+//QueryUserInfoByID 通过user_id获取用户信息
+func (m *MemberLogic) QueryUserInfoByID(uid int64) (db.QueryRow, error) {
+	return m.db.QueryByID(uid)
 }
 
 // GetWxUserOpID xx

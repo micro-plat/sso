@@ -1,6 +1,6 @@
 <template>
     <div class="container">
-        <h1 class="sso-title">能源业务中心运营管理系统</h1>
+        <div class="sso-title">能源业务中心运营管理系统</div>
         <div>
             <div class="changepwd_content">
                 <div class="title-text">修改密码</div>
@@ -111,8 +111,13 @@
 </script>
 
 <style scoped>
-.container{ height:100%;}
-body{font-family: "\9ED1\4F53";background:url(../../img/background.png); background-size: cover; font-size:12px; margin:0;padding:0;}
+.container{ 
+    width:100%;
+    height:100%; 
+    background:url(../../img/background.png); 
+    background-size: cover;
+}
+
 li{	list-style:none;}
 .input{ border:none;}
 .input{ border:none;font-family: "\9ED1\4F53"; width:100%;	}
@@ -191,6 +196,7 @@ li{	list-style:none;}
 }
 .footer{
     margin: 4vw .3vw 2vw;
+    padding-bottom: 26px;
 }
 .footer p {
     font-size: 14px;
@@ -204,7 +210,8 @@ li{	list-style:none;}
     color: #fff;
     letter-spacing: 3px;
     text-align: center;
-    margin: 3vw 1vw;
+    padding-top: 36px;
+    /* margin: 3vw 1vw; */
     font-family: Josefin Sans,sans-serif;
 }
  ::-webkit-input-placeholder {
@@ -221,4 +228,6 @@ li{	list-style:none;}
   :-ms-input-placeholder {
     color: #333;
   }
+
+  /* body{font-family: "\9ED1\4F53";background:url(../../img/background.png); background-size: cover; font-size:12px; margin:0;padding:0;} */
 </style>

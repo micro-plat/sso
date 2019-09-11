@@ -55,9 +55,16 @@
 </script>
 
 <style scoped>
-.container{ height:100%;}
 
-body{font-family:"黑体";background:#f5f5f5; font-size:12px; margin:0;padding:0;}
+.container{ 
+    background: url(../../img/background.png) ;
+    background-size: cover;
+    height: 100%;
+    width: 100%;
+    position: absolute;
+}
+
+/* body{font-family:"黑体";background:#f5f5f5; font-size:12px; margin:0;padding:0;} */
 
 li{	list-style:none;}
 
@@ -98,9 +105,9 @@ li{	list-style:none;}
 .list:hover {
     cursor: pointer;
 }
- body{
+ /* body{
     background: url(../../img/background.png) ;
-     background-size: cover;
-} 
+    background-size: cover;
+}  */
 
 </style>

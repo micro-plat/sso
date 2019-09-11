@@ -42,12 +42,18 @@
 
 <style scoped>
 .main {
-  margin-top:200px;
+  /* margin-top:200px; */
+  height: 100%;
+	width: 100%;
+  position: absolute;
+  background:url(../../img/background.png); 
+  background-size: cover;
 }
 .content {
     width: 60%;
     text-align: center;
     margin: 0 auto;
+    padding-top: 250px;
 }
 .message {
   font-size:20px;
