@@ -14,8 +14,7 @@ select
 from sso_user_info t
 left join sso_user_role r on r.user_id = t.user_id
 where 
-	1=1 
-	and if(@role_id <> '',r.role_id=@role_id,1=1) 
+	if(@role_id <> '',r.role_id=@role_id,1=1) 
 	#user_name
 group by t.user_id,
 			t.user_name,
@@ -24,8 +23,7 @@ group by t.user_id,
 			t.email,
 			t.create_time,
 			t.ext_params
-order by 
-	t.user_id
+order by t.status,t.user_id
 limit @start, @ps
 `
 

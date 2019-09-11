@@ -80,15 +80,6 @@ this.$fetch => this.$http.get
   }
 </script>
 ```
-```
-说明: "xxx/xxx/xxx"是服务端验证地址,记住服务端要将此路径排除登录验证(zookeeper -> auth文件-> exclude中 一定要加上此路径, 不然会一直空转)
-```
-
-##### 3.2 服务端增加一个上面提到的接口 xxx/xxx/xxx
-```
-里面调用 data, err := model.GetSSOClient(u.c).CheckCodeLogin(code)
-然后处理自己的业务，同时生成子系统的jwt
-```
 
 ##### 3.3 处理修改密码和退出,以及菜单控件的修改 (一般是 menu.vue)
 ``` js
