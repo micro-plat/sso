@@ -1,9 +1,13 @@
 #!/bin/sh
 
+#############################################
+# ./builid.sh 线上环境， ./build.sh dev 线下环境
+#############################################
+
 #获取当前目录
 rootdir=$(pwd)
 
-rm -rf ./out 
+rm -rf $rootdir/out 
 echo ""
 echo "-----------(默认生成 prod环境, 开发环境传 dev)--------"
 
@@ -31,33 +35,32 @@ if [ $publishenv != "dev" ]; then
 fi
 
 echo "----------1:生成apiserver数据-----------"
-cd apiserver/apiserver/
-CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build  $tags -o "../../out/sso/apiserver/bin/apiserver_sso"
+cd $rootdir/apiserver/apiserver/
+CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build  $tags -o "$rootdir/out/sso/apiserver/bin/apiserver_sso"
 if [ $? -ne 0 ]; then
 	echo "apiserver 项目编译出错,请检查"
 	exit 1
 fi
-cd ../../
 
 
 echo "----------2:生成lgapi数据------------"
-cd loginserver/lgapi/
-CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build $tags -o "../../out/sso/loginserver/bin/lgapi_sso"
+cd $rootdir/loginserver/lgapi/
+CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build $tags -o "$rootdir/out/sso/loginserver/bin/lgapi_sso"
 if [ $? -ne 0 ]; then
 	echo "lgapi 项目编译出错,请检查"
 	exit 1
 fi
-cd ../
+
 
 echo "----------3:生成lgweb数据-----------"
-cd lgweb/
-CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build $tags -o "../../out/sso/loginserver/bin/lgweb_sso"
+cd $rootdir/loginserver/lgweb/
+CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build $tags -o "$rootdir/out/sso/loginserver/bin/lgweb_sso"
 if [ $? -ne 0 ]; then
 	echo "lgweb golang 项目编译出错,请检查"
 	exit 1
 fi
 
-rm -rf ./dist/
+rm -rf $rootdir/loginserver/lgweb/dist/
 echo ""
 echo "--------------------------------------"
 npm run build
@@ -66,32 +69,32 @@ if [ $? -ne 0 ]; then
 	exit 1
 fi
 
-cp -r ./dist/static/ ../../out/sso/loginserver/bin/static/
-
+cp -r $rootdir/loginserver/lgweb/dist/static/ $rootdir/out/sso/loginserver/bin/static/
 echo "--------------------------------------"
-cd ../../
+
 
 
 echo "----------4:生成mgrapi数据----------"
-cd mgrserver/mgrapi/
-CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build  $tags -o "../../out/sso/mgrserver/bin/mgrapi_sso"
+cd $rootdir/mgrserver/mgrapi/
+CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build  $tags -o "$rootdir/out/sso/mgrserver/bin/mgrapi_sso"
 if [ $? -ne 0 ]; then
 	echo "mgrapi 项目编译出错,请检查"
 	exit 1
 fi
-cd ../
 
 echo "-------创建mgrapi图片临时目录--------"
-mkdir -p ../out/sso/mgrserver/image
+mkdir -p $rootdir/out/sso/mgrserver/image
 
 echo "----------5:生成mgrweb数据------------"
-cd mgrweb/
-CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build  $tags -o "../../out/sso/mgrserver/bin/mgrweb_sso"
+cd $rootdir/mgrserver/mgrweb/
+CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build  $tags -o "$rootdir/out/sso/mgrserver/bin/mgrweb_sso"
 if [ $? -ne 0 ]; then
 	echo "mgrweb golang 项目编译出错,请检查"
 	exit
 fi
-rm -rf ./dist/
+
+rm -rf $rootdir/mgrserver/mgrweb/dist/
+
 echo ""
 echo "--------------------------------------"
 npm run build
@@ -99,10 +102,9 @@ if [ $? -ne 0 ]; then
 	echo "mgrweb vue项目编译出错,请检查"
 	exit
 fi
-cp -r ./dist/static/ ../../out/sso/mgrserver/bin/static/
+cp -r $rootdir/mgrserver/mgrweb/dist/static/ $rootdir/out/sso/mgrserver/bin/static/
 echo "--------------------------------------"
 
-cd ../../
 echo "-----------6:生成数据完成--------------"
 
 cd $rootdir/out/sso/loginserver/bin/
