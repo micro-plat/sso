@@ -53,7 +53,7 @@
         this.$http.get("/sso/member/menus/get")
           .then(res => {
             this.menus = res;
-            this.$refs.NewTap.open("首页", this.indexUrl);
+            this.$refs.NewTap.open("用户管理", this.indexUrl);
             this.getUserOtherSys();
           })
           .catch(err => {

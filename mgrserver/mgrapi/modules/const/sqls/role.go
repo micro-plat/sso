@@ -6,7 +6,7 @@ select
 	t.role_id,
 	t.name role_name,
 	t.status,
-	case when t.status = 0 then '正常' when t.status = 2 then '禁用' end status_label,
+	case when t.status = 0 then '启用' when t.status = 2 then '禁用' end status_label,
 	t.create_time
 from sso_role_info t
 where 

@@ -5,7 +5,7 @@ select
 	t.user_id,
 	t.user_name,
 	t.status,
-	case when t.status = 0 then '正常' when t.status=1 then '锁定' when t.status = 2 then '禁用' end status_label,
+	case when t.status = 0 then '启用' when t.status=1 then '锁定' when t.status = 2 then '禁用' end status_label,
 	t.mobile,
 	t.create_time,
 	t.email,
@@ -55,7 +55,7 @@ from (select
 		t.user_id,
 		t.user_name,
 		t.status,
-		case when t.status = 0 then '正常' when t.status=1 then '锁定' when t.status = 2 then '禁用' end status_label,
+		case when t.status = 0 then '启用' when t.status=1 then '锁定' when t.status = 2 then '禁用' end status_label,
 		t.mobile,
 		t.create_time,
 		t.email

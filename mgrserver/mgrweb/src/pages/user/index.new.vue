@@ -27,7 +27,7 @@
             <div class="form-group">
               <select v-model="paging.status" class="form-control visible-md visible-lg">
                 <option selected="selected" value="-1">---请选择状态---</option>
-                <option value="0">正常</option>
+                <option value="0">启用</option>
                 <option value="1">锁定</option>
                 <option value="2">禁用</option>
               </select>
