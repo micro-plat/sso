@@ -18,4 +18,5 @@ type QueryUserInput struct {
 	PageSize  int    `form:"ps" json:"ps" valid:"required"`
 	UserName  string `form:"username" json:"username"`
 	RoleID    string `form:"role_id" json:"role_id"`
+	Status    string `form:"status" json:"status"`
 }

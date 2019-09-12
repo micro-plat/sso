@@ -20,4 +20,5 @@ type QueryRoleInput struct {
 	PageIndex int    `form:"pi" json:"pi" valid:"required"`
 	PageSize  int    `form:"ps" json:"ps" valid:"required"`
 	RoleName  string `form:"role_name" json:"role_name"`
+	Status    int    `form:"status" json:"status"`
 }

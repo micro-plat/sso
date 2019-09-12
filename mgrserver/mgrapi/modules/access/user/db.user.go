@@ -42,6 +42,7 @@ func (u *DbUser) Query(input *model.QueryUserInput) (data db.QueryRows, total in
 	db := u.c.GetRegularDB()
 	params := map[string]interface{}{
 		"role_id":   input.RoleID,
+		"status":    input.Status,
 		"user_name": " and t.user_name like '%" + input.UserName + "%'",
 		"start":     (input.PageIndex - 1) * input.PageSize,
 		"ps":        input.PageSize,

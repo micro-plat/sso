@@ -24,6 +24,14 @@
                 <option v-for="(r, index) in roleList" :key="index" :value="r.role_id">{{r.name}}</option>
               </select>
             </div>
+            <div class="form-group">
+              <select v-model="paging.status" class="form-control visible-md visible-lg">
+                <option selected="selected" value="-1">---请选择状态---</option>
+                <option value="0">正常</option>
+                <option value="1">锁定</option>
+                <option value="2">禁用</option>
+              </select>
+            </div>
             <a class="btn btn-success" @click="searchClick">查询</a>
             <a class="btn btn-primary" @click="showModal(1,{})">添加用户</a>
           </form>
@@ -103,9 +111,6 @@
                     v-model="userInfo.ext_params"
                     placeholder="扩展参数"
                   ></textarea>
-                  <!-- <div class="form-heigit">
-                                    <span v-show="errors.first('ext')" class="text-danger">请输入正确的邮箱！</span>
-                  </div>-->
                 </div>
                 <div class="form-group sel-col-5">
                   <div class="form-inline">
@@ -254,10 +259,11 @@ export default {
   data() {
     return {
       paging: {
-        ps: 5,
+        ps: 10,
         pi: 1,
         username: "",
-        role_id: ""
+        role_id: "",
+        status: -1
       },
       pageSizes: [5, 10, 20, 50], //可选显示数据条数
 

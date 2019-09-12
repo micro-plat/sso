@@ -7,11 +7,17 @@
             <div class="panel-body">
                 <form class="form-inline" role="form">
                     <div class="form-group">
-                        <!-- <label class="sr-only" >角色名</label> -->
                         <input type="text" class="form-control" onkeypress="if(event.keyCode == 13) return false;" v-model="paging.role_name"  placeholder="请输入角色名">
-            </div>
-                        <a class="btn btn-success" @click="searchClick" >查询</a>
-                        <a class="btn btn-primary" @click="showModal(1,{})" >添加角色</a>
+                    </div>
+                     <div class="form-group">
+                        <select v-model="paging.status" class="form-control visible-md visible-lg">
+                            <option selected="selected" value="-1">---请选择状态---</option>
+                            <option value="0">正常</option>
+                            <option value="2">禁用</option>
+                        </select>
+                    </div>
+                    <a class="btn btn-success" @click="searchClick" >查询</a>
+                    <a class="btn btn-primary" @click="showModal(1,{})" >添加角色</a>
                 </form>
             </div>
         </div>
@@ -108,7 +114,8 @@ export default {
             paging: {
                 ps: 10,
                 pi: 1,
-                role_name: ""
+                role_name: "",
+                status: -1
             },
             pageSizes: [5, 10, 20, 50], //可选显示数据条数
             datalist: {

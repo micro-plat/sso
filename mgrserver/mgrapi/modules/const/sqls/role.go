@@ -11,8 +11,9 @@ select
 from sso_role_info t
 where 
 	1 = 1 #role_sql
+	and if(@status <> -1, t.status=@status,1=1)
 order by 
-	t.role_id
+	t.status,t.role_id
 limit @start, @ps
 `
 
@@ -24,6 +25,7 @@ from
 	sso_role_info t
 where 
 	1 = 1 #role_sql
+	and if(@status <> -1, t.status=@status,1=1)
 order by 
 	t.role_id
 `

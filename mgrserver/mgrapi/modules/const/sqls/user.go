@@ -14,6 +14,7 @@ select
 from sso_user_info t
 left join sso_user_role r on r.user_id = t.user_id
 where 
+    if(@status <> '-1', t.status=@status,1=1) and
 	if(@role_id <> '',r.role_id=@role_id,1=1) 
 	#user_name
 group by t.user_id,
@@ -58,12 +59,10 @@ from (select
 		t.mobile,
 		t.create_time,
 		t.email
-	from 
-		sso_user_info t
-	left join 
-		sso_user_role r on r.user_id = t.user_id
+	from sso_user_info t
+	left join sso_user_role r on r.user_id = t.user_id
 	where 
-		1=1 
+		if(@status <> '-1', t.status=@status,1=1)
 		and if(@role_id <> '',r.role_id=@role_id,1=1) 
 		#user_name
 	group by 

@@ -69,6 +69,7 @@ func (r *DbRole) Query(input *model.QueryRoleInput) (data db.QueryRows, count in
 	}
 
 	params := map[string]interface{}{
+		"status":   input.Status,
 		"role_sql": " and t.name like '%" + input.RoleName + "%' ",
 		"start":    (input.PageIndex - 1) * input.PageSize,
 		"ps":       input.PageSize,
