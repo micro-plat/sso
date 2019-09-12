@@ -231,3 +231,8 @@ GetUserOtherSystems()
 线上：http://api.sso.18jiayou.com
 ```
 ###### 3.5 将原来调用 sso apiserver的菜单，系统信息,都改成新的方式
+
+######3.6 在【用户系统】-> 系统管理 中加上子系统的回调地址
+```
+如：http://web.sso.18jiayou.com/ssocallback  这个非常重要，不然登录后没法正常跳转回子系统
+``` 
