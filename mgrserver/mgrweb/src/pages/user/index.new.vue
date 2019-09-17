@@ -11,7 +11,7 @@
                 class="form-control"
                 v-model="paging.username"
                 onkeypress="if(event.keyCode == 13) return false;"
-                placeholder="请输入用户名"
+                placeholder="请输入登录名或者姓名"
               />
             </div>
             <div class="form-group">
@@ -54,19 +54,35 @@
             <div class="panel-body">
               <form role="form" class="ng-pristine ng-valid ng-submitted height-min">
                 <div class="form-group">
-                  <label>用户名</label>
+                  <label>姓名</label>
+                  <input
+                    name="fullname"
+                    type="text"
+                    class="form-control"
+                    v-validate="'required'"
+                    v-model="userInfo.full_name"
+                    placeholder="请输入姓名"
+                    required
+                    maxlength="5"
+                  />
+                  <div class="form-heigit">
+                    <span v-show="errors.first('fullname')" class="text-danger">姓名不能为空！</span>
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label>登录名</label>
                   <input
                     name="username1"
                     type="text"
                     class="form-control"
                     v-validate="'required'"
                     v-model="userInfo.user_name"
-                    placeholder="请输入用户名"
+                    placeholder="请输入登录名"
                     required
                     maxlength="32"
                   />
                   <div class="form-heigit">
-                    <span v-show="errors.first('username1')" class="text-danger">用户名不能为空！</span>
+                    <span v-show="errors.first('username1')" class="text-danger">登录名不能为空！</span>
                   </div>
                 </div>
                 <div class="form-group">
@@ -86,19 +102,23 @@
                   </div>
                 </div>
                 <div class="form-group">
-                  <label>邮箱</label>
+                  <div><label>邮箱</label></div>
                   <input
-                    name="email1"
+                    name="email_pre"
                     type="text"
-                    class="form-control"
-                    v-validate="'required|email'"
-                    v-model="userInfo.email"
+                    class="email-input"
+                    v-validate="'required'"
+                    v-model="userInfo.email_pre"
                     placeholder="请输入邮箱"
                     required
                   />
-                  <div class="form-heigit">
+                  <select class="email-select" v-model="userInfo.email_suffix">
+                     <option selected="selected" value="@100bm.cn">@100bm.cn</option>
+                     <option value="@hztx18.com">@hztx18.com</option>
+                  </select>
+                  <!-- <div class="form-heigit">
                     <span v-show="errors.first('email1')" class="text-danger">请输入正确的邮箱！</span>
-                  </div>
+                  </div> -->
                 </div>
                 <div class="form-group">
                   <label>扩展参数(非必须)</label>
@@ -196,20 +216,17 @@
 
       <el-scrollbar style="height:100%">
         <el-table :data="datalist.items" stripe style="width: 100%">
-          <el-table-column align="center" width="100" prop="user_name" label="用户名"></el-table-column>
-
+          <el-table-column align="center" width="100" prop="user_name" label="登录名"></el-table-column>
+          <el-table-column align="center" width="100" prop="full_name" label="姓名"></el-table-column>
           <el-table-column align="center" width="350" prop="rolestr" label="系统/角色"></el-table-column>
-
           <el-table-column align="center" width="130" prop="mobile" label="联系电话"></el-table-column>
           <el-table-column align="center" width="170" prop="email" label="邮箱"></el-table-column>
-
           <el-table-column align="center" width="80" prop="status" label="状态">
             <template slot-scope="scope">
               <el-tag :type="scope.row.status == '0' ? 'success' : 'info'" >{{scope.row.status_label}}</el-tag>
             </template>
           </el-table-column>
-
-          <el-table-column align="center" prop="create_time" label="创建时间">
+          <el-table-column align="center" width="180" prop="create_time" label="创建时间">
             <template slot-scope="scope">
               <i class="el-icon-time"></i>
               <span style="margin-left: 10px">{{ scope.row.create_time }}</span>
@@ -258,6 +275,13 @@ export default {
   },
   data() {
     return {
+      errorTemplate:{
+        902: "用户被锁定",
+        903: "用户被禁用",
+        905: "用户不存在",
+        909: "此登录名已被使用",
+        918: "此姓名名已被使用"
+      },
       paging: {
         ps: 10,
         pi: 1,
@@ -272,11 +296,14 @@ export default {
         items: []
       },
       userInfo: {
+        full_name:"",
         user_name: "",
         user_id: -1,
         lists: [],
         mobile: null,
         email: null,
+        email_pre:null,
+        email_suffix:"@100bm.cn",
         status: 0,
         is_add: 2,
         ext_params: ""
@@ -288,6 +315,24 @@ export default {
       selectSys: [],
       isAdd: 1
     };
+  },
+  watch:{
+    'userInfo.full_name': {
+      handler(newValue, oldValue) {
+        console.log(newValue);
+        if (!/^[\u4E00-\u9FA5]+[1-9]?$/.test(newValue)) {
+          return
+        }
+
+        if (newValue && newValue.length >= 2) {
+          this.$http.post("/user/generateusername", {full_name: newValue})
+          .then(res => {
+            this.userInfo.user_name = res.data;
+            this.userInfo.email_pre = res.data;
+          })
+        }
+      }
+    }
   },
   created() {},
   mounted() {
@@ -377,23 +422,22 @@ export default {
       if (i == 1) {
         // 添加用户
         this.isAdd = 1;
+        this.userInfo.full_name = "";
         this.userInfo.user_name = "";
         this.userInfo.role_id = "";
         this.userInfo.mobile = null;
         this.userInfo.status = 0;
         this.userInfo.user_id = -1;
         this.userInfo.is_add = 1;
-        this.userInfo.lists = [
-          {
-            sys_id: "",
-            role_id: ""
-          }
-        ];
+        this.userInfo.lists = [{sys_id: "",role_id: ""}];
         this.userInfo.email = null;
+        this.userInfo.email_pre = "";
+        this.userInfo.email_suffix = "@100bm.cn";
         this.selectSys.push("");
       } else {
         // 编辑用户
         this.isAdd = 2;
+        this.userInfo.full_name = j.full_name;
         this.userInfo.user_name = j.user_name;
         this.userInfo.role_id = j.role_id;
         this.userInfo.mobile = j.mobile;
@@ -402,6 +446,8 @@ export default {
         this.userInfo.lists = j.roles;
         this.userInfo.is_add = 2;
         this.userInfo.email = j.email;
+        this.userInfo.email_pre = j.email ? j.email.split("@")[0] : "";
+        this.userInfo.email_suffix = j.email ? "@" + j.email.split("@")[1] : "";
         this.userInfo.ext_params = j.ext_params;
         for (var s = 0; s < j.roles.length; s++) {
           this.selectSys.push(j.roles[s].sys_id);
@@ -456,35 +502,14 @@ export default {
         })
         .catch(err => {
           if (err.response) {
-            switch (err.response.status) {
-              case 905:
-                this.$notify({
+            var msg = this.errorTemplate[err.response.status] || "出现错误,请稍后再试"
+            this.$notify({
                   title: "错误",
-                  message: "用户不存在",
+                  message: msg,
                   type: "error",
                   offset: 50,
                   duration: 2000
                 });
-                break;
-              case 903:
-                this.$notify({
-                  title: "错误",
-                  message: "用户被禁用",
-                  type: "error",
-                  offset: 50,
-                  duration: 2000
-                });
-                break;
-              case 902:
-                this.$notify({
-                  title: "错误",
-                  message: "用户被锁定",
-                  type: "error",
-                  offset: 50,
-                  duration: 2000
-                });
-                break;
-            }
           }
           console.log(err)
         });
@@ -622,16 +647,32 @@ export default {
         return false;
       }
 
+      if (!/^[\u4E00-\u9FA5]+[1-9]?$/.test(this.userInfo.full_name)) {
+        this.$notify({
+          title: "警告",
+          message: "姓名只能为中文或者中文加一个数字",
+          type: "warning",
+          offset: 50
+        });
+        return false;
+      }
+
+      if (!this.userInfo.email_pre || !this.userInfo.email_suffix) {
+        this.$notify({
+          title: "警告",
+          message: "请输入正确的邮箱地址",
+          type: "warning",
+          offset: 50
+        });
+        return false;
+      }
+
       var s = "";
       for (var i = 0; i < this.userInfo.lists.length; i++) {
-        s =
-          s +
-          this.userInfo.lists[i].sys_id +
-          "," +
-          this.userInfo.lists[i].role_id +
-          "|";
+        s = s + this.userInfo.lists[i].sys_id + "," + this.userInfo.lists[i].role_id +"|";
       }
       this.userInfo.auth = s;
+      this.userInfo.email = this.userInfo.email_pre + this.userInfo.email_suffix;
       this.$validator.validate().then(result => {
         if (!result) {
           return false;
@@ -660,25 +701,14 @@ export default {
               })
               .catch(err => {
                 if (err.response) {
-                  switch (err.response.status) {
-                    case 909:
-                      this.$notify({
+                  var msg = this.errorTemplate[err.response.status] || "出现错误,请稍后再试"
+                  this.$notify({
                         title: "错误",
-                        message: "此用户名已被使用",
+                        message: msg,
                         type: "error",
                         offset: 50,
                         duration: 2000
                       });
-                    break;
-                    default:
-                      this.$notify({
-                        title: "错误",
-                        message: "网络错误,请稍后再试",
-                        type: "error",
-                        offset: 50,
-                        duration: 2000
-                      });
-                  }
                 }
               });
           } else if (this.isAdd == 2) {
@@ -696,25 +726,14 @@ export default {
               })
               .catch(err => {
                 if (err.response) {
-                  switch (err.response.status) {
-                    case 909:
-                      this.$notify({
+                   var msg = this.errorTemplate[err.response.status] || "出现错误,请稍后再试"
+                   this.$notify({
                         title: "错误",
-                        message: "此用户名已被使用",
+                        message: msg,
                         type: "error",
                         offset: 50,
                         duration: 2000
-                      });
-                    break;
-                    default:
-                      this.$notify({
-                        title: "错误",
-                        message: "网络错误,请稍后再试",
-                        type: "error",
-                        offset: 50,
-                        duration: 2000
-                      });
-                  }
+                    });
                 }
               });
           }
@@ -761,5 +780,20 @@ export default {
 }
 #qrCodeModal .modal-body {
   margin-left: -7px;
+}
+
+.email-input {
+  width: 80%;
+  height: 34px;
+  padding: 6px 12px;
+  background-color: #fff;
+  background-image: none;
+  border: 1px solid #ccc;
+}
+
+.email-select {
+  height: 34px;
+  background-color: #fff;
+  border: 1px solid #ccc;
 }
  </style>
