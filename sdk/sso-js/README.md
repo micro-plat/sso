@@ -26,7 +26,7 @@ Vue.prototype.$http = ssocfg.http;
 --|:--:|--:
 apiHost|string| 子系统apihost
 storagePlace |string|jwt存储方式 [localStorage, sessionStorage],cookie请传空, 最好用 localStorage
-ssoWebHost |string| 线下:http://login.sso.18jiayou1.com:8091, 线上：http://login.sso.18jiayou.com
+ssoWebHost |string| 线下:http://login.sso.18jiayou1.com, 线上：http://login.sso.18jiayou.com
 ident|string|子系统ident
 
 ```
@@ -41,7 +41,7 @@ ident|string|子系统ident
 
 this.$post => this.$http.post;
 this.$put => this.$http.put;
-this.$get => this.$http.del;
+this.$get => this.$http.get;
 this.$del => this.$http.del;
 this.$fetch => this.$http.get
 
@@ -109,9 +109,9 @@ this.$fetch => this.$http.get
     name: 'app',
     data () {
       return {
-        logo: "http://sso2.100bm.cn:6888/static/img/d663155de6dc8e060415bbcd891cb9d4.png",
-        copyright: "2018 admin-web", //版权信息
-        themes: "bg-danger|bg-danger|bg-dark light-danger", //顶部左侧背景颜色,顶部右侧背景颜色,右边菜单背景颜色
+        logo: "",
+        copyright: new Date().getFullYear() + "admin-web", //版权信息
+        themes: "", //顶部左侧背景颜色,顶部右侧背景颜色,右边菜单背景颜色
         menus: [{}],  //菜单数据
         systemName: "用户权限系统",  //系统名称
         userinfo: {name:'wule',role:"管理员"},
@@ -124,6 +124,7 @@ this.$fetch => this.$http.get
     },
     created(){
       this.getMenu();
+      this.getSystemInfo();
     },
     mounted(){
       document.title = "用户权限系统";
@@ -140,8 +141,7 @@ this.$fetch => this.$http.get
         this.$http.get("/sso/member/menus/get")
           .then(res => {
             this.menus = res;
-            this.$refs.NewTap.open("首页", this.indexUrl);
-            this.getSystemInfo();
+            this.$refs.NewTap.open("用户管理", this.indexUrl);    //这个名称要根据自己系统修改
             this.getUserOtherSys();
           })
           .catch(err => {
@@ -151,7 +151,7 @@ this.$fetch => this.$http.get
       getSystemInfo() {
         this.$http.get("/sso/system/info/get")
         .then(res => {
-          this.themes = res.themes;
+          this.themes = res.theme;
           this.systemName = res.systemName;
           this.logo = res.logo;
         }).catch(err => {

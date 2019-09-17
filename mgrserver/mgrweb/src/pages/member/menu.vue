@@ -22,9 +22,9 @@
     name: 'app',
     data () {
       return {
-        logo: "http://sso2.100bm.cn:6888/static/img/d663155de6dc8e060415bbcd891cb9d4.png",
-        copyright: "2018 admin-web", //版权信息
-        themes: "bg-danger|bg-danger|bg-dark light-danger", //顶部左侧背景颜色,顶部右侧背景颜色,右边菜单背景颜色
+        logo: "",
+        copyright: new Date().getFullYear() + " admin-web", //版权信息
+        themes: "", //顶部左侧背景颜色,顶部右侧背景颜色,右边菜单背景颜色
         menus: [{}],  //菜单数据
         systemName: "用户权限系统",  //系统名称
         userinfo: {name:'wule',role:"管理员"},
@@ -37,6 +37,7 @@
     },
     created(){
       this.getMenu();
+      this.getSystemInfo();
     },
     mounted(){
       document.title = "用户权限系统";
@@ -60,7 +61,18 @@
             console.log(err)
           });
       },
-
+      //获取系统的相关数据
+      getSystemInfo() {
+        this.$http.get("/sso/system/info/get")
+        .then(res => {
+          this.themes = res.theme;
+          this.systemName = res.systemName;
+          this.logo = res.logo;
+          
+        }).catch(err => {
+          console.log(err);
+        })
+      },
       //用户可用的其他系统
       getUserOtherSys() {
         this.$http.get("sso/member/systems/get")

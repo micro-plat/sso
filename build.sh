@@ -4,6 +4,20 @@
 # ./builid.sh 线上环境， ./build.sh dev 线下环境
 #############################################
 
+#echo $@ 多个参数时 动态判断
+
+# for i in $@;  
+# do  
+# if [ $i = "oci" ]; then 
+# 	echo "oci"
+# fi;
+
+# if [ $i = "prod" ]; then 
+# 	echo "prod"
+# fi
+# done  
+
+
 #获取当前目录
 rootdir=$(pwd)
 
