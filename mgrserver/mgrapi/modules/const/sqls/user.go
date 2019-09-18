@@ -3,6 +3,7 @@ package sqls
 const QueryUserInfoList = `
 select 
 	t.user_id,
+	t.full_name,
 	t.user_name,
 	t.status,
 	case when t.status = 0 then '启用' when t.status=1 then '锁定' when t.status = 2 then '禁用' end status_label,
@@ -15,7 +16,7 @@ from sso_user_info t
 left join sso_user_role r on r.user_id = t.user_id
 where 
     if(@status <> '-1', t.status=@status,1=1) and
-	if(@role_id <> '',r.role_id=@role_id,1=1) 
+	if(@role_id <> '',r.role_id=@role_id,1=1)
 	#user_name
 group by t.user_id,
 			t.user_name,
@@ -62,8 +63,8 @@ from (select
 	from sso_user_info t
 	left join sso_user_role r on r.user_id = t.user_id
 	where 
-		if(@status <> '-1', t.status=@status,1=1)
-		and if(@role_id <> '',r.role_id=@role_id,1=1) 
+		if(@status <> '-1', t.status=@status,1=1) and
+		if(@role_id <> '',r.role_id=@role_id,1=1)
 		#user_name
 	group by 
 		t.user_id,
@@ -109,6 +110,7 @@ const EditUserInfo = `
 update 
 	sso_user_info t
 set 
+	t.full_name =@full_name,
 	t.status = @status, 
 	t.user_name = @user_name, 
 	t.mobile = @mobile,
@@ -147,9 +149,9 @@ from
 const AddUserInfo = `
 insert 
 	into sso_user_info 
-	(user_name, status, password, mobile, email, ext_params)
+	(full_name,user_name, status, password, mobile, email, ext_params)
 values
-	(@user_name, @status, @password, @mobile, @email, @ext_params)
+	(@full_name, @user_name, @status, @password, @mobile, @email, @ext_params)
 `
 
 //AddUserRole 添加用户角色
@@ -256,7 +258,14 @@ limit
 
 const GetUserInfoByName = `
 select 
-	user_id, user_name, email, status, mobile, 
+	user_id, full_name, user_name, email, status, mobile, 
 	wx_openid, changepwd_times, ext_params 
 from sso_user_info 
 where user_name=@user_name;`
+
+const GetUserInfoByFullName = `
+select 
+	user_id, full_name, user_name, email, status, mobile, 
+	wx_openid, changepwd_times, ext_params 
+from sso_user_info 
+where full_name=@full_name;`

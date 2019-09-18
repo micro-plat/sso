@@ -1,6 +1,8 @@
 package logic
 
 import (
+	"fmt"
+	"strings"
 	"time"
 	"github.com/micro-plat/hydra/component"
 	"github.com/micro-plat/hydra/context"
@@ -11,6 +13,7 @@ import (
 	"github.com/micro-plat/sso/mgrserver/mgrapi/modules/access/user"
 	"github.com/micro-plat/sso/mgrserver/mgrapi/modules/const/enum"
 	"github.com/micro-plat/sso/mgrserver/mgrapi/modules/model"
+	"github.com/jmz331/gpinyin"
 )
 
 type IUserLogic interface {
@@ -24,6 +27,8 @@ type IUserLogic interface {
 	Edit(username string, tel string, email string) (err error)
 	SetDefaultPwd(userID int) error
 	GenerateQrcodeInfo(userID int) (map[string]interface{}, error)
+
+	GenerateUserNameByFullName(fullName string) string
 }
 
 type UserLogic struct {
@@ -85,7 +90,15 @@ func (u *UserLogic) Save(input *model.UserInputNew) (err error) {
 		return err
 	}
 	if info != nil && info.GetInt64("user_id") != input.UserID {
-		return context.NewError(context.ERR_BAD_REQUEST, "此用户名已被使用")
+		return context.NewError(model.ERR_USER_NAMEEXISTS, "此登录名已被使用")
+	}
+
+	info2, err := u.db.GetUserInfoByFullName(input.FullName)
+	if err != nil {
+		return
+	}
+	if info2 != nil && info2.GetInt64("user_id") != input.UserID {
+		return context.NewError(model.ERR_USER_FULLNAMEEXISTS, "此姓名已被使用")
 	}
 	return u.db.Edit(input)
 }
@@ -97,7 +110,12 @@ func (u *UserLogic) Add(input *model.UserInputNew) (err error) {
 		return err
 	}
 	if info != nil {
-		return context.NewError(model.ERR_USER_NAMEEXISTS, "此用户名已被使用")
+		return context.NewError(model.ERR_USER_NAMEEXISTS, "此登录名已被使用")
+	}
+	
+	info2, err := u.db.GetUserInfoByFullName(input.FullName)
+	if info2 != nil {
+		return context.NewError(model.ERR_USER_FULLNAMEEXISTS, "此姓名已被使用")
 	}
 	return u.db.Add(input)
 }
@@ -141,4 +159,17 @@ func (u *UserLogic) GenerateQrcodeInfo(userID int) (map[string]interface{}, erro
 		"timestamp":timestamp,
 		"sign":md5.Encrypt(raw),
 	}, nil
+}
+
+//GenerateUserNameByFullName 根据名字生成登录名
+func (u *UserLogic) GenerateUserNameByFullName(fullName string) string {
+	arrName := strings.Split(gpinyin.ConvertToPinyinString(fullName, "-", gpinyin.PINYIN_WITHOUT_TONE), "-")
+	result := fmt.Sprintf("%s%s", string(arrName[0]), string(arrName[1]))
+	if len(arrName) > 2 {
+		result = string(arrName[0])
+		for i := 1; i < len(arrName); i++ {
+			result = fmt.Sprintf("%s%s", result, string(string(arrName[i])[0]))
+		}
+	}
+	return result
 }

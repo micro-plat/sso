@@ -163,3 +163,16 @@ func (u *UserHandler) GenerateQrcodeHandle(ctx *context.Context) (r interface{})
 	}
 	return data
 }
+
+//GenerateUserNameHandle 根据汉字生成拼音用户名
+func (u *UserHandler) GenerateUserNameHandle(ctx *context.Context) (r interface{}) {
+	ctx.Log.Info("--------根据汉字生成拼音用户名--------")
+
+	ctx.Log.Info("1: 参数验证")
+	if err := ctx.Request.Check("full_name"); err != nil {
+		return context.NewError(context.ERR_NOT_ACCEPTABLE, err)
+	}
+
+	ctx.Log.Info("2: 生成登录用户名并返回")
+	return u.userLib.GenerateUserNameByFullName(ctx.Request.GetString("full_name"))
+}

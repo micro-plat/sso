@@ -1,7 +1,8 @@
 package model
 
-// 需要编辑/添加的用户数据
+//UserInputNew 需要编辑/添加的用户数据
 type UserInputNew struct {
+	FullName  string `form:"full_name" json:"full_name" valid:"required"`
 	UserName  string `form:"user_name" json:"user_name" valid:"ascii,required"`
 	UserID    int64  `form:"user_id" json:"user_id"`
 	RoleID    int64  `form:"role_id" json:"role_id" `

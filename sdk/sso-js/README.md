@@ -152,7 +152,7 @@ this.$fetch => this.$http.get
         this.$http.get("/sso/system/info/get")
         .then(res => {
           this.themes = res.theme;
-          this.systemName = res.systemName;
+          this.systemName = res.name;
           this.logo = res.logo;
         }).catch(err => {
           console.log(err);

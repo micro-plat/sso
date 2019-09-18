@@ -36,4 +36,22 @@ const (
 
 	//请先保存系统根节点
 	ERR_SYSFUNC_ROOTNOTEXISTS = 912
+
+	//验证码为空
+	ERR_USER_EMPTY_VALIDATECODE = 913
+
+	//验证码过期
+	ERR_VALIDATECODE_TIMEOUT = 914
+
+	//验证码错误
+	ERR_VALIDATECODE_WRONG = 915
+
+	//二维码超时(用户系统生成的二维码时间过期)
+	ERR_QRCODE_TIMEOUT = 916
+
+	//一个微信只能绑定一个账户
+	ERR_OPENID_ONLY_BIND_Once = 917
+
+	//用户姓名已存在
+	ERR_USER_FULLNAMEEXISTS = 918
 )

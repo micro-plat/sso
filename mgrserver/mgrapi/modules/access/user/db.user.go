@@ -25,6 +25,7 @@ type IDbUser interface {
 	EditInfo(username string, tel string, email string) (err error)
 	ResetPwd(userID int) (err error)
 	GetUserInfoByName(userName string) (data db.QueryRow, err error)
+	GetUserInfoByFullName(fullName string) (data db.QueryRow, err error)
 }
 
 type DbUser struct {
@@ -43,7 +44,7 @@ func (u *DbUser) Query(input *model.QueryUserInput) (data db.QueryRows, total in
 	params := map[string]interface{}{
 		"role_id":   input.RoleID,
 		"status":    input.Status,
-		"user_name": " and t.user_name like '%" + input.UserName + "%'",
+		"user_name": " and (t.user_name like '%" + input.UserName + "%' or t.full_name like '%" + input.UserName + "%')",
 		"start":     (input.PageIndex - 1) * input.PageSize,
 		"ps":        input.PageSize,
 	}
@@ -174,7 +175,6 @@ func (u *DbUser) GetAll(sysID, pi, ps int) (data db.QueryRows, count int, err er
 	if err != nil {
 		return nil, 0, fmt.Errorf("获取用户列表发生错误(err:%v),sql:%s,输入参数:%v,", err, q, a)
 	}
-	fmt.Println("data:", data, pi, ps, q, a)
 	return data, types.GetInt(c), nil
 
 }
@@ -289,6 +289,19 @@ func (u *DbUser) ResetPwd(userID int) (err error) {
 func (u *DbUser) GetUserInfoByName(userName string) (data db.QueryRow, err error) {
 	db := u.c.GetRegularDB()
 	result, _, _, err := db.Query(sqls.GetUserInfoByName, map[string]interface{}{"user_name": userName})
+	if err != nil {
+		return nil, err
+	}
+	if result.IsEmpty() {
+		return nil, nil
+	}
+	return result.Get(0), nil
+}
+
+//GetUserInfoByFullName 根据姓名查询用户信息
+func (u *DbUser) GetUserInfoByFullName(fullName string) (data db.QueryRow, err error) {
+	db := u.c.GetRegularDB()
+	result, _, _, err := db.Query(sqls.GetUserInfoByFullName, map[string]interface{}{"full_name": fullName})
 	if err != nil {
 		return nil, err
 	}
