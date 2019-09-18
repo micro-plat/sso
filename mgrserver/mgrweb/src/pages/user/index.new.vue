@@ -47,7 +47,7 @@
           </div>
         </div>
       </bootstrap-modal>
-      <bootstrap-modal ref="editModal" :need-header="true" :need-footer="true" :closed="resetSys">
+      <bootstrap-modal ref="editModal" :need-header="true" :need-footer="true" :closed="resetSys" no-close-on-backdrop="true">
         <div slot="title">{{isAdd == 1 ? "添加用户" : "编辑用户信息"}}</div>
         <div slot="body">
           <div class="panel panel-default">
@@ -80,6 +80,7 @@
                     placeholder="请输入登录名"
                     required
                     maxlength="32"
+                    :disabled="isAdd==1"
                   />
                   <div class="form-heigit">
                     <span v-show="errors.first('username1')" class="text-danger">登录名不能为空！</span>
@@ -146,7 +147,7 @@
                     v-for="(list,index) in userInfo.lists"
                     v-bind:key="list.id"
                   >
-                    <div class="form-group col-sm-7">
+                    <div class="form-group col-sm-5" style="margin-right:30px">
                       <select
                         name="select1"
                         class="form-control"
@@ -164,7 +165,7 @@
                         >{{r.name}}</option>
                       </select>
                     </div>
-                    <div class="form-group col-sm-4">
+                    <div class="form-group col-sm-5">
                       <select
                         name="select2"
                         class="form-control"
@@ -181,7 +182,7 @@
                       </select>
                     </div>
                     <div
-                      class="form-group del-btn"
+                      class="form-group del-btn col-sm-1"
                       v-if="userInfo.lists.length > 1"
                       style="margin:4px"
                     >
@@ -431,6 +432,7 @@ export default {
         this.userInfo.is_add = 1;
         this.userInfo.lists = [{sys_id: "",role_id: ""}];
         this.userInfo.email = null;
+        this.userInfo.ext_params = "",
         this.userInfo.email_pre = "";
         this.userInfo.email_suffix = "@100bm.cn";
         this.selectSys.push("");

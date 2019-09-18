@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"strings"
 	"time"
+	"regexp"
 	"github.com/micro-plat/hydra/component"
 	"github.com/micro-plat/hydra/context"
 	"github.com/micro-plat/lib4go/db"
@@ -85,14 +86,6 @@ func (u *UserLogic) GetAll(sysID, pi, ps int) (data db.QueryRows, count int, err
 
 //Save 保存要编辑的用户信息
 func (u *UserLogic) Save(input *model.UserInputNew) (err error) {
-	info, err := u.db.GetUserInfoByName(input.UserName)
-	if err != nil {
-		return err
-	}
-	if info != nil && info.GetInt64("user_id") != input.UserID {
-		return context.NewError(model.ERR_USER_NAMEEXISTS, "此登录名已被使用")
-	}
-
 	info2, err := u.db.GetUserInfoByFullName(input.FullName)
 	if err != nil {
 		return
@@ -100,22 +93,33 @@ func (u *UserLogic) Save(input *model.UserInputNew) (err error) {
 	if info2 != nil && info2.GetInt64("user_id") != input.UserID {
 		return context.NewError(model.ERR_USER_FULLNAMEEXISTS, "此姓名已被使用")
 	}
+
+	info, err := u.db.GetUserInfoByName(input.UserName)
+	if err != nil {
+		return err
+	}
+	if info != nil && info.GetInt64("user_id") != input.UserID {
+		return context.NewError(model.ERR_USER_NAMEEXISTS, "此登录名已被使用")
+	}
 	return u.db.Edit(input)
 }
 
 //Add 新增用户
 func (u *UserLogic) Add(input *model.UserInputNew) (err error) {
+	info2, err := u.db.GetUserInfoByFullName(input.FullName)
+	if err != nil {
+		return nil
+	}
+	if info2 != nil {
+		return context.NewError(model.ERR_USER_FULLNAMEEXISTS, "此姓名已被使用")
+	}
+
 	info, err := u.db.GetUserInfoByName(input.UserName)
 	if err != nil {
 		return err
 	}
 	if info != nil {
 		return context.NewError(model.ERR_USER_NAMEEXISTS, "此登录名已被使用")
-	}
-	
-	info2, err := u.db.GetUserInfoByFullName(input.FullName)
-	if info2 != nil {
-		return context.NewError(model.ERR_USER_FULLNAMEEXISTS, "此姓名已被使用")
 	}
 	return u.db.Add(input)
 }
@@ -163,7 +167,14 @@ func (u *UserLogic) GenerateQrcodeInfo(userID int) (map[string]interface{}, erro
 
 //GenerateUserNameByFullName 根据名字生成登录名
 func (u *UserLogic) GenerateUserNameByFullName(fullName string) string {
+	numberSufix := ""
 	arrName := strings.Split(gpinyin.ConvertToPinyinString(fullName, "-", gpinyin.PINYIN_WITHOUT_TONE), "-")
+	matched, _ := regexp.MatchString(`.*\d{1}$`, fullName)
+	if matched {
+		numberSufix = arrName[len(arrName) -1]
+		arrName = arrName[:len(arrName) - 1]
+	}
+	
 	result := fmt.Sprintf("%s%s", string(arrName[0]), string(arrName[1]))
 	if len(arrName) > 2 {
 		result = string(arrName[0])
@@ -171,5 +182,5 @@ func (u *UserLogic) GenerateUserNameByFullName(fullName string) string {
 			result = fmt.Sprintf("%s%s", result, string(string(arrName[i])[0]))
 		}
 	}
-	return result
+	return fmt.Sprintf("%s%s", result, numberSufix)
 }
