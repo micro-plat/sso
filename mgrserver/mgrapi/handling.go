@@ -9,7 +9,7 @@ import (
 func (r *SSO) handling() {
 	//每个请求执行前执行
 	r.Handling(func(ctx *context.Context) (rt interface{}) {
-		//验证jwt并缓存用户信息
+		//验证jwt并缓存登录用户信息
 		if err := ssosdk.CheckAndSetMember(ctx); err != nil {
 			return err
 		}

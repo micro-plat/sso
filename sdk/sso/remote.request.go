@@ -22,9 +22,9 @@ func remoteRequest(host, path, content string, data interface{}) (interface{}, e
 	if statusCode != 200 {
 		return nil, context.NewErrorf(statusCode, "读取系统信息失败,HttpStatus:%d, body:%s", statusCode, body)
 	}
-
 	listByte := []byte(body)
-	err = json.Unmarshal(listByte, &data)
+	//err = json.Unmarshal(listByte, &data)
+	err = json.Unmarshal(listByte, data)
 	if err != nil {
 		return nil, fmt.Errorf("字符串转json发生错误，err：%v", err)
 	}

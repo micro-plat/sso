@@ -40,7 +40,6 @@ func (u *userLogic) getUserInfoByName(userName string) (info *User, err error) {
 
 //CheckCodeLogin 验证用户登录的code
 func (u *userLogic) checkCodeLogin(code string) (res *LoginState, err error) {
-
 	values := net.NewValues()
 	values.Set("code", code)
 	values.Set("ident", u.cfg.ident)
@@ -60,22 +59,8 @@ func (u *userLogic) checkCodeLogin(code string) (res *LoginState, err error) {
 }
 
 //GetUserMenu 查询用户在某个系统下的菜单数据
-func (u *userLogic) getUserMenu(userID int) (*[]*Menu, error) {
-	values := net.NewValues()
-	values.Set("user_id", types.GetString(userID))
-	values.Set("ident", u.cfg.ident)
-	values.Set("timestamp", types.GetString(time.Now().Unix()))
-
-	values = values.Sort()
-	raw := values.Join("", "") + u.cfg.secret
-	values.Set("sign", md5.Encrypt(raw))
-
-	menu := &[]*Menu{}
-	result, err := remoteRequest(u.cfg.host, userMenuUrl, values.Join("=", "&"), menu)
-	if err != nil {
-		return nil, err
-	}
-	return result.(*[]*Menu), nil
+func (u *userLogic) getUserMenu(userID int) ([]Menu, error) {
+	return getUserMenuFromLocal(userID)
 }
 
 //getUserSystems 返回用户可用的子系统列表(有权限,除当前系统外)

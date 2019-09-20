@@ -31,7 +31,7 @@ func (client *Client) GetUserInfoByName(userName string) (info *User, err error)
 }
 
 //GetUserMenu 获取用户菜单信息
-func (client *Client) GetUserMenu(userID int) (*[]*Menu, error) {
+func (client *Client) GetUserMenu(userID int) ([]Menu, error) {
 	u := newUser(client.cfg)
 	return u.getUserMenu(userID)
 }

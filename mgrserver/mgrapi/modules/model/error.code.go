@@ -54,4 +54,7 @@ const (
 
 	//用户姓名已存在
 	ERR_USER_FULLNAMEEXISTS = 918
+
+	//用户没有相关页面权限
+	ERR_USER_HASNOPAGEAUTHORITY = 919
 )
