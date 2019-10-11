@@ -16,6 +16,8 @@ if err := sso.Bind(r.MicroApp,conf.SsoApiHost, conf.Ident, conf.Secret); err != 
 	return err
 }
 
+SsoApiHost 线下:http://api.sso.18jiayou1.com:6689, 线上：http://api.sso.18jiayou.com
+
 sdk生成了四个接口(前端对接接口)
 "/sso/login/verify": 登录回调后验证
 "/sso/member/menus/get"：获取用户菜单
