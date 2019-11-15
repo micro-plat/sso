@@ -48,8 +48,14 @@ export function httpConfig(apiBaseUrl, storagePlace) {
 //http request 拦截器
 axios.interceptors.request.use(
     config => {
-
+        var userName = '';
+        var userInfo = localStorage.getItem("userinfo")
+        if (userInfo) {
+            userName = JSON.parse(userInfo).name || '';
+        }
+        
         config.headers = {
+          'X-Request-Id':userName + '-' + guid(),
           'Content-Type': 'application/x-www-form-urlencoded',
           '__jwt__': GetTocken()
         };
@@ -185,4 +191,11 @@ function del(url, data = {}) {
                 reject(err)
             })
     })
+}
+
+function guid() {
+    return 'xxxxxxxx-xxxx-4xxx'.replace(/[x]/g, function(c) {
+        var r = Math.random()*16|0, v = c == 'x' ? r : (r&0x3|0x8);
+        return v.toString(16);
+    });
 }
