@@ -82,3 +82,15 @@ inner join
 where 
 	t.sys_id=@sys_id 
 	and t.user_id=@user_id`
+
+const QueryAllUserInfo = `
+select 
+	user_id,
+	user_name,
+	full_name,
+	mobile,
+	email,
+	wx_openid,
+	status
+from sso_user_info
+where status = 0`

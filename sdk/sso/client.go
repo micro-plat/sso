@@ -47,3 +47,9 @@ func (client *Client) GetUserOtherSystems(userID int) (*[]*System, error) {
 	s := newUser(client.cfg)
 	return s.getUserOtherSystems(userID)
 }
+
+//GetAllUser 获取所有用户信息
+func (client *Client) GetAllUser() (*[]*User, error) {
+	s := newUser(client.cfg)
+	return s.GetAllUser()
+}

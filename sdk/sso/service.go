@@ -16,6 +16,7 @@ func Bind(app *hydra.MicroApp, ssoApiHost, ident, secret string) error {
 	app.Micro("/sso/login/verify", loginVerify)
 	app.Micro("/sso/member/menus/get", userMenus)
 	app.Micro("/sso/member/systems/get", userSystems)
+	app.Micro("/sso/member/all/get", getAllUser)
 	app.Micro("/sso/system/info/get", systemInfo)
 
 	return nil
@@ -31,7 +32,7 @@ func loginVerify(ctx *context.Context) (r interface{}) {
 	}
 
 	ctx.Log.Info("2: 调用sso api 用code取用户信息")
-	data, err := getSSOClient().CheckCodeLogin(ctx.Request.GetString("code"))
+	data, err := GetSSOClient().CheckCodeLogin(ctx.Request.GetString("code"))
 	if err != nil {
 		return err
 	}
@@ -54,7 +55,7 @@ func userMenus(ctx *context.Context) (r interface{}) {
 	mem := GetMember(ctx)
 
 	ctx.Log.Info("2: 远程获取菜单信息")
-	menus, err := getSSOClient().GetUserMenu(int(mem.UserID))
+	menus, err := GetSSOClient().GetUserMenu(int(mem.UserID))
 	if err != nil {
 		return err
 	}
@@ -71,7 +72,7 @@ func userSystems(ctx *context.Context) (r interface{}) {
 	mem := GetMember(ctx)
 
 	ctx.Log.Info("2.获取数据")
-	data, err := getSSOClient().GetUserOtherSystems(int(mem.UserID))
+	data, err := GetSSOClient().GetUserOtherSystems(int(mem.UserID))
 	if err != nil {
 		return err
 	}
@@ -85,7 +86,22 @@ func systemInfo(ctx *context.Context) (r interface{}) {
 	ctx.Log.Info("--------去sso获取系统信息----------")
 
 	ctx.Log.Info("1. 执行操作")
-	data, err := getSSOClient().GetSystemInfo()
+	data, err := GetSSOClient().GetSystemInfo()
+	if err != nil {
+		return err
+	}
+
+	ctx.Log.Info("2. 返回数据")
+	return data
+
+}
+
+//getAllUser 获取所有用户信息
+func getAllUser(ctx *context.Context) (r interface{}) {
+	ctx.Log.Info("--------获取所有用户信息----------")
+
+	ctx.Log.Info("1. 执行操作")
+	data, err := GetSSOClient().GetAllUser()
 	if err != nil {
 		return err
 	}

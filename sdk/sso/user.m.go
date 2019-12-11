@@ -2,10 +2,13 @@ package sso
 
 //User 用户信息
 type User struct {
-	UserName  string `json:"user_name"`
-	WxOpID    string `json:"wx_openid"`
-	ExtParams string `json:"ext_params"`
 	UserID    string `json:"user_id"`
+	UserName  string `json:"user_name"`
+	FullNme   string `json:"full_name"`
+	WxOpID    string `json:"wx_openid"`
+	Mobile    string `json:"mobile"`
+	Email     string `json:"email"`
+	ExtParams string `json:"ext_params"`
 }
 
 //LoginState 用户信息

@@ -18,6 +18,7 @@ type IMemberLogic interface {
 	QueryUserInfo(u string, ident string) (info db.QueryRow, err error)
 	GetUserInfoByCode(code, ident string) (res *model.LoginState, err error)
 	QueryUserSystem(userID int, ident string) (s db.QueryRows, err error)
+	QueryAllUserInfo() (s db.QueryRows, err error)
 }
 
 //MemberLogic 用户登录管理
@@ -37,6 +38,11 @@ func NewMemberLogic(c component.IContainer) *MemberLogic {
 //QueryUserSystem 查询用户可用的子系统
 func (m *MemberLogic) QueryUserSystem(userID int, ident string) (s db.QueryRows, err error) {
 	return m.db.QueryUserSystem(userID, ident)
+}
+
+//QueryAllUserInfo 获取所有用户信息
+func (m *MemberLogic) QueryAllUserInfo() (s db.QueryRows, err error) {
+	return m.db.QueryAllUserInfo()
 }
 
 // QueryUserInfo 返回用户信息
