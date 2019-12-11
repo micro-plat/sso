@@ -23,6 +23,7 @@ sdk生成了四个接口(前端对接接口)
 "/sso/member/menus/get"：获取用户菜单
 "/sso/member/systems/get":获取登录用户有权限的其他系统信息
 "/sso/system/info/get": 获取当前系统信息
+"/sso/member/all/get": 获取所有正常的用户信息
 
 在install.dev/install-prod -> auth-> exclude 下面新增 "/sso/login/verify", 这个不需要验证(修改zookeeper)
 
