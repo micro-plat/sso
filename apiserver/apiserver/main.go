@@ -13,7 +13,7 @@ type SSO struct {
 func main() {
 	app := &SSO{
 		hydra.NewApp(
-			hydra.WithPlatName("sso_v3"),
+			hydra.WithPlatName("sso_other"),
 			hydra.WithSystemName("apiserver"),
 			hydra.WithServerTypes("api")),
 	}

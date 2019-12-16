@@ -9,7 +9,7 @@ module.exports = {
         // apiHost: '"http://webapi.sso.18jiayou1.com:6677"', //测试环境有dns(用户管理api地址)
         // ssoWebHost:`"http://login.sso.18jiayou1.com:80"`, //测试环境有dns(sso登录跳转地址) 8091
 
-         apiHost: '"http://webapi.sso.18jiayou.com"', //线上环境(用户管理api地址)
-         ssoWebHost:`"http://login.sso.18jiayou.com"`, //线上环境(sso登录跳转地址)
+         apiHost: '"http://webapi.sso.100bm.cn"', //线上环境(用户管理api地址)
+         ssoWebHost:`"http://login.sso.100bm.cn"`, //线上环境(sso登录跳转地址)
     }
 }

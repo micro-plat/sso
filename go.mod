@@ -2,7 +2,9 @@ module github.com/micro-plat/sso
 
 go 1.12
 
-//replace github.com/micro-plat/hydra => ../../../github.com/micro-plat/hydra
+replace github.com/micro-plat/hydra => ../../../github.com/micro-plat/hydra
+
+replace github.com/micro-plat/lib4go => ../../../github.com/micro-plat/lib4go
 
 require (
 	github.com/asaskevich/govalidator v0.0.0-20190424111038-f61b66f89f4a
@@ -12,6 +14,6 @@ require (
 	github.com/micro-plat/lib4go v0.2.1
 	github.com/patrickmn/go-cache v2.1.0+incompatible
 	github.com/pkg/profile v1.3.0
-	github.com/urfave/cli v1.20.0
+	github.com/urfave/cli v1.22.1
 	github.com/zkfy/log v0.0.0-20180312054228-b2704c3ef896
 )

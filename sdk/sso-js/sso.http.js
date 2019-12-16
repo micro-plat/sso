@@ -6,16 +6,29 @@ axios.defaults.timeout = 5000;
 axios.defaults.withCredentials = true;
 axios.defaults.baseURL = ""; //process.env.service.url;
 
-let GetTocken = (function () {
+// let GetTocken = (function () {
+//     if (!window.sso_StoragePlace){
+//         return "";
+//     }
+
+//     var jwt = window.localStorage.getItem("__jwt__");
+//     if (window.sso_StoragePlace == "sessionStorage") {
+//         jwt = window.sessionStorage.getItem("__jwt__");
+//     }
+//     return jwt;
+// });
+
+function GetTocken() {
     if (!window.sso_StoragePlace){
         return "";
     }
+
     var jwt = window.localStorage.getItem("__jwt__");
     if (window.sso_StoragePlace == "sessionStorage") {
         jwt = window.sessionStorage.getItem("__jwt__");
     }
-    return jwt;
-});
+    return jwt; 
+}
 
 function SetToken(response) {
     if (!window.sso_StoragePlace){
@@ -54,10 +67,11 @@ axios.interceptors.request.use(
             userName = JSON.parse(userInfo).name || '';
         }
         
+        var jwt = GetTocken()
         config.headers = {
           'X-Request-Id':userName + '-' + guid(),
           'Content-Type': 'application/x-www-form-urlencoded',
-          '__jwt__': GetTocken()
+          '__jwt__': jwt
         };
 
         return config;
@@ -97,7 +111,7 @@ axios.interceptors.response.use(
 function fetch(url, params = {}) {
     return new Promise((resolve, reject) => {
         axios.get(url, {
-                params: params
+                params: params,
             })
             .then(response => {
                 if (response.status == 200) {
