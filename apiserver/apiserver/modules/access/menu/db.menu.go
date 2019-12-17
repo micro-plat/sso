@@ -1,12 +1,16 @@
 package menu
 
 import (
+	"fmt"
+
 	"github.com/micro-plat/hydra/component"
+	"github.com/micro-plat/lib4go/types"
 	"github.com/micro-plat/sso/apiserver/apiserver/modules/const/sqls"
 )
 
 type IMenu interface {
 	Query(uid int64, ident string) ([]map[string]interface{}, error)
+	QueryUserMenuTags(uid int64, ident string) (types.XMaps, error)
 }
 
 type Menu struct {
@@ -50,4 +54,17 @@ func (l *Menu) Query(uid int64, ident string) ([]map[string]interface{}, error) 
 		}
 	}
 	return result, nil
+}
+
+//QueryUserMenuTags 获取用户有权限的tags
+func (l *Menu) QueryUserMenuTags(uid int64, ident string) (types.XMaps, error) {
+	db := l.c.GetRegularDB()
+	data, q, args, err := db.Query(sqls.QueryUserMenuTags, map[string]interface{}{
+		"user_id": uid,
+		"ident":   ident,
+	})
+	if err != nil {
+		return nil, fmt.Errorf("QueryUserMenuTags出错: sql:%s, args:%+v, err:%+v", q, args, err)
+	}
+	return data, nil
 }

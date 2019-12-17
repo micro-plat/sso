@@ -3,6 +3,7 @@ package logic
 import (
 	"github.com/micro-plat/hydra/component"
 	"github.com/micro-plat/hydra/context"
+	"github.com/micro-plat/lib4go/types"
 	"github.com/micro-plat/sso/apiserver/apiserver/modules/access/menu"
 	"github.com/micro-plat/sso/apiserver/apiserver/modules/access/system"
 	"github.com/micro-plat/sso/apiserver/apiserver/modules/const/enum"
@@ -12,6 +13,7 @@ import (
 // IMenuLogic interface
 type IMenuLogic interface {
 	Query(uid int64, ident string) ([]map[string]interface{}, error)
+	GetTags(uid int64, ident string) (types.XMaps, error)
 }
 
 // MenuLogic 菜单
@@ -41,4 +43,9 @@ func (m *MenuLogic) Query(uid int64, ident string) ([]map[string]interface{}, er
 	}
 
 	return m.db.Query(uid, ident)
+}
+
+//GetTags 获取按钮级tags
+func (m *MenuLogic) GetTags(uid int64, ident string) (types.XMaps, error) {
+	return m.db.QueryUserMenuTags(uid, ident)
 }
