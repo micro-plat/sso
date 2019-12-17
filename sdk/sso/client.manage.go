@@ -1,6 +1,10 @@
 package sso
 
-//import cache "github.com/patrickmn/go-cache"
+import (
+	"time"
+
+	cache "github.com/patrickmn/go-cache"
+)
 
 //SaveSSOClient  保存sso client
 func saveSSOClient(ssoAPIHost, ident, secret string) error {
@@ -9,7 +13,7 @@ func saveSSOClient(ssoAPIHost, ident, secret string) error {
 		return err
 	}
 	ssoClient = client
-	//localCache = cache.New(2*time.Minute, 10*time.Second)
+	localCache = cache.New(5*time.Minute, 10*time.Second)
 	return nil
 }
 

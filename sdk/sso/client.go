@@ -1,5 +1,11 @@
 package sso
 
+import (
+	"strings"
+
+	"github.com/micro-plat/lib4go/types"
+)
+
 //Client sso client
 type Client struct {
 	cfg *Config
@@ -52,4 +58,27 @@ func (client *Client) GetUserOtherSystems(userID int) (*[]*System, error) {
 func (client *Client) GetAllUser() (*[]*User, error) {
 	s := newUser(client.cfg)
 	return s.GetAllUser()
+}
+
+//GetUserDisplayTags 获取用户有权限的Tags
+func (client *Client) GetUserDisplayTags(UserID int, tags string) (result []types.XMap, err error) {
+	tagInput := strings.Split(tags, ",")
+
+	s := newUser(client.cfg)
+	userHasTags, err := s.GetUserTags(UserID)
+	if err != nil {
+		return nil, err
+	}
+
+	for _, tag := range tagInput {
+		detail := types.XMap{"tag": tag, "display": false}
+		for _, temp := range userHasTags {
+			if strings.EqualFold(strings.TrimSpace(tag), strings.TrimSpace(temp.Path)) {
+				detail["display"] = true
+				break
+			}
+		}
+		result = append(result, detail)
+	}
+	return
 }

@@ -60,7 +60,21 @@ func (u *userLogic) checkCodeLogin(code string) (res *LoginState, err error) {
 
 //GetUserMenu 查询用户在某个系统下的菜单数据
 func (u *userLogic) getUserMenu(userID int) ([]Menu, error) {
-	return getUserMenuFromAPIServer(userID)
+	values := net.NewValues()
+	values.Set("user_id", types.GetString(userID))
+	values.Set("ident", u.cfg.ident)
+	values.Set("timestamp", types.GetString(time.Now().Unix()))
+
+	values = values.Sort()
+	raw := values.Join("", "") + u.cfg.secret
+	values.Set("sign", md5.Encrypt(raw))
+
+	var other []Menu
+	_, err := remoteRequest(u.cfg.host, userMenuUrl, values.Join("=", "&"), &other)
+	if err != nil {
+		return nil, err
+	}
+	return other, nil
 }
 
 //getUserSystems 返回用户可用的子系统列表(有权限,除当前系统外)
@@ -98,4 +112,9 @@ func (u *userLogic) GetAllUser() (*[]*User, error) {
 		return nil, err
 	}
 	return result.(*[]*User), nil
+}
+
+//GetUserTags 获取用户有权限的tags
+func (u *userLogic) GetUserTags(userID int) ([]Menu, error) {
+	return getUserTagFromLocal(userID)
 }

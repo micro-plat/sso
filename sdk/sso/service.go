@@ -18,6 +18,7 @@ func Bind(app *hydra.MicroApp, ssoApiHost, ident, secret string) error {
 	app.Micro("/sso/member/systems/get", userSystems)
 	app.Micro("/sso/member/all/get", getAllUser)
 	app.Micro("/sso/system/info/get", systemInfo)
+	app.Micro("/sso/member/tag/display", getTags)
 
 	return nil
 }
@@ -108,5 +109,24 @@ func getAllUser(ctx *context.Context) (r interface{}) {
 
 	ctx.Log.Info("2. 返回数据")
 	return data
+}
 
+//getTags 按钮是否显示
+func getTags(ctx *context.Context) (r interface{}) {
+	ctx.Log.Info("--------获取页面的按钮是否显示----------")
+
+	ctx.Log.Info("1: 验证参数")
+	if err := ctx.Request.Check("tags"); err != nil {
+		return context.NewError(context.ERR_NOT_ACCEPTABLE, fmt.Errorf("tags不能为空,如:user_new,user_delete"))
+	}
+	mem := GetMember(ctx)
+
+	ctx.Log.Info("2. 执行操作")
+	data, err := GetSSOClient().GetUserDisplayTags(int(mem.UserID), ctx.Request.GetString("tags"))
+	if err != nil {
+		return err
+	}
+
+	ctx.Log.Info("2. 返回数据")
+	return data
 }

@@ -1,6 +1,8 @@
 package sso
 
 import (
+	"strings"
+
 	"github.com/micro-plat/hydra/context"
 )
 
@@ -29,24 +31,32 @@ func CheckAndSetMember(ctx *context.Context) error {
 	ctx.Meta.Set("login-state", &m)
 
 	//验证用户是否有页面权限
-	// tags := ctx.GetContainer().GetTags(ctx.Service)
-	// ctx.Log.Infof("当前接口配置的tags为: %v", tags)
-	// if tags == nil || len(tags) == 0 {
-	// 	return nil
-	// }
+	tags := ctx.GetContainer().GetTags(ctx.Service)
+	ctx.Log.Infof("当前接口配置的tags为: %v", tags)
+	if tags == nil || len(tags) == 0 {
+		return nil
+	}
 
-	// menu, err := getUserMenuFromLocal(int(m.UserID))
-	// if err != nil {
-	// 	return err
-	// }
-
-	// for _, tag := range tags {
-	// 	if strings.Trim(tag, " ") == "" {
-	// 		continue
-	// 	}
-	// 	if flag := verifyAuthority(menu, tag); !flag {
-	// 		return context.NewError(919, "用户没有相关页面权限")
-	// 	}
-	// }
+	userHasTags, err := getUserTagFromLocal(int(m.UserID))
+	if err != nil {
+		return err
+	}
+	configTag := strings.TrimSpace(tags[0])
+	if configTag == "" {
+		return nil
+	}
+	if flag := verifyAuthority(userHasTags, configTag); !flag {
+		return context.NewErrorf(919, "用户没有相应的按钮级权限")
+	}
 	return nil
+}
+
+//verifyAuthority 验证用户是否包含此tag
+func verifyAuthority(userHasTags []Menu, tag string) bool {
+	for _, temp := range userHasTags {
+		if strings.EqualFold(strings.TrimSpace(temp.Path), tag) {
+			return true
+		}
+	}
+	return false
 }

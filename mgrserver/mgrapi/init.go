@@ -37,17 +37,17 @@ func (r *SSO) init() {
 		if _, err := c.GetCache(); err != nil {
 			return err
 		}
-		if err := ssoSdk.Bind(r.MicroApp,conf.SsoApiHost, conf.Ident, conf.Secret); err != nil {
+		if err := ssoSdk.Bind(r.MicroApp, conf.SsoApiHost, conf.Ident, conf.Secret); err != nil {
 			return err
 		}
 		return nil
 	})
 
-	r.Micro("/base", base.NewBaseUserHandler, "/user/index")                     //基础数据
-	r.Micro("/user", user.NewUserHandler, "/user/index")          				//用户相关接口
-	r.Micro("/auth", role.NewRoleAuthHandler, "/user/role")                     //权限管理
-	r.Micro("/role", role.NewRoleHandler, "/user/role")                         //角色管理相关接口
-	r.Micro("/system/info", system.NewSystemHandler, "/sys/index")              //系统管理相关接口
-	r.Micro("/system/func", function.NewSystemFuncHandler, "/sys/index")        //系统功能相关接口
-	r.Micro("/image/upload", image.NewImageHandler("../image")) 			   //图片上传
+	r.Micro("/base", base.NewBaseUserHandler)                   //基础数据
+	r.Micro("/user", user.NewUserHandler)                       //用户相关接口
+	r.Micro("/auth", role.NewRoleAuthHandler)                   //权限管理
+	r.Micro("/role", role.NewRoleHandler)                       //角色管理相关接口
+	r.Micro("/system/info", system.NewSystemHandler)            //系统管理相关接口
+	r.Micro("/system/func", function.NewSystemFuncHandler)      //系统功能相关接口
+	r.Micro("/image/upload", image.NewImageHandler("../image")) //图片上传
 }
