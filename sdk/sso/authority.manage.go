@@ -42,7 +42,7 @@ func CheckAndSetMember(ctx *context.Context) error {
 		return err
 	}
 	configTag := strings.TrimSpace(tags[0])
-	if configTag == "" {
+	if configTag == "" || configTag == "*" {
 		return nil
 	}
 	if flag := verifyAuthority(userHasTags, configTag); !flag {
