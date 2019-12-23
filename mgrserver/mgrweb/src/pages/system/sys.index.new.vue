@@ -133,6 +133,7 @@
               </div>
               <div class="form-group">
                 <label>{{editData.logo}}</label>
+                <input v-show="editData.logo != ''" type="button" value="删除" @click="deletePic" />
                 <input class="form-control" placeholder="" name="logo2" v-model="editData.logo"  type="hidden">
                 <div class="form-height text-danger"><span v-show="errors.first('logo2')">logo地址不能为空</span></div>
                 <uploader :options="options" class="uploader-example" :file-status-text="statusText" ref="uploader" @file-success="fileEditSuccess" @file-error="fileError">
@@ -793,9 +794,9 @@ export default {
       // if(!editData.secret) {
       //   return "secret不能为空";
       // }
-      if (!editData.logo) {
-        return "logo图片必须上传";
-      }
+      // if (!editData.logo) {
+      //   return "logo图片必须上传";
+      // }
       if(!editData.theme) {
         return "请选择主题样式";
       }
@@ -809,8 +810,10 @@ export default {
       if (!secretInfo.secret) {
         return "秘钥不能为空";
       }
+    },
+    deletePic() {
+      this.editData.logo = "";
     }
-
   }
 };
 </script>

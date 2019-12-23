@@ -580,9 +580,9 @@ export default {
           if(!this.addData.secret) {
             return "secret不能为空";
           }
-          if (!this.addData.logo) {
-            return "logo图片必须上传";
-          }
+          // if (!this.addData.logo) {
+          //   return "logo图片必须上传";
+          // }
           if(!this.addData.theme) {
             return "请选择主题样式";
           }
