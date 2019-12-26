@@ -186,3 +186,8 @@ func (u *SystemHandler) ChangeSecretHandle(ctx *context.Context) (r interface{})
 
 	return "success"
 }
+
+//ExportMenuHandle 导出菜单数据
+func (u *SystemHandler) ExportMenuHandle(ctx *context.Context) (r interface{}) {
+	return nil
+}
