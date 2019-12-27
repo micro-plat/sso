@@ -9,6 +9,7 @@ type User struct {
 	Mobile    string `json:"mobile"`
 	Email     string `json:"email"`
 	ExtParams string `json:"ext_params"`
+	Status    string `json:"status"`
 }
 
 //LoginState 用户信息
