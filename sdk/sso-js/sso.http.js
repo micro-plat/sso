@@ -182,7 +182,7 @@ function put(url, data = {}) {
 
 function del(url, data = {}) {
     return new Promise((resolve, reject) => {
-        axios.delete(url, data)
+        axios.delete(url, {data:data})
             .then(response => {
                 if (response.status == 200) {
                     resolve(response.data);
