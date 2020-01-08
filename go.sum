@@ -179,6 +179,7 @@ github.com/yosssi/gmq v0.0.1 h1:GhlDVaAQoi3Mvjul/qJXXGfL4JBeE0GQwbWp3eIsja8=
 github.com/yosssi/gmq v0.0.1/go.mod h1:mReykazh0U1JabvuWh1PEbzzJftqOQWsjr0Lwg5jL1Y=
 github.com/zkfy/cron v0.0.0-20170309132418-df38d32658d8 h1:jxPemXnLeekMXItoaw4jZtDfe8HmvFmviUm2L5tEBhE=
 github.com/zkfy/cron v0.0.0-20170309132418-df38d32658d8/go.mod h1:JOZbTZbRDcU9U/JLhwfjNJ9Z3fCrvcwldtFCsB7LnSc=
+github.com/zkfy/go-cache v2.1.0+incompatible/go.mod h1:3BfHxgJ+4h6vTvsIuKZnIf44JzXgECayURPxvafVv5Y=
 github.com/zkfy/go-metrics v0.0.0-20161128210544-1f30fe9094a5 h1:Rb2qQMbEon+BI3IXGh4eW3u/iTLPA3+Y6kNK+gHO32w=
 github.com/zkfy/go-metrics v0.0.0-20161128210544-1f30fe9094a5/go.mod h1:VOfLef4/FOZxeKOJ2BtlXFcirZ3i6/E7dR1wBl37LS8=
 github.com/zkfy/go-oci8 v0.0.0-20180327092318-ad9f59dedff0 h1:jTkoGemWKwQ/TQ+y6nX6LoN2dkV1UW9edx9vIaEt4OQ=
