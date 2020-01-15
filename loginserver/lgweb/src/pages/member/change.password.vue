@@ -1,6 +1,6 @@
 <template>
     <div class="container">
-        <div class="sso-title">能源业务中心运营管理系统</div>
+        <div class="sso-title">运营管理系统</div>
         <div>
             <div class="changepwd_content">
                 <div class="title-text">修改密码</div>
@@ -46,7 +46,7 @@
         password1: "",
         password2: "",
         errorMsg: "",
-        copyRight: "四川千行你我科技有限公司Copyright©" + new Date().getFullYear() +" 版权所有"
+        copyRight: ""
       }
     },
     created() {
@@ -56,7 +56,7 @@
         }
     },
     mounted(){
-      document.title = "修改密码-能源业务中心运营管理系统";
+      document.title = "修改密码-运营管理系统";
     },
     methods:{
       signOut() {
@@ -114,7 +114,7 @@
 .container{ 
     width:100%;
     height:100%; 
-    background:url(../../img/background.png); 
+    background:url(https://c-ssl.duitang.com/uploads/item/201602/25/20160225154259_CHYNV.thumb.700_0.jpeg); 
     background-size: cover;
 }
 

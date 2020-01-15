@@ -25,7 +25,7 @@
       }
     },
     mounted(){
-      document.title = "登录出错-能源业务中心运营管理系统";
+      document.title = "登录出错-运营管理系统";
       if (this.$route.query.type) {
           this.errorType = this.$route.query.type
       }

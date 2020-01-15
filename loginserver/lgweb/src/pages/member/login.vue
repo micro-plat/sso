@@ -6,6 +6,7 @@
       :requireCode="requireCode"
       :sendCode="getCodeCall"
       :loginCallBack="loginsubmit"
+      :requireLabel="false"
 
       :loginTitle="loginTitle"
       :loginNameLabel="loginNameLabel"
@@ -15,6 +16,7 @@
       :codeLabel="codeLabel"
       :codeHolder="codeHolder"
       :sendBtnLabel="sendBtnLabel"
+      :bgImageUrl="backGroundImage"
       ref="LoginUp">
     </login-with-up>
   </div>
@@ -26,7 +28,7 @@
   import loginWithUp from 'login-with-up';
   import {JoinUrlParams} from '@/services/common.js'
 
-  import "@/services/qrcode.min.js"
+  //import "@/services/qrcode.min.js"
   import "@/services/md5.js"
   import {trimError} from "@/services/utils"
 
@@ -34,16 +36,17 @@
     name: 'app',
     data () {
       return {
-        systemName: "能源业务中心运营管理系统",
-        copyright:"四川千行你我科技有限公司Copyright©" + new Date().getFullYear() +" 版权所有",
+        systemName: "单点登录系统",
+        backGroundImage : "https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1579090788593&di=0b6ac87ff038756286c6a2d410611b67&imgtype=0&src=http%3A%2F%2Fku.90sjimg.com%2Fback_pic%2F04%2F00%2F35%2F5557fcfbad34664.jpg",
+        //copyright:"Copyright©" + new Date().getFullYear() +" 版权所有",
         callback:"",
         changePwd:0,
         ident: "",
 
         loginTitle:"用户登录",
-        loginNameLabel:"用户名",
+        loginNameLabel:"",
         loginNameHolder:"请输入用户名",
-        loginPwdLabel:"密码",
+        loginPwdLabel:"",
         loginPwdHolder:"请输入用户密码",
         codeLabel:"微信验证码",
         codeHolder:"请输入微信验证码",
@@ -71,43 +74,43 @@
     mounted(){
       window.localStorage.removeItem("__sso_jwt__");
 
-      document.title = "登录-能源业务中心运营管理系统";
+      document.title = "登录-运营管理系统";
       this.callback = this.$route.query.callback;
       this.changePwd = this.$route.query.changepwd;
       this.ident = this.$route.params.ident ? this.$route.params.ident : "";
 
-      this.controlLoginType();
+      //this.controlLoginType();
     },
 
     methods:{
-      controlLoginType() {
-        this.$post("/system/config/get", {ident: this.ident})
-        .then(res => {
-            this.loginTitle = "登录到【" + res.system_name + "】";
-            this.requireCode = res.require_wx_code;
-        })
-        .catch(err => {
-            this.$refs.LoginUp.showError("获取系统信息失败");
-        }); 
-      },
+      // controlLoginType() {
+      //   this.$post("/system/config/get", {ident: this.ident})
+      //   .then(res => {
+      //       //this.loginTitle = "登录到【" + res.system_name + "】";
+      //       //this.requireCode = res.require_wx_code;
+      //   })
+      //   .catch(err => {
+      //       this.$refs.LoginUp.showError("获取系统信息失败");
+      //   }); 
+      // },
 
       //发送微信验证码
-      getCodeCall(e){
-         e.ident = this.ident;
-         this.$refs.LoginUp.showError("发送验证码中...");
-         this.$post("/member/sendcode", e)
-          .then(res=>{
-            this.$refs.LoginUp.showError("微信验证码发送成功,【运维云管家】中查看");
-            this.$refs.LoginUp.countDown();
-          })
-          .catch(err=>{
-              var msg = "登录失败,稍后再试";
-              if (err.response) {
-                msg = this.errorTemplate[err.response.status] || msg
-              }
-              this.$refs.LoginUp.showError(msg);
-          })
-      },
+      // getCodeCall(e){
+      //    e.ident = this.ident;
+      //    this.$refs.LoginUp.showError("发送验证码中...");
+      //    this.$post("/member/sendcode", e)
+      //     .then(res=>{
+      //       this.$refs.LoginUp.showError("微信验证码发送成功,【运维云管家】中查看");
+      //       this.$refs.LoginUp.countDown();
+      //     })
+      //     .catch(err=>{
+      //         var msg = "登录失败,稍后再试";
+      //         if (err.response) {
+      //           msg = this.errorTemplate[err.response.status] || msg
+      //         }
+      //         this.$refs.LoginUp.showError(msg);
+      //     })
+      // },
 
       //用户名密码登录
       loginsubmit(e){
@@ -115,7 +118,7 @@
           ident: this.ident,
           password: $.md5(e.password),
           username:e.username,
-          wxcode:e.wxcode
+          //wxcode:e.wxcode
         }
         this.$post("/member/login", req)
           .then(res => {
