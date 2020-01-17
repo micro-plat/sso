@@ -57,7 +57,7 @@
 <style scoped>
 
 .container{ 
-    background: url(../../img/background.png) ;
+    background: url(http://47.97.1.98/image/background.jpg) ;
     background-size: cover;
     height: 100%;
     width: 100%;

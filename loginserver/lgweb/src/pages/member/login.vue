@@ -37,7 +37,7 @@
     data () {
       return {
         systemName: "单点登录系统",
-        backGroundImage : "https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1579090788593&di=0b6ac87ff038756286c6a2d410611b67&imgtype=0&src=http%3A%2F%2Fku.90sjimg.com%2Fback_pic%2F04%2F00%2F35%2F5557fcfbad34664.jpg",
+        backGroundImage : "http://47.97.1.98/image/background.jpg",
         //copyright:"Copyright©" + new Date().getFullYear() +" 版权所有",
         callback:"",
         changePwd:0,

@@ -14,7 +14,7 @@ const WxBindSecrect = `f19179a06954edd0`
 type Conf struct {
 
 	//BindTimeOut 后台发送二维图片(绑定微信账户)  过期时间(秒)
-	BindTimeOut int `json:"bind_timeout" valid:"required"`
+	BindTimeOut int `json:"bind_timeout"`
 
 	//RequireWxCode 登录是否需要验证码
 	RequireWxCode bool `json:"require_wx_code"`
@@ -26,25 +26,25 @@ type Conf struct {
 	UserLockTime int `json:"user_lock_time" valid:"required"`
 
 	//WxPhoneLoginURL 微信手机登录地址
-	WxPhoneLoginURL string `json:"wx_phone_login_url" valid:"required"`
+	WxPhoneLoginURL string `json:"wx_phone_login_url"`
 
 	//WxAppID WxAppID
-	WxAppID string `json:"wx_app_id" valid:"required"`
+	WxAppID string `json:"wx_app_id"`
 
 	//WxSecret WxSecret
-	WxSecret string `json:"wx_secret" valid:"required"`
+	WxSecret string `json:"wx_secret"`
 
 	//RefreshWxTokenHost 刷新微信token的host(我们内部的接口)
-	RefreshWxTokenHost string `json:"refresh_wx_token_host" valid:"required"`
+	RefreshWxTokenHost string `json:"refresh_wx_token_host" `
 
 	//WxGetTokenURL 获取微信token
-	WxTokenURL string `json:"wx_get_token_url" valid:"required"`
+	WxTokenURL string `json:"wx_get_token_url"`
 
 	//LoginValidCodeTemplateID 登录验证码模板
-	LoginValidCodeTemplateID string `json:"login_validcode_template_id" valid:"required"`
+	LoginValidCodeTemplateID string `json:"login_validcode_template_id"`
 
 	//WxSendTemplateMsgURL 发送微信模板消息的接口
-	WxSendTemplateMsgURL string `json:"wx_send_template_msg_url" valid:"required"`
+	WxSendTemplateMsgURL string `json:"wx_send_template_msg_url"`
 }
 
 //Valid 验证配置参数是否合法

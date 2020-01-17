@@ -114,7 +114,7 @@
 .container{ 
     width:100%;
     height:100%; 
-    background:url(https://c-ssl.duitang.com/uploads/item/201602/25/20160225154259_CHYNV.thumb.700_0.jpeg); 
+    background:url(http://47.97.1.98/image/background.jpg); 
     background-size: cover;
 }
 
