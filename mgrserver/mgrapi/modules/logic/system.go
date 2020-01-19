@@ -19,20 +19,17 @@ type ISystemLogic interface {
 	Sort(sysID, sortrank, levelID, id, parentId int, isUp bool) (err error)
 	GetUsers(systemName string) (user db.QueryRows, allUser db.QueryRows, err error)
 	ChangeSecret(id int, secret string) error
-	ExportMenu(sysID int) (db.QueryRows, error)
 }
 
 type SystemLogic struct {
-	c     component.IContainer
-	cache system.ICacheSystem
-	db    system.IDbSystem
+	c  component.IContainer
+	db system.IDbSystem
 }
 
 func NewSystemLogic(c component.IContainer) *SystemLogic {
 	return &SystemLogic{
-		c:     c,
-		cache: system.NewCacheSystem(c),
-		db:    system.NewDbSystem(c),
+		c:  c,
+		db: system.NewDbSystem(c),
 	}
 }
 
@@ -115,9 +112,4 @@ func (u *SystemLogic) GetUsers(systemName string) (user db.QueryRows, allUser db
 //ChangeSecret 修改secret
 func (u *SystemLogic) ChangeSecret(id int, secret string) error {
 	return u.db.ChangeSecret(id, secret)
-}
-
-//ExportMenu 导出菜单数据
-func (u *SystemLogic) ExportMenu(sysID int) (db.QueryRows, error) {
-	return u.db.ExportMenu(sysID)
 }

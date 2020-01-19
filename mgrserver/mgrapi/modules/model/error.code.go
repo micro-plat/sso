@@ -57,4 +57,7 @@ const (
 
 	//用户没有相关页面权限
 	ERR_USER_HASNOPAGEAUTHORITY = 919
+
+	//系统已存在菜单数据
+	ERR_SYSTEM_HASMENUS = 920
 )

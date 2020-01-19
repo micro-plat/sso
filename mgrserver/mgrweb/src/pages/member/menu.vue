@@ -40,7 +40,7 @@
       this.getSystemInfo();
     },
     mounted(){
-      document.title = "用户权限系统";
+      this.setDocmentTitle();
       this.userinfo = JSON.parse(localStorage.getItem("userinfo"));
     },
     methods:{
@@ -68,6 +68,7 @@
           this.themes = res.theme;
           this.systemName = res.name;
           this.logo = res.logo;
+          this.setDocmentTitle();
           
         }).catch(err => {
           console.log(err);
@@ -83,18 +84,8 @@
           console.log(err);
         })
       },
-      
-      //查询某个url对应的菜单
-      getOneMenuName(url, menus) {
-        for (var i = 0; i < menus.length; i++) { 
-          for (var j = 0; j < menus[i].children.length; j++) {
-            for (var k = 0; k < menus[i].children[j].children.length; k++) {
-                if (menus[i].children[j].children[k].path == url) {
-                  return menus[i].children[j].children[k].name;
-                }
-            }
-          }
-        }
+      setDocmentTitle() {
+        document.title = this.systemName;
       }
     
     }

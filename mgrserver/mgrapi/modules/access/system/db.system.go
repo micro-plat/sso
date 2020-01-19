@@ -22,7 +22,6 @@ type IDbSystem interface {
 	Sort(sysID, sortRank, levelID, id, parentId int, isUp bool) (err error)
 	GetUsers(systemName string) (user db.QueryRows, allUser db.QueryRows, err error)
 	ChangeSecret(id int, secret string) error
-	ExportMenu(sysID int) (db.QueryRows, error)
 }
 
 type DbSystem struct {
@@ -251,9 +250,4 @@ func (u *DbSystem) ChangeSecret(id int, secret string) error {
 		"secret": secret,
 	})
 	return err
-}
-
-//ExportMenu 导出菜单数据
-func (u *DbSystem) ExportMenu(sysID int) (db.QueryRows, error) {
-	return nil, nil
 }

@@ -47,6 +47,8 @@ tags=""
 if [ $publishenv != "dev" ]; then
 	tags=" -tags prod "
 fi
+echo "tags: $tags"
+echo ""
 
 echo "----------1:生成apiserver数据-----------"
 cd $rootdir/apiserver/apiserver/

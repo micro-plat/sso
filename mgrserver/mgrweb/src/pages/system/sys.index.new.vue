@@ -52,6 +52,8 @@
               <el-button plain type="primary" size="mini" @click="edit(scope.row.id)">编辑</el-button>
               <el-button plain type="success" size="mini" @click="enable(scope.row.id,1)" v-if="scope.row.enable == 0" >启用</el-button>
               <el-button plain type="info" size="mini" @click="enable(scope.row.id,0)" v-if="scope.row.enable == 1">禁用</el-button>
+              <el-button plain type="primary" size="mini" @click="exportMenu(scope.row.id)">导出菜单</el-button>
+              <el-button plain type="primary" size="mini" @click="importMenu(scope.row.id)">导入菜单</el-button>
               <el-button plain type="primary" size="mini" @click="setSecret(scope.row.id)">设置秘钥</el-button>
               <el-button plain  type="danger" size="mini" @click="deleteById(scope.row.id)">删除</el-button>
               <el-button plain  type="warning" size="mini" @click="manage(scope.row.id)">管理</el-button>
@@ -537,7 +539,12 @@ export default {
       ps:10,
       totalPage: 0,
       pageAuth: [],
-      auth:{addsys:false}
+      auth:{addsys:false},
+
+      errorTemplate:{
+        920: "当前系统下面已存在菜单数据,不能导入"
+      }
+      
     };
   },
   props:["path"],
@@ -813,7 +820,85 @@ export default {
     },
     deletePic() {
       this.editData.logo = "";
+    },
+
+    //导出菜单
+    exportMenu(id) {
+      console.log(id);
+      this.$http.post("/system/menu/export", {id:id})
+      .then(res => {
+        console.log("导出菜单");
+      })
+      .catch( err => {
+        this.$notify({
+            title: '错误',
+            message: '网络错误,请稍后再试',
+            type: 'error',
+            offset: 50,
+            duration:2000,
+          });
+      });
+    },
+
+    //导入菜单
+    importMenu(id) {
+      var menus = [{
+        id:14163,
+        name:"入库管理",
+        parent:0,
+        level_id:1,
+        icon:"",
+        path:"-",
+        enable:1,
+        sortrank:1,
+        is_open:1
+      },{
+        id:14171,
+        name:"入库管理",
+        parent:14163,
+        level_id:2,
+        icon:"fa fa-arrow-circle-right text-info",
+        path:"-",
+        enable:1,
+        sortrank:2,
+        is_open:1
+      },
+      {
+        id:14172,
+        name:"上传批次",
+        parent:14171,
+        level_id:3,
+        icon:"",
+        path:"/pis/inbound/info",
+        enable:1,
+        sortrank:1,
+        is_open:0
+      }];
+      this.$http.post("/system/menu/import", {data:JSON.stringify({id:id, menus:menus})})
+      .then(res => {
+        this.$notify({
+              title: '成功',
+              message: '导入菜单成功',
+              type: 'success',
+              offset: 50,
+              duration:2000
+            });
+      })
+      .catch( err => {
+        var msg = "网络错误,请稍后再试";
+        if (err.response) {
+          msg = this.errorTemplate[err.response.status] || msg
+        }
+        this.$notify({
+            title: '错误',
+            message: msg,
+            type: 'error',
+            offset: 50,
+            duration:2000,
+          });
+      });
     }
+
   }
 };
 </script>
