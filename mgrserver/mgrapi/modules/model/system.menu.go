@@ -6,13 +6,13 @@ type ImportReq struct {
 }
 
 type MenuInfo struct {
-	ID       int    `form:"id" json:"id" valid:"required"`
+	ID       string `form:"id" json:"id" valid:"required"`
 	Name     string `form:"name" json:"name" valid:"required"`
-	Parent   int    `form:"parent" json:"parent" valid:"required"`
-	LevelID  int    `form:"level_id" json:"level_id" valid:"required"`
+	Parent   string `form:"parent" json:"parent" valid:"required"`
+	LevelID  string `form:"level_id" json:"level_id" valid:"required"`
 	Icon     string `form:"icon" json:"icon"`
 	Path     string `form:"path" json:"path"`
-	Enable   int    `form:"enable" json:"enable"`
-	Sortrank int    `form:"sortrank" json:"sortrank"`
-	IsOpen   int    `form:"is_open" json:"is_open"`
+	Enable   string `form:"enable" json:"enable"`
+	Sortrank string `form:"sortrank" json:"sortrank"`
+	IsOpen   string `form:"is_open" json:"is_open"`
 }

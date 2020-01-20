@@ -56,6 +56,7 @@ func (u *SystemMenuHandler) ImportHandle(ctx *context.Context) (r interface{}) {
 	ctx.Log.Info("1. 反序列化json对象")
 	var req model.ImportReq
 	json.Unmarshal([]byte(ctx.Request.GetString("data")), &req)
+	ctx.Log.Infof("导入的菜单数据为: %+v", req)
 
 	ctx.Log.Info("2. 导入菜单数据")
 	if err := u.subLib.Import(&req); err != nil {

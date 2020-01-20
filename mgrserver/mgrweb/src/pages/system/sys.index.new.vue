@@ -30,9 +30,9 @@
       </div>
       <el-scrollbar style="height:100%">
         <el-table :data="datalist" stripe  style="width: 100%">
-          <el-table-column width="130" prop="ident" label="英文名称" ></el-table-column>
-          <el-table-column width="250" prop="name" label="系统名称" ></el-table-column>
-          <el-table-column  width="150" prop="enable" label="状态" >
+          <el-table-column width="100" prop="ident" label="英文名称" ></el-table-column>
+          <el-table-column width="230" prop="name" label="系统名称" ></el-table-column>
+          <el-table-column  width="100" prop="enable" label="状态" >
             <template slot-scope="scope">
               <el-tag type="info" v-if="scope.row.enable == 0">禁用</el-tag>
               <el-tag type="success" v-if="scope.row.enable == 1">启用</el-tag>
@@ -96,6 +96,30 @@
         <div slot="footer">
           <a class="btn btn-sm btn-danger" @click="saveSecret">提交</a>
           <a class="btn btn-sm btn-primary" @click="secretCancel">取消</a>
+        </div>
+    </bootstrap-modal>
+    <bootstrap-modal ref="importModal" :need-header="true" :need-footer="true">
+        <div slot="title">
+          导入菜单
+        </div>
+        <div slot="body">
+          <div class="panel panel-default">
+            <div class="panel-body">
+              <form role="form" class="ng-pristine ng-valid ng-submitted">
+                <div style="display:none">
+                  <input v-model="importData.id" name="id">
+                </div>
+                <div class="form-group">
+                  <label>选择菜单文件</label>
+                  <input type="file" id="upload_file" @change="fileChange" accept=".xlsx, .xls" />
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+        <div slot="footer">
+          <a class="btn btn-sm btn-danger" @click="saveImportMenu">提交</a>
+          <a class="btn btn-sm btn-primary" @click="importClose">取消</a>
         </div>
     </bootstrap-modal>
     <bootstrap-modal ref="editModal" :need-header="true" :need-footer="true">
@@ -484,6 +508,8 @@
 </template>
 
 <script>
+  import XLSX from "xlsx";
+  import DateConvert from "@/services/date.js"
   import pager from "vue-simple-pager"
   import PullTo from 'vue-pull-to'
   import AddModal from './addModal.vue'
@@ -534,6 +560,7 @@ export default {
       },
       editData: {},
       secrectData : {id:0, secret:""},
+      importData : {id:0, menus:[]},
       enableData: { id: null, status: null },
       pi: 1,
       ps:10,
@@ -824,10 +851,19 @@ export default {
 
     //导出菜单
     exportMenu(id) {
-      console.log(id);
       this.$http.post("/system/menu/export", {id:id})
       .then(res => {
-        console.log("导出菜单");
+        var data = [
+                ['id', 'name', 'parent', 'level_id', 'icon', 'path','enable','sortrank','is_open']
+            ];
+          res.forEach(element => {
+              data.push(
+                [element["id"], element["name"],element["parent"],element["level_id"],
+                 element["icon"],element["path"],element["enable"],element["sortrank"],element["is_open"]])
+          });
+          var sheet = XLSX.utils.aoa_to_sheet(data);
+          var name = '菜单' + DateConvert("yyyyMMddhhmm",new Date()) + '.xlsx'
+          this.openDownloadDialog(this.sheet2blob(sheet), name);
       })
       .catch( err => {
         this.$notify({
@@ -840,41 +876,49 @@ export default {
       });
     },
 
-    //导入菜单
-    importMenu(id) {
-      var menus = [{
-        id:14163,
-        name:"入库管理",
-        parent:0,
-        level_id:1,
-        icon:"",
-        path:"-",
-        enable:1,
-        sortrank:1,
-        is_open:1
-      },{
-        id:14171,
-        name:"入库管理",
-        parent:14163,
-        level_id:2,
-        icon:"fa fa-arrow-circle-right text-info",
-        path:"-",
-        enable:1,
-        sortrank:2,
-        is_open:1
-      },
-      {
-        id:14172,
-        name:"上传批次",
-        parent:14171,
-        level_id:3,
-        icon:"",
-        path:"/pis/inbound/info",
-        enable:1,
-        sortrank:1,
-        is_open:0
-      }];
-      this.$http.post("/system/menu/import", {data:JSON.stringify({id:id, menus:menus})})
+    fileChange(ev) {
+        var fileName = ev.target.files[0]["name"];
+        console.log(fileName);
+        var str = fileName.split(".")
+            if (str[1] != "xlsx" && str[1] != "xls") {
+              this.$notify({
+                title: '提示',
+                message: "文件格式有误(只支持excel文件)",
+                type: 'error',
+                offset: 50,
+                duration:2000,
+              });
+              return false
+            }
+        let f = ev.target.files[0],
+        reader = new FileReader();
+        reader.onload = e => {
+          let data = e.target.result;
+          let wb = XLSX.read(data, {
+              type: "array"
+          });
+          let jsonData = XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]]);
+          //console.log("jsonData: ", jsonData);
+          this.importData.menus = jsonData;
+        };
+        reader.readAsArrayBuffer(f);
+    },
+
+    //保存要导入的菜单
+    saveImportMenu() {
+      console.log("菜单数据:", this.importData);
+      if (this.importData.menus.length == 0) {
+        this.$notify({
+            title: '提示',
+            message: '菜单数据为空',
+            type: 'error',
+            offset: 50,
+            duration:2000,
+          });
+        return false;
+      }
+
+      this.$http.post("/system/menu/import", {data:JSON.stringify(this.importData)})
       .then(res => {
         this.$notify({
               title: '成功',
@@ -883,12 +927,15 @@ export default {
               offset: 50,
               duration:2000
             });
+        
+        this.importClose();
       })
       .catch( err => {
-        var msg = "网络错误,请稍后再试";
+        var msg = err;
         if (err.response) {
-          msg = this.errorTemplate[err.response.status] || msg
-        }
+          msg = this.errorTemplate[err.response.status] || "网络错误,请稍后再试"
+        } 
+
         this.$notify({
             title: '错误',
             message: msg,
@@ -897,6 +944,63 @@ export default {
             duration:2000,
           });
       });
+    },
+
+    //导入菜单
+    importMenu(id) {
+      this.importData.id = id;
+      this.importData.menus = [];
+      this.$refs.importModal.open();
+    },
+
+    importClose() {
+      this.$refs.importModal.close();
+      $("#upload_file").val(null);
+    },
+
+    sheet2blob(sheet, sheetName) {
+      sheetName = sheetName || "sheet1";
+      var workbook = {
+          SheetNames: [sheetName],
+          Sheets: {}
+      };
+      workbook.Sheets[sheetName] = sheet;
+      // 生成excel的配置项
+      var wopts = {
+          bookType: "xlsx", // 要生成的文件类型
+          bookSST: false, // 是否生成Shared String Table，官方解释是，如果开启生成速度会下降，但在低版本IOS设备上有更好的兼容性
+          type: "binary"
+      };
+      var wbout = XLSX.write(workbook, wopts);
+      var blob = new Blob([s2ab(wbout)], {
+          type: "application/octet-stream"
+      });
+      // 字符串转ArrayBuffer
+      function s2ab(s) {
+          var buf = new ArrayBuffer(s.length);
+          var view = new Uint8Array(buf);
+          for (var i = 0; i != s.length; ++i) view[i] = s.charCodeAt(i) & 0xff;
+          return buf;
+      }
+      return blob;
+    },
+    openDownloadDialog(url, saveName)
+    {
+        if(typeof url == 'object' && url instanceof Blob)
+        {
+            url = URL.createObjectURL(url); 
+        }
+        var aLink = document.createElement('a');
+        aLink.href = url;
+        aLink.download = saveName || '';
+        var event;
+        if(window.MouseEvent) event = new MouseEvent('click');
+        else
+        {
+            event = document.createEvent('MouseEvents');
+            event.initMouseEvent('click', true, false, window, 0, 0, 0, 0, 0, false, false, false, false, 0, null);
+        }
+        aLink.dispatchEvent(event);
     }
 
   }

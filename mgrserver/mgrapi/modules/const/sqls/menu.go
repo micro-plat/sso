@@ -12,7 +12,7 @@ select
 	path,
 	enable,
 	sortrank,
-	is_open
+	IFNULL(is_open, 0) as is_open
 from sso_system_menu
 where sys_id = @sys_id
 `

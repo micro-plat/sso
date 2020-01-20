@@ -57,7 +57,7 @@ func (l *DbSystemMenu) Exists(sysID string) (bool, error) {
 //Import 导入菜单(现在菜单数据有4级:1大分类.2:小分类,3:菜单,4:权限(tag))
 func (l *DbSystemMenu) Import(req *model.ImportReq) error {
 	first := l.getLevelData(1, req.Menus)
-	oldIDMaping := make(map[int]int64)
+	oldIDMaping := make(map[string]int64)
 
 	db := l.c.GetRegularDB()
 	trans, err := db.Begin()
@@ -96,7 +96,7 @@ func (l *DbSystemMenu) Import(req *model.ImportReq) error {
 func (l *DbSystemMenu) getLevelData(levelID int, data []model.MenuInfo) (result []model.MenuInfo) {
 	result = make([]model.MenuInfo, 0)
 	for _, val := range data {
-		if val.LevelID == levelID {
+		if val.LevelID == types.GetString(levelID) {
 			result = append(result, val)
 		}
 	}
@@ -104,7 +104,7 @@ func (l *DbSystemMenu) getLevelData(levelID int, data []model.MenuInfo) (result 
 }
 
 //insertLevelData 插入菜单数据
-func (l *DbSystemMenu) insertLevelData(trans db.IDBTrans, oldIDMaping map[int]int64, sysID string, levelID int, data []model.MenuInfo) error {
+func (l *DbSystemMenu) insertLevelData(trans db.IDBTrans, oldIDMaping map[string]int64, sysID string, levelID int, data []model.MenuInfo) error {
 	for _, val := range data {
 		var newParent int64
 		if levelID != 1 {
