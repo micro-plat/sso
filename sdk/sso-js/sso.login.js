@@ -55,23 +55,19 @@ export function setRouteBeforeLogin() {
         window.localStorage.setItem("beforeLoginUrl", window.location.pathname);
     }
 
-    var queryInfo = window.location.search;
-    var sourceUrl = ""
-    if (queryInfo && queryInfo.indexOf("source=") >= 0) {
-        //是外部系统跳转过来(反正不是我们用golang开发的系统)
-        var queryArray = queryInfo.split("&")
-        var sourceInfo = getSourceInfo(queryArray);
-        if (sourceInfo) {
-            sourceUrl = "?source=" + sourceInfo.source + "&sessionid=" + sourceInfo.sessionId;
-        }
-    }
+    // var queryInfo = window.location.search;
+    // var sourceUrl = ""
+    // if (queryInfo && queryInfo.indexOf("source=") >= 0) {
+    //     //是外部系统跳转过来(反正不是我们用golang开发的系统)
+    //     var queryArray = queryInfo.split("&")
+    //     var sourceInfo = getSourceInfo(queryArray);
+    //     if (sourceInfo) {
+    //         sourceUrl = "?source=" + sourceInfo.source + "&sessionid=" + sourceInfo.sessionId;
+    //     }
+    // }
     var url = window.ssoconfig.loginWebHost + "/" + window.ssoconfig.ident + "/jump";
-    if (sourceUrl) {
-        url += "?" + sourceUrl +  "&callback=" + encodeURIComponent(window.location.href);
-    } else {
-        if (process.env.NODE_ENV == "development") {
-            url += "?callback=" + encodeURIComponent(window.location.protocol + "//" + window.location.host + "/ssocallback");
-        }
+    if (process.env.NODE_ENV == "development") {
+        url += "?callback=" + encodeURIComponent(window.location.protocol + "//" + window.location.host + "/ssocallback");
     }
     window.location.href= url;
 }
@@ -151,24 +147,24 @@ function transformSysInfo(systems) {
  * 返回source及sessionid等信息(时间紧没有使用工厂的方式)
  * @param {*} queryArray 
  */
-function getSourceInfo(queryArray) {
-    if (!queryArray || !queryArray.length) {
-        return ""
-    }
-    var source = "", sessionId = "";
-    for (var index = 0; index < queryArray.length; index++) { 
-        if (queryArray[index].toLowerCase().includes("source")) {
-            source = queryArray[index].split("=")[1]
-        }
-        if (queryArray[index].toLowerCase().includes("sessionid")) {
-            sessionId = queryArray[index].split("=")[1]
-        }
-        if (source && sessionId) {
-            return {
-                source: source,
-                sessionid:sessionId
-            }
-        }
-     }
-    return null
-}
+// function getSourceInfo(queryArray) {
+//     if (!queryArray || !queryArray.length) {
+//         return ""
+//     }
+//     var source = "", sessionId = "";
+//     for (var index = 0; index < queryArray.length; index++) { 
+//         if (queryArray[index].toLowerCase().includes("source")) {
+//             source = queryArray[index].split("=")[1]
+//         }
+//         if (queryArray[index].toLowerCase().includes("sessionid")) {
+//             sessionId = queryArray[index].split("=")[1]
+//         }
+//         if (source && sessionId) {
+//             return {
+//                 source: source,
+//                 sessionid:sessionId
+//             }
+//         }
+//      }
+//     return null
+// }
