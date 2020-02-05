@@ -2,6 +2,7 @@
 *node_modules/
 *dist/
 .vscode/
+./mgrserver/mgrapi/home
 ./mgrserver/mgrweb/dist/
 ./mgrserver/mgrweb/npm-debug.log*
 ./mgrserver/mgrweb/yarn-debug.log*
