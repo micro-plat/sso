@@ -40,7 +40,7 @@ func (u *DataPerssionHandler) SyncHandle(ctx *context.Context) (r interface{}) {
 	}
 
 	ctx.Log.Info("------返回结果------")
-	return nil
+	return "success"
 }
 
 /*

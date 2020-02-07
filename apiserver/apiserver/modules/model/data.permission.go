@@ -6,7 +6,7 @@ type DataPermissionSyncReq struct {
 	Name   string `form:"name" json:"name" valid:"required"`
 	Type   string `form:"type" json:"type" valid:"required"`
 	Value  string `form:"value" json:"value" valid:"required"`
-	Remark string `form:"remark" json:"remark" valid:"required"`
+	Remark string `form:"remark" json:"remark"`
 }
 
 //DataPermissionGetReq 获取用户有权限的　[数据权限]　数据

@@ -130,3 +130,13 @@ func getTags(ctx *context.Context) (r interface{}) {
 	ctx.Log.Info("2. 返回数据")
 	return data
 }
+
+//SyncDataPermission 同步数据
+func SyncDataPermission(req SyncReq) error {
+	return GetSSOClient().SyncPermissionData(req)
+}
+
+//GetDataPermission 获取 [数据权限] 数据, 返回(1,2,3,4,5,6)某个用户有权限的数据
+func GetDataPermission(businessType string, userID int64) (string, error) {
+	return GetSSOClient().GetPermissionData(businessType, userID)
+}
