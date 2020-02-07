@@ -4,6 +4,7 @@ import (
 	"github.com/micro-plat/hydra/component"
 	"github.com/micro-plat/sso/apiserver/apiserver/services/login"
 	"github.com/micro-plat/sso/apiserver/apiserver/services/member"
+	"github.com/micro-plat/sso/apiserver/apiserver/services/permission"
 	"github.com/micro-plat/sso/apiserver/apiserver/services/system"
 )
 
@@ -35,4 +36,6 @@ func (r *SSO) init() {
 	r.Micro("/member/all/get", member.NewMemberGetAllHandler) //获取所有用户信息
 	r.Micro("/system/info/get", system.NewInfoHandler)        //获取子系统信息
 	r.Micro("/login/auth", login.NewAuthorizeHandler)         //用户登录认证
+
+	r.Micro("/permission/data", permission.NewDataPerssionHandler) //【数据权限】相关接口
 }
