@@ -43,24 +43,3 @@ func (s *DataPermissionLogic) Sync(req SyncReq) (err error) {
 	fmt.Println(a)
 	return nil
 }
-
-//Get 获取【数据权限】数据
-func (s *DataPermissionLogic) Get(businessType string, userID int64) (r string, err error) {
-	values := net.NewValues()
-	values.Set("type", businessType)
-	values.Set("user_id", types.GetString(userID))
-	values.Set("ident", s.conf.ident)
-	values.Set("timestamp", types.GetString(time.Now().Unix()))
-
-	values = values.Sort()
-	raw := values.Join("", "") + s.conf.secret
-	values.Set("sign", md5.Encrypt(raw))
-
-	result := make(map[string]string)
-	a, err := remoteRequest(s.conf.host, getDataPermission, values.Join("=", "&"), &result)
-	if err != nil {
-		return "", err
-	}
-	fmt.Println(a)
-	return result["data"], nil
-}
