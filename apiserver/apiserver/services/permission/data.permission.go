@@ -46,7 +46,7 @@ func (u *DataPerssionHandler) SyncHandle(ctx *context.Context) (r interface{}) {
 /*
 * GetHandle: 获取当前用户可用的【数据权限】数据(1,2,3,4)
  */
-func (u *DataPerssionHandler) GetHandle(ctx *context.Context) (r interface{}) {
+func (u *DataPerssionHandler) ObtainHandle(ctx *context.Context) (r interface{}) {
 	ctx.Log.Info("-------获取当前用户可用的【数据权限】数据------")
 
 	ctx.Log.Info("-------验证数据的有效性------")

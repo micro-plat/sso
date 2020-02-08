@@ -9,5 +9,5 @@ const userAllUrl = "/member/all/get"
 const userAllTag = "/member/tags/get"
 
 //数据权限
-const getDataPermission = "/permission/data/get"
+const getDataPermission = "/permission/data/obtain"
 const syncDataPermission = "/permission/data/sync"

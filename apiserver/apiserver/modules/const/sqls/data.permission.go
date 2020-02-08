@@ -20,6 +20,27 @@ VALUES(
 )
 `
 
+//AddDefaultDataPermissionInfo 增加一个默认全部
+const AddDefaultDataPermissionInfo = `
+insert into sso_data_permission(
+	sys_id,
+	ident,
+	name,
+	type,
+	value,
+	remark
+)
+select 
+	@sys_id,
+	@ident,
+	'全部',
+	@type,
+	'*',
+	'全部'
+from DUAL
+where NOT EXISTS (SELECT 1 FROM sso_data_permission WHERE sys_id=@sys_id and type=@type and value='*')
+`
+
 //QueryUserDataPermission 获取某个用户的某个类型下的 [数据权限] 信息
 const QueryUserDataPermission = `
 select 

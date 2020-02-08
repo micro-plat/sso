@@ -62,10 +62,11 @@ func (l *DBDataPermission) SyncDataPermission(req model.DataPermissionSyncReq) e
 		return context.NewError(context.ERR_SERVICE_UNAVAILABLE, "ident传入有误或者系统被禁用")
 	}
 
+	//增加权限数据
 	first := data.Get(0)
 	_, q, a, err := db.Execute(sqls.AddDataPermission, map[string]interface{}{
 		"ident":  req.Ident,
-		"sys_id": first.GetString("sys_id"),
+		"sys_id": first.GetString("id"),
 		"name":   req.Name,
 		"type":   req.Type,
 		"value":  req.Value,
@@ -74,5 +75,13 @@ func (l *DBDataPermission) SyncDataPermission(req model.DataPermissionSyncReq) e
 	if err != nil {
 		return fmt.Errorf("SyncDataPermission 同步数据发生错误, q:%s, a:%+v, err:%+v", q, a, err)
 	}
+
+	//增加一个类型全局数据
+	db.Execute(sqls.AddDefaultDataPermissionInfo, map[string]interface{}{
+		"ident":  req.Ident,
+		"sys_id": first.GetString("id"),
+		"type":   req.Type,
+	})
+
 	return nil
 }

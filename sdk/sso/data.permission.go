@@ -36,7 +36,7 @@ func (s *DataPermissionLogic) Sync(req SyncReq) (err error) {
 	values.Set("sign", md5.Encrypt(raw))
 
 	result := make(map[string]string)
-	a, err := remoteRequest(s.conf.host, syncDataPermission, values.Join("=", "&"), result)
+	a, err := remoteRequest(s.conf.host, syncDataPermission, values.Join("=", "&"), &result)
 	if err != nil {
 		return err
 	}
@@ -57,7 +57,7 @@ func (s *DataPermissionLogic) Get(businessType string, userID int64) (r string, 
 	values.Set("sign", md5.Encrypt(raw))
 
 	result := make(map[string]string)
-	a, err := remoteRequest(s.conf.host, getDataPermission, values.Join("=", "&"), result)
+	a, err := remoteRequest(s.conf.host, getDataPermission, values.Join("=", "&"), &result)
 	if err != nil {
 		return "", err
 	}
