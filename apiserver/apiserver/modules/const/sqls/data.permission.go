@@ -7,6 +7,7 @@ insert into sso_data_permission(
 	ident,
 	name,
 	type,
+	type_name,
 	value,
 	remark
 )
@@ -15,6 +16,7 @@ VALUES(
 	@ident,
 	@name,
 	@type,
+	@type_name,
 	@value,
 	@remark
 )
@@ -27,7 +29,9 @@ insert into sso_data_permission(
 	ident,
 	name,
 	type,
+	type_name,
 	value,
+	isall,
 	remark
 )
 select 
@@ -35,7 +39,9 @@ select
 	@ident,
 	'全部',
 	@type,
+	@type_name,
 	'*',
+	1,
 	'全部'
 from DUAL
 where NOT EXISTS (SELECT 1 FROM sso_data_permission WHERE sys_id=@sys_id and type=@type and value='*')

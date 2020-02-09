@@ -1,6 +1,8 @@
 package user
 
 import (
+	"fmt"
+
 	"github.com/micro-plat/hydra/component"
 	"github.com/micro-plat/hydra/context"
 	"github.com/micro-plat/sso/mgrserver/mgrapi/modules/logic"
@@ -40,6 +42,21 @@ func (u *UserHandler) GetAllHandle(ctx *context.Context) (r interface{}) {
 	if err != nil {
 		return context.NewError(context.ERR_NOT_IMPLEMENTED, err)
 	}
+
+	// err1 := sso.SyncDataPermission(sso.SyncReq{
+	// 	Name:   "test",
+	// 	Type:   "test_type",
+	//  TypeName:   "测试",
+	// 	Value:  "2",
+	// 	Remark: "123456789",
+	// })
+	// fmt.Println(err1)
+
+	info, err := sso.GetDataPermission("test_type", sso.GetMember(ctx).UserID)
+	if err != nil {
+		fmt.Println(err)
+	}
+	fmt.Println(info)
 
 	ctx.Log.Info("2.返回数据。")
 	return map[string]interface{}{
@@ -157,7 +174,7 @@ func (u *UserHandler) GenerateQrcodeHandle(ctx *context.Context) (r interface{})
 	}
 
 	ctx.Log.Info("2: 生成二维码信息")
-	data, err := u.userLib.GenerateQrcodeInfo(ctx.Request.GetInt("user_id")) 
+	data, err := u.userLib.GenerateQrcodeInfo(ctx.Request.GetInt("user_id"))
 	if err != nil {
 		return err
 	}

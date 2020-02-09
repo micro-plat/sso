@@ -8,7 +8,9 @@
         ident varchar(32) not null DEFAULT ''  comment '系统标识',
 		name varchar(128)  not null    comment '名称',
 		type varchar(64)  not null    comment '业务类型',
+		type_name VARCHAR(128) not null comment '类型名称',
 		value varchar(64)  not null    comment '业务值',
+		isall tinyint not null DEFAULT  0 comment '是否全部',
 		remark varchar(256)  not null    comment '说明'		
   ) COMMENT='数据权限数据(来源于其他子系统)';
 

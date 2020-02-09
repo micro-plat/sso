@@ -129,3 +129,19 @@ where t1.parent = (select id from sso_system_menu where path=@path)
 
 //QueryRoleInfoByName 通过名称查询角色信息
 const QueryRoleInfoByName = `select role_id, name, status, create_time from sso_role_info where name=@role_name`
+
+const QuerySysDataPermission = `
+select 
+	t.id, 
+	t.name,  
+	t.sys_id,
+	t.type_name,
+	t.type,
+	t.value,
+	t.isall,
+	t.remark,   
+(case when EXISTS (select 1 from sso_role_datapermission p where p.role_id = @role_id and p.sys_id = @sys_id and p.permission_id = t.id) then 1 else 0 end) checked
+from sso_data_permission t 
+where t.sys_id = @sys_id and t.type = @data_type
+order by t.isall desc, t.id
+`

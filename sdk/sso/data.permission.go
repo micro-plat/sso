@@ -26,6 +26,7 @@ func (s *DataPermissionLogic) Sync(req SyncReq) (err error) {
 	values := net.NewValues()
 	values.Set("name", req.Name)
 	values.Set("type", req.Type)
+	values.Set("type_name", req.TypeName)
 	values.Set("value", req.Value)
 	values.Set("remark", req.Remark)
 	values.Set("ident", s.conf.ident)

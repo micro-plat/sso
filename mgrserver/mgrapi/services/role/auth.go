@@ -58,3 +58,22 @@ func (u *RoleAuthHandler) QueryHandle(ctx *context.Context) (r interface{}) {
 	ctx.Log.Info("3.返回结果。")
 	return res
 }
+
+//PermissionQueryHandle 数据权限关联查询
+func (u *RoleAuthHandler) PermissionQueryHandle(ctx *context.Context) (r interface{}) {
+	ctx.Log.Info("--------查询角色与数据权限的关联数据--------")
+
+	ctx.Log.Info("1.参数校验")
+	if err := ctx.Request.Check("role_id", "sys_id", "data_type"); err != nil {
+		return context.NewError(context.ERR_NOT_ACCEPTABLE, err)
+	}
+
+	ctx.Log.Info("2.执行操作")
+	res, err := u.roleLib.QueryAuthDataPermission(ctx.Request.GetInt64("sys_id"), ctx.Request.GetInt64("role_id"), ctx.Request.GetString("data_type"))
+	if err != nil {
+		return context.NewError(context.ERR_NOT_IMPLEMENTED, err)
+	}
+
+	ctx.Log.Info("3.返回结果。")
+	return res
+}

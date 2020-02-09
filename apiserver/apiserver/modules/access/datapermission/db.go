@@ -65,12 +65,13 @@ func (l *DBDataPermission) SyncDataPermission(req model.DataPermissionSyncReq) e
 	//增加权限数据
 	first := data.Get(0)
 	_, q, a, err := db.Execute(sqls.AddDataPermission, map[string]interface{}{
-		"ident":  req.Ident,
-		"sys_id": first.GetString("id"),
-		"name":   req.Name,
-		"type":   req.Type,
-		"value":  req.Value,
-		"remark": req.Remark,
+		"ident":     req.Ident,
+		"sys_id":    first.GetString("id"),
+		"name":      req.Name,
+		"type":      req.Type,
+		"type_name": req.TypeName,
+		"value":     req.Value,
+		"remark":    req.Remark,
 	})
 	if err != nil {
 		return fmt.Errorf("SyncDataPermission 同步数据发生错误, q:%s, a:%+v, err:%+v", q, a, err)
@@ -78,9 +79,10 @@ func (l *DBDataPermission) SyncDataPermission(req model.DataPermissionSyncReq) e
 
 	//增加一个类型全局数据
 	db.Execute(sqls.AddDefaultDataPermissionInfo, map[string]interface{}{
-		"ident":  req.Ident,
-		"sys_id": first.GetString("id"),
-		"type":   req.Type,
+		"ident":     req.Ident,
+		"sys_id":    first.GetString("id"),
+		"type":      req.Type,
+		"type_name": req.TypeName,
 	})
 
 	return nil

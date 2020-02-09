@@ -9,6 +9,7 @@ import (
 type IBaseLogic interface {
 	QueryUserRoleList() (data db.QueryRows, err error)
 	QuerySysList() (data db.QueryRows, err error)
+	GetPermissTypes(sysID string) (data db.QueryRows, err error)
 }
 
 type BaseLogic struct {
@@ -32,4 +33,9 @@ func (b *BaseLogic) QueryUserRoleList() (data db.QueryRows, err error) {
 //QuerySysList 获取系统列表
 func (b *BaseLogic) QuerySysList() (data db.QueryRows, err error) {
 	return b.db.QuerySysList()
+}
+
+//GetPermissTypes 查询某个系统下面所有的数据权限类型
+func (b *BaseLogic) GetPermissTypes(sysID string) (data db.QueryRows, err error) {
+	return b.db.GetPermissTypes(sysID)
 }
