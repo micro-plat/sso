@@ -23,6 +23,7 @@ type IDbRole interface {
 	QueryAuthMenu(sysID int64, roleID int64) (results []map[string]interface{}, err error)
 	QueryRoleInfoByName(roleName string) (data db.QueryRow, err error)
 	QueryAuthDataPermission(sysID, roleID int64, dataType string) (data db.QueryRows, err error)
+	SaveRolePermission(sysID, roleID int64, selectAuth string) error
 }
 
 type DbRole struct {
@@ -191,7 +192,6 @@ func (r *DbRole) Auth(input *model.RoleAuthInput) (err error) {
 			return fmt.Errorf("添加角色权限发生错误(err:%v),sql:%s,输入参数:%v", err, q, a)
 		}
 	}
-
 	dbTrans.Commit()
 	return nil
 }
@@ -273,4 +273,44 @@ func (r *DbRole) QueryAuthDataPermission(sysID, roleID int64, dataType string) (
 		return nil, fmt.Errorf("查询角色与数据权限的关联关系发生错误(err:%v),sql:%s,输入参数:%v", err, q, a)
 	}
 	return data, nil
+}
+
+//SaveRolePermission 保存角色与数据权限的关系
+func (r *DbRole) SaveRolePermission(sysID, roleID int64, selectAuth string) error {
+	db := r.c.GetRegularDB()
+	dbTrans, err := db.Begin()
+	if err != nil {
+		return fmt.Errorf("保存角色与数据权限的关系, 开启DB事务出错(err:%v)", err)
+	}
+	//删除原权限
+	_, q, a, err := dbTrans.Execute(sqls.DelDataPermissionRoleAuth, map[string]interface{}{
+		"role_id": roleID,
+		"sys_id":  sysID,
+	})
+	if err != nil {
+		dbTrans.Rollback()
+		return fmt.Errorf("删除[数据权限]－> 角色原权限发生错误(err:%v),sql:%s,输入参数:%v", err, q, a)
+	}
+
+	if strings.EqualFold(selectAuth, "") {
+		dbTrans.Commit()
+		return nil
+	}
+
+	//添加新的数据权限 关系
+	authArray := strings.Split(selectAuth, ",")
+	for i := 0; i < len(authArray); i++ {
+		_, q, a, err := dbTrans.Execute(sqls.AddRoleDataPermissionAuth, map[string]interface{}{
+			"role_id":       roleID,
+			"sys_id":        sysID,
+			"permission_id": authArray[i],
+		})
+		if err != nil {
+			dbTrans.Rollback()
+			return fmt.Errorf("添加角色 -> 数据权限 关系发生错误(err:%v),sql:%s,输入参数:%v", err, q, a)
+		}
+	}
+
+	dbTrans.Commit()
+	return nil
 }

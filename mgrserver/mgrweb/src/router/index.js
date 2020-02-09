@@ -7,6 +7,7 @@ import sysfunc from '@/pages/system/func.index.vue'
 import userindex from '@/pages/user/index.new.vue'
 import roleindex from '@/pages/role/index.new.vue';
 import roleauth from '@/pages/role/auth.vue';
+import dataauth from '@/pages/role/data.auth.vue';
 
 Vue.use(Router);
 
@@ -45,6 +46,11 @@ export default new Router({
       path: 'role/auth',
       name: 'roleauth',
       component: roleauth
+    },
+    {
+      path: 'role/dataauth',
+      name: 'dataauth',
+      component: dataauth
     }
   ]
   },

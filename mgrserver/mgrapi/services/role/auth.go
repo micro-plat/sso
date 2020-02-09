@@ -77,3 +77,22 @@ func (u *RoleAuthHandler) PermissionQueryHandle(ctx *context.Context) (r interfa
 	ctx.Log.Info("3.返回结果。")
 	return res
 }
+
+//SavePermissionHandle 保存角色与数据权限的关联关系
+func (u *RoleAuthHandler) SavePermissionHandle(ctx *context.Context) (r interface{}) {
+	ctx.Log.Info("--------保存角色与数据权限的关联关系--------")
+
+	ctx.Log.Info("1.参数校验")
+	if err := ctx.Request.Check("role_id", "sys_id"); err != nil {
+		return context.NewError(context.ERR_NOT_ACCEPTABLE, err)
+	}
+
+	ctx.Log.Info("2.保存数据")
+	err := u.roleLib.SaveRolePermission(ctx.Request.GetInt64("sys_id"), ctx.Request.GetInt64("role_id"), ctx.Request.GetString("select_auth"))
+	if err != nil {
+		return err
+	}
+
+	ctx.Log.Info("3.返回结果。")
+	return "success"
+}

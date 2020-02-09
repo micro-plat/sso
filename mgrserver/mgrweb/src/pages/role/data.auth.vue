@@ -6,18 +6,32 @@
         </div>
         <div class="panel-body">
           <form class="form-inline">
+            <label>选择系统：</label>
             <select name="roleid" class="form-control not-100" v-model="sysid"  @change="querySystemTypeInfo">
                 <option v-for="(s, index) in datalist" :key="index" :value="s.id">{{s.name}}</option>
             </select>
+            <label style="margin-left:20px;">选择类型：</label>
             <select name="roleid" class="form-control not-100" v-model="data_type" @change="queryRoleDataPermission">
                 <option v-for="(s, index) in typelist" :key="index" :value="s.type">{{s.type_name}}</option>
             </select>
-            <a class="btn btn-success" @click="queryTree" >切换</a>
-            <a class="btn btn-default head-right" @click="back">返回</a>
+            <a style="margin-left:20px;" class="btn btn-default head-right" @click="back">返回</a>
             <a class="btn btn-success head-right" @click="saveAuth">保存</a>
           </form>
           <div class="line line-dashed b-b line-lg"></div>
-          <v-tree ref="tree" :data='ztreeDataSource' :multiple='true' :halfcheck='true'/>
+              <el-scrollbar style="height:100%">
+                  <el-table :data="list" stripe  style="width: 100%">
+                    <el-table-column  width="100" prop="enable" label="选择" >
+                      <template slot-scope="scope">
+                        <el-checkbox v-model="scope.row.checked" @change="checked=>choseChange(checked, scope.row.isall)"></el-checkbox>
+                      </template>
+                    </el-table-column>
+                    <el-table-column width="300" prop="name" label="名称" ></el-table-column>
+                    <el-table-column width="300" prop="type_name" label="类型名称" ></el-table-column>
+                    <el-table-column width="300" prop="value" label="值" ></el-table-column>
+                    <el-table-column width="500"   prop="remark" label="备注" ></el-table-column>
+                  </el-table>
+            </el-scrollbar>
+
         </div>
         <footer class="panel-footer text-right bg-light lter">
           <a class="btn btn-success" @click="saveAuth">保存</a>
@@ -32,12 +46,10 @@ export default {
     return {
       datalist: null,
       typelist:null,
+      list: null,
       sysid: null,
       data_type: null,
-      currentData: {},
-      role_id: null,
-      //ztreeDataSource: [],
-      selectAuth: []
+      role_id: null
     };
   },
   mounted() {
@@ -48,18 +60,24 @@ export default {
     back: function() {
       this.$router.push({path: '/user/role'})
     },
+    //保存数据权限
     saveAuth: function() {
-      var array = this.$refs.tree.getCheckedNodes();
-      for (var i = 0; i < array.length; i++) {
-        this.selectAuth.push(array[i].id);
+      if (!this.data_type) {
+        return
       }
-      this.$http.post("/auth/save", {
+
+      var selectAuth = [];
+      this.list.forEach(item => {
+        if (item.checked) {
+          selectAuth.push(item.permissionId)
+        }
+      });
+      this.$http.post("/auth/savepermission", {
         role_id: this.role_id,
         sys_id: this.sysid,
-        selectauth: this.selectAuth.join(",")
+        select_auth: selectAuth.join(",")
       })
         .then(res => {
-          this.selectAuth = [];
           this.$notify({
             title: '成功',
             message: '授权成功',
@@ -76,32 +94,8 @@ export default {
               offset: 50,
               duration:2000,
             });
-            this.selectAuth = [];
         });
     },
-    // queryTree: function() {
-    //   this.$http.post("/auth/query", {
-    //     sys_id: this.sysid,
-    //     role_id: this.role_id
-    //   })
-    //     .then(res => {
-    //       if (res.length > 0) {
-    //         this.ztreeDataSource = res;
-    //         return;
-    //       }
-    //       this.ztreeDataSource = [
-    //         {
-    //           title: "新节点",
-    //           children: [],
-    //           path: "",
-    //           icon: "",
-    //           isNew: true,
-    //           parentId: 0,
-    //           parentLevel: 0
-    //         }
-    //       ];
-    //     })
-    // },
     querySys: function() {
       this.$http.post("/base/getsystems",{})
         .then(res => {
@@ -127,9 +121,13 @@ export default {
       this.$http.post("/base/getpermisstypes",{sys_id: this.sysid})
         .then(res => {
           this.typelist = res;
+          this.data_type = null;
           if (this.typelist.length > 0) {
             this.data_type = this.typelist[0].type;
+            this.queryRoleDataPermission();
+            return;
           }
+          this.list = [];
         })
         .catch(err => {
             this.$notify({
@@ -143,33 +141,54 @@ export default {
     },
     //查询角色与数据的关联信息
     queryRoleDataPermission() {
+      this.list = [];
       if (!this.data_type) {
         console.log("data_type empty");
         return;
       }
 
-      this.$http.post("/auth/query", {
+      this.$http.post("/auth/permissionquery", {
         sys_id: this.sysid,
         role_id: this.role_id,
         data_type: this.data_type
       })
       .then(res => {
         if (res.length > 0) {
-          this.ztreeDataSource = res;
-          return;
+          res.forEach(item => {
+            this.list.push({
+              checked:item.checked == "1",
+              isall:item.isall == "1",
+              name:item.name,
+              remark: item.remark,
+              type: item.type,
+              type_name:item.type_name,
+              value: item.value,
+              permissionId:item.id});
+          });
         }
-        this.ztreeDataSource = [
-          {
-            title: "新节点",
-            children: [],
-            path: "",
-            icon: "",
-            isNew: true,
-            parentId: 0,
-            parentLevel: 0
-          }
-        ];
       })
+    },
+
+    //checked 是否选中，isAll是否表示全部数据
+    choseChange(checked, isAll){
+      console.log("checked:",checked)
+      console.log("是否代表全部:", isAll)
+
+      if (!checked) {
+        return;
+      }
+
+      this.list.forEach(item => {
+        if (isAll) {
+          if (!item.isall) {
+            item.checked = false;
+          }
+        } else {
+         if (item.isall) {
+           item.checked = false;
+         } 
+        }
+      });
     }
   }
 };

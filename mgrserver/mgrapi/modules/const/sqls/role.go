@@ -85,6 +85,10 @@ values
 	( @sys_id, @role_id, @menu_id, 1, @sortrank)
 `
 
+//AddRoleDataPermissionAuth 添加角色与数据权限数据的关系
+const AddRoleDataPermissionAuth = `
+	insert into sso_role_datapermission(sys_id, role_id, permission_id)values(@sys_id, @role_id, @permission_id)`
+
 //DelRoleAuth 删除角色权限
 const DelRoleAuth = `
 delete from 
@@ -93,6 +97,9 @@ where
 	sys_id = @sys_id
 	and role_id = @role_id
 `
+
+//DelDataPermissionRoleAuth 删除数据权限的关联关系
+const DelDataPermissionRoleAuth = `delete from sso_role_datapermission where sys_id = @sys_id and role_id = @role_id`
 
 //QuerySysMenucList 系统菜单获取
 const QuerySysMenucList = `select t.id, 
