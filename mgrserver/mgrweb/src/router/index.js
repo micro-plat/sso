@@ -4,6 +4,7 @@ import menu from '@/pages/member/menu';
 import ssocallback from '@/pages/member/sso.callback.vue';
 import sysindex from '@/pages/system/sys.index.new.vue'
 import sysfunc from '@/pages/system/func.index.vue'
+import datapermission from '@/pages/system/data.permission.vue'
 import userindex from '@/pages/user/index.new.vue'
 import roleindex from '@/pages/role/index.new.vue';
 import roleauth from '@/pages/role/auth.vue';
@@ -38,7 +39,13 @@ export default new Router({
       path: "sys/func",
       name: "sysfunc",
       component: sysfunc
-    }, {
+    },
+    {
+      path: "sys/data/permission",
+      name: "datapermission",
+      component: datapermission
+    },
+    {
       path: 'user/role',
       name: 'userrole',
       component: roleindex

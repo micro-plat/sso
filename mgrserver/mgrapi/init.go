@@ -6,9 +6,11 @@ import (
 	"github.com/micro-plat/sso/mgrserver/mgrapi/services/base"
 	"github.com/micro-plat/sso/mgrserver/mgrapi/services/function"
 	"github.com/micro-plat/sso/mgrserver/mgrapi/services/image"
+	"github.com/micro-plat/sso/mgrserver/mgrapi/services/permission"
 	"github.com/micro-plat/sso/mgrserver/mgrapi/services/role"
 	"github.com/micro-plat/sso/mgrserver/mgrapi/services/system"
 	"github.com/micro-plat/sso/mgrserver/mgrapi/services/user"
+
 	ssoSdk "github.com/micro-plat/sso/sdk/sso"
 )
 
@@ -43,12 +45,13 @@ func (r *SSO) init() {
 		return nil
 	})
 
-	r.Micro("/base", base.NewBaseUserHandler)                   //基础数据
-	r.Micro("/user", user.NewUserHandler)                       //用户相关接口
-	r.Micro("/auth", role.NewRoleAuthHandler)                   //权限管理
-	r.Micro("/role", role.NewRoleHandler)                       //角色管理相关接口
-	r.Micro("/system/info", system.NewSystemHandler)            //系统管理相关接口
-	r.Micro("/system/menu", system.NewSystemMenuHandler)        //系统菜单管理相关接口
-	r.Micro("/system/func", function.NewSystemFuncHandler)      //系统功能相关接口
-	r.Micro("/image/upload", image.NewImageHandler("../image")) //图片上传
+	r.Micro("/base", base.NewBaseUserHandler)                          //基础数据
+	r.Micro("/user", user.NewUserHandler)                              //用户相关接口
+	r.Micro("/auth", role.NewRoleAuthHandler)                          //权限管理
+	r.Micro("/role", role.NewRoleHandler)                              //角色管理相关接口
+	r.Micro("/system/info", system.NewSystemHandler)                   //系统管理相关接口
+	r.Micro("/system/menu", system.NewSystemMenuHandler)               //系统菜单管理相关接口
+	r.Micro("/system/func", function.NewSystemFuncHandler)             //系统功能相关接口
+	r.Micro("/system/permission", permission.NewDataPermissionHandler) //数据权限功能相关接口
+	r.Micro("/image/upload", image.NewImageHandler("../image"))        //图片上传
 }

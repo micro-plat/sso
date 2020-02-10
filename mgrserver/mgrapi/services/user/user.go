@@ -1,8 +1,6 @@
 package user
 
 import (
-	"fmt"
-
 	"github.com/micro-plat/hydra/component"
 	"github.com/micro-plat/hydra/context"
 	"github.com/micro-plat/sso/mgrserver/mgrapi/modules/logic"
@@ -44,19 +42,19 @@ func (u *UserHandler) GetAllHandle(ctx *context.Context) (r interface{}) {
 	}
 
 	// err1 := sso.SyncDataPermission(sso.SyncReq{
-	// 	Name:   "test",
-	// 	Type:   "test_type",
-	//  TypeName:   "测试",
-	// 	Value:  "2",
-	// 	Remark: "123456789",
+	// 	Name:     "test2",
+	// 	Type:     "test_type",
+	// 	TypeName: "测试8888",
+	// 	Value:    "6",
+	// 	Remark:   "123456789888888",
 	// })
 	// fmt.Println(err1)
 
-	info, err := sso.GetDataPermission("test_type", sso.GetMember(ctx).UserID)
-	if err != nil {
-		fmt.Println(err)
-	}
-	fmt.Println(info)
+	// info, err := sso.GetDataPermission("test_type", sso.GetMember(ctx).UserID)
+	// if err != nil {
+	// 	fmt.Println(err)
+	// }
+	// fmt.Println(info)
 
 	ctx.Log.Info("2.返回数据。")
 	return map[string]interface{}{

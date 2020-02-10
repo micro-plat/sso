@@ -32,20 +32,19 @@
         <el-table :data="datalist" stripe  style="width: 100%">
           <el-table-column width="100" prop="ident" label="英文名称" ></el-table-column>
           <el-table-column width="230" prop="name" label="系统名称" ></el-table-column>
-          <el-table-column  width="100" prop="enable" label="状态" >
+          <el-table-column  width="80" prop="enable" label="状态" >
             <template slot-scope="scope">
               <el-tag type="info" v-if="scope.row.enable == 0">禁用</el-tag>
               <el-tag type="success" v-if="scope.row.enable == 1">启用</el-tag>
             </template>
           </el-table-column>
-          <el-table-column width="250" prop="logo" label="logo" >
+          <el-table-column width="230" prop="logo" label="logo" >
             <template slot-scope="scope">
               <img v-if="scope.row.theme" :class="scope.row.theme.split('|')[0]"
                    :src="scope.row.logo" :onerror="errorImg" alt="">
             </template>
           </el-table-column>
-          <!-- <el-table-column width="300" prop="secret" label="secret" ></el-table-column> -->
-          <el-table-column width="350" prop="callbackurl" label="登录回调地址" ></el-table-column>
+          <el-table-column width="300" prop="callbackurl" label="登录回调地址" ></el-table-column>
 
           <el-table-column  label="操作">
             <template slot-scope="scope">
@@ -56,8 +55,8 @@
               <el-button plain type="primary" size="mini" @click="importMenu(scope.row.id)">导入菜单</el-button>
               <el-button plain type="primary" size="mini" @click="setSecret(scope.row.id)">设置秘钥</el-button>
               <el-button plain  type="danger" size="mini" @click="deleteById(scope.row.id)">删除</el-button>
-              <el-button plain  type="warning" size="mini" @click="manage(scope.row.id)">管理</el-button>
-
+              <el-button plain  type="warning" size="mini" @click="manage(scope.row.id)">菜单</el-button>
+              <el-button plain  type="warning" size="mini" @click="managePermission(scope.row.id)">数据权限</el-button>
             </template>
           </el-table-column>
         </el-table>
@@ -812,6 +811,15 @@ export default {
     manage(id) {
       this.$router.push({
         name: "sysfunc",
+        query: {
+          id: id
+        }
+      });
+    },
+    //管理数据权限数据
+    managePermission(id) {
+      this.$router.push({
+        name: "datapermission",
         query: {
           id: id
         }

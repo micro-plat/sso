@@ -50,6 +50,11 @@ func (u *BaseUserHandler) GetSystemsHandle(ctx *context.Context) (r interface{})
 func (u *BaseUserHandler) GetPermissTypesHandle(ctx *context.Context) (r interface{}) {
 	ctx.Log.Info("--------查询某个系统下面所有的数据权限类型--------")
 
+	ctx.Log.Info("验证参数")
+	if err := ctx.Request.Check("sys_id"); err != nil {
+		return context.NewError(context.ERR_NOT_ACCEPTABLE, err)
+	}
+
 	ctx.Log.Info("1.获取数据")
 	rows, err := u.baseLib.GetPermissTypes(ctx.Request.GetString("sys_id"))
 	if err != nil {

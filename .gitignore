@@ -43,3 +43,5 @@ loginserver/lgweb/lgweb
 
 out/
 apiserver/apiserver/home
+mgrserver/mgrapi/r
+mgrserver/mgrapi/home

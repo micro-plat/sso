@@ -38,3 +38,23 @@ inner join
 	sso_system_info s on s.id=t.sys_id 
 where 
 	t.user_id=@user_id`
+
+//QuerySystemInfoById 获取系统信息
+const QuerySystemInfoById = `
+select 
+	t.id,
+	t.ident,
+	t.name,
+	t.index_url,
+	t.logo,
+	t.theme,
+	t.layout,
+	t.ident,
+	t.wechat_status,
+	t.login_url,
+	t.secret 
+from 
+	sso_system_info t
+where 
+	t.id=@id
+`
