@@ -57,7 +57,7 @@ func getUserDataPermissionFromLocal(userID int64, bussinessType string) (string,
 	userDataPermissionKey := fmt.Sprintf("data_permission_cache_%s_%s", types.GetString(userID), bussinessType)
 	value, found := localCache.Get(userDataPermissionKey)
 	if !found {
-		data, err := GetUserDataPermissionFromAPI(userID, bussinessType)
+		data, err := getUserDataPermissionFromAPI(userID, bussinessType)
 		if err != nil {
 			return "", err
 		}
@@ -68,7 +68,7 @@ func getUserDataPermissionFromLocal(userID int64, bussinessType string) (string,
 }
 
 //GetUserDataPermissionFromAPI 获取【数据权限】数据
-func GetUserDataPermissionFromAPI(userID int64, businessType string) (r string, err error) {
+func getUserDataPermissionFromAPI(userID int64, businessType string) (r string, err error) {
 	cfg := ssoClient.cfg
 	values := net.NewValues()
 	values.Set("type", businessType)

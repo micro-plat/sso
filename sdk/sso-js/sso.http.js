@@ -94,11 +94,9 @@ axios.interceptors.response.use(
  * @returns {Promise}
  */
 
-function fetch(url, params = {}) {
+function fetch(url, params = {}, config={}) {
     return new Promise((resolve, reject) => {
-        axios.get(url, {
-                params: params
-            })
+        axios.get(url, {params: params}, config)
             .then(response => {
                 if (response.status == 200) {
                     resolve(response.data);
@@ -117,10 +115,10 @@ function fetch(url, params = {}) {
  * @returns {Promise}
  */
 
- function post(url, data = {}) {
+ function post(url, data = {}, config={}) {
     data = Qs.stringify(data)
     return new Promise((resolve, reject) => {
-        axios.post(url, data)
+        axios.post(url, data, config)
             .then(response => {
                 if (response.status == 200) {
                     resolve(response.data);
@@ -138,9 +136,9 @@ function fetch(url, params = {}) {
  * @returns {Promise}
  */
 
-function patch(url, data = {}) {
+function patch(url, data = {}, config={}) {
     return new Promise((resolve, reject) => {
-        axios.patch(url, data)
+        axios.patch(url, data, config)
             .then(response => {
                 if (response.status == 200) {
                     resolve(response.data);
@@ -158,10 +156,10 @@ function patch(url, data = {}) {
  * @returns {Promise}
  */
 
-function put(url, data = {}) {
+function put(url, data = {}, config={}) {
     data = Qs.stringify(data)
     return new Promise((resolve, reject) => {
-        axios.put(url, data)
+        axios.put(url, data, config)
             .then(response => {
                 if (response.status == 200) {
                     resolve(response.data);
@@ -180,9 +178,9 @@ function put(url, data = {}) {
  * @returns {Promise}
  */
 
-function del(url, data = {}) {
+function del(url, data = {}, config={}) {
     return new Promise((resolve, reject) => {
-        axios.delete(url, {data:data})
+        axios.delete(url, {data:data}, config)
             .then(response => {
                 if (response.status == 200) {
                     resolve(response.data);

@@ -90,5 +90,5 @@ func (client *Client) SyncPermissionData(req SyncReq) error {
 
 //GetPermissionData 获取用户的 数据权限管理　数据
 func (client *Client) GetPermissionData(businessType string, userID int64) (string, error) {
-	return getUserDataPermissionFromLocal(userID, businessType)
+	return getUserDataPermissionFromAPI(userID, businessType)
 }
