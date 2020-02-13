@@ -22,7 +22,7 @@ type IDbRole interface {
 	Auth(input *model.RoleAuthInput) (err error)
 	QueryAuthMenu(sysID int64, roleID int64) (results []map[string]interface{}, err error)
 	QueryRoleInfoByName(roleName string) (data db.QueryRow, err error)
-	QueryAuthDataPermission(sysID, roleID int64, dataType string) (data db.QueryRows, err error)
+	QueryAuthDataPermission(sysID, roleID int64) (data db.QueryRows, err error)
 	SaveRolePermission(sysID, roleID int64, selectAuth string) error
 }
 
@@ -262,12 +262,11 @@ func (r *DbRole) QueryAuthMenu(sysID int64, roleID int64) (results []map[string]
 }
 
 //QueryAuthDataPermission 查询角色与数据权限的关联关系
-func (r *DbRole) QueryAuthDataPermission(sysID, roleID int64, dataType string) (data db.QueryRows, err error) {
+func (r *DbRole) QueryAuthDataPermission(sysID, roleID int64) (data db.QueryRows, err error) {
 	db := r.c.GetRegularDB()
 	data, q, a, err := db.Query(sqls.QuerySysDataPermission, map[string]interface{}{
-		"role_id":   roleID,
-		"sys_id":    sysID,
-		"data_type": dataType,
+		"role_id": roleID,
+		"sys_id":  sysID,
 	})
 	if err != nil {
 		return nil, fmt.Errorf("查询角色与数据权限的关联关系发生错误(err:%v),sql:%s,输入参数:%v", err, q, a)

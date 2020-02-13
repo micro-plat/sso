@@ -16,7 +16,7 @@ type IRoleLogic interface {
 	Save(input *model.RoleEditInput) (err error)
 	Auth(input *model.RoleAuthInput) (err error)
 	QueryAuthMenu(sysID int64, roleID int64) (results []map[string]interface{}, err error)
-	QueryAuthDataPermission(sysID, roleID int64, dataType string) (data db.QueryRows, err error)
+	QueryAuthDataPermission(sysID, roleID int64) (data db.QueryRows, err error)
 	SaveRolePermission(sysID, roleID int64, selectAuth string) error
 }
 
@@ -99,8 +99,8 @@ func (r *RoleLogic) QueryAuthMenu(sysID int64, roleID int64) (results []map[stri
 }
 
 //QueryAuthDataPermission 查询角色与数据权限的关联关系
-func (r *RoleLogic) QueryAuthDataPermission(sysID, roleID int64, dataType string) (data db.QueryRows, err error) {
-	return r.db.QueryAuthDataPermission(sysID, roleID, dataType)
+func (r *RoleLogic) QueryAuthDataPermission(sysID, roleID int64) (data db.QueryRows, err error) {
+	return r.db.QueryAuthDataPermission(sysID, roleID)
 }
 
 //SaveRolePermission  保存角色与权限数据的关系

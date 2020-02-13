@@ -10,7 +10,7 @@ import (
 //IDataPermissionLogic 数据权限
 type IDataPermissionLogic interface {
 	GetTypeInfo(sysID string) (s db.QueryRows, err error)
-	Query(sysID, dataType string, pi int, ps int) (data db.QueryRows, count int, err error)
+	Query(sysID, tableName string, pi int, ps int) (data db.QueryRows, count int, err error)
 	Delete(id int) (err error)
 	Add(input *model.DataPermissionReq) (err error)
 	Edit(input *model.DataPermissionReq) (err error)
@@ -37,8 +37,8 @@ func (u *DataPermissionLogic) GetTypeInfo(sysID string) (s db.QueryRows, err err
 }
 
 //Query 获取数据权限管理列表
-func (u *DataPermissionLogic) Query(sysID, dataType string, pi int, ps int) (data db.QueryRows, count int, err error) {
-	data, count, err = u.db.Query(sysID, dataType, pi, ps)
+func (u *DataPermissionLogic) Query(sysID, tableName string, pi int, ps int) (data db.QueryRows, count int, err error) {
+	data, count, err = u.db.Query(sysID, tableName, pi, ps)
 	if err != nil {
 		return nil, 0, err
 	}

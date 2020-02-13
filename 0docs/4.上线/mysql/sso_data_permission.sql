@@ -7,13 +7,11 @@
         sys_id bigint  not null    comment '系统编号' ,
         ident varchar(32) not null DEFAULT ''  comment '系统标识',
 		name varchar(128)  not null    comment '名称',
-		type varchar(64)  not null    comment '业务类型',
-		type_name VARCHAR(128) not null comment '类型名称',
-		value varchar(64)  not null    comment '业务值',
-		isall tinyint not null DEFAULT  0 comment '是否全部',
+		table_name VARCHAR(128) not null comment '表名',
+		operate_action varchar(64)  not null    comment '操作动作',
+		rules VARCHAR(1000) not null comment '权限规则(json)',
 		remark varchar(256)  not null    comment '说明'		
   ) COMMENT='数据权限数据(来源于其他子系统)';
 
  
- alter table sso_data_permission add unique(sys_id,type,value);
-alter table sso_data_permission add index index_data_permission_ident_type(ident,type);
+alter table sso_data_permission add unique(sys_id, table_name, operate_action);

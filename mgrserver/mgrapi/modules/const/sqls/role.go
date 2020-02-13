@@ -142,13 +142,12 @@ select
 	t.id, 
 	t.name,  
 	t.sys_id,
-	t.type_name,
-	t.type,
-	t.value,
-	t.isall,
+	t.table_name,
+	t.operate_action,
+	t.rules,
 	t.remark,   
 (case when EXISTS (select 1 from sso_role_datapermission p where p.role_id = @role_id and p.sys_id = @sys_id and p.permission_id = t.id) then 1 else 0 end) checked
 from sso_data_permission t 
-where t.sys_id = @sys_id and t.type = @data_type
-order by t.isall desc, t.id
+where t.sys_id = @sys_id
+order by t.id
 `

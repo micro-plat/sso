@@ -5,9 +5,8 @@ const QueryDataPermissionTotalCount = `
 select
 	count(1) as count
 from sso_data_permission
-where isall =0
-      and sys_id = @sys_id
-	  &type
+where sys_id = @sys_id
+	  &table_name
 `
 
 //QueryDataPermissionList 数据权限分页　数据
@@ -17,14 +16,13 @@ select
 	sys_id,
 	ident,
 	name,
-	type,
-	type_name,
-	value,
+	table_name,
+	operate_action,
+	rules,
 	remark
 from sso_data_permission
-where isall =0
-      and sys_id = @sys_id
-	  &type
+where sys_id = @sys_id
+	  &table_name
 limit @start, @ps
 `
 
@@ -36,7 +34,7 @@ from sso_data_permission
 where id = @id
 limit 1 `
 
-const DeletePermissionInfoById = `delete from sso_data_permission where id=@id and isall = 0 limit 1`
+const DeletePermissionInfoById = `delete from sso_data_permission where id=@id limit 1`
 
 const GetNotDefaultPermissionCount = `select count(1) as count from sso_data_permission where sys_id = @sys_id and type=@type and isall = 0`
 
@@ -47,18 +45,18 @@ insert into sso_data_permission(
 	sys_id,
 	ident,
 	name,
-	type,
-	type_name,
-	value,
+	table_name,
+	operate_action,
+	rules,
 	remark
 )
 VALUES(
 	@sys_id,
 	@ident,
 	@name,
-	@type,
-	@type_name,
-	@value,
+	@table_name,
+	@operate_action,
+	@rules,
 	@remark
 )
 `
@@ -92,7 +90,7 @@ where NOT EXISTS (SELECT 1 FROM sso_data_permission WHERE sys_id=@sys_id and typ
 const UpdateDataPermission = `
 update sso_data_permission set 
 	name = @name,
-	value = @value,
+	rules = @rules,
 	remark = @remark
 where id=@id
 limit 1

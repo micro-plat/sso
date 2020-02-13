@@ -64,12 +64,12 @@ func (u *RoleAuthHandler) PermissionQueryHandle(ctx *context.Context) (r interfa
 	ctx.Log.Info("--------查询角色与数据权限的关联数据--------")
 
 	ctx.Log.Info("1.参数校验")
-	if err := ctx.Request.Check("role_id", "sys_id", "data_type"); err != nil {
+	if err := ctx.Request.Check("role_id", "sys_id"); err != nil {
 		return context.NewError(context.ERR_NOT_ACCEPTABLE, err)
 	}
 
 	ctx.Log.Info("2.执行操作")
-	res, err := u.roleLib.QueryAuthDataPermission(ctx.Request.GetInt64("sys_id"), ctx.Request.GetInt64("role_id"), ctx.Request.GetString("data_type"))
+	res, err := u.roleLib.QueryAuthDataPermission(ctx.Request.GetInt64("sys_id"), ctx.Request.GetInt64("role_id"))
 	if err != nil {
 		return context.NewError(context.ERR_NOT_IMPLEMENTED, err)
 	}
