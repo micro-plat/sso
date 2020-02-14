@@ -16,8 +16,10 @@ type IRoleLogic interface {
 	Save(input *model.RoleEditInput) (err error)
 	Auth(input *model.RoleAuthInput) (err error)
 	QueryAuthMenu(sysID int64, roleID int64) (results []map[string]interface{}, err error)
-	QueryAuthDataPermission(sysID, roleID int64) (data db.QueryRows, err error)
-	SaveRolePermission(sysID, roleID int64, selectAuth string) error
+	QueryAuthDataPermission(req model.RolePermissionQueryReq) (data db.QueryRows, count int, err error)
+	SaveRolePermission(req model.RolePermissionReq) error
+	ChangeRolePermissionStatus(id string, status int) error
+	DelRolePermission(id string) error
 }
 
 type RoleLogic struct {
@@ -99,11 +101,21 @@ func (r *RoleLogic) QueryAuthMenu(sysID int64, roleID int64) (results []map[stri
 }
 
 //QueryAuthDataPermission 查询角色与数据权限的关联关系
-func (r *RoleLogic) QueryAuthDataPermission(sysID, roleID int64) (data db.QueryRows, err error) {
-	return r.db.QueryAuthDataPermission(sysID, roleID)
+func (r *RoleLogic) QueryAuthDataPermission(req model.RolePermissionQueryReq) (data db.QueryRows, count int, err error) {
+	return r.db.QueryAuthDataPermission(req)
 }
 
 //SaveRolePermission  保存角色与权限数据的关系
-func (r *RoleLogic) SaveRolePermission(sysID, roleID int64, selectAuth string) error {
-	return r.db.SaveRolePermission(sysID, roleID, selectAuth)
+func (r *RoleLogic) SaveRolePermission(req model.RolePermissionReq) error {
+	return r.db.SaveRolePermission(req)
+}
+
+//ChangeRolePermissionStatus 改变 【角色与权限数据关系】的状态
+func (r *RoleLogic) ChangeRolePermissionStatus(id string, status int) error {
+	return r.db.ChangeRolePermissionStatus(id, status)
+}
+
+//DelRolePermission 删除
+func (r *RoleLogic) DelRolePermission(id string) error {
+	return r.db.DelRolePermission(id)
 }

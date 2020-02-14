@@ -6,7 +6,7 @@
       <div class="panel panel-default">
         <div class="panel-body">
           <form class="form-inline">
-            <div class="form-group">
+            <!-- <div class="form-group">
               <input
                     name="table_name"
                     type="text"
@@ -15,16 +15,16 @@
                     placeholder="请输入表名"
                     maxlength="64" />
             </div>
-            <a class="visible-xs-inline visible-sm-inline visible-md-inline  visible-lg-inline btn btn btn-success" @click="query">查询</a>
+            <a class="visible-xs-inline visible-sm-inline visible-md-inline  visible-lg-inline btn btn btn-success" @click="query">查询</a> -->
             <a class="visible-xs-inline visible-sm-inline visible-md-inline  visible-lg-inline btn btn btn-success" @click="Add">添加</a>
           </form>
         </div>
       </div>
       <el-scrollbar style="height:100%">
         <el-table :data="datalist" stripe  style="width: 100%">
-          <el-table-column width="300" prop="name" label="名称" ></el-table-column>
-          <el-table-column width="200" prop="table_name" label="表名" ></el-table-column>
-          <el-table-column width="200" prop="operate_action" label="操作动作" ></el-table-column>
+          <el-table-column width="300" prop="name" label="规则名称" ></el-table-column>
+          <!-- <el-table-column width="200" prop="table_name" label="表名" ></el-table-column>
+          <el-table-column width="200" prop="operate_action" label="操作动作" ></el-table-column> -->
           <el-table-column width="400" prop="rules" label="规则信息" ></el-table-column>
           <el-table-column width="300" prop="remark" label="备注" ></el-table-column>
           <el-table-column  label="操作">
@@ -55,10 +55,10 @@
             <div class="panel-body">
               <form role="form" class="ng-pristine ng-valid ng-submitted height-min">
                 <div class="form-group">
-                  <label>名称(必填)</label>
+                  <label>规则名称(必填)</label>
                   <el-input v-model="permissionData.name" placeholder="请输入名称" maxlength="64" ></el-input>
                 </div>
-                <el-row :span="24">
+                <!-- <el-row :span="24">
                  <el-col :span="12">
                    <div class="form-group">
                     <label>表名(必填)</label>
@@ -71,7 +71,7 @@
                     <el-input v-model="permissionData.operate_action" placeholder="如:新增,修改"  maxlength="64" ></el-input>
                   </div>
                  </el-col>
-               </el-row>
+               </el-row> -->
                 <div class="form-group">
                   <label>备注(非必填)</label>
                   <textarea
@@ -185,8 +185,8 @@ export default {
       sysname: "",
       permissionData: {
         name: "",
-        table_name: "",
-        operate_action: "",
+        //table_name: "",
+        //operate_action: "",
         rules: "",
         remark: "",
       },
@@ -245,7 +245,7 @@ export default {
         pi: this.pi,
         ps:this.ps,
         sys_id: this.sysId,
-        table_name: this.table_name
+        //table_name: this.table_name
       })
         .then(res => {
           this.datalist = res.list;
@@ -333,7 +333,17 @@ export default {
     },
 
     checkBeforSave() {
-      if (!this.permissionData.table_name || !this.permissionData.name) {
+      // if (!this.permissionData.table_name || !this.permissionData.name) {
+      //   this.$notify({
+      //       title: '提示',
+      //       message: '必填字段不能为空',
+      //       type: 'error',
+      //       offset: 50,
+      //       duration:2000,
+      //     });
+      //     return false
+      // }
+      if (!this.permissionData.name) {
         this.$notify({
             title: '提示',
             message: '必填字段不能为空',

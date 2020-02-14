@@ -6,7 +6,6 @@ select
 	count(1) as count
 from sso_data_permission
 where sys_id = @sys_id
-	  &table_name
 `
 
 //QueryDataPermissionList 数据权限分页　数据
@@ -16,13 +15,10 @@ select
 	sys_id,
 	ident,
 	name,
-	table_name,
-	operate_action,
 	rules,
 	remark
 from sso_data_permission
 where sys_id = @sys_id
-	  &table_name
 limit @start, @ps
 `
 
@@ -45,8 +41,6 @@ insert into sso_data_permission(
 	sys_id,
 	ident,
 	name,
-	table_name,
-	operate_action,
 	rules,
 	remark
 )
@@ -54,8 +48,6 @@ VALUES(
 	@sys_id,
 	@ident,
 	@name,
-	@table_name,
-	@operate_action,
 	@rules,
 	@remark
 )

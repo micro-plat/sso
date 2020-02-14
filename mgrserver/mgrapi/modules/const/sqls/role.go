@@ -87,7 +87,26 @@ values
 
 //AddRoleDataPermissionAuth 添加角色与数据权限数据的关系
 const AddRoleDataPermissionAuth = `
-	insert into sso_role_datapermission(sys_id, role_id, permission_id)values(@sys_id, @role_id, @permission_id)`
+insert into sso_role_datapermission
+(	
+	role_id,     
+	sys_id,    
+	table_name,
+	operate_action,
+	name,        
+	permissions,
+	status
+)
+values
+(
+	@role_id,     
+	@sys_id,    
+	@table_name,
+	@operate_action,
+	@name,        
+	@permissions,
+	1
+)`
 
 //DelRoleAuth 删除角色权限
 const DelRoleAuth = `
@@ -99,7 +118,12 @@ where
 `
 
 //DelDataPermissionRoleAuth 删除数据权限的关联关系
-const DelDataPermissionRoleAuth = `delete from sso_role_datapermission where sys_id = @sys_id and role_id = @role_id`
+const DelDataPermissionRoleAuth = `
+delete from sso_role_datapermission 
+where sys_id = @sys_id and 
+	  role_id = @role_id and
+	  table_name = @table_name and
+	  operate_action = @operate_action`
 
 //QuerySysMenucList 系统菜单获取
 const QuerySysMenucList = `select t.id, 
@@ -137,17 +161,45 @@ where t1.parent = (select id from sso_system_menu where path=@path)
 //QueryRoleInfoByName 通过名称查询角色信息
 const QueryRoleInfoByName = `select role_id, name, status, create_time from sso_role_info where name=@role_name`
 
-const QuerySysDataPermission = `
-select 
-	t.id, 
-	t.name,  
-	t.sys_id,
-	t.table_name,
-	t.operate_action,
-	t.rules,
-	t.remark,   
-(case when EXISTS (select 1 from sso_role_datapermission p where p.role_id = @role_id and p.sys_id = @sys_id and p.permission_id = t.id) then 1 else 0 end) checked
-from sso_data_permission t 
-where t.sys_id = @sys_id
-order by t.id
+const QueryRoleDataPermission = `
+SELECT  
+  id,
+  sys_id,
+  role_id,
+  table_name,
+  operate_action,
+  permissions,
+  status,
+  name,
+  DATE_FORMAT(create_time, '%y-%m-%d %h:%i:%s') as create_time
+from  sso_role_datapermission
+where sys_id = @sys_id and
+	  role_id = @role_id
+limit @start, @ps
+`
+
+const QueryRoleDataPermissionCount = `
+SELECT  
+  count(1) as count
+from  sso_role_datapermission
+where sys_id = @sys_id and
+	  role_id = @role_id
+`
+const ChangeRolePermissionStatus = `
+update sso_role_datapermission set 
+	status = @status 
+where id=@id 
+limit 1`
+
+const DeleteRolePermission = `
+delete from sso_role_datapermission 
+where id=@id 
+limit 1`
+
+const UpdateRolePermission = `
+update sso_role_datapermission set 
+	name = @name,
+	permissions=@permissions
+where id=@id
+limit 1
 `

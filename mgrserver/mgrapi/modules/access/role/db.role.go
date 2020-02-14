@@ -22,8 +22,10 @@ type IDbRole interface {
 	Auth(input *model.RoleAuthInput) (err error)
 	QueryAuthMenu(sysID int64, roleID int64) (results []map[string]interface{}, err error)
 	QueryRoleInfoByName(roleName string) (data db.QueryRow, err error)
-	QueryAuthDataPermission(sysID, roleID int64) (data db.QueryRows, err error)
-	SaveRolePermission(sysID, roleID int64, selectAuth string) error
+	QueryAuthDataPermission(req model.RolePermissionQueryReq) (data db.QueryRows, count int, err error)
+	SaveRolePermission(req model.RolePermissionReq) error
+	ChangeRolePermissionStatus(id string, status int) error
+	DelRolePermission(id string) error
 }
 
 type DbRole struct {
@@ -262,20 +264,35 @@ func (r *DbRole) QueryAuthMenu(sysID int64, roleID int64) (results []map[string]
 }
 
 //QueryAuthDataPermission 查询角色与数据权限的关联关系
-func (r *DbRole) QueryAuthDataPermission(sysID, roleID int64) (data db.QueryRows, err error) {
+func (r *DbRole) QueryAuthDataPermission(req model.RolePermissionQueryReq) (data db.QueryRows, count int, err error) {
 	db := r.c.GetRegularDB()
-	data, q, a, err := db.Query(sqls.QuerySysDataPermission, map[string]interface{}{
-		"role_id": roleID,
-		"sys_id":  sysID,
+	c, q, a, err := db.Scalar(sqls.QueryRoleDataPermissionCount, map[string]interface{}{
+		"sys_id":  req.SysID,
+		"role_id": req.RoleID,
+	})
+
+	if err != nil {
+		return nil, 0, fmt.Errorf("查询角色与数据权限的关联关系发生错误(err:%v),sql:(%s),输入参数:%v,", err, q, a)
+	}
+
+	data, q, a, err = db.Query(sqls.QueryRoleDataPermission, map[string]interface{}{
+		"sys_id":  req.SysID,
+		"role_id": req.RoleID,
+		"start":   (req.PageIndex - 1) * req.PageSize,
+		"ps":      req.PageSize,
 	})
 	if err != nil {
-		return nil, fmt.Errorf("查询角色与数据权限的关联关系发生错误(err:%v),sql:%s,输入参数:%v", err, q, a)
+		return nil, 0, fmt.Errorf("查询角色与数据权限的关联关系发生错误(err:%v),sql:%s,输入参数:%v", err, q, a)
 	}
-	return data, nil
+	return data, types.GetInt(c), nil
 }
 
 //SaveRolePermission 保存角色与数据权限的关系
-func (r *DbRole) SaveRolePermission(sysID, roleID int64, selectAuth string) error {
+func (r *DbRole) SaveRolePermission(req model.RolePermissionReq) error {
+	if req.ID != 0 {
+		return r.updateRolePermission(req)
+	}
+
 	db := r.c.GetRegularDB()
 	dbTrans, err := db.Begin()
 	if err != nil {
@@ -283,33 +300,70 @@ func (r *DbRole) SaveRolePermission(sysID, roleID int64, selectAuth string) erro
 	}
 	//删除原权限
 	_, q, a, err := dbTrans.Execute(sqls.DelDataPermissionRoleAuth, map[string]interface{}{
-		"role_id": roleID,
-		"sys_id":  sysID,
+		"role_id":        req.RoleID,
+		"sys_id":         req.SysID,
+		"table_name":     req.TableName,
+		"operate_action": req.OperateAction,
 	})
 	if err != nil {
 		dbTrans.Rollback()
 		return fmt.Errorf("删除[数据权限]－> 角色原权限发生错误(err:%v),sql:%s,输入参数:%v", err, q, a)
 	}
 
-	if strings.EqualFold(selectAuth, "") {
-		dbTrans.Commit()
-		return nil
-	}
-
 	//添加新的数据权限 关系
-	authArray := strings.Split(selectAuth, ",")
-	for i := 0; i < len(authArray); i++ {
-		_, q, a, err := dbTrans.Execute(sqls.AddRoleDataPermissionAuth, map[string]interface{}{
-			"role_id":       roleID,
-			"sys_id":        sysID,
-			"permission_id": authArray[i],
-		})
-		if err != nil {
-			dbTrans.Rollback()
-			return fmt.Errorf("添加角色 -> 数据权限 关系发生错误(err:%v),sql:%s,输入参数:%v", err, q, a)
-		}
+	_, q, a, err = dbTrans.Execute(sqls.AddRoleDataPermissionAuth, map[string]interface{}{
+		"role_id":        req.RoleID,
+		"sys_id":         req.SysID,
+		"table_name":     req.TableName,
+		"operate_action": req.OperateAction,
+		"name":           req.Name,
+		"permissions":    req.Permissions,
+	})
+	if err != nil {
+		dbTrans.Rollback()
+		return fmt.Errorf("添加角色 -> 数据权限 关系发生错误(err:%v),sql:%s,输入参数:%v", err, q, a)
 	}
 
 	dbTrans.Commit()
+	return nil
+}
+
+//UpdateRolePermission 更新数据权限关联关系
+func (r *DbRole) updateRolePermission(req model.RolePermissionReq) error {
+	db := r.c.GetRegularDB()
+	_, q, a, err := db.Execute(sqls.UpdateRolePermission, map[string]interface{}{
+		"id":          req.ID,
+		"name":        req.Name,
+		"permissions": req.Permissions,
+	})
+	if err != nil {
+		return fmt.Errorf("更新数据权限关联关系时发生错误(err:%v),sql:%s,输入参数:%v", err, q, a)
+	}
+	return nil
+}
+
+//ChangeRolePermissionStatus 改变状态
+func (r *DbRole) ChangeRolePermissionStatus(id string, status int) error {
+	db := r.c.GetRegularDB()
+
+	_, q, a, err := db.Execute(sqls.ChangeRolePermissionStatus, map[string]interface{}{
+		"id":     id,
+		"status": status,
+	})
+	if err != nil {
+		return fmt.Errorf("改变[数据权限]－> 角色与配置的关系时发生错误(err:%v),sql:%s,输入参数:%v", err, q, a)
+	}
+	return nil
+}
+
+//DelRolePermission delete
+func (r *DbRole) DelRolePermission(id string) error {
+	db := r.c.GetRegularDB()
+	_, q, a, err := db.Execute(sqls.DeleteRolePermission, map[string]interface{}{
+		"id": id,
+	})
+	if err != nil {
+		return fmt.Errorf("删除角色与数据权限配置信息的关系时发生错误(err:%v),sql:%s,输入参数:%v", err, q, a)
+	}
 	return nil
 }

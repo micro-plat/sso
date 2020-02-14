@@ -12,7 +12,7 @@ import (
 
 type IDbDataPermission interface {
 	GetTypeInfo(sysID string) (s db.QueryRows, err error)
-	Query(sysID, tableName string, pi int, ps int) (data db.QueryRows, count int, err error)
+	Query(sysID string, pi int, ps int) (data db.QueryRows, count int, err error)
 	Delete(id int) (err error)
 	Add(input *model.DataPermissionReq) (err error)
 	Edit(input *model.DataPermissionReq) (err error)
@@ -41,21 +41,19 @@ func (u *DbDataPermission) GetTypeInfo(sysID string) (s db.QueryRows, err error)
 }
 
 //Query 获取数据权限 数据
-func (u *DbDataPermission) Query(sysID, tableName string, pi int, ps int) (data db.QueryRows, count int, err error) {
+func (u *DbDataPermission) Query(sysID string, pi int, ps int) (data db.QueryRows, count int, err error) {
 	db := u.c.GetRegularDB()
 	c, q, a, err := db.Scalar(sqls.QueryDataPermissionTotalCount, map[string]interface{}{
-		"table_name": tableName,
-		"sys_id":     sysID,
+		"sys_id": sysID,
 	})
 
 	if err != nil {
 		return nil, 0, fmt.Errorf("获取系统管理列表条数发生错误(err:%v),sql:(%s),输入参数:%v,", err, q, a)
 	}
 	data, q, a, err = db.Query(sqls.QueryDataPermissionList, map[string]interface{}{
-		"table_name": tableName,
-		"sys_id":     sysID,
-		"start":      (pi - 1) * ps,
-		"ps":         ps,
+		"sys_id": sysID,
+		"start":  (pi - 1) * ps,
+		"ps":     ps,
 	})
 
 	if err != nil {
@@ -123,13 +121,13 @@ func (u *DbDataPermission) Add(input *model.DataPermissionReq) (err error) {
 	sysfist := sysInfo.Get(0)
 
 	params := map[string]interface{}{
-		"name":           input.Name,
-		"sys_id":         input.SysID,
-		"ident":          sysfist.GetString("ident"),
-		"operate_action": input.OperateAction,
-		"table_name":     input.TableName,
-		"rules":          input.Rules,
-		"remark":         input.Remark,
+		"name":   input.Name,
+		"sys_id": input.SysID,
+		"ident":  sysfist.GetString("ident"),
+		// "operate_action": input.OperateAction,
+		// "table_name":     input.TableName,
+		"rules":  input.Rules,
+		"remark": input.Remark,
 	}
 
 	_, q, a, err := db.Execute(sqls.AddDataPermission, params)
