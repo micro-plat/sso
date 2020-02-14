@@ -5,7 +5,8 @@ const QueryDataPermissionTotalCount = `
 select
 	count(1) as count
 from sso_data_permission
-where sys_id = @sys_id
+where sys_id = @sys_id 
+      #name
 `
 
 //QueryDataPermissionList 数据权限分页　数据
@@ -19,6 +20,7 @@ select
 	remark
 from sso_data_permission
 where sys_id = @sys_id
+	  #name
 limit @start, @ps
 `
 

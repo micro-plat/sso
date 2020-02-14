@@ -39,7 +39,7 @@ export default {
     };
   },
   mounted() {
-    this.role_id = this.$route.query.role_id;
+    this.role_id = this.$route.params.id;
     this.querySys();
   },
   methods: {

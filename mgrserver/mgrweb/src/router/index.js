@@ -8,7 +8,7 @@ import datapermission from '@/pages/system/data.permission.vue'
 import userindex from '@/pages/user/index.new.vue'
 import roleindex from '@/pages/role/index.new.vue';
 import roleauth from '@/pages/role/auth.vue';
-import dataauth from '@/pages/role/data.auth.vue';
+import dataauth from '@/pages/role/permission.auth.vue';
 
 Vue.use(Router);
 
@@ -36,12 +36,12 @@ export default new Router({
       name: "sysindex",
       component: sysindex
     }, {
-      path: "sys/func",
+      path: "sys/func/:id",
       name: "sysfunc",
       component: sysfunc
     },
     {
-      path: "sys/data/permission",
+      path: "sys/data/permission/:id",
       name: "datapermission",
       component: datapermission
     },
@@ -50,12 +50,12 @@ export default new Router({
       name: 'userrole',
       component: roleindex
     }, {
-      path: 'role/auth',
+      path: 'role/auth/:id',
       name: 'roleauth',
       component: roleauth
     },
     {
-      path: 'role/dataauth',
+      path: 'role/dataauth/:id',
       name: 'dataauth',
       component: dataauth
     }

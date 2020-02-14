@@ -132,7 +132,7 @@ export default {
     };
   },
   mounted() {
-    this.role_id = this.$route.query.role_id;
+    this.role_id = this.$route.params.id;
     this.querySys();
   },
   methods: {
@@ -197,6 +197,10 @@ export default {
 
     //保存数据权限
     saveAuth: function() {
+      if (! this.checkBeforeSave()) {
+        return
+      }
+
       var selectAuth = [];
       this.currentPermissions.forEach(item => {
         if (item.checked) {
@@ -324,6 +328,31 @@ export default {
         editData: editDataConfig.sort(function(a,b){return b.checked-a.checked})
         }
     },
+    checkBeforeSave() {
+      if (!this.rolePermission.name || !this.rolePermission.table_name) {
+        this.$notify({
+              title: '提示',
+              message: '必填字段不能为空',
+              type: 'error',
+              offset: 50,
+              duration:2000,
+            });
+        return false;
+      }
+      for (var i=0; i < this.currentPermissions.length; i++) {
+        if (this.currentPermissions[i].checked){
+          return true;
+        }
+      }
+      this.$notify({
+          title: '提示',
+          message: '规则必须选择一个',
+          type: 'error',
+          offset: 50,
+          duration:2000,
+        });
+      return false;
+    }
   }
 };
 </script>

@@ -1,33 +1,30 @@
 //数据权限管理,查询，添加，编辑
 <template>
   <div ref="main">
-
     <div class="panel panel-default">
       <div class="panel panel-default">
         <div class="panel-body">
           <form class="form-inline">
-            <!-- <div class="form-group">
+            <div class="form-group">
               <input
-                    name="table_name"
+                    name="queryName"
                     type="text"
                     class="form-control"
-                    v-model="table_name"
-                    placeholder="请输入表名"
+                    v-model="queryName"
+                    placeholder="请输入规则名"
                     maxlength="64" />
             </div>
-            <a class="visible-xs-inline visible-sm-inline visible-md-inline  visible-lg-inline btn btn btn-success" @click="query">查询</a> -->
+            <a class="visible-xs-inline visible-sm-inline visible-md-inline  visible-lg-inline btn btn btn-success" @click="query">查询</a>
             <a class="visible-xs-inline visible-sm-inline visible-md-inline  visible-lg-inline btn btn btn-success" @click="Add">添加</a>
           </form>
         </div>
       </div>
       <el-scrollbar style="height:100%">
         <el-table :data="datalist" stripe  style="width: 100%">
-          <el-table-column width="300" prop="name" label="规则名称" ></el-table-column>
-          <!-- <el-table-column width="200" prop="table_name" label="表名" ></el-table-column>
-          <el-table-column width="200" prop="operate_action" label="操作动作" ></el-table-column> -->
-          <el-table-column width="400" prop="rules" label="规则信息" ></el-table-column>
-          <el-table-column width="300" prop="remark" label="备注" ></el-table-column>
-          <el-table-column  label="操作">
+          <el-table-column width="300" prop="name" label="规则名称" align="center"></el-table-column>
+          <el-table-column width="600" prop="rules" label="规则内容" ></el-table-column>
+          <el-table-column width="300" prop="remark" label="备注" align="center" ></el-table-column>
+          <el-table-column  label="操作" >
             <template slot-scope="scope">
               <el-button plain type="primary" size="mini" @click="edit(scope.row.id)">编辑</el-button>
               <el-button plain  type="danger" size="mini" @click="deleteById(scope.row.id)">删除</el-button>
@@ -58,20 +55,6 @@
                   <label>规则名称(必填)</label>
                   <el-input v-model="permissionData.name" placeholder="请输入名称" maxlength="64" ></el-input>
                 </div>
-                <!-- <el-row :span="24">
-                 <el-col :span="12">
-                   <div class="form-group">
-                    <label>表名(必填)</label>
-                    <el-input v-model="permissionData.table_name" placeholder="请输入表名" :disabled="!isAdd" maxlength="64" ></el-input>
-                  </div>
-                 </el-col>
-                 <el-col :span="12">
-                   <div class="form-group" style="margin-left:10px;">
-                    <label>操作动作(非必填)</label>
-                    <el-input v-model="permissionData.operate_action" placeholder="如:新增,修改"  maxlength="64" ></el-input>
-                  </div>
-                 </el-col>
-               </el-row> -->
                 <div class="form-group">
                   <label>备注(非必填)</label>
                   <textarea
@@ -113,7 +96,7 @@
                       </el-col>
                       <el-col :span="5">
                         <div class="form-group" >
-                            <el-select v-model="item.field_type" @change="fieldTypeChange">
+                            <el-select v-model="item.field_type" @change="fieldTypeChange(item.id,item.field_type)">
                               <el-option
                                 v-for="item in fieldTypeList"
                                 :key="item.value"
@@ -125,12 +108,13 @@
                       </el-col>
                       <el-col :span="5">
                         <div class="form-group" >
-                          <el-select v-model="item.compare_symbol">
+                          <el-select v-model="item.compare_symbol" :disabled="item.compareSymbolDisabled">
                               <el-option
                                 v-for="item in compareSymbolList"
                                 :key="item.value"
                                 :label="item.label"
-                                :value="item.value">
+                                :value="item.value"
+                                :disabled="item.disabled">
                               </el-option>
                             </el-select>
                         </div>
@@ -174,6 +158,7 @@ export default {
   },
   data() {
     return {
+      queryName: null,
       table_name: null,
       datalist: null,
       pageSizeList: [5, 10, 20, 50], //可选显示数据条数
@@ -185,8 +170,6 @@ export default {
       sysname: "",
       permissionData: {
         name: "",
-        //table_name: "",
-        //operate_action: "",
         rules: "",
         remark: "",
       },
@@ -201,18 +184,18 @@ export default {
         {label:"小于等于", value:"<="},
         {label:"不等于", value:"<>"},
         {label:"in", value:"in"},
-        {label:"like", value:"like"}
       ],
       compareSymbolListAll:[],
       ruleslist:[],
       pi: 1,
       ps:10,
-      totalPage: 0
+      totalPage: 0,
+      compareSymbolDisabled: true,
     };
   },
   props:["path"],
   mounted() {
-    this.sysId = this.$route.query.id;
+    this.sysId = this.$route.params.id;
     this.$refs.main.style.height = document.documentElement.clientHeight + 'px';
     this.query();
   },
@@ -245,7 +228,7 @@ export default {
         pi: this.pi,
         ps:this.ps,
         sys_id: this.sysId,
-        //table_name: this.table_name
+        name: this.queryName
       })
         .then(res => {
           this.datalist = res.list;
@@ -333,16 +316,6 @@ export default {
     },
 
     checkBeforSave() {
-      // if (!this.permissionData.table_name || !this.permissionData.name) {
-      //   this.$notify({
-      //       title: '提示',
-      //       message: '必填字段不能为空',
-      //       type: 'error',
-      //       offset: 50,
-      //       duration:2000,
-      //     });
-      //     return false
-      // }
       if (!this.permissionData.name) {
         this.$notify({
             title: '提示',
@@ -427,6 +400,7 @@ export default {
 
       this.ruleslist.push({
         id : Date.now(),
+        name:"",
         field_name : "",
         compare_symbol: "",
         field_type: "",
@@ -445,12 +419,31 @@ export default {
       }
     },
 
-    fieldTypeChange(opt){
-      if (opt == "string") {
+    fieldTypeChange(id, fieldType){
+      // console.log(id, fieldType);
 
-      }
-      console.log(opt)
-    }
+      // if (fieldType == "string") {
+      //   this.compareSymbolList.forEach(item => {
+      //     if (item.value == "<=" || item.value == ">=" || item.value == ">" || item.value == "<" ) {
+      //       item.disabled = true;
+      //     } else {
+      //       item.disabled = false;
+      //     }
+      //   });
+      // } else if (fieldType == "number") {
+      //   this.compareSymbolList.forEach(item => {
+      //     if (item.value == "like") {
+      //       item.disabled = true;
+      //     } else {
+      //       item.disabled = false;
+      //     }
+      //   });
+      // } else {
+      //   this.compareSymbolDisabled = true;
+      //   return;
+      // }
+      // this.compareSymbolDisabled = false;
+    },
     
   }
 };

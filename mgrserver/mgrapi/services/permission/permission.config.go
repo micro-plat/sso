@@ -36,7 +36,8 @@ func (u *DataPermissionHandler) GetAllHandle(ctx *context.Context) (r interface{
 
 	ctx.Log.Info("2.获取数据")
 	data, count, err := u.subLib.Query(
-		ctx.Request.GetString("sys_id"), ctx.Request.GetInt("pi", 1), ctx.Request.GetInt("ps", 10))
+		ctx.Request.GetString("sys_id"), ctx.Request.GetString("name"),
+		ctx.Request.GetInt("pi", 1), ctx.Request.GetInt("ps", 10))
 	if err != nil {
 		return err
 	}

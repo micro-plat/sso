@@ -55,8 +55,8 @@
               <el-button plain type="primary" size="mini" @click="importMenu(scope.row.id)">导入菜单</el-button>
               <el-button plain type="primary" size="mini" @click="setSecret(scope.row.id)">设置秘钥</el-button>
               <el-button plain  type="danger" size="mini" @click="deleteById(scope.row.id)">删除</el-button>
-              <el-button plain  type="warning" size="mini" @click="manage(scope.row.id)">菜单</el-button>
-              <el-button plain  type="warning" size="mini" @click="managePermission(scope.row.id)">数据权限</el-button>
+              <el-button plain  type="warning" size="mini" @click="manage(scope.row.id, scope.row.ident)">菜单</el-button>
+              <el-button plain  type="warning" size="mini" @click="managePermission(scope.row.id, scope.row.ident)">数据权限</el-button>
             </template>
           </el-table-column>
         </el-table>
@@ -808,22 +808,25 @@ export default {
           });
         });
     },
-    manage(id) {
-      this.$router.push({
-        name: "sysfunc",
-        query: {
-          id: id
-        }
-      });
+    manage(id, ident) {
+      this.$emit("addTab", "菜单配置(" + ident + ')', "/sys/func/" + id);
+      // this.$router.push({
+      //   name: "sysfunc",
+      //   query: {
+      //     id: id
+      //   }
+      // });
     },
     //管理数据权限数据
-    managePermission(id) {
-      this.$router.push({
-        name: "datapermission",
-        query: {
-          id: id
-        }
-      });
+    managePermission(id,ident) {
+      this.$emit("addTab", "数据规则配置(" + ident + ')', "/sys/data/permission/" + id);
+
+      // this.$router.push({
+      //   name: "datapermission",
+      //   query: {
+      //     id: id
+      //   }
+      // });
     },
     
     checkBeforeSave(editData) {

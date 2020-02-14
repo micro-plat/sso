@@ -48,8 +48,8 @@
                         <el-button plain type="success" size="mini" @click="roleChange(0,scope.row.role_id)" v-if="scope.row.status == 2">启用</el-button>
                         <el-button plain type="info" size="mini" @click="roleChange(2,scope.row.role_id)" v-if="scope.row.status == 0">禁用</el-button>
                         <el-button plain type="danger" size="mini" @click="roleDel(scope.row.role_id)">删除</el-button>
-                        <el-button plain type="success" size="mini" @click="menuAuth(scope.row.role_id)">菜单授权</el-button>
-                        <el-button plain type="success" size="mini" @click="dataAuth(scope.row.role_id)">数据授权</el-button>
+                        <el-button plain type="success" size="mini" @click="menuAuth(scope.row.role_id, scope.row.role_name)">菜单授权</el-button>
+                        <el-button plain type="success" size="mini" @click="dataAuth(scope.row.role_id, scope.row.role_name)">数据授权</el-button>
                     </template>
                 </el-table-column>
             </el-table>
@@ -321,21 +321,23 @@ export default {
                 }
             });
         },
-        menuAuth(id) {
-            this.$router.push({
-                name: "roleauth",
-                query: {
-                    role_id: id
-                }
-            });
+        menuAuth(id, role_name) {
+            this.$emit("addTab", "菜单授权(" + role_name + ')', "/role/auth/" + id);
+            // this.$router.push({
+            //     name: "roleauth",
+            //     query: {
+            //         role_id: id
+            //     }
+            // });
         },
-        dataAuth(id) {
-            this.$router.push({
-                name: "dataauth",
-                query: {
-                    role_id: id
-                }
-            });
+        dataAuth(id,role_name) {
+            this.$emit("addTab", "数据授权(" + role_name + ')', "/role/dataauth/" + id);
+            // this.$router.push({
+            //     name: "dataauth",
+            //     query: {
+            //         role_id: id
+            //     }
+            // });
         }
     }
 };

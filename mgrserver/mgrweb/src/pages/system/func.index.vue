@@ -622,8 +622,7 @@ export default {
   },
   methods: {
     initData() {
-      let routerParams = this.$route.query;
-      this.id = routerParams.id;
+      this.id = this.$route.params.id;
       
       this.$http.get("/system/func", { id: this.id })
         .then(res => {
