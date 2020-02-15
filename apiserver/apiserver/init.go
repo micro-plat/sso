@@ -29,13 +29,13 @@ func (r *SSO) init() {
 		return nil
 	})
 
-	r.Micro("/member/menu/get", member.NewMenuHandler)        //获取用户菜单数据
-	r.Micro("/member/tags/get", member.NewTagHandler)         //获取用户有权限的tag数据
-	r.Micro("/member/info/get", member.NewMemberHandler)      //获取用户信息
-	r.Micro("/member/system/get", member.NewMemberSysHandler) //获取用户可用的子系统
-	r.Micro("/member/all/get", member.NewMemberGetAllHandler) //获取所有用户信息
-	r.Micro("/system/info/get", system.NewInfoHandler)        //获取子系统信息
-	r.Micro("/login/auth", login.NewAuthorizeHandler)         //用户登录认证
-
-	r.Micro("/permission/data", permission.NewDataPerssionHandler) //【数据权限】相关接口
+	r.Micro("/member/menu/get", member.NewMenuHandler)               //获取用户菜单数据
+	r.Micro("/member/tags/get", member.NewTagHandler)                //获取用户有权限的tag数据
+	r.Micro("/member/info/get", member.NewMemberHandler)             //获取用户信息
+	r.Micro("/role/user/get", member.NewRoleHandler)                 //获取角色下的所有用户
+	r.Micro("/member/system/get", member.NewMemberSysHandler)        //获取用户可用的子系统
+	r.Micro("/member/all/get", member.NewMemberGetAllHandler)        //获取所有用户信息
+	r.Micro("/system/info/get", system.NewInfoHandler)               //获取子系统信息
+	r.Micro("/login/auth", login.NewAuthorizeHandler)                //用户登录认证
+	r.Micro("/permission/config", permission.NewDataPerssionHandler) //【数据权限】相关接口
 }

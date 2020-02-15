@@ -53,38 +53,16 @@ func getUserTagFromApiserver(userID int) ([]Menu, error) {
 }
 
 //从本地获取用户的数据权限信息
-func getUserDataPermissionFromLocal(userID int64, bussinessType string) (string, error) {
-	userDataPermissionKey := fmt.Sprintf("data_permission_cache_%s_%s", types.GetString(userID), bussinessType)
-	value, found := localCache.Get(userDataPermissionKey)
-	if !found {
-		data, err := getUserDataPermissionFromAPI(userID, bussinessType)
-		if err != nil {
-			return "", err
-		}
-		localCache.Set(userDataPermissionKey, data, cache.DefaultExpiration)
-		return data, nil
-	}
-	return types.GetString(value), nil
-}
-
-//GetUserDataPermissionFromAPI 获取【数据权限】数据
-func getUserDataPermissionFromAPI(userID int64, businessType string) (r string, err error) {
-	cfg := ssoClient.cfg
-	values := net.NewValues()
-	values.Set("type", businessType)
-	values.Set("user_id", types.GetString(userID))
-	values.Set("ident", cfg.ident)
-	values.Set("timestamp", types.GetString(time.Now().Unix()))
-
-	values = values.Sort()
-	raw := values.Join("", "") + cfg.secret
-	values.Set("sign", md5.Encrypt(raw))
-
-	result := make(map[string]string)
-	a, err := remoteRequest(cfg.host, getDataPermission, values.Join("=", "&"), &result)
-	if err != nil {
-		return "", err
-	}
-	fmt.Println(a)
-	return result["data"], nil
-}
+// func getUserDataPermissionFromLocal(userID int64, bussinessType string) (string, error) {
+// 	userDataPermissionKey := fmt.Sprintf("data_permission_cache_%s_%s", types.GetString(userID), bussinessType)
+// 	value, found := localCache.Get(userDataPermissionKey)
+// 	if !found {
+// 		data, err := getUserDataPermissionFromAPI(userID, bussinessType)
+// 		if err != nil {
+// 			return "", err
+// 		}
+// 		localCache.Set(userDataPermissionKey, data, cache.DefaultExpiration)
+// 		return data, nil
+// 	}
+// 	return types.GetString(value), nil
+// }

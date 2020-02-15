@@ -41,20 +41,18 @@ func (u *UserHandler) GetAllHandle(ctx *context.Context) (r interface{}) {
 		return context.NewError(context.ERR_NOT_IMPLEMENTED, err)
 	}
 
-	// err1 := sso.SyncDataPermission(sso.SyncReq{
-	// 	Name:     "test2",
-	// 	Type:     "test_type",
-	// 	TypeName: "测试8888",
-	// 	Value:    "6",
-	// 	Remark:   "123456789888888",
-	// })
-	// fmt.Println(err1)
+	// sql, err := sso.GetDataPermission(
+	// 	sso.GetMember(ctx).UserID,
+	// 	"pis_inbound_info",
+	// 	sso.WithAlias("p"),
+	// 	sso.WithCustomParams(map[string]interface{}{
+	// 		"seller_id": 10,
+	// 	}))
 
-	// info, err := sso.GetDataPermission("test_type", sso.GetMember(ctx).UserID)
 	// if err != nil {
 	// 	fmt.Println(err)
 	// }
-	// fmt.Println(info)
+	// fmt.Println(sql)
 
 	ctx.Log.Info("2.返回数据。")
 	return map[string]interface{}{

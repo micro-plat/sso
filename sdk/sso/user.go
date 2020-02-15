@@ -118,3 +118,23 @@ func (u *userLogic) GetAllUser() (*[]*User, error) {
 func (u *userLogic) GetUserTags(userID int) ([]Menu, error) {
 	return getUserTagFromLocal(userID)
 }
+
+//getRoleUsers 获取与某个角色关联的所有用户
+func (u *userLogic) getRoleUsers(userID int64) (userIds string, err error) {
+	cfg := u.cfg
+	values := net.NewValues()
+	values.Set("ident", cfg.ident)
+	values.Set("timestamp", types.GetString(time.Now().Unix()))
+	values.Set("user_id", types.GetString(userID))
+
+	values = values.Sort()
+	raw := values.Join("", "") + cfg.secret
+	values.Set("sign", md5.Encrypt(raw))
+
+	result := make(map[string]string)
+	_, err = remoteRequest(cfg.host, roleAllUser, values.Join("=", "&"), &result)
+	if err != nil {
+		return "", err
+	}
+	return result["data"], nil
+}

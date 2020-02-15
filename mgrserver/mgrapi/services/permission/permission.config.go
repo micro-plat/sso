@@ -3,7 +3,6 @@ package permission
 import (
 	"github.com/micro-plat/hydra/component"
 	"github.com/micro-plat/hydra/context"
-	"github.com/micro-plat/lib4go/types"
 	"github.com/micro-plat/sso/mgrserver/mgrapi/modules/logic"
 	"github.com/micro-plat/sso/mgrserver/mgrapi/modules/model"
 	"github.com/micro-plat/sso/sdk/sso"
@@ -65,12 +64,6 @@ func (u *DataPermissionHandler) AddHandle(ctx *context.Context) (r interface{}) 
 		return err
 	}
 
-	ctx.Log.Info("3.记录行为")
-	data, _ := types.Struct2Map(&input)
-	if err := u.op.MenuOperate(sso.GetMember(ctx), "添加数据权限数据", data); err != nil {
-		return err
-	}
-
 	ctx.Log.Info("3.返回数据")
 	return "success"
 }
@@ -88,12 +81,6 @@ func (u *DataPermissionHandler) EditHandle(ctx *context.Context) (r interface{})
 	ctx.Log.Info("2.更新数据库数据--------")
 	err := u.subLib.Edit(&input)
 	if err != nil {
-		return err
-	}
-
-	ctx.Log.Info("3.记录行为")
-	data, _ := types.Struct2Map(&input)
-	if err := u.op.MenuOperate(sso.GetMember(ctx), "编辑数据权限数据", data); err != nil {
 		return err
 	}
 
@@ -121,6 +108,6 @@ func (u *DataPermissionHandler) DelHandle(ctx *context.Context) (r interface{}) 
 		return err
 	}
 
-	ctx.Log.Info("3.返回数据。")
+	ctx.Log.Info("4.返回数据。")
 	return "success"
 }

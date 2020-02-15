@@ -2,6 +2,7 @@ package logic
 
 import (
 	"github.com/micro-plat/hydra/component"
+	"github.com/micro-plat/lib4go/db"
 
 	"github.com/micro-plat/sso/apiserver/apiserver/modules/access/datapermission"
 	"github.com/micro-plat/sso/apiserver/apiserver/modules/model"
@@ -9,8 +10,8 @@ import (
 
 //IDataPermissionLogic 数据权限
 type IDataPermissionLogic interface {
-	GetUserDataPermission(req model.DataPermissionGetReq) (result string, err error)
-	SyncDataPermission(req model.DataPermissionSyncReq) error
+	GetUserDataPermissionConfigs(req model.DataPermissionGetReq) (result db.QueryRows, err error)
+	GetAllUserInfoByUserRole(userID int, ident string) (string, error)
 }
 
 //DataPermissionLogic 数据权限
@@ -25,12 +26,12 @@ func NewDataPermissionLogic(c component.IContainer) *DataPermissionLogic {
 	}
 }
 
-//GetUserDataPermission 获取用户有权限的　[数据权限]　数据
-func (m *DataPermissionLogic) GetUserDataPermission(req model.DataPermissionGetReq) (result string, err error) {
-	return m.db.GetUserDataPermission(req)
+//GetUserDataPermissionConfigs 获取用户有权限的　[数据权限]　规则信息
+func (m *DataPermissionLogic) GetUserDataPermissionConfigs(req model.DataPermissionGetReq) (result db.QueryRows, err error) {
+	return m.db.GetUserDataPermissionConfigs(req)
 }
 
-//SyncDataPermission 同步子系统的　[数据权限]　数据
-func (m *DataPermissionLogic) SyncDataPermission(req model.DataPermissionSyncReq) error {
-	return m.db.SyncDataPermission(req)
+//GetAllUserInfoByUserRole 获取和当前用户同一个角色的用户ids
+func (m *DataPermissionLogic) GetAllUserInfoByUserRole(userID int, ident string) (string, error) {
+	return m.db.GetAllUserInfoByUserRole(userID, ident)
 }

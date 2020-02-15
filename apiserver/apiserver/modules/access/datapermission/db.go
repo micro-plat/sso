@@ -5,14 +5,14 @@ import (
 	"strings"
 
 	"github.com/micro-plat/hydra/component"
-	"github.com/micro-plat/hydra/context"
+	"github.com/micro-plat/lib4go/db"
 	"github.com/micro-plat/sso/apiserver/apiserver/modules/const/sqls"
 	"github.com/micro-plat/sso/apiserver/apiserver/modules/model"
 )
 
 type IDBDataPermission interface {
-	GetUserDataPermission(req model.DataPermissionGetReq) (result string, err error)
-	SyncDataPermission(req model.DataPermissionSyncReq) error
+	GetUserDataPermissionConfigs(req model.DataPermissionGetReq) (result db.QueryRows, err error)
+	GetAllUserInfoByUserRole(userID int, ident string) (string, error)
 }
 
 //DBDataPermission 数据权限
@@ -27,63 +27,51 @@ func NewDBDataPermission(c component.IContainer) *DBDataPermission {
 	}
 }
 
-//GetUserDataPermission 获取某个用户的数据权限数据
-func (l *DBDataPermission) GetUserDataPermission(req model.DataPermissionGetReq) (result string, err error) {
+//GetUserDataPermissionConfigs 获取某个用户的数据权限规则配置信息
+func (l *DBDataPermission) GetUserDataPermissionConfigs(req model.DataPermissionGetReq) (result db.QueryRows, err error) {
 	db := l.c.GetRegularDB()
 	data, q, a, err := db.Query(sqls.QueryUserDataPermission, map[string]interface{}{
-		"user_id": req.UserID,
-		"ident":   req.Ident,
-		"type":    req.Type,
+		"user_id":        req.UserID,
+		"ident":          req.Ident,
+		"table_name":     req.TableName,
+		"operate_action": req.OperateAction,
 	})
 	if err != nil {
-		return "", fmt.Errorf("获取某个用户的数据权限数据 GetUserDataPermission 出错: q:%s,a:%+v, err:%+v", q, a, err)
+		return nil, fmt.Errorf("获取某个用户的数据权限规则配置信息 QueryUserDataPermission 出错: q:%s,a:%+v, err:%+v", q, a, err)
 	}
 	if data.IsEmpty() {
-		return "", nil
+		return result, nil
 	}
-	var temp []string
-	for _, item := range data {
-		temp = append(temp, item.GetString("value"))
+	fmt.Println(data.Get(0).GetString("permissions"))
+
+	configs, q, args, err := db.Query(sqls.QueryPermissionConfig, map[string]interface{}{
+		"ids": data.Get(0).GetString("permissions"),
+	})
+	fmt.Println(q)
+	fmt.Println(args)
+
+	if err != nil {
+		return result, fmt.Errorf("QueryPermissionConfig出错: sql:%s, args:%+v, err:%+v", q, args, err)
 	}
-	return strings.Join(temp, ","), nil
+
+	fmt.Println(configs)
+	fmt.Println("dddddd")
+	return configs, nil
 }
 
-// SyncDataPermission 同步数据权限数据
-func (l *DBDataPermission) SyncDataPermission(req model.DataPermissionSyncReq) error {
+//GetAllUserInfoByUserRole 获取和当前用户同一个角色的用户ids
+func (l *DBDataPermission) GetAllUserInfoByUserRole(userID int, ident string) (string, error) {
 	db := l.c.GetRegularDB()
-	data, _, _, err := db.Query(sqls.QuerySystemInfo, map[string]interface{}{
-		"ident": req.Ident,
+	userInfo, q, args, err := db.Query(sqls.GetAllUserInfoByUserRole, map[string]interface{}{
+		"user_id": userID,
+		"ident":   ident,
 	})
 	if err != nil {
-		return context.NewError(context.ERR_SERVICE_UNAVAILABLE, "获取系统信息出错")
+		return "", fmt.Errorf("GetAllUserInfoByUserRole出错: sql:%s, args:%+v, err:%+v", q, args, err)
 	}
-
-	if data.IsEmpty() {
-		return context.NewError(context.ERR_SERVICE_UNAVAILABLE, "ident传入有误或者系统被禁用")
+	userIDArray := make([]string, 0)
+	for _, item := range userInfo {
+		userIDArray = append(userIDArray, item.GetString("user_id"))
 	}
-
-	//增加权限数据
-	first := data.Get(0)
-	_, q, a, err := db.Execute(sqls.AddDataPermission, map[string]interface{}{
-		"ident":     req.Ident,
-		"sys_id":    first.GetString("id"),
-		"name":      req.Name,
-		"type":      req.Type,
-		"type_name": req.TypeName,
-		"value":     req.Value,
-		"remark":    req.Remark,
-	})
-	if err != nil {
-		return fmt.Errorf("SyncDataPermission 同步数据发生错误, q:%s, a:%+v, err:%+v", q, a, err)
-	}
-
-	//增加一个类型全局数据
-	db.Execute(sqls.AddDefaultDataPermissionInfo, map[string]interface{}{
-		"ident":     req.Ident,
-		"sys_id":    first.GetString("id"),
-		"type":      req.Type,
-		"type_name": req.TypeName,
-	})
-
-	return nil
+	return strings.Join(userIDArray, ","), nil
 }
