@@ -76,62 +76,64 @@
                       </a>
                     </span>
                   </div>
-                  <div class="form-inline pull-in clearfix"
-                       v-for="(item,index) in ruleslist"
-                       v-bind:key="item.id">
-                    <el-row >
-                      <el-col :span="3">
+                  <div style="max-height:300px;overflow-y:scroll">
+                    <div class="form-inline pull-in clearfix"
+                        v-for="(item,index) in ruleslist"
+                        v-bind:key="item.id">
+                      <el-row >
+                        <el-col :span="3">
+                          <div class="form-group">
+                            <el-select v-model="item.conlink_symbol" :disabled="index == 0" >
+                                <el-option key="" label="链接符" value=""></el-option>
+                                <el-option key="and" label="并且" value="and"></el-option>
+                                <el-option key="or" label="或者" value="or"></el-option>
+                            </el-select>
+                          </div>
+                        </el-col>
+                        <el-col :span="5">
                         <div class="form-group">
-                          <el-select v-model="item.conlink_symbol" :disabled="index == 0" >
-                               <el-option key="" label="链接符" value=""></el-option>
-                               <el-option key="and" label="并且" value="and"></el-option>
-                               <el-option key="or" label="或者" value="or"></el-option>
-                          </el-select>
+                        <el-input v-model="item.field_name" placeholder="请输入字段名"  maxlength="32" ></el-input>
                         </div>
-                      </el-col>
-                      <el-col :span="5">
-                      <div class="form-group">
-                      <el-input v-model="item.field_name" placeholder="请输入字段名"  maxlength="32" ></el-input>
-                      </div>
-                      </el-col>
-                      <el-col :span="5">
-                        <div class="form-group" >
-                            <el-select v-model="item.field_type" @change="fieldTypeChange(item.id,item.field_type)">
-                              <el-option
-                                v-for="item in fieldTypeList"
-                                :key="item.value"
-                                :label="item.label"
-                                :value="item.value">
-                              </el-option>
-                            </el-select>
-                        </div>
-                      </el-col>
-                      <el-col :span="5">
-                        <div class="form-group" >
-                          <el-select v-model="item.compare_symbol" :disabled="item.compareSymbolDisabled">
-                              <el-option
-                                v-for="item in compareSymbolList"
-                                :key="item.value"
-                                :label="item.label"
-                                :value="item.value"
-                                :disabled="item.disabled">
-                              </el-option>
-                            </el-select>
-                        </div>
-                      </el-col>
-                      <el-col :span="5">
-                        <div class="form-group" >
-                          <el-input v-model="item.value" placeholder="请输入值"  maxlength="32" ></el-input>
-                        </div>
-                      </el-col>
-                      <el-col :span="2">
-                        <div class="form-group del-btn" v-if="ruleslist.length > 1" style="margin:4px">
-                          <a class="btn m-b-xs btn-xs btn-danger" @click="del(index)">
-                            <i class="fa fa-minus"></i>
-                          </a>
-                        </div>
-                      </el-col >
-                    </el-row>                 
+                        </el-col>
+                        <el-col :span="4">
+                          <div class="form-group" >
+                              <el-select v-model="item.field_type" @change="fieldTypeChange(item.id,item.field_type)">
+                                <el-option
+                                  v-for="item in fieldTypeList"
+                                  :key="item.value"
+                                  :label="item.label"
+                                  :value="item.value">
+                                </el-option>
+                              </el-select>
+                          </div>
+                        </el-col>
+                        <el-col :span="4">
+                          <div class="form-group" >
+                            <el-select v-model="item.compare_symbol" :disabled="item.compareSymbolDisabled">
+                                <el-option
+                                  v-for="item in item.compareSymbolList"
+                                  :key="item.value"
+                                  :label="item.label"
+                                  :value="item.value"
+                                  :disabled="item.disabled">
+                                </el-option>
+                              </el-select>
+                          </div>
+                        </el-col>
+                        <el-col :span="5">
+                          <div class="form-group" >
+                            <el-input v-model="item.value" placeholder="请输入值"  maxlength="32" ></el-input>
+                          </div>
+                        </el-col>
+                        <el-col :span="2">
+                          <div class="form-group del-btn" v-if="ruleslist.length > 1" style="margin-left:4px; margin-top:4px">
+                            <a class="btn m-b-xs btn-xs btn-danger" @click="del(index)">
+                              <i class="fa fa-minus"></i>
+                            </a>
+                          </div>
+                        </el-col >
+                      </el-row>                 
+                    </div>
                   </div>
                 </div>
               </form>
@@ -174,18 +176,19 @@ export default {
         remark: "",
       },
       fieldTypeList:[
-        {label:"字段类型", value:""},
+        {label:"类型", value:""},
         {label:"数字", value:"number"},
         {label:"字符", value:"string"}],
       compareSymbolList:[
         {label:"比较符", value:""},
-        {label:"等于", value:"="},
-        {label:"大于等于", value:">="},
-        {label:"小于等于", value:"<="},
-        {label:"不等于", value:"<>"},
+        {label:"=", value:"="},
+        {label:">=", value:">="},
+        {label:"<=", value:"<="},
+        {label:"<>", value:"<>"},
         {label:"in", value:"in"},
+        {label:"notin", value:"not in"},
+        {label:"like", value:"like"},
       ],
-      compareSymbolListAll:[],
       ruleslist:[],
       pi: 1,
       ps:10,
@@ -386,6 +389,15 @@ export default {
           var temp = this.datalist[index];
           this.permissionData = temp;
           this.ruleslist = JSON.parse(temp.rules);
+          this.ruleslist.forEach(rule => {
+            rule.compareSymbolList = JSON.parse(JSON.stringify(this.compareSymbolList));
+            rule.compareSymbolList.forEach(item => {
+              item.disabled = false;
+              if (rule.field_type == "number") {
+                item.disabled = (item.value == "like")
+              }
+            })
+          });
           break;
         }
       }
@@ -405,6 +417,8 @@ export default {
         compare_symbol: "",
         field_type: "",
         conlink_symbol: "and",
+        compareSymbolList: JSON.parse(JSON.stringify(this.compareSymbolList)),
+        compareSymbolDisabled : true,
       })
       var length = this.ruleslist.length; 
       if (this.ruleslist.length == 1) {
@@ -420,31 +434,26 @@ export default {
     },
 
     fieldTypeChange(id, fieldType){
-      // console.log(id, fieldType);
+      console.log(id, fieldType);
 
-      // if (fieldType == "string") {
-      //   this.compareSymbolList.forEach(item => {
-      //     if (item.value == "<=" || item.value == ">=" || item.value == ">" || item.value == "<" ) {
-      //       item.disabled = true;
-      //     } else {
-      //       item.disabled = false;
-      //     }
-      //   });
-      // } else if (fieldType == "number") {
-      //   this.compareSymbolList.forEach(item => {
-      //     if (item.value == "like") {
-      //       item.disabled = true;
-      //     } else {
-      //       item.disabled = false;
-      //     }
-      //   });
-      // } else {
-      //   this.compareSymbolDisabled = true;
-      //   return;
-      // }
-      // this.compareSymbolDisabled = false;
+      this.ruleslist.forEach(rule => {
+        if (rule.id == id) {
+
+          rule.compare_symbol = "";
+          rule.compareSymbolDisabled = false;
+          if (fieldType == "") {
+          rule.compareSymbolDisabled = true;
+          }
+
+          rule.compareSymbolList.forEach(item => {
+            item.disabled = false;
+            if (fieldType == "number") {
+              item.disabled = (item.value == "like")
+            }
+          })
+        }
+	    });
     },
-    
   }
 };
 </script>
