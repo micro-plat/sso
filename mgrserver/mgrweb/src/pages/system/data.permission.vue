@@ -81,22 +81,22 @@
                         v-for="(item,index) in ruleslist"
                         v-bind:key="item.id">
                       <el-row >
-                        <el-col :span="3">
-                          <div class="form-group">
+                        <!-- <el-col :span="3"> -->
+                          <div class="form-group" style="width:80px;margin-left:4px;margin-top:4px">
                             <el-select v-model="item.conlink_symbol" :disabled="index == 0" >
-                                <el-option key="" label="链接符" value=""></el-option>
+                                <el-option key="" label="链接" value=""></el-option>
                                 <el-option key="and" label="并且" value="and"></el-option>
                                 <el-option key="or" label="或者" value="or"></el-option>
                             </el-select>
                           </div>
-                        </el-col>
-                        <el-col :span="5">
-                        <div class="form-group">
+                        <!-- </el-col> -->
+                        <!-- <el-col :span="5"> -->
+                        <div class="form-group" style="width:110px;margin-left:4px;margin-top:4px">
                         <el-input v-model="item.field_name" placeholder="请输入字段名"  maxlength="32" ></el-input>
                         </div>
-                        </el-col>
-                        <el-col :span="4">
-                          <div class="form-group" >
+                        <!-- </el-col> -->
+                        <!-- <el-col :span="4"> -->
+                          <div class="form-group" style="width:80px;margin-left:4px;margin-top:4px">
                               <el-select v-model="item.field_type" @change="fieldTypeChange(item.id,item.field_type)">
                                 <el-option
                                   v-for="item in fieldTypeList"
@@ -106,9 +106,9 @@
                                 </el-option>
                               </el-select>
                           </div>
-                        </el-col>
-                        <el-col :span="4">
-                          <div class="form-group" >
+                        <!-- </el-col> -->
+                        <!-- <el-col :span="4"> -->
+                          <div class="form-group" style="width:90px;margin-left:4px;margin-top:4px" >
                             <el-select v-model="item.compare_symbol" :disabled="item.compareSymbolDisabled">
                                 <el-option
                                   v-for="item in item.compareSymbolList"
@@ -119,19 +119,19 @@
                                 </el-option>
                               </el-select>
                           </div>
-                        </el-col>
-                        <el-col :span="5">
-                          <div class="form-group" >
+                        <!-- </el-col> -->
+                        <!-- <el-col :span="5"> -->
+                          <div class="form-group" style="width:110px;margin-left:4px;margin-top:4px" >
                             <el-input v-model="item.value" placeholder="请输入值"  maxlength="32" ></el-input>
                           </div>
-                        </el-col>
-                        <el-col :span="2">
+                        <!-- </el-col> -->
+                        <!-- <el-col :span="2"> -->
                           <div class="form-group del-btn" v-if="ruleslist.length > 1" style="margin-left:4px; margin-top:4px">
                             <a class="btn m-b-xs btn-xs btn-danger" @click="del(index)">
                               <i class="fa fa-minus"></i>
                             </a>
                           </div>
-                        </el-col >
+                        <!-- </el-col > -->
                       </el-row>                 
                     </div>
                   </div>
