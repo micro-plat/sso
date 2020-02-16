@@ -19,6 +19,7 @@ type IMemberLogic interface {
 	GetUserInfoByCode(code, ident string) (res *model.LoginState, err error)
 	QueryUserSystem(userID int, ident string) (s db.QueryRows, err error)
 	QueryAllUserInfo() (s db.QueryRows, err error)
+	GetAllUserInfoByUserRole(userID int, ident string) (string, error)
 }
 
 //MemberLogic 用户登录管理
@@ -89,4 +90,9 @@ func (m *MemberLogic) GetUserInfoByCode(code, ident string) (res *model.LoginSta
 	}
 
 	return (*model.LoginState)(userTemp), nil
+}
+
+//GetAllUserInfoByUserRole 获取和当前用户同一个角色的用户ids
+func (m *MemberLogic) GetAllUserInfoByUserRole(userID int, ident string) (string, error) {
+	return m.db.GetAllUserInfoByUserRole(userID, ident)
 }

@@ -9,14 +9,14 @@ import (
 //RoleHandler 角色相关功能
 type RoleHandler struct {
 	c   component.IContainer
-	sys logic.IDataPermissionLogic
+	sys logic.IMemberLogic
 }
 
 //NewRoleHandler new
 func NewRoleHandler(container component.IContainer) (u *RoleHandler) {
 	return &RoleHandler{
 		c:   container,
-		sys: logic.NewDataPermissionLogic(container),
+		sys: logic.NewMemberLogic(container),
 	}
 }
 

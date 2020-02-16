@@ -1,6 +1,9 @@
 package member
 
 import (
+	"fmt"
+	"strings"
+
 	"github.com/micro-plat/hydra/component"
 	"github.com/micro-plat/hydra/context"
 	"github.com/micro-plat/lib4go/db"
@@ -13,6 +16,7 @@ type IDBMember interface {
 	QueryByID(uid int, ident string) (s *model.MemberState, err error)
 	QueryUserSystem(userID int, ident string) (s db.QueryRows, err error)
 	QueryAllUserInfo() (s db.QueryRows, err error)
+	GetAllUserInfoByUserRole(userID int, ident string) (string, error)
 }
 
 //DBMember 控制用户登录
@@ -120,4 +124,21 @@ func (l *DBMember) QueryByID(uid int, ident string) (s *model.MemberState, err e
 	s.SysIdent = ident
 
 	return
+}
+
+//GetAllUserInfoByUserRole 获取和当前用户同一个角色的用户ids
+func (l *DBMember) GetAllUserInfoByUserRole(userID int, ident string) (string, error) {
+	db := l.c.GetRegularDB()
+	userInfo, q, args, err := db.Query(sqls.GetAllUserInfoByUserRole, map[string]interface{}{
+		"user_id": userID,
+		"ident":   ident,
+	})
+	if err != nil {
+		return "", fmt.Errorf("GetAllUserInfoByUserRole出错: sql:%s, args:%+v, err:%+v", q, args, err)
+	}
+	var userIDArray []string
+	for _, item := range userInfo {
+		userIDArray = append(userIDArray, item.GetString("user_id"))
+	}
+	return strings.Join(userIDArray, ","), nil
 }

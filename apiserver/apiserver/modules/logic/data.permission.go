@@ -11,7 +11,6 @@ import (
 //IDataPermissionLogic 数据权限
 type IDataPermissionLogic interface {
 	GetUserDataPermissionConfigs(req model.DataPermissionGetReq) (result db.QueryRows, err error)
-	GetAllUserInfoByUserRole(userID int, ident string) (string, error)
 }
 
 //DataPermissionLogic 数据权限
@@ -29,9 +28,4 @@ func NewDataPermissionLogic(c component.IContainer) *DataPermissionLogic {
 //GetUserDataPermissionConfigs 获取用户有权限的　[数据权限]　规则信息
 func (m *DataPermissionLogic) GetUserDataPermissionConfigs(req model.DataPermissionGetReq) (result db.QueryRows, err error) {
 	return m.db.GetUserDataPermissionConfigs(req)
-}
-
-//GetAllUserInfoByUserRole 获取和当前用户同一个角色的用户ids
-func (m *DataPermissionLogic) GetAllUserInfoByUserRole(userID int, ident string) (string, error) {
-	return m.db.GetAllUserInfoByUserRole(userID, ident)
 }

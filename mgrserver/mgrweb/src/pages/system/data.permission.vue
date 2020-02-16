@@ -182,7 +182,9 @@ export default {
       compareSymbolList:[
         {label:"比较符", value:""},
         {label:"=", value:"="},
+        {label:">", value:">"},
         {label:">=", value:">="},
+        {label:"<", value:"<"},
         {label:"<=", value:"<="},
         {label:"<>", value:"<>"},
         {label:"in", value:"in"},
@@ -329,7 +331,6 @@ export default {
           });
           return false
       }
-
       if (this.ruleslist.length == 0) {
         this.$notify({
             title: '提示',
@@ -340,6 +341,19 @@ export default {
           });
           return false
       }
+      for (var i=0; i< this.ruleslist.length; i++) {
+        var temp = this.ruleslist[i];
+        if (!temp.field_name || !temp.compare_symbol || !temp.field_type || !temp.value || (i !=0 && !temp.conlink_symbol)){
+          this.$notify({
+            title: '提示',
+            message: '第('+ (i+1) +')行规则数据请填完整',
+            type: 'error',
+            offset: 50,
+            duration:2000,
+          });
+          return false;
+        }
+      }
       return true;
     },
 
@@ -348,7 +362,14 @@ export default {
       for (var i=0; i<this.ruleslist.length; i++) {
         var temp = this.ruleslist[i];
         if (temp.field_name && temp.value && temp.field_type && temp.compare_symbol) {
-          result.push(temp);
+          result.push({
+            id:temp.id,
+            field_name:temp.field_name,
+            compare_symbol:temp.compare_symbol,
+            field_type:temp.field_type,
+            conlink_symbol:temp.conlink_symbol,
+            value:temp.value
+          });
         }
       }
       return result;
@@ -395,6 +416,8 @@ export default {
               item.disabled = false;
               if (rule.field_type == "number") {
                 item.disabled = (item.value == "like")
+              } else if (rule.field_type == "string") {
+                 item.disabled = (item.value == ">=" || item.value == ">" || item.value == "<=" || item.value == "<")
               }
             })
           });
@@ -449,6 +472,8 @@ export default {
             item.disabled = false;
             if (fieldType == "number") {
               item.disabled = (item.value == "like")
+            } else if (fieldType == "string") {
+              item.disabled = (item.value == ">=" || item.value == ">" || item.value == "<=" || item.value == "<")
             }
           })
         }

@@ -33,16 +33,17 @@ func (d *DataPermission) getUserDataPermission(userID int64, tableName string, o
 	if len(configs) == 0 {
 		return " 1=1 ", nil
 	}
-	tempSQL, err := d.GenerateSQL(configs, tableName, opt...)
-	return d.replaceParams(userID, tempSQL, opt...)
+	params := d.constructParmas(userID, opt...)
+	tempSQL, err := d.GenerateSQL(configs, tableName, params, opt...)
+	return d.replaceSpecial(userID, tempSQL)
 }
 
 //GenerateSQL 生成sql
-func (d *DataPermission) GenerateSQL(configs []GetPermissionConfigRes, tableName string, opt ...PermissionOption) (string, error) {
+func (d *DataPermission) GenerateSQL(configs []GetPermissionConfigRes, tableName string, params map[string]interface{}, opt ...PermissionOption) (string, error) {
 	alias := d.getReallyTableName(tableName, opt...)
 	var sqlsArray []string
 	for _, item := range configs {
-		configSQL, err := d.convertConfigToSQL(item.RuleConfigs, alias)
+		configSQL, err := d.convertConfigToSQL(item.RuleConfigs, alias, params)
 		if err != nil {
 			return "", err
 		}
@@ -52,7 +53,7 @@ func (d *DataPermission) GenerateSQL(configs []GetPermissionConfigRes, tableName
 }
 
 //convertConfigToSQL 将一组json转换成sql语句
-func (d *DataPermission) convertConfigToSQL(configJSON, alias string) (string, error) {
+func (d *DataPermission) convertConfigToSQL(configJSON, alias string, params map[string]interface{}) (string, error) {
 	var rules []PermissionConfig
 	err := json.Unmarshal([]byte(configJSON), &rules)
 	if err != nil {
@@ -60,39 +61,38 @@ func (d *DataPermission) convertConfigToSQL(configJSON, alias string) (string, e
 	}
 	var buffer bytes.Buffer
 	for _, item := range rules {
-		valueT := item.Value
+		transformValue := transform.Translate(item.Value, params)
+		valueT := transformValue
 		if strings.EqualFold(item.FieldType, "string") {
-			valueT = fmt.Sprintf("'%s'", item.Value)
+			valueT = fmt.Sprintf("'%s'", transformValue)
 		}
-		if strings.EqualFold(item.CompareSymbol, "in") {
+		if strings.EqualFold(item.CompareSymbol, "in") || strings.EqualFold(item.CompareSymbol, "not in") {
 			if strings.EqualFold(item.FieldType, "string") {
-				valueT = fmt.Sprintf("('%s')", strings.Replace(strings.Replace(item.Value, " ", "", -1), ",", "','", -1))
+				valueT = fmt.Sprintf("('%s')", strings.Replace(strings.Replace(transformValue, " ", "", -1), ",", "','", -1))
 			} else {
-				valueT = fmt.Sprintf("(%s)", item.Value)
+				valueT = fmt.Sprintf("(%s)", transformValue)
 			}
+		} else if strings.EqualFold(item.CompareSymbol, "like") {
+			valueT = fmt.Sprintf("'%s%%'", transformValue)
 		}
+
 		buffer.WriteString(fmt.Sprintf(" %s %s.%s %s %s ", item.ConlinkSymbol, alias, item.FieldName, item.CompareSymbol, valueT))
 	}
 	return buffer.String(), nil
 }
 
 //replaceParams 替换sql中的参数信息
-func (d *DataPermission) replaceParams(userID int64, tempSQL string, opt ...PermissionOption) (string, error) {
-	params := types.NewXMapByMap(map[string]interface{}{
-		"userid": userID,
-	})
+func (d *DataPermission) replaceSpecial(userID int64, tempSQL string) (string, error) {
 	if strings.Contains(tempSQL, "@role") {
 		userIds, err := newUser(d.conf).getRoleUsers(userID)
 		if err != nil {
 			return "", err
 		}
-		params.SetValue("role", userIds)
+		return transform.Translate(tempSQL, map[string]interface{}{
+			"role": userIds,
+		}), nil
 	}
-	businessParam := getParams(opt...)
-	if businessParam != nil {
-		params.MergeMap(businessParam)
-	}
-	return transform.Translate(tempSQL, params.ToMap()), nil
+	return tempSQL, nil
 }
 
 //getConfigFromAPI 远程获取用户【数据权限】的配置信息
@@ -125,4 +125,16 @@ func (d *DataPermission) getReallyTableName(tableName string, opt ...PermissionO
 		return tableName
 	}
 	return alias
+}
+
+//constructParmas 构造自定义参数
+func (d *DataPermission) constructParmas(userID int64, opt ...PermissionOption) map[string]interface{} {
+	params := types.NewXMapByMap(map[string]interface{}{
+		"userid": userID,
+	})
+	businessParam := getParams(opt...)
+	if businessParam != nil {
+		params.MergeMap(businessParam)
+	}
+	return params.ToMap()
 }
