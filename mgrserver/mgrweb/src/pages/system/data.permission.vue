@@ -14,6 +14,15 @@
                     placeholder="请输入规则名"
                     maxlength="64" />
             </div>
+            <div class="form-group">
+              <input
+                    name="queryTableName"
+                    type="text"
+                    class="form-control"
+                    v-model="queryTableName"
+                    placeholder="请输入表名"
+                    maxlength="64" />
+            </div>
             <a class="visible-xs-inline visible-sm-inline visible-md-inline  visible-lg-inline btn btn btn-success" @click="query">查询</a>
             <a class="visible-xs-inline visible-sm-inline visible-md-inline  visible-lg-inline btn btn btn-success" @click="Add">添加</a>
           </form>
@@ -21,12 +30,26 @@
       </div>
       <el-scrollbar style="height:100%">
         <el-table :data="datalist" stripe  style="width: 100%">
-          <el-table-column width="300" prop="name" label="规则名称" align="center"></el-table-column>
-          <el-table-column width="600" prop="rules" label="规则内容" ></el-table-column>
-          <el-table-column width="300" prop="remark" label="备注" align="center" ></el-table-column>
+          <el-table-column width="200" prop="name" label="规则名称" align="center"></el-table-column>
+          <el-table-column width="180" prop="table_name" label="表名" align="center"></el-table-column>
+          <el-table-column width="100" prop="operate_action" label="操作动作" align="center">
+            <template slot-scope="scope">
+                    <span>{{scope.row.operate_action | EnumFilter("operate_action") }}</span>
+                </template>
+          </el-table-column>
+          <el-table-column width="100" prop="status" label="状态" align="center">
+            <template slot-scope="scope">
+              <el-tag type="info" v-if="scope.row.status == 1">禁用</el-tag>
+              <el-tag type="success" v-if="scope.row.status == 0">启用</el-tag>
+            </template>
+          </el-table-column>
+          <el-table-column width="500" prop="rules" label="规则内容" ></el-table-column>
+          <el-table-column width="250" prop="remark" label="备注" align="center" ></el-table-column>
           <el-table-column  label="操作" >
             <template slot-scope="scope">
               <el-button plain type="primary" size="mini" @click="edit(scope.row.id)">编辑</el-button>
+              <el-button plain type="success" size="mini" @click="enable(scope.row.id,0)" v-if="scope.row.status == 1" >启用</el-button>
+              <el-button plain type="info" size="mini" @click="disable(scope.row.id,1)" v-if="scope.row.status == 0">禁用</el-button>
               <el-button plain  type="danger" size="mini" @click="deleteById(scope.row.id)">删除</el-button>
             </template>
           </el-table-column>
@@ -55,6 +78,28 @@
                   <label>规则名称(必填)</label>
                   <el-input v-model="permissionData.name" placeholder="请输入名称" maxlength="64" ></el-input>
                 </div>
+                <el-row :span="24">
+                 <el-col :span="12">
+                   <div class="form-group">
+                    <label>表名(必填)</label>
+                    <el-input v-model="permissionData.table_name" placeholder="请输入表名" :disabled="!isAdd" maxlength="64" ></el-input>
+                  </div>
+                 </el-col>
+                 <el-col :span="12">
+                   <div class="form-group" style="margin-left:10px;">
+                    <label>操作动作(非必填)</label>
+                    <el-select v-model="permissionData.operate_action"  placeholder="请选择操作">
+                        <el-option key="" label="选择操作动作" value=""></el-option>
+                        <el-option
+                            v-for="item in operateActionList"
+                            :key="item.value"
+                            :label="item.name"
+                            :value="item.value">
+                        </el-option>
+                    </el-select>
+                  </div>
+                 </el-col>
+               </el-row>
                 <div class="form-group">
                   <label>备注(非必填)</label>
                   <textarea
@@ -152,6 +197,7 @@
 <script>
   import pager from "vue-simple-pager"
   import PullTo from 'vue-pull-to'
+  import {EnumUtility,EnumFilter} from 'qxnw-enum';
 export default {
   components: {
     "bootstrap-modal": require("vue2-bootstrap-modal"),
@@ -161,7 +207,7 @@ export default {
   data() {
     return {
       queryName: null,
-      table_name: null,
+      queryTableName: null,
       datalist: null,
       pageSizeList: [5, 10, 20, 50], //可选显示数据条数
       datacount: 0,
@@ -172,6 +218,8 @@ export default {
       sysname: "",
       permissionData: {
         name: "",
+        table_name:"",
+        operate_action:"",
         rules: "",
         remark: "",
       },
@@ -196,12 +244,14 @@ export default {
       ps:10,
       totalPage: 0,
       compareSymbolDisabled: true,
+      operateActionList: this.EnumUtility.Get("operate_action"),
     };
   },
   props:["path"],
   mounted() {
     this.sysId = this.$route.params.id;
     this.$refs.main.style.height = document.documentElement.clientHeight + 'px';
+    //this.getDictionInfo("operate_action");
     this.query();
   },
   methods: {
@@ -233,7 +283,8 @@ export default {
         pi: this.pi,
         ps:this.ps,
         sys_id: this.sysId,
-        name: this.queryName
+        name: this.queryName,
+        table_name: this.queryTableName,
       })
         .then(res => {
           this.datalist = res.list;
@@ -321,7 +372,7 @@ export default {
     },
 
     checkBeforSave() {
-      if (!this.permissionData.name) {
+      if (!this.permissionData.name || !this.permissionData.table_name) {
         this.$notify({
             title: '提示',
             message: '必填字段不能为空',
@@ -456,9 +507,32 @@ export default {
       }
     },
 
-    fieldTypeChange(id, fieldType){
-      console.log(id, fieldType);
+    enable(id) {
+      this.$http.post("/system/permission/enable", {
+        id: id
+      })
+      .then(res => {
+          this.query();
+      })
+    },
 
+    disable(id) {
+      this.$http.post("/system/permission/disable", {
+        id: id
+      })
+      .then(res => {
+          this.query();
+      })
+    },
+
+    getDictionInfo(type) {
+      this.$http.get("/dds/dictionary/get?dic_type=" + type, {})
+      .then(res => {
+          this.operateActionList = res;
+      })
+    },
+
+    fieldTypeChange(id, fieldType){
       this.ruleslist.forEach(rule => {
         if (rule.id == id) {
 

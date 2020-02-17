@@ -1,8 +1,6 @@
 package permission
 
 import (
-	"fmt"
-
 	"github.com/micro-plat/hydra/component"
 	"github.com/micro-plat/hydra/context"
 	"github.com/micro-plat/sso/apiserver/apiserver/modules/logic"
@@ -39,7 +37,6 @@ func (u *DataPerssionHandler) ObtainHandle(ctx *context.Context) (r interface{})
 		return err
 	}
 
-	fmt.Println(result)
 	ctx.Log.Info("------返回结果------")
 	return result
 }

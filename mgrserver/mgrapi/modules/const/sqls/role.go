@@ -85,28 +85,39 @@ values
 	( @sys_id, @role_id, @menu_id, 1, @sortrank)
 `
 
+// //AddRoleDataPermissionAuth 添加角色与数据权限数据的关系
+// const AddRoleDataPermissionAuth = `
+// insert into sso_role_datapermission
+// (
+// 	role_id,
+// 	sys_id,
+// 	table_name,
+// 	operate_action,
+// 	name,
+// 	permissions,
+// 	status
+// )
+// values
+// (
+// 	@role_id,
+// 	@sys_id,
+// 	@table_name,
+// 	@operate_action,
+// 	@name,
+// 	@permissions,
+// 	1
+// )`
+
 //AddRoleDataPermissionAuth 添加角色与数据权限数据的关系
 const AddRoleDataPermissionAuth = `
-insert into sso_role_datapermission
-(	
-	role_id,     
-	sys_id,    
-	table_name,
-	operate_action,
-	name,        
-	permissions,
-	status
-)
-values
-(
-	@role_id,     
-	@sys_id,    
-	@table_name,
-	@operate_action,
-	@name,        
-	@permissions,
-	1
-)`
+insert into sso_role_datapermission(
+	sys_id, 
+	role_id, 
+	permission_config_id)
+values(
+	@sys_id, 
+	@role_id, 
+	@permission_config_id)`
 
 //DelRoleAuth 删除角色权限
 const DelRoleAuth = `
@@ -121,16 +132,14 @@ where
 const DelDataPermissionRoleAuth = `
 delete from sso_role_datapermission 
 where sys_id = @sys_id and 
-	  role_id = @role_id and
-	  table_name = @table_name and
-	  operate_action = @operate_action`
+	  role_id = @role_id`
 
-//QuerySysMenucList 系统菜单获取
-const QuerySysMenucList = `select t.id, 
-t.name title, 
-t.parent, 
-t.sys_id, 
-t.level_id,  
+// //QuerySysMenucList 系统菜单获取
+const QuerySysMenucList = `select t.id,
+t.name title,
+t.parent,
+t.sys_id,
+t.level_id,
 (case
 	when t.id in (select menu_id
 					from sso_role_menu rm
@@ -140,13 +149,28 @@ t.level_id,
 	else
 	 0
   end) checked,
-t.icon, 
-t.path, 
-t.enable, 
-t.create_time, 
-t.sortrank 
-from sso_system_menu t 
-where t.sys_id = @sys_id 
+t.icon,
+t.path,
+t.enable,
+t.create_time,
+t.sortrank
+from sso_system_menu t
+where t.sys_id = @sys_id
+`
+
+const QueryRoleDataPermission = `
+select 
+	t.id, 
+	t.name,
+	t.table_name,
+	t.operate_action,
+	t.remark,
+	t.sys_id, 
+	t.status,
+	(case when t.id in (select permission_config_id from sso_role_datapermission rm where rm.role_id = @role_id and rm.sys_id = @sys_id) then 1 else 0 end) checked
+from sso_data_permission t 
+where t.sys_id = @sys_id and
+      t.status = 0
 `
 
 //GetPageAuth 获取页面授权tag
@@ -161,22 +185,22 @@ where t1.parent = (select id from sso_system_menu where path=@path)
 //QueryRoleInfoByName 通过名称查询角色信息
 const QueryRoleInfoByName = `select role_id, name, status, create_time from sso_role_info where name=@role_name`
 
-const QueryRoleDataPermission = `
-SELECT  
-  id,
-  sys_id,
-  role_id,
-  table_name,
-  operate_action,
-  permissions,
-  status,
-  name,
-  DATE_FORMAT(create_time, '%y-%m-%d %h:%i:%s') as create_time
-from  sso_role_datapermission
-where sys_id = @sys_id and
-	  role_id = @role_id
-limit @start, @ps
-`
+// const QueryRoleDataPermission = `
+// SELECT
+//   id,
+//   sys_id,
+//   role_id,
+//   table_name,
+//   operate_action,
+//   permissions,
+//   status,
+//   name,
+//   DATE_FORMAT(create_time, '%y-%m-%d %h:%i:%s') as create_time
+// from  sso_role_datapermission
+// where sys_id = @sys_id and
+// 	  role_id = @role_id
+// limit @start, @ps
+// `
 
 const QueryRoleDataPermissionCount = `
 SELECT  

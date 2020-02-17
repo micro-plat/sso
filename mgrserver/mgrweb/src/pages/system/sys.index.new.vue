@@ -522,7 +522,7 @@ export default {
   data() {
     return {
       options: {
-        target: process.env.service.apiHost+'/image/upload',   //上传地址
+        target: process.env.VUE_APP_API_URL+'/image/upload',   //上传地址
         testChunks: false,
         withCredentials:true,   //携带jwt
         singleFile:true,        //单文件上传

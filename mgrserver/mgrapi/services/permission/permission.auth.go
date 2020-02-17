@@ -34,15 +34,14 @@ func (u *AuthPermissionHandler) QueryHandle(ctx *context.Context) (r interface{}
 	}
 
 	ctx.Log.Info("2.执行操作")
-	res, count, err := u.roleLib.QueryAuthDataPermission(req)
+	res, err := u.roleLib.QueryAuthDataPermission(req)
 	if err != nil {
 		return context.NewError(context.ERR_NOT_IMPLEMENTED, err)
 	}
 
 	ctx.Log.Info("3.返回结果。")
 	return map[string]interface{}{
-		"count": count,
-		"list":  res,
+		"list": res,
 	}
 }
 

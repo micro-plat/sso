@@ -15,6 +15,7 @@ Vue.use(uploader);
 import ElementUI from 'element-ui';
 import 'element-ui/lib/theme-chalk/index.css';
 Vue.use(ElementUI);
+import {EnumUtility,EnumFilter} from 'qxnw-enum';
 
 const config = {fieldsBagName: 'vee-fields'}
 
@@ -25,13 +26,15 @@ Vue.use(VeeValidate,config);
 
 
 import {ssoHttpConfig} from 'qxnw-sso';
-var conf = process.env.service;
-var ssocfg =  ssoHttpConfig(conf.apiHost, "localStorage", conf.ssoWebHost, conf.ident);
+//var conf = process.env.service;
+var conf = process.env
+var ssocfg =  ssoHttpConfig(conf.VUE_APP_API_URL, "localStorage", conf.SSO_WEB_HOST, conf.IDENT);
 
 Vue.prototype.$sso = ssocfg.sso;
 Vue.prototype.$http = ssocfg.http;
 
 Vue.config.productionTip = false;
+Vue.prototype.EnumUtility = new EnumUtility() // 枚举字典
 
   /* eslint-disable no-new */
 new Vue({

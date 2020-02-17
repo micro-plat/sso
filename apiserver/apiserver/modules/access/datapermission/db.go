@@ -37,14 +37,16 @@ func (l *DBDataPermission) GetUserDataPermissionConfigs(req model.DataPermission
 	if err != nil {
 		return nil, fmt.Errorf("获取某个用户的数据权限规则配置信息 QueryUserDataPermission 出错: q:%s,a:%+v, err:%+v", q, a, err)
 	}
-	if data.IsEmpty() {
-		return result, nil
-	}
-	configs, q, args, err := db.Query(sqls.QueryPermissionConfig, map[string]interface{}{
-		"ids": data.Get(0).GetString("permissions"),
-	})
-	if err != nil {
-		return result, fmt.Errorf("QueryPermissionConfig出错: sql:%s, args:%+v, err:%+v", q, args, err)
-	}
-	return configs, nil
+	return data, nil
+
+	// if data.IsEmpty() {
+	// 	return result, nil
+	// }
+	// configs, q, args, err := db.Query(sqls.QueryPermissionConfig, map[string]interface{}{
+	// 	"ids": data.Get(0).GetString("permissions"),
+	// })
+	// if err != nil {
+	// 	return result, fmt.Errorf("QueryPermissionConfig出错: sql:%s, args:%+v, err:%+v", q, args, err)
+	// }
+	// return configs, nil
 }

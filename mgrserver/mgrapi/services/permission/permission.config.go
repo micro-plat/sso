@@ -35,7 +35,7 @@ func (u *DataPermissionHandler) GetAllHandle(ctx *context.Context) (r interface{
 
 	ctx.Log.Info("2.获取数据")
 	data, count, err := u.subLib.Query(
-		ctx.Request.GetString("sys_id"), ctx.Request.GetString("name"),
+		ctx.Request.GetString("sys_id"), ctx.Request.GetString("name"), ctx.Request.GetString("table_name"),
 		ctx.Request.GetInt("pi", 1), ctx.Request.GetInt("ps", 10))
 	if err != nil {
 		return err
@@ -109,5 +109,43 @@ func (u *DataPermissionHandler) DelHandle(ctx *context.Context) (r interface{}) 
 	}
 
 	ctx.Log.Info("4.返回数据。")
+	return "success"
+}
+
+//EnableHandle 启用数据权限配置信息
+func (u *DataPermissionHandler) EnableHandle(ctx *context.Context) (r interface{}) {
+	ctx.Log.Info("--------启用数据权限配置信息--------")
+
+	ctx.Log.Info("1.参数校验")
+	if err := ctx.Request.Check("id"); err != nil {
+		return context.NewError(context.ERR_NOT_ACCEPTABLE, err)
+	}
+
+	ctx.Log.Info("2.保存数据")
+	err := u.subLib.ChangePermissionConfigStatus(ctx.Request.GetString("id"), model.Enable)
+	if err != nil {
+		return err
+	}
+
+	ctx.Log.Info("3.返回结果。")
+	return "success"
+}
+
+//DisableHandle 禁用数据权限配置信息
+func (u *DataPermissionHandler) DisableHandle(ctx *context.Context) (r interface{}) {
+	ctx.Log.Info("--------禁用数据权限配置信息--------")
+
+	ctx.Log.Info("1.参数校验")
+	if err := ctx.Request.Check("id"); err != nil {
+		return context.NewError(context.ERR_NOT_ACCEPTABLE, err)
+	}
+
+	ctx.Log.Info("2.保存数据")
+	err := u.subLib.ChangePermissionConfigStatus(ctx.Request.GetString("id"), model.Disable)
+	if err != nil {
+		return err
+	}
+
+	ctx.Log.Info("3.返回结果。")
 	return "success"
 }

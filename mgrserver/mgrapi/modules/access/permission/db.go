@@ -11,11 +11,11 @@ import (
 )
 
 type IDbDataPermission interface {
-	GetTypeInfo(sysID string) (s db.QueryRows, err error)
-	Query(sysID, name string, pi int, ps int) (data db.QueryRows, count int, err error)
+	Query(sysID, name, tableName string, pi int, ps int) (data db.QueryRows, count int, err error)
 	Delete(id int) (err error)
 	Add(input *model.DataPermissionReq) (err error)
 	Edit(input *model.DataPermissionReq) (err error)
+	ChangePermissionConfigStatus(id string, status int) error
 }
 
 type DbDataPermission struct {
@@ -28,34 +28,24 @@ func NewDbDataPermission(c component.IContainer) *DbDataPermission {
 	}
 }
 
-//GetTypeInfo 获取类型信息
-func (u *DbDataPermission) GetTypeInfo(sysID string) (s db.QueryRows, err error) {
-	db := u.c.GetRegularDB()
-	data, q, a, err := db.Query(sqls.GetPermissTypes, map[string]interface{}{
-		"sys_id": sysID,
-	})
-	if err != nil {
-		return nil, fmt.Errorf("获取类型信息 GetTypeInfo出错: q:%s,a:%+v,err:%+v", q, a, err)
-	}
-	return data, nil
-}
-
 //Query 获取数据权限 数据
-func (u *DbDataPermission) Query(sysID, name string, pi int, ps int) (data db.QueryRows, count int, err error) {
+func (u *DbDataPermission) Query(sysID, name, tableName string, pi int, ps int) (data db.QueryRows, count int, err error) {
 	db := u.c.GetRegularDB()
 	c, q, a, err := db.Scalar(sqls.QueryDataPermissionTotalCount, map[string]interface{}{
-		"sys_id": sysID,
-		"name":   " and name like '%" + name + "%'",
+		"sys_id":     sysID,
+		"name":       " and name like '%" + name + "%'",
+		"table_name": " and table_name like '%" + tableName + "%'",
 	})
 
 	if err != nil {
 		return nil, 0, fmt.Errorf("获取系统管理列表条数发生错误(err:%v),sql:(%s),输入参数:%v,", err, q, a)
 	}
 	data, q, a, err = db.Query(sqls.QueryDataPermissionList, map[string]interface{}{
-		"sys_id": sysID,
-		"name":   " and name like '%" + name + "%'",
-		"start":  (pi - 1) * ps,
-		"ps":     ps,
+		"sys_id":     sysID,
+		"name":       " and name like '%" + name + "%'",
+		"table_name": " and table_name like '%" + tableName + "%'",
+		"start":      (pi - 1) * ps,
+		"ps":         ps,
 	})
 
 	if err != nil {
@@ -90,11 +80,13 @@ func (u *DbDataPermission) Add(input *model.DataPermissionReq) (err error) {
 	sysfist := sysInfo.Get(0)
 
 	params := map[string]interface{}{
-		"name":   input.Name,
-		"sys_id": input.SysID,
-		"ident":  sysfist.GetString("ident"),
-		"rules":  input.Rules,
-		"remark": input.Remark,
+		"name":           input.Name,
+		"sys_id":         input.SysID,
+		"ident":          sysfist.GetString("ident"),
+		"table_name":     input.TableName,
+		"operate_action": input.OperateAction,
+		"rules":          input.Rules,
+		"remark":         input.Remark,
 	}
 
 	_, q, a, err := db.Execute(sqls.AddDataPermission, params)
@@ -108,13 +100,27 @@ func (u *DbDataPermission) Add(input *model.DataPermissionReq) (err error) {
 func (u *DbDataPermission) Edit(input *model.DataPermissionReq) (err error) {
 	db := u.c.GetRegularDB()
 	_, q, a, err := db.Execute(sqls.UpdateDataPermission, map[string]interface{}{
-		"id":     input.ID,
-		"name":   input.Name,
-		"rules":  input.Rules,
-		"remark": input.Remark,
+		"id":             input.ID,
+		"name":           input.Name,
+		"operate_action": input.OperateAction,
+		"rules":          input.Rules,
+		"remark":         input.Remark,
 	})
 	if err != nil {
 		return fmt.Errorf("修改数据权限数据发生错误(err:%v),sql:%s,输入参数:%v,", err, q, a)
+	}
+	return nil
+}
+
+//ChangePermissionConfigStatus 改变规则状态
+func (u *DbDataPermission) ChangePermissionConfigStatus(id string, status int) error {
+	db := u.c.GetRegularDB()
+	_, q, a, err := db.Execute(sqls.ChangePermissionConfigStatus, map[string]interface{}{
+		"id":     id,
+		"status": status,
+	})
+	if err != nil {
+		return fmt.Errorf("改变规则状态发生错误(err:%v),sql:%s,输入参数:%v,", err, q, a)
 	}
 	return nil
 }

@@ -10,8 +10,8 @@ import (
 	"github.com/micro-plat/sso/mgrserver/mgrapi/services/role"
 	"github.com/micro-plat/sso/mgrserver/mgrapi/services/system"
 	"github.com/micro-plat/sso/mgrserver/mgrapi/services/user"
-
 	ssoSdk "github.com/micro-plat/sso/sdk/sso"
+	"gitlab.100bm.cn/micro-plat/dds/dds"
 )
 
 //init 检查应用程序配置文件，并根据配置初始化服务
@@ -39,9 +39,12 @@ func (r *SSO) init() {
 		if _, err := c.GetCache(); err != nil {
 			return err
 		}
+		
+		dds.Bind(r.MicroApp, "db")
 		if err := ssoSdk.Bind(r.MicroApp, conf.SsoApiHost, conf.Ident, conf.Secret); err != nil {
 			return err
 		}
+
 		return nil
 	})
 
