@@ -408,6 +408,12 @@ export default {
       return true;
     },
 
+// field_name => f
+// compare_symbol => c
+// field_type => t
+// conlink_symbol => s
+// value => v
+
     constructRules() {
       var result = []
       for (var i=0; i<this.ruleslist.length; i++) {
@@ -415,11 +421,11 @@ export default {
         if (temp.field_name && temp.value && temp.field_type && temp.compare_symbol) {
           result.push({
             id:temp.id,
-            field_name:temp.field_name,
-            compare_symbol:temp.compare_symbol,
-            field_type:temp.field_type,
-            conlink_symbol:temp.conlink_symbol,
-            value:temp.value
+            f:temp.field_name,
+            c:temp.compare_symbol,
+            t:temp.field_type,
+            s:temp.conlink_symbol,
+            v:temp.value
           });
         }
       }
@@ -460,7 +466,16 @@ export default {
         if (this.datalist[index].id == id) {
           var temp = this.datalist[index];
           this.permissionData = temp;
-          this.ruleslist = JSON.parse(temp.rules);
+          var tempRules = JSON.parse(temp.rules);
+          tempRules.forEach(item => {
+            this.ruleslist.push({
+              field_name : item.f,
+              compare_symbol : item.c,
+              field_type : item.t,
+              conlink_symbol : item.s,
+              value : item.v
+            })
+          });
           this.ruleslist.forEach(rule => {
             rule.compareSymbolList = JSON.parse(JSON.stringify(this.compareSymbolList));
             rule.compareSymbolList.forEach(item => {
@@ -559,4 +574,12 @@ export default {
 
 <style scoped>
   .page-pagination{padding: 10px 15px;text-align: right;}
+
+/* id => id, 字段对应
+field_name => f
+compare_symbol => c
+field_type => t
+conlink_symbol => s
+value => v */
 </style>
+

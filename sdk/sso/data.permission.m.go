@@ -9,14 +9,21 @@ type GetPermissionConfigRes struct {
 	RuleConfigs string `form:"rules" json:"rules"` //规则配置json串
 }
 
+//对应关系
+// field_name => f
+// compare_symbol => c
+// field_type => t
+// conlink_symbol => s
+// value => v
+
 //PermissionConfig 规则配置结构
 type PermissionConfig struct {
 	ID            int64  `form:"id" json:"id"`
-	FieldName     string `form:"field_name" json:"field_name"`         //字段名称
-	FieldType     string `form:"field_type" json:"field_type"`         //字段类型
-	CompareSymbol string `form:"compare_symbol" json:"compare_symbol"` //比较符("<,>,=,>=,<=,<>,in")
-	ConlinkSymbol string `form:"conlink_symbol" json:"conlink_symbol"` //条件链接符(and, or)
-	Value         string `form:"value" json:"value"`                   //值(比较的值)
+	FieldName     string `form:"f" json:"f"` //字段名称
+	FieldType     string `form:"t" json:"t"` //字段类型
+	CompareSymbol string `form:"c" json:"c"` //比较符("<,>,=,>=,<=,<>,in")
+	ConlinkSymbol string `form:"s" json:"s"` //条件链接符(and, or)
+	Value         string `form:"v" json:"v"` //值(比较的值)
 }
 
 type opts map[string]interface{}
