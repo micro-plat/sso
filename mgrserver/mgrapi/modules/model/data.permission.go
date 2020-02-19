@@ -20,7 +20,7 @@ type RolePermissionReq struct {
 	// Name   string `form:"name" json:"name" valid:"required"` //名称
 	// TableName     string `form:"table_name" json:"table_name" valid:"required"`   //表
 	// OperateAction string `form:"operate_action" json:"operate_action"`            //操作动作
-	Permissions string `form:"permissions" json:"permissions" valid:"required"` //规则主键信息(sso_data_permission)
+	Permissions string `form:"permissions" json:"permissions"` //规则主键信息(sso_data_permission)
 }
 
 //RolePermissionQueryReq 查询角色规则关联信息

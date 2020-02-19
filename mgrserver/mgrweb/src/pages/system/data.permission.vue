@@ -43,7 +43,11 @@
               <el-tag type="success" v-if="scope.row.status == 0">启用</el-tag>
             </template>
           </el-table-column>
-          <el-table-column width="500" prop="rules" label="规则内容" ></el-table-column>
+          <el-table-column width="500" prop="rules" label="规则内容" >
+            <template slot-scope="scope">
+              {{scope.row.rules | subStr}}
+            </template>
+          </el-table-column>
           <el-table-column width="250" prop="remark" label="备注" align="center" ></el-table-column>
           <el-table-column  label="操作" >
             <template slot-scope="scope">
@@ -167,7 +171,7 @@
                         <!-- </el-col> -->
                         <!-- <el-col :span="5"> -->
                           <div class="form-group" style="width:110px;margin-left:4px;margin-top:4px" >
-                            <el-input v-model="item.value" placeholder="请输入值"  maxlength="32" ></el-input>
+                            <el-input v-model="item.value" placeholder="请输入值" ></el-input>
                           </div>
                         <!-- </el-col> -->
                         <!-- <el-col :span="2"> -->
@@ -467,6 +471,7 @@ export default {
           var temp = this.datalist[index];
           this.permissionData = temp;
           var tempRules = JSON.parse(temp.rules);
+          this.ruleslist =[];
           tempRules.forEach(item => {
             this.ruleslist.push({
               field_name : item.f,
@@ -567,6 +572,14 @@ export default {
           })
         }
 	    });
+    },
+  },
+  filters:{
+    subStr(value) {
+      if (value.length > 350) {
+        return value.substring(0, 350) + " ...";
+      }
+      return value;
     },
   }
 };
