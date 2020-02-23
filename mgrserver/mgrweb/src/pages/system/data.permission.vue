@@ -500,7 +500,7 @@ export default {
     },
 
     addRole() {
-      if (this.ruleslist.length > 8) {
+      if (this.ruleslist.length > 20) {
         return;
       }
 
