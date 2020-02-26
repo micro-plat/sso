@@ -72,6 +72,9 @@
         this.$http.post("/sso/login/verify", req)
           .then(res => {
             localStorage.setItem("userinfo", JSON.stringify({name:res.user_name, role:res.role_name}));
+            if (res.is_first_login) {
+              return this.$router.push({ path: '/changepwd'});
+            }
             return this.$router.push({ path: '/'});
           })
           .catch(err => {

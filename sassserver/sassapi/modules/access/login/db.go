@@ -22,6 +22,7 @@ type IDbLogin interface {
 	QueryUserMenu(uid int64, ident string) ([]map[string]interface{}, error)
 	GetSystemInfo(ident string) (s db.QueryRow, err error)
 	ChangePwd(userID int64, expassword, newpassword string) error
+	UpdateUserLoginTime(mobile string) error
 }
 
 //DbLogin 登录相关功能
@@ -58,13 +59,14 @@ func (l *DbLogin) Query(mobile, p, ident string) (s *model.MemberState, err erro
 
 	row := data.Get(0)
 	s = &model.MemberState{
-		BelongID:   row.GetInt("belong_id"),
-		BelongType: row.GetInt("belong_type"),
-		UserID:     row.GetInt64("user_id", -1),
-		Password:   row.GetString("password"),
-		UserName:   row.GetString("user_name"),
-		ExtParams:  row.GetString("ext_params"),
-		Status:     row.GetInt("status"),
+		BelongID:      row.GetInt("belong_id"),
+		BelongType:    row.GetInt("belong_type"),
+		UserID:        row.GetInt64("user_id", -1),
+		Password:      row.GetString("password"),
+		UserName:      row.GetString("user_name"),
+		ExtParams:     row.GetString("ext_params"),
+		Status:        row.GetInt("status"),
+		LastLoginTime: row.GetString("last_login_time"),
 	}
 	fmt.Print(row)
 
@@ -167,6 +169,18 @@ func (l *DbLogin) ChangePwd(userID int64, expassword, newpassword string) error 
 	})
 	if err != nil {
 		context.NewError(context.ERR_SERVER_ERROR, err)
+	}
+	return nil
+}
+
+//UpdateUserLoginTime 更新用户最后一次登录时间
+func (l *DbLogin) UpdateUserLoginTime(mobile string) error {
+	db := l.c.GetRegularDB(config.DbName)
+	_, _, _, err := db.Execute(sqls.UpdateUserLoginTime, map[string]interface{}{
+		"mobile": mobile,
+	})
+	if err != nil {
+		return err
 	}
 	return nil
 }

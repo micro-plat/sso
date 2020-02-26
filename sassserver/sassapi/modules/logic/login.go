@@ -1,6 +1,7 @@
 package logic
 
 import (
+	"fmt"
 	"strings"
 
 	"github.com/Owen-Zhang/base64Captcha"
@@ -76,6 +77,10 @@ func (l *LoginLogic) Login(mobile, password, ident string) (*model.LoginState, e
 
 	if err := l.checkUserInfo(mobile, password, m); err != nil {
 		return nil, err
+	}
+
+	if err := l.db.UpdateUserLoginTime(mobile); err != nil {
+		fmt.Println(err)
 	}
 
 	return (*model.LoginState)(m), nil

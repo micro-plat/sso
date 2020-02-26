@@ -1,6 +1,8 @@
 package login
 
 import (
+	"strings"
+
 	"github.com/micro-plat/hydra/component"
 	"github.com/micro-plat/hydra/context"
 	"github.com/micro-plat/sso/sassserver/sassapi/modules/logic"
@@ -49,9 +51,10 @@ func (u *LoginHandler) Handle(ctx *context.Context) (r interface{}) {
 	ctx.Log.Info("5: 设置jwt数据")
 	ctx.Response.SetJWT(member)
 
-	ctx.Log.Info("6: 返回用户数据")
+	ctx.Log.Info("7: 返回用户数据")
 	return map[string]interface{}{
-		"user_name": member.UserName,
-		"role_name": member.RoleName,
+		"user_name":      member.UserName,
+		"role_name":      member.RoleName,
+		"is_first_login": strings.EqualFold(member.LastLoginTime, ""),
 	}
 }

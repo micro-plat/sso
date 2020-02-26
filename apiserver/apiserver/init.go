@@ -6,6 +6,7 @@ import (
 	"github.com/micro-plat/sso/apiserver/apiserver/services/member"
 	"github.com/micro-plat/sso/apiserver/apiserver/services/permission"
 	"github.com/micro-plat/sso/apiserver/apiserver/services/system"
+	"github.com/micro-plat/sso/apiserver/apiserver/services/user"
 )
 
 //init 检查应用程序配置文件，并根据配置初始化服务
@@ -38,4 +39,5 @@ func (r *SSO) init() {
 	r.Micro("/system/info/get", system.NewInfoHandler)               //获取子系统信息
 	r.Micro("/login/auth", login.NewAuthorizeHandler)                //用户登录认证
 	r.Micro("/permission/config", permission.NewDataPerssionHandler) //【数据权限】相关接口
+	r.Micro("/user", user.NewUserHandler)                            //操作用户相关接口
 }

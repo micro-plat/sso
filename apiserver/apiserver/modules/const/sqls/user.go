@@ -135,22 +135,13 @@ set
 where 
 	t.user_id = @user_id`
 
-/* //GetNewUserID 获取新用户ID 这个不用,mysql中处理方式不一样
-//GetNewUserID 获取新用户ID
-const GetNewUserID = `
-select
-	seq_user_info_id.nextval
-from
-	dual`
-*/
-
 //AddUserInfo 添加用户信息
 const AddUserInfo = `
 insert 
 	into sso_user_info 
-	(user_name, status, password, mobile, email, ext_params)
+	(user_name, full_name, status, password, mobile, email, ext_params, source_id, source)
 values
-	(@user_name, @status, @password, @mobile, @email, @ext_params)
+	(@user_name, @full_name, 0, @password, @mobile, @email, @ext_params, @source_id, @source)
 `
 
 //AddUserRole 添加用户角色

@@ -41,7 +41,8 @@ select
 	wx_openid,
 	ext_params,
 	belong_id,
-	belong_type 
+	belong_type,
+	last_login_time 
 from sso_user_info 
 where mobile=@mobile
 limit 1;`
@@ -89,4 +90,8 @@ from
 	sso_system_info t
 where 
 	t.ident=@ident
+`
+
+const UpdateUserLoginTime = `
+update sso_user_info set last_login_time = now() where mobile=@mobile limit 1
 `

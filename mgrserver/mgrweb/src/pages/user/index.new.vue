@@ -445,15 +445,15 @@ export default {
         this.userInfo.mobile = j.mobile;
         this.userInfo.status = j.status;
         this.userInfo.user_id = j.user_id;
-        this.userInfo.lists = j.roles;
+        this.userInfo.lists = j.roles || [];
         this.userInfo.is_add = 2;
         this.userInfo.email = j.email;
         this.userInfo.email_pre = j.email ? j.email.split("@")[0] : "";
         this.userInfo.email_suffix = j.email ? "@" + j.email.split("@")[1] : "";
         this.userInfo.ext_params = j.ext_params;
-        for (var s = 0; s < j.roles.length; s++) {
-          this.selectSys.push(j.roles[s].sys_id);
-        }
+        (j.roles || []).forEach(item => {
+          this.selectSys.push(item.sys_id);
+        });
         this.setSys();
       }
       this.$refs.editModal.open();

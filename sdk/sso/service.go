@@ -137,3 +137,14 @@ func getTags(ctx *context.Context) (r interface{}) {
 func GetDataPermission(userID int64, tableName string, opt ...PermissionOption) (string, error) {
 	return GetSSOClient().getUserDataPermission(userID, tableName, opt...)
 }
+
+/*AddUser 增加用户
+*mobile 手机号
+*fullName 中文名
+*targetIdent 要给那个系统增加用户
+*source 来源(可以不传), 加油站、公司、下游渠道等
+*sourceID 来源编号(可以不传)
+ */
+func AddUser(mobile, fullName, targetIdent, source string, sourceID int) error {
+	return GetSSOClient().AddUser(mobile, fullName, targetIdent, source, sourceID)
+}

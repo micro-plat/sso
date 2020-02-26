@@ -105,15 +105,15 @@
           <el-table-column align="center" width="100" prop="full_name" label="姓名"></el-table-column>
           <el-table-column align="center" width="350" prop="rolestr" label="角色"></el-table-column>
           <el-table-column align="center" width="170" prop="email" label="邮箱"></el-table-column>
-          <el-table-column align="center" width="80" prop="status" label="状态">
+          <el-table-column align="center" width="120" prop="status" label="状态">
             <template slot-scope="scope">
               <el-tag :type="scope.row.status == '0' ? 'success' : 'info'" >{{scope.row.status_label}}</el-tag>
             </template>
           </el-table-column>
-          <el-table-column align="center" width="180" prop="create_time" label="创建时间">
+          <el-table-column align="center" width="220" prop="last_login_time" label="最后登录时间">
             <template slot-scope="scope">
-              <i class="el-icon-time"></i>
-              <span style="margin-left: 10px">{{ scope.row.create_time }}</span>
+              <i v-if="scope.row.last_login_time != ''" class="el-icon-time"></i>
+              <span style="margin-left: 10px">{{ scope.row.last_login_time }}</span>
             </template>
           </el-table-column>
           <el-table-column align="center" label="操作">

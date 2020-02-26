@@ -56,7 +56,7 @@
     },
     methods:{
       signOut() {
-          this.$router.push({path:jumpLogin(this.ident)});
+          this.$router.push({path:"/"});
       },
       check() {
             if (!this.expassword) {

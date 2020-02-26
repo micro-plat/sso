@@ -138,3 +138,28 @@ func (u *userLogic) getRoleUsers(userID int64) (userIds string, err error) {
 	}
 	return result["data"], nil
 }
+
+//AddUser 增加用户
+func (u *userLogic) AddUser(mobile, fullName, targetIdent, source string, sourceID int) error {
+	cfg := u.cfg
+	values := net.NewValues()
+	values.Set("ident", cfg.ident)
+	values.Set("timestamp", types.GetString(time.Now().Unix()))
+	values.Set("mobile", mobile)
+	values.Set("user_name", mobile)
+	values.Set("full_name", fullName)
+	values.Set("target_ident", targetIdent)
+	values.Set("source", source)
+	values.Set("source_id", types.GetString(sourceID))
+
+	values = values.Sort()
+	raw := values.Join("", "") + cfg.secret
+	values.Set("sign", md5.Encrypt(raw))
+
+	result := make(map[string]string)
+	_, err := remoteRequest(cfg.host, addUser, values.Join("=", "&"), &result)
+	if err != nil {
+		return err
+	}
+	return nil
+}

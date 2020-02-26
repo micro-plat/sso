@@ -11,7 +11,8 @@ select
 	t.create_time,
 	t.email,
 	t.wx_openid,
-	t.ext_params
+	t.ext_params,
+	t.last_login_time
 from sso_user_info t
 left join sso_user_role r on r.user_id = t.user_id
 where t.belong_id = @belong_id and

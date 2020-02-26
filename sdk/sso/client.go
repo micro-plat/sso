@@ -87,3 +87,8 @@ func (client *Client) GetUserDisplayTags(UserID int, tags string) (result []type
 func (client *Client) getUserDataPermission(userID int64, tableName string, opt ...PermissionOption) (r string, err error) {
 	return newDataPermission(client.cfg).getUserDataPermission(userID, tableName, opt...)
 }
+
+//AddUser 增加用户
+func (client *Client) AddUser(mobile, fullName, targetIdent, source string, sourceID int) error {
+	return newUser(client.cfg).AddUser(mobile, fullName, targetIdent, source, sourceID)
+}
