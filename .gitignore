@@ -45,3 +45,8 @@ out/
 apiserver/apiserver/home
 mgrserver/mgrapi/r
 mgrserver/mgrapi/home
+
+./sassserver/sassapi/sassapi
+./sassserver/sassweb/sassweb
+./sassserver/sassapi/home
+./sassserver/sassapi/r
