@@ -40,4 +40,5 @@ func (r *SSO) init() {
 	r.Micro("/login/auth", login.NewAuthorizeHandler)                //用户登录认证
 	r.Micro("/permission/config", permission.NewDataPerssionHandler) //【数据权限】相关接口
 	r.Micro("/user", user.NewUserHandler)                            //操作用户相关接口
+	r.Micro("/verifycode/get", login.NewVerifyCodeHandler)                  //生成图片验证码
 }

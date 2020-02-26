@@ -3,12 +3,14 @@ package logic
 import (
 	"fmt"
 
+	"github.com/Owen-Zhang/base64Captcha"
 	"github.com/micro-plat/hydra/component"
 	"github.com/micro-plat/hydra/context"
 	"github.com/micro-plat/lib4go/db"
 	"github.com/micro-plat/lib4go/types"
 
 	"github.com/micro-plat/sso/apiserver/apiserver/modules/access/member"
+	"github.com/micro-plat/sso/apiserver/apiserver/modules/const/config"
 	"github.com/micro-plat/sso/apiserver/apiserver/modules/const/enum"
 	"github.com/micro-plat/sso/apiserver/apiserver/modules/model"
 )
@@ -20,6 +22,8 @@ type IMemberLogic interface {
 	QueryUserSystem(userID int, ident string) (s db.QueryRows, err error)
 	QueryAllUserInfo() (s db.QueryRows, err error)
 	GetAllUserInfoByUserRole(userID int, ident string) (string, error)
+
+	GenerateVerifyCode(userName string) (string, error)
 }
 
 //MemberLogic 用户登录管理
@@ -95,4 +99,22 @@ func (m *MemberLogic) GetUserInfoByCode(code, ident string) (res *model.LoginSta
 //GetAllUserInfoByUserRole 获取和当前用户同一个角色的用户ids
 func (m *MemberLogic) GetAllUserInfoByUserRole(userID int, ident string) (string, error) {
 	return m.db.GetAllUserInfoByUserRole(userID, ident)
+}
+
+//GenerateVerifyCode 生成验证码,此处userName可能为电话号码
+func (m *MemberLogic) GenerateVerifyCode(userName string) (string, error) {
+	var configD = base64Captcha.ConfigDigit{
+		Height:     60,
+		Width:      150,
+		MaxSkew:    0.5,
+		DotCount:   50,
+		CaptchaLen: 5,
+	}
+	_, captcaInterfaceInstance, verifyCode := base64Captcha.GenerateCaptcha("", configD)
+	base64blob := base64Captcha.CaptchaWriteToBase64Encoding(captcaInterfaceInstance)
+
+	if err := m.cache.SaveLoginVerifyCode(userName, verifyCode, config.VerifyCodeTimeOut); err != nil {
+		return "", err
+	}
+	return base64blob, nil
 }
