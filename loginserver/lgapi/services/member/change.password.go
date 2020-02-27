@@ -3,6 +3,7 @@ package member
 import (
 	"github.com/micro-plat/hydra/component"
 	"github.com/micro-plat/hydra/context"
+	"github.com/micro-plat/sso/common/service"
 	m "github.com/micro-plat/sso/loginserver/lgapi/modules/access/member"
 	"github.com/micro-plat/sso/loginserver/lgapi/modules/logic"
 )
@@ -29,10 +30,12 @@ func (u *ChangePwdHandler) Handle(ctx *context.Context) (r interface{}) {
 		return context.NewError(context.ERR_NOT_ACCEPTABLE, err)
 	}
 
-	err := u.mem.ChangePwd(int(m.Get(ctx).UserID), ctx.Request.GetString("expassword"), ctx.Request.GetString("newpassword"))
+	err := service.ChangePwd(u.c, int(m.Get(ctx).UserID), ctx.Request.GetString("expassword"),
+		ctx.Request.GetString("newpassword"))
 	if err != nil {
 		return err
 	}
 
+	ctx.Log.Info("修改成功")
 	return "success"
 }

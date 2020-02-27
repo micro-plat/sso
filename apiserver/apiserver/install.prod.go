@@ -2,7 +2,10 @@
 
 package main
 
-import "github.com/micro-plat/hydra/conf"
+import (
+	"github.com/micro-plat/hydra/conf"
+	"github.com/micro-plat/sso/common/module/model"
+)
 
 func (s *SSO) install() {
 	s.Conf.SetInput(`#mysql_db_string`, `mysql数据库连接串`, `username:password@tcp(host)/sso?charset=utf8`)
@@ -12,4 +15,10 @@ func (s *SSO) install() {
 	s.Conf.API.SetHeaders(conf.NewHeader().WithCrossDomain())
 	s.Conf.Plat.SetDB(conf.NewMysqlConfForProd("#mysql_db_string"))
 	s.Conf.Plat.SetCache(conf.NewRedisCacheConfForProd(1, "#redis_string"))
+
+	s.Conf.API.SetApp(model.Conf{
+		UserLoginFailCount: 5,
+		UserLockTime:       24 * 60 * 60,
+		//此处还会配置某个系统默认对应的角色
+	})
 }

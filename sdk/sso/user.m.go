@@ -14,13 +14,16 @@ type User struct {
 
 //LoginState 用户信息
 type LoginState struct {
-	UserID    int64  `json:"user_id" m2s:"user_id"`
-	UserName  string `json:"user_name" m2s:"user_name"`
-	RoleName  string `json:"role_name" m2s:"role_name"`
-	SystemID  int    `json:"sys_id" `
-	SysIdent  string `json:"ident" `
-	RoleID    int    `json:"role_id"`
-	Status    int    `json:"status" m2s:"status"`
-	IndexURL  string `json:"index_url"`
-	ExtParams string `json:"ext_params" m2s:"ext_params"`
+	UserID        int64  `json:"user_id" m2s:"user_id"`
+	UserName      string `json:"user_name" m2s:"user_name"`
+	RoleName      string `json:"role_name" m2s:"role_name"`
+	SystemID      int    `json:"sys_id" `
+	SysIdent      string `json:"ident" `
+	RoleID        int    `json:"role_id"`
+	Status        int    `json:"status" m2s:"status"`
+	IndexURL      string `json:"index_url"`
+	ExtParams     string `json:"ext_params" m2s:"ext_params"`
+	Source        string `json:"source" m2s:"source"`             //来源
+	SourceID      int    `json:"source_id" m2s:"source_id"`       //来源id
+	LastLoginTime string `json:"last_login_time" m2s:"source_id"` //上次登录时间
 }

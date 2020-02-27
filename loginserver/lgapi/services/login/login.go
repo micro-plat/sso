@@ -3,6 +3,8 @@ package login
 import (
 	"github.com/micro-plat/hydra/component"
 	"github.com/micro-plat/hydra/context"
+	"github.com/micro-plat/sso/common/module/model"
+	"github.com/micro-plat/sso/common/service"
 	"github.com/micro-plat/sso/loginserver/lgapi/modules/logic"
 )
 
@@ -28,32 +30,18 @@ func (u *LoginHandler) Handle(ctx *context.Context) (r interface{}) {
 	if err := ctx.Request.Check("username", "password"); err != nil {
 		return context.NewError(context.ERR_NOT_ACCEPTABLE, "用户名和密码不能为空")
 	}
-
-	ctx.Log.Info("2: 判断系统是否被禁用")
-	ident := ctx.Request.GetString("ident")
-	if err := u.m.CheckSystemStatus(ident); err != nil {
-		return err
-	}
-
-	ctx.Log.Info("3: 判断用户是否被锁定, 锁定时间过期后要解锁")
-	userName := ctx.Request.GetString("username")
-	if err := u.m.CheckUserIsLocked(userName); err != nil {
-		return err
-	}
-
-	ctx.Log.Info("4: 判断用户输入的验证码")
-	if err := u.m.CheckWxValidCode(userName, ctx.Request.GetString("wxcode")); err != nil {
-		return err
-	}
-
-	ctx.Log.Info("5:处理用户账号登录")
-	member, err := u.m.Login(userName, ctx.Request.GetString("password"), ident)
+	member, err := service.Login(u.c, ctx.Log, model.LoginReq{
+		UserName: ctx.Request.GetString("username"),
+		Password: ctx.Request.GetString("password"),
+		Ident:    ctx.Request.GetString("ident"),
+		Wxcode:   ctx.Request.GetString("wxcode"),
+	})
 	if err != nil {
 		return err
 	}
 
 	ctx.Log.Info("6:生成返回给子系统的Code")
-	result, err := u.m.GenerateCodeAndSysInfo(ident, member.UserID)
+	result, err := u.m.GenerateCodeAndSysInfo(ctx.Request.GetString("ident"), member.UserID)
 	if err != nil {
 		return err
 	}

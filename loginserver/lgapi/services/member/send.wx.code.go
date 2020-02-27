@@ -3,6 +3,7 @@ package member
 import (
 	"github.com/micro-plat/hydra/component"
 	"github.com/micro-plat/hydra/context"
+	"github.com/micro-plat/sso/common/service"
 	"github.com/micro-plat/sso/loginserver/lgapi/modules/logic"
 )
 
@@ -36,7 +37,7 @@ func (u *SendCodeHandler) Handle(ctx *context.Context) (r interface{}) {
 	}
 
 	ctx.Log.Info("3: 发送微信验证码")
-	if err := u.mem.SendWxValidCode(ctx.Request.GetString("username"), openID, ctx.Request.GetString("ident")); err != nil {
+	if err := service.SendWxVerifyCode(u.c, ctx.Request.GetString("username"), openID, ctx.Request.GetString("ident")); err != nil {
 		return err
 	}
 

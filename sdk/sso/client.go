@@ -89,6 +89,16 @@ func (client *Client) getUserDataPermission(userID int64, tableName string, opt 
 }
 
 //AddUser 增加用户
-func (client *Client) AddUser(mobile, fullName, targetIdent, source string, sourceID int) error {
-	return newUser(client.cfg).AddUser(mobile, fullName, targetIdent, source, sourceID)
+func (client *Client) AddUser(userName, mobile, fullName, targetIdent, source string, sourceID int) error {
+	return newUser(client.cfg).AddUser(userName, mobile, fullName, targetIdent, source, sourceID)
+}
+
+//Login 用户密码登录
+func (client *Client) Login(userName, password string) (LoginState, error) {
+	return newUser(client.cfg).Login(userName, password)
+}
+
+//ChangePwd 修改密码
+func (client *Client) ChangePwd(userID int64, expassword, newpassword string) error {
+	return newUser(client.cfg).ChangePwd(userID, expassword, newpassword)
 }

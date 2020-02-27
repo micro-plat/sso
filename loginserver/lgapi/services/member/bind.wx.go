@@ -3,8 +3,8 @@ package member
 import (
 	"github.com/micro-plat/hydra/component"
 	"github.com/micro-plat/hydra/context"
+	"github.com/micro-plat/sso/common/module/model"
 	"github.com/micro-plat/sso/loginserver/lgapi/modules/logic"
-	"github.com/micro-plat/sso/loginserver/lgapi/modules/model"
 )
 
 //BindWxHandler 绑定微信

@@ -40,6 +40,7 @@ mgrserver/mgrapi/mgrapi
 mgrserver/mgrweb/mgrweb
 loginserver/lgapi/lgapi
 loginserver/lgweb/lgweb
+loginserver/lgapi/home
 
 out/
 apiserver/apiserver/home

@@ -23,6 +23,14 @@ func Bind(app *hydra.MicroApp, ssoApiHost, ident, secret string) error {
 	return nil
 }
 
+//BindSass sass系统的绑定(登录通过api的方式调用, 系统信息也通过api的方式调用)
+//相当于只有菜单数据是自动绑定，后台不要管
+func BindSass(app *hydra.MicroApp, ssoApiHost, ident, secret string) error {
+	app.Micro("/sso/member/menus/get", userMenus)
+
+	return nil
+}
+
 //loginVerify 登录验证，如果成功了写子系统jwt
 func loginVerify(ctx *context.Context) (r interface{}) {
 	ctx.Log.Info("-------sso登录后去取登录用户---------")
@@ -139,12 +147,28 @@ func GetDataPermission(userID int64, tableName string, opt ...PermissionOption) 
 }
 
 /*AddUser 增加用户
+*userName 用户名没有就传手机号
 *mobile 手机号
 *fullName 中文名
 *targetIdent 要给那个系统增加用户
 *source 来源(可以不传), 加油站、公司、下游渠道等
 *sourceID 来源编号(可以不传)
  */
-func AddUser(mobile, fullName, targetIdent, source string, sourceID int) error {
-	return GetSSOClient().AddUser(mobile, fullName, targetIdent, source, sourceID)
+func AddUser(userName, mobile, fullName, targetIdent, source string, sourceID int) error {
+	return GetSSOClient().AddUser(userName, mobile, fullName, targetIdent, source, sourceID)
+}
+
+//Login 用户密码登录, 密码请用md5加密
+func Login(userName, password string) (LoginState, error) {
+	return GetSSOClient().Login(userName, password)
+}
+
+//ChangePwd 修改密码
+func ChangePwd(userID int64, expassword, newpassword string) error {
+	return GetSSOClient().ChangePwd(userID, expassword, newpassword)
+}
+
+//GetSystemInfo 获取系统信息
+func GetSystemInfo() (data *System, err error) {
+	return GetSSOClient().GetSystemInfo()
 }

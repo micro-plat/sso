@@ -2,7 +2,7 @@ package main
 
 import (
 	"github.com/micro-plat/hydra/component"
-	"github.com/micro-plat/sso/loginserver/lgapi/modules/model"
+	"github.com/micro-plat/sso/common/module/model"
 	"github.com/micro-plat/sso/loginserver/lgapi/services/login"
 	"github.com/micro-plat/sso/loginserver/lgapi/services/member"
 	"github.com/micro-plat/sso/loginserver/lgapi/services/system"

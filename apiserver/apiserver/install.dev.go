@@ -2,7 +2,10 @@
 
 package main
 
-import "github.com/micro-plat/hydra/conf"
+import (
+	"github.com/micro-plat/hydra/conf"
+	"github.com/micro-plat/sso/common/module/model"
+)
 
 //bindConf 绑定启动配置， 启动时检查注册中心配置是否存在，不存在则引导用户输入配置参数并自动创建到注册中心
 func (s *SSO) install() {
@@ -14,4 +17,10 @@ func (s *SSO) install() {
 	s.Conf.Plat.SetCache(conf.NewRedisCacheConf(1, "192.168.0.111:6379",
 		"192.168.0.112:6379", "192.168.0.113:6379", "192.168.0.114:6379",
 		"192.168.0.115:6379", "192.168.0.116:6379"))
+
+	s.Conf.API.SetApp(model.Conf{
+		UserLoginFailCount: 5,
+		UserLockTime:       24 * 60 * 60,
+		//此处还会配置某个系统默认对应的角色
+	})
 }

@@ -140,13 +140,13 @@ func (u *userLogic) getRoleUsers(userID int64) (userIds string, err error) {
 }
 
 //AddUser 增加用户
-func (u *userLogic) AddUser(mobile, fullName, targetIdent, source string, sourceID int) error {
+func (u *userLogic) AddUser(userName, mobile, fullName, targetIdent, source string, sourceID int) error {
 	cfg := u.cfg
 	values := net.NewValues()
 	values.Set("ident", cfg.ident)
 	values.Set("timestamp", types.GetString(time.Now().Unix()))
 	values.Set("mobile", mobile)
-	values.Set("user_name", mobile)
+	values.Set("user_name", userName)
 	values.Set("full_name", fullName)
 	values.Set("target_ident", targetIdent)
 	values.Set("source", source)
@@ -158,6 +158,49 @@ func (u *userLogic) AddUser(mobile, fullName, targetIdent, source string, source
 
 	result := make(map[string]string)
 	_, err := remoteRequest(cfg.host, addUser, values.Join("=", "&"), &result)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+//Login 用户名密码登录
+func (u *userLogic) Login(userName, password string) (LoginState, error) {
+	values := net.NewValues()
+	values.Set("user_name", userName)
+	values.Set("password", password)
+	values.Set("ident", u.cfg.ident)
+	values.Set("timestamp", types.GetString(time.Now().Unix()))
+
+	values = values.Sort()
+	raw := values.Join("", "") + u.cfg.secret
+	fmt.Println(raw)
+	values.Set("sign", md5.Encrypt(raw))
+
+	lgState := LoginState{}
+	_, err := remoteRequest(u.cfg.host, passwordLogin, values.Join("=", "&"), &lgState)
+	if err != nil {
+		return LoginState{}, err
+	}
+	return lgState, nil
+}
+
+//ChangePwd 修改密码
+func (u *userLogic) ChangePwd(userID int64, expassword, newpassword string) error {
+	values := net.NewValues()
+	values.Set("user_id", types.GetString(userID))
+	values.Set("expassword", expassword)
+	values.Set("newpassword", newpassword)
+	values.Set("ident", u.cfg.ident)
+	values.Set("timestamp", types.GetString(time.Now().Unix()))
+
+	values = values.Sort()
+	raw := values.Join("", "") + u.cfg.secret
+	fmt.Println(raw)
+	values.Set("sign", md5.Encrypt(raw))
+
+	var res map[string]interface{}
+	_, err := remoteRequest(u.cfg.host, changePassword, values.Join("=", "&"), res)
 	if err != nil {
 		return err
 	}

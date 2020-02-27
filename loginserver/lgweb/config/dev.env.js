@@ -7,7 +7,7 @@ module.exports = merge(prodEnv, {
     service: {
         wxcallbackhost:'"http://ssov3.100bm.cn"',
         wxcallbackurl:'"/wxcallback"',
-        //url: '"http://192.168.5.78:6687"',     //本地
-        url: '"http://loginapi.sso.18jiayou1.com:6687"'
+        url: '"http://192.168.0.103:6687"'     //本地
+        //url: '"http://loginapi.sso.18jiayou1.com:6687"'
     }
 });

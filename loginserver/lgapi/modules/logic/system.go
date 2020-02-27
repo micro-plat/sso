@@ -5,8 +5,8 @@ import (
 
 	"github.com/micro-plat/hydra/component"
 	"github.com/micro-plat/lib4go/db"
+	commodel "github.com/micro-plat/sso/common/module/model"
 	"github.com/micro-plat/sso/loginserver/lgapi/modules/access/system"
-	"github.com/micro-plat/sso/loginserver/lgapi/modules/model"
 )
 
 // ISystemLogic xx
@@ -32,7 +32,7 @@ func NewSystemLogic(c component.IContainer) *SystemLogic {
 
 //GetSystemConfig 获取系统配置信息
 func (s *SystemLogic) GetSystemConfig(ident string) (map[string]interface{}, error) {
-	result := map[string]interface{}{"system_name": "用户登录", "require_wx_code": model.GetConf(s.c).RequireWxCode}
+	result := map[string]interface{}{"system_name": "用户登录", "require_wx_code": commodel.GetConf(s.c).RequireWxCode}
 	if strings.EqualFold(ident, "") {
 		return result, nil
 	}
