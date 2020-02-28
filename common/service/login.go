@@ -34,5 +34,10 @@ func Login(c component.IContainer, log logger.ILogger, req model.LoginReq) (*mod
 		return nil, err
 	}
 
+	log.Info("5:记录用户登录时间")
+	if err = server.UpdateUserLoginTime(member.UserID); err != nil {
+		log.Errorf("记录用户登录时间出错: %+v", err)
+	}
+
 	return member, nil
 }

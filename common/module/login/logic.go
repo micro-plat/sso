@@ -184,6 +184,11 @@ func (m *LoginLogic) unLockUser(userName string) error {
 	return m.db.UnLock(userName)
 }
 
+//UpdateUserLoginTime 记录用户成功登录时间
+func (m *LoginLogic) UpdateUserLoginTime(userID int64) error {
+	return m.db.UpdateUserLoginTime(userID)
+}
+
 //SendWxValidCode 发送微信验证码
 func (m *LoginLogic) SendWxValidCode(userName, openID, ident string) error {
 	//1: 发送微信验证码

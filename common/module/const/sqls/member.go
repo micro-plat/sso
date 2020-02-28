@@ -95,3 +95,10 @@ set
 	t.changepwd_times = t.changepwd_times + 1
 where 
 	t.user_id = @user_id`
+
+const UpdateUserLoginTime = `
+update sso_user_info set 
+	last_login_time = now() 
+where user_id = @user_id
+limit 1
+`

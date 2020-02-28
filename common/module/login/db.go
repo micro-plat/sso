@@ -1,6 +1,8 @@
 package login
 
 import (
+	"fmt"
+
 	"github.com/micro-plat/hydra/component"
 	"github.com/micro-plat/hydra/context"
 	"github.com/micro-plat/lib4go/db"
@@ -19,7 +21,7 @@ type IDBMember interface {
 	GetUserInfo(u string) (db.QueryRows, error)
 	UpdateUserStatus(userID int, status int) error
 	UnLock(userName string) error
-
+	UpdateUserLoginTime(userID int64) error
 	UpdateUserOpenID(data map[string]string) error
 }
 
@@ -105,6 +107,18 @@ func (l *DBMember) ChangePwd(userID int, newpassword string) (err error) {
 	})
 	if err != nil {
 		return err
+	}
+	return nil
+}
+
+//UpdateUserLoginTime　记录用户成功登录时间
+func (l *DBMember) UpdateUserLoginTime(userID int64) error {
+	db := l.c.GetRegularDB()
+	_, q, a, err := db.Execute(sqls.UpdateUserLoginTime, map[string]interface{}{
+		"user_id": userID,
+	})
+	if err != nil {
+		return fmt.Errorf("UpdateUserLoginTime 出错: sql:%s, arg:%+v, err:%+v", q, a, err)
 	}
 	return nil
 }
