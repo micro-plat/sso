@@ -26,7 +26,11 @@ func Bind(app *hydra.MicroApp, ssoApiHost, ident, secret string) error {
 //BindSass sass系统的绑定(登录通过api的方式调用, 系统信息也通过api的方式调用)
 //相当于只有菜单数据是自动绑定，后台不要管
 func BindSass(app *hydra.MicroApp, ssoApiHost, ident, secret string) error {
+	if err := saveSSOClient(ssoApiHost, ident, secret); err != nil {
+		return err
+	}
 	app.Micro("/sso/member/menus/get", userMenus)
+	app.Micro("/sso/member/changepwd", changePwd)
 
 	return nil
 }
@@ -139,6 +143,20 @@ func getTags(ctx *context.Context) (r interface{}) {
 	return data
 }
 
+//ChangePwd 修改密码
+func changePwd(ctx *context.Context) (r interface{}) {
+	ctx.Log.Info("--------修改密码----------")
+
+	ctx.Log.Info("1: 验证参数")
+	if err := ctx.Request.Check("expassword", "newpassword"); err != nil {
+		return context.NewError(context.ERR_NOT_ACCEPTABLE, err)
+	}
+
+	ctx.Log.Info("2: 调用sdk修改密码")
+	mem := GetMember(ctx)
+	return GetSSOClient().ChangePwd(mem.UserID, ctx.Request.GetString("expassword"), ctx.Request.GetString("newpassword"))
+}
+
 /* getUserDataPermission 获取 [数据权限] 生成相应的sql语句
  *
  */
@@ -161,11 +179,6 @@ func AddUser(userName, mobile, fullName, targetIdent, source string, sourceID in
 //Login 用户密码登录, 密码请用md5加密
 func Login(userName, password string) (LoginState, error) {
 	return GetSSOClient().Login(userName, password)
-}
-
-//ChangePwd 修改密码
-func ChangePwd(userID int64, expassword, newpassword string) error {
-	return GetSSOClient().ChangePwd(userID, expassword, newpassword)
 }
 
 //GetSystemInfo 获取系统信息

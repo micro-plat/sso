@@ -200,7 +200,7 @@ func (u *userLogic) ChangePwd(userID int64, expassword, newpassword string) erro
 	values.Set("sign", md5.Encrypt(raw))
 
 	var res map[string]interface{}
-	_, err := remoteRequest(u.cfg.host, changePassword, values.Join("=", "&"), res)
+	_, err := remoteRequest(u.cfg.host, changePassword, values.Join("=", "&"), &res)
 	if err != nil {
 		return err
 	}
