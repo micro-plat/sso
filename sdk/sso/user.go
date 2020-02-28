@@ -1,7 +1,6 @@
 package sso
 
 import (
-	"fmt"
 	"time"
 
 	"github.com/micro-plat/lib4go/net"
@@ -47,7 +46,6 @@ func (u *userLogic) checkCodeLogin(code string) (res *LoginState, err error) {
 
 	values = values.Sort()
 	raw := values.Join("", "") + u.cfg.secret
-	fmt.Println(raw)
 	values.Set("sign", md5.Encrypt(raw))
 
 	lgState := &LoginState{}
@@ -174,7 +172,6 @@ func (u *userLogic) Login(userName, password string) (LoginState, error) {
 
 	values = values.Sort()
 	raw := values.Join("", "") + u.cfg.secret
-	fmt.Println(raw)
 	values.Set("sign", md5.Encrypt(raw))
 
 	lgState := LoginState{}
@@ -196,7 +193,6 @@ func (u *userLogic) ChangePwd(userID int64, expassword, newpassword string) erro
 
 	values = values.Sort()
 	raw := values.Join("", "") + u.cfg.secret
-	fmt.Println(raw)
 	values.Set("sign", md5.Encrypt(raw))
 
 	var res map[string]interface{}
