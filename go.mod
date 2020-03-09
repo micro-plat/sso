@@ -15,7 +15,7 @@ require (
 	github.com/go-sql-driver/mysql v1.4.1
 	github.com/jmz331/gpinyin v0.0.0-20150408151959-c4a0503fb352
 	github.com/micro-plat/hydra v0.12.2
-	github.com/micro-plat/lib4go v0.2.1
+	github.com/micro-plat/lib4go v0.3.0
 	github.com/patrickmn/go-cache v2.1.0+incompatible
 	github.com/pkg/profile v1.3.0
 	github.com/urfave/cli v1.22.1
