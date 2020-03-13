@@ -31,6 +31,7 @@ func BindSass(app *hydra.MicroApp, ssoApiHost, ident, secret string) error {
 	}
 	app.Micro("/sso/member/menus/get", userMenus)
 	app.Micro("/sso/member/changepwd", changePwd)
+	app.Micro("/sso/member/all/get", getAllUser)
 
 	return nil
 }
@@ -169,8 +170,8 @@ func GetDataPermission(userID int64, tableName string, opt ...PermissionOption) 
 *mobile 手机号
 *fullName 中文名
 *targetIdent 要给那个系统增加用户
-*source 来源(可以不传), 加油站、公司、下游渠道等
-*sourceID 来源编号(可以不传)
+*source 来源, 加油站、公司、下游渠道等
+*sourceID 来源编号
  */
 func AddUser(userName, mobile, fullName, targetIdent, source string, sourceID int) error {
 	return GetSSOClient().AddUser(userName, mobile, fullName, targetIdent, source, sourceID)
