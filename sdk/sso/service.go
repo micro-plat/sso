@@ -114,8 +114,11 @@ func systemInfo(ctx *context.Context) (r interface{}) {
 func getAllUser(ctx *context.Context) (r interface{}) {
 	ctx.Log.Info("--------获取所有用户信息----------")
 
+	ctx.Log.Info("1. 获取登录信息")
+	mem := GetMember(ctx)
+
 	ctx.Log.Info("1. 执行操作")
-	data, err := GetSSOClient().GetAllUser()
+	data, err := GetSSOClient().GetAllUser(mem.Source, mem.SourceID)
 	if err != nil {
 		return err
 	}

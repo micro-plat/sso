@@ -95,10 +95,12 @@ func (u *userLogic) getUserOtherSystems(userID int) (*[]*System, error) {
 }
 
 //GetAllUser 返回所有正常用户
-func (u *userLogic) GetAllUser() (*[]*User, error) {
+func (u *userLogic) GetAllUser(source string, sourceID int) (*[]*User, error) {
 	values := net.NewValues()
 	values.Set("ident", u.cfg.ident)
 	values.Set("timestamp", types.GetString(time.Now().Unix()))
+	values.Set("source", source)
+	values.Set("source_id", types.GetString(sourceID))
 
 	values = values.Sort()
 	raw := values.Join("", "") + u.cfg.secret

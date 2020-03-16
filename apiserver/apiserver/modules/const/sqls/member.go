@@ -90,4 +90,6 @@ select
 	full_name,
 	status
 from sso_user_info
+where (@source = '' or @source = source) and
+	  (@source_id = 0 or @source_id = source_id)
 `

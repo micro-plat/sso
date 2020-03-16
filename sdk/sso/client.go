@@ -55,9 +55,9 @@ func (client *Client) GetUserOtherSystems(userID int) (*[]*System, error) {
 }
 
 //GetAllUser 获取所有用户信息
-func (client *Client) GetAllUser() (*[]*User, error) {
+func (client *Client) GetAllUser(source string, sourceID int) (*[]*User, error) {
 	s := newUser(client.cfg)
-	return s.GetAllUser()
+	return s.GetAllUser(source, sourceID)
 }
 
 //GetUserDisplayTags 获取用户有权限的Tags
