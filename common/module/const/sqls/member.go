@@ -5,6 +5,7 @@ const QueryUserByUserName = `
 select 
 	user_id,
 	user_name,
+	full_name,
 	password,
 	status,
 	wx_openid,

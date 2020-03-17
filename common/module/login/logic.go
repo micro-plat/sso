@@ -81,16 +81,17 @@ func (m *LoginLogic) ChangePwd(userID int, expassword string, newpassword string
 	if err != nil {
 		return err
 	}
-	if strings.EqualFold(strings.ToLower(md5.Encrypt(expassword)), strings.ToLower(data.Get(0).GetString("password"))) {
-		return m.db.ChangePwd(userID, newpassword)
-	}
-
-	conf := model.GetConf(m.c)
 	userInfo, err := m.db.QueryByID(userID)
 	if err != nil {
 		return err
 	}
 
+	if strings.EqualFold(strings.ToLower(md5.Encrypt(expassword)), strings.ToLower(data.Get(0).GetString("password"))) {
+		m.cache.SetLoginSuccess(userInfo.GetString("user_name"))
+		return m.db.ChangePwd(userID, newpassword)
+	}
+
+	conf := model.GetConf(m.c)
 	count, err := m.cache.SetLoginFail(userInfo.GetString("user_name"))
 	if err != nil {
 		return err
