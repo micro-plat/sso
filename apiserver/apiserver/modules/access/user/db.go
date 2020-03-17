@@ -6,6 +6,8 @@ import (
 	"strings"
 
 	"github.com/micro-plat/hydra/component"
+	"github.com/micro-plat/hydra/context"
+	"github.com/micro-plat/lib4go/db"
 	"github.com/micro-plat/lib4go/security/md5"
 	"github.com/micro-plat/lib4go/types"
 	"github.com/micro-plat/sso/apiserver/apiserver/modules/access/system"
@@ -36,11 +38,18 @@ func NewDBUser(c component.IContainer) *DBUser {
 //AddUser 新增用户
 func (l *DBUser) AddUser(req model.UserInputNew) error {
 	db := l.c.GetRegularDB()
+	info, err := l.GetUserInfoByName(req.UserName)
+	if err != nil {
+		return err
+	}
+	if info != nil {
+		return context.NewError(commodel.ERR_USER_NAMEEXISTS, "此登录名[user_name]已被使用")
+	}
+
 	params, err := types.Struct2Map(req)
 	if err != nil {
 		return fmt.Errorf("Struct2Map Error(err:%v)", err)
 	}
-
 	dbTrans, err := db.Begin()
 	if err != nil {
 		return fmt.Errorf("开启DB事务出错(err:%v)", err)
@@ -87,4 +96,17 @@ func (l *DBUser) AddUser(req model.UserInputNew) error {
 
 	dbTrans.Commit()
 	return nil
+}
+
+//GetUserInfoByName 根据用户名查询用户信息
+func (l *DBUser) GetUserInfoByName(userName string) (data db.QueryRow, err error) {
+	db := l.c.GetRegularDB()
+	result, _, _, err := db.Query(sqls.GetUserInfoByName, map[string]interface{}{"user_name": userName})
+	if err != nil {
+		return nil, err
+	}
+	if result.IsEmpty() {
+		return nil, nil
+	}
+	return result.Get(0), nil
 }

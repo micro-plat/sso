@@ -245,3 +245,11 @@ where
 limit 
 	#pageSize offset #currentPage
 `
+
+//GetUserInfoByName 通过user_name获取用户信息
+const GetUserInfoByName = `
+select 
+	user_id, full_name, user_name, email, status, mobile, 
+	wx_openid, changepwd_times, ext_params 
+from sso_user_info 
+where user_name=@user_name;`
