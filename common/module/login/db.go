@@ -70,13 +70,26 @@ func (l *DBMember) Query(u, p, ident string) (s *model.MemberState, err error) {
 		LastLoginTime: row.GetString("last_login_time"),
 	}
 
+	count, _, _, errcount := db.Scalar(sqls.QueryUserHasRoleMenuCount, map[string]interface{}{
+		"user_id": data.Get(0).GetInt64("user_id", -1),
+		"ident":   ident,
+	})
+
+	if errcount != nil {
+		return nil, errcount
+	}
+
+	if types.GetInt(count) <= 0 {
+		return nil, context.NewError(model.ERR_USER_HASNOROLES, "用户没有相关系统权限,请联系管理员")
+	}
+
 	roles, _, _, erro := db.Query(sqls.QueryUserRole, map[string]interface{}{
 		"user_id": data.Get(0).GetInt64("user_id", -1),
 		"ident":   ident,
 	})
 
-	if erro != nil || roles.IsEmpty() {
-		return nil, context.NewError(model.ERR_USER_HASNOROLES, "用户没有相关系统权限,请联系管理员")
+	if erro != nil {
+		return nil, erro
 	}
 
 	s.SysIdent = ident
