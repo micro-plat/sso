@@ -16,7 +16,8 @@ func GetMember(ctx *context.Context) *LoginState {
 }
 
 //CheckAndSetMember 验证jwt同时保存用户登录信息
-func CheckAndSetMember(ctx *context.Context) error {
+//isReallyTimeCheckUser 是否每次api调用都去验证用户信息(状态信息等)
+func CheckAndSetMember(ctx *context.Context, isReallyTimeCheckUser ...bool) error {
 	if skip, err := ctx.Request.SkipJWTExclude(); err != nil || skip {
 		return err
 	}
@@ -25,6 +26,12 @@ func CheckAndSetMember(ctx *context.Context) error {
 	var m LoginState
 	if err := ctx.Request.GetJWT(&m); err != nil {
 		return context.NewError(context.ERR_FORBIDDEN, err)
+	}
+
+	if len(isReallyTimeCheckUser) > 0 && isReallyTimeCheckUser[0] {
+		if _, err := GetCurrentUserInfo(m.UserName); err != nil {
+			return err
+		}
 	}
 
 	//保存登录用户信息

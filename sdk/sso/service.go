@@ -189,3 +189,8 @@ func Login(userName, password string) (LoginState, error) {
 func GetSystemInfo() (data *System, err error) {
 	return GetSSOClient().GetSystemInfo()
 }
+
+//GetCurrentUserInfo 从服务端实时获取当前登录用户信息(主要是为禁用用户什么的)
+func GetCurrentUserInfo(userName string) (info *User, err error) {
+	return GetSSOClient().GetUserInfoByName(userName)
+}

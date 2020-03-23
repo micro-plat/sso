@@ -49,6 +49,8 @@ func (r *SSO) init() {
 	r.Micro("/system/info/get", system.NewInfoHandler)               //获取子系统信息
 	r.Micro("/login/auth", login.NewAuthorizeHandler)                //用户跳转登录后的认证(不是用户名密码登录)
 	r.Micro("/permission/config", permission.NewDataPerssionHandler) //【数据权限】相关接口
-	r.Micro("/user", user.NewUserHandler)                            //用户相关接口
-	r.Micro("/verifycode/get", login.NewVerifyCodeHandler)           //生成图片验证码
+
+	//以下接口是为sass系统使用
+	r.Micro("/user", user.NewUserHandler)                  //用户相关接口
+	r.Micro("/verifycode/get", login.NewVerifyCodeHandler) //生成图片验证码(这个现在没用,以后可能会用到)
 }
