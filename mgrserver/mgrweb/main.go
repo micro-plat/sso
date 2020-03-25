@@ -1,4 +1,4 @@
-// +build !ebs
+// +build !hbs
 
 package main
 
@@ -20,5 +20,5 @@ func main() {
 		),
 	}
 	app.install()
-	app.Start() //
+	app.Start()
 }

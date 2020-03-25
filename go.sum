@@ -87,6 +87,11 @@ github.com/mholt/archiver v3.1.1+incompatible h1:1dCVxuqs0dJseYEhi5pl7MYPH9zDa1w
 github.com/mholt/archiver v3.1.1+incompatible/go.mod h1:Dh2dOXnSdiLxRiPoVfIr/fI1TwETms9B8CTWfeh7ROU=
 github.com/micro-plat/gmq v1.0.1 h1:ai1PiCEfgBmiqzmZ4iWE3l2Vuz7rOTWOakqRWqi/Hgo=
 github.com/micro-plat/gmq v1.0.1/go.mod h1:93NeUjbgul5ywP+cm4eXERv6Zk0J8zZyrzYrY3q8GVQ=
+github.com/micro-plat/lib4go v0.2.1/go.mod h1:iXv3tW1ZU1M7HYSzcrm4aA6O9gPD+0v0HlgTH873H/A=
+github.com/micro-plat/lib4go v0.3.0 h1:7Xp34fCMu1OqnnhmbWQQTu/S3Gqkwk/gUqbUByTF5K0=
+github.com/micro-plat/lib4go v0.3.0/go.mod h1:yJt+7OPs98Qawn1JKQvn2qwtJi2yEg/t1gRi+k7oUZo=
+github.com/micro-plat/lib4go v0.3.1 h1:HhBdtx0Ce/ulmZSbtRW8h2Oo1V6kFk4yup7b+o7symM=
+github.com/micro-plat/lib4go v0.3.1/go.mod h1:yJt+7OPs98Qawn1JKQvn2qwtJi2yEg/t1gRi+k7oUZo=
 github.com/modern-go/concurrent v0.0.0-20180228061459-e0a39a4cb421/go.mod h1:6dJC0mAP4ikYIbvyc7fijjWJddQyLn8Ig3JB5CqoB9Q=
 github.com/modern-go/concurrent v0.0.0-20180306012644-bacd9c7ef1dd h1:TRLaZ9cD/w8PVh93nsPXa1VrQ6jlwL5oN8l14QlcNfg=
 github.com/modern-go/concurrent v0.0.0-20180306012644-bacd9c7ef1dd/go.mod h1:6dJC0mAP4ikYIbvyc7fijjWJddQyLn8Ig3JB5CqoB9Q=

@@ -1,4 +1,4 @@
-// +build ebs
+// +build hbs
 
 package main
 
@@ -14,7 +14,7 @@ func main() {
 
 	app := &mgrweb{
 		hydra.NewApp(
-			hydra.WithPlatName("17ebs_sso"),
+			hydra.WithPlatName("hbs_sso"),
 			hydra.WithSystemName("mgrweb"),
 			hydra.WithServerTypes("web"),
 		),

@@ -1,5 +1,5 @@
 // +build prod
-// +build !ebs
+// +build !hbs
 
 package main
 

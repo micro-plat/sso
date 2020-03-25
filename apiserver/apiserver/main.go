@@ -1,4 +1,4 @@
-// +build !ebs
+// +build !hbs
 
 package main
 
