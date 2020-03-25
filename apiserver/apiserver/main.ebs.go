@@ -1,4 +1,4 @@
-// +build !ebs
+// +build ebs
 
 package main
 
@@ -15,11 +15,10 @@ type SSO struct {
 func main() {
 	app := &SSO{
 		hydra.NewApp(
-			hydra.WithPlatName("sso_v3"),
-			hydra.WithSystemName("mgrapi"),
+			hydra.WithPlatName("17ebs_sso"),
+			hydra.WithSystemName("apiserver"),
 			hydra.WithServerTypes("api")),
 	}
-
 	app.init()
 	app.Start()
 }

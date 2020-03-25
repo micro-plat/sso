@@ -24,7 +24,7 @@ type LoginState struct {
 	Status        int    `json:"status" m2s:"status"`
 	IndexURL      string `json:"index_url"`
 	ExtParams     string `json:"ext_params" m2s:"ext_params"`
-	Source        string `json:"source" m2s:"source"`             //来源
-	SourceID      int    `json:"source_id" m2s:"source_id"`       //来源id
-	LastLoginTime string `json:"last_login_time" m2s:"source_id"` //上次登录时间
+	Source        string `json:"source" m2s:"source"`                   //来源
+	SourceID      string `json:"source_id" m2s:"source_id"`             //来源id
+	LastLoginTime string `json:"last_login_time" m2s:"last_login_time"` //上次登录时间
 }

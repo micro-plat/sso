@@ -95,12 +95,12 @@ func (u *userLogic) getUserOtherSystems(userID int) (*[]*System, error) {
 }
 
 //GetAllUser 返回所有正常用户
-func (u *userLogic) GetAllUser(source string, sourceID int) (*[]*User, error) {
+func (u *userLogic) GetAllUser(source string, sourceID string) (*[]*User, error) {
 	values := net.NewValues()
 	values.Set("ident", u.cfg.ident)
 	values.Set("timestamp", types.GetString(time.Now().Unix()))
 	values.Set("source", source)
-	values.Set("source_id", types.GetString(sourceID))
+	values.Set("source_id", sourceID)
 
 	values = values.Sort()
 	raw := values.Join("", "") + u.cfg.secret
@@ -140,20 +140,20 @@ func (u *userLogic) getRoleUsers(userID int64) (userIds string, err error) {
 }
 
 //AddUser 增加用户
-func (u *userLogic) AddUser(userName, mobile, fullName, targetIdent, source string, sourceID int) error {
+func (u *userLogic) AddUser(userName, mobile, fullName, targetIdent, source, sourceSecrect string, sourceID string) error {
 	cfg := u.cfg
 	values := net.NewValues()
-	values.Set("ident", cfg.ident)
+	values.Set("ident", targetIdent)
 	values.Set("timestamp", types.GetString(time.Now().Unix()))
 	values.Set("mobile", mobile)
 	values.Set("user_name", userName)
 	values.Set("full_name", fullName)
 	values.Set("target_ident", targetIdent)
 	values.Set("source", source)
-	values.Set("source_id", types.GetString(sourceID))
+	values.Set("source_id", sourceID)
 
 	values = values.Sort()
-	raw := values.Join("", "") + cfg.secret
+	raw := values.Join("", "") + sourceSecrect
 	values.Set("sign", md5.Encrypt(raw))
 
 	result := make(map[string]string)

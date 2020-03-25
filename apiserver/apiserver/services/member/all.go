@@ -27,7 +27,7 @@ func (u *MemberGetAllHandler) Handle(ctx *context.Context) (r interface{}) {
 	ctx.Log.Info("-------获取所有用户信息---------")
 
 	ctx.Log.Info("1. 查询数据")
-	members, err := u.m.QueryAllUserInfo(ctx.Request.GetString("source"), ctx.Request.GetInt("source_id"))
+	members, err := u.m.QueryAllUserInfo(ctx.Request.GetString("source"), ctx.Request.GetString("source_id"))
 	if err != nil {
 		return err
 	}

@@ -11,7 +11,7 @@ import (
 
 func remoteRequest(host, path, content string, data interface{}) (interface{}, error) {
 	url := host + path
-	client, err := http.NewHTTPClient(http.WithRequestTimeout(5 * time.Second))
+	client, err := http.NewHTTPClient(http.WithRequestTimeout(30*time.Second), http.WithConnTimeout(30*time.Second))
 	if err != nil {
 		return nil, err
 	}
@@ -26,7 +26,7 @@ func remoteRequest(host, path, content string, data interface{}) (interface{}, e
 	//err = json.Unmarshal(listByte, &data)
 	err = json.Unmarshal(listByte, data)
 	if err != nil {
-		return nil, fmt.Errorf("字符串转json发生错误，err：%v", err)
+		return nil, fmt.Errorf("字符串转json发生错误，err：%v;org:%s;%s", err, string(listByte), url)
 	}
 
 	return data, nil

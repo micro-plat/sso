@@ -15,7 +15,7 @@ type IDBMember interface {
 	QueryByUserName(u string, ident string) (info db.QueryRow, err error)
 	QueryByID(uid int, ident string) (s *model.MemberState, err error)
 	QueryUserSystem(userID int, ident string) (s db.QueryRows, err error)
-	QueryAllUserInfo(source string, sourceID int) (s db.QueryRows, err error)
+	QueryAllUserInfo(source string, sourceID string) (s db.QueryRows, err error)
 	GetAllUserInfoByUserRole(userID int, ident string) (string, error)
 }
 
@@ -32,7 +32,7 @@ func NewDBMember(c component.IContainer) *DBMember {
 }
 
 //QueryAllUserInfo 获取全部用户
-func (l *DBMember) QueryAllUserInfo(source string, sourceID int) (s db.QueryRows, err error) {
+func (l *DBMember) QueryAllUserInfo(source string, sourceID string) (s db.QueryRows, err error) {
 	db := l.c.GetRegularDB()
 	data, _, _, err := db.Query(sqls.QueryAllUserInfo, map[string]interface{}{
 		"source":    source,

@@ -55,7 +55,7 @@ func (client *Client) GetUserOtherSystems(userID int) (*[]*System, error) {
 }
 
 //GetAllUser 获取所有用户信息
-func (client *Client) GetAllUser(source string, sourceID int) (*[]*User, error) {
+func (client *Client) GetAllUser(source string, sourceID string) (*[]*User, error) {
 	s := newUser(client.cfg)
 	return s.GetAllUser(source, sourceID)
 }
@@ -89,8 +89,8 @@ func (client *Client) getUserDataPermission(userID int64, tableName string, opt 
 }
 
 //AddUser 增加用户
-func (client *Client) AddUser(userName, mobile, fullName, targetIdent, source string, sourceID int) error {
-	return newUser(client.cfg).AddUser(userName, mobile, fullName, targetIdent, source, sourceID)
+func (client *Client) AddUser(userName, mobile, fullName, targetIdent, source, sourceSecrect string, sourceID string) error {
+	return newUser(client.cfg).AddUser(userName, mobile, fullName, targetIdent, source, sourceSecrect, sourceID)
 }
 
 //Login 用户密码登录

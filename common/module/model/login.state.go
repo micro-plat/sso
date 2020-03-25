@@ -21,9 +21,9 @@ type MemberState struct {
 	ProfilePercent int    `json:"profile_percent"`
 	LoginTimeout   int    `json:"login_timeout" m2s:"login_timeout"`
 	ExtParams      string `json:"ext_params" m2s:"ext_params"`
-	Source         string `json:"source" m2s:"source"`             //来源
-	SourceID       int    `json:"source_id" m2s:"source_id"`       //来源id
-	LastLoginTime  string `json:"last_login_time" m2s:"source_id"` //上次登录时间
+	Source         string `json:"source" m2s:"source"`                   //来源
+	SourceID       string `json:"source_id" m2s:"source_id"`             //来源id
+	LastLoginTime  string `json:"last_login_time" m2s:"last_login_time"` //上次登录时间
 }
 
 //LoginState 用户登录状态

@@ -1,6 +1,8 @@
 package user
 
 import (
+	"encoding/json"
+
 	"github.com/micro-plat/hydra/context"
 
 	"github.com/micro-plat/hydra/component"
@@ -59,7 +61,9 @@ func (u *UserHandler) LoginHandle(ctx *context.Context) (r interface{}) {
 		return err
 	}
 
-	ctx.Log.Info("返回数据")
+	val, _ := json.Marshal(mem)
+
+	ctx.Log.Info("返回数据", string(val))
 	return mem
 }
 

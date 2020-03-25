@@ -24,6 +24,9 @@ rootdir=$(pwd)
 rm -rf $rootdir/out 
 echo ""
 echo "-----------(默认生成 prod环境, 开发环境传 dev)--------"
+echo ""
+echo "----此脚本不能打包17ebs_sso相关的包,要做修改才行 ！！！！！！！---"
+echo "----17ebs_sso只需要打包三个文件(mgrserver/mgrapi, mgrserver/mgrweb, apiserver/apiserver)---"
 
 read -p "所有配置参数都改好了？确认请输入[y],否则输入[n]: " flag
 temp=$(echo $flag | tr [A-Z] [a-z])
@@ -52,7 +55,7 @@ echo ""
 
 echo "----------1:生成apiserver数据-----------"
 cd $rootdir/apiserver/apiserver/
-CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build  $tags -o "$rootdir/out/sso/apiserver/bin/apiserver_sso"
+CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build  $tags -o "$rootdir/out/sso/apiserver/bin/apiserver"
 if [ $? -ne 0 ]; then
 	echo "apiserver 项目编译出错,请检查"
 	exit 1
@@ -61,7 +64,7 @@ fi
 
 echo "----------2:生成lgapi数据------------"
 cd $rootdir/loginserver/lgapi/
-CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build $tags -o "$rootdir/out/sso/loginserver/bin/lgapi_sso"
+CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build $tags -o "$rootdir/out/sso/loginserver/bin/lgapi"
 if [ $? -ne 0 ]; then
 	echo "lgapi 项目编译出错,请检查"
 	exit 1
@@ -70,7 +73,7 @@ fi
 
 echo "----------3:生成lgweb数据-----------"
 cd $rootdir/loginserver/lgweb/
-CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build $tags -o "$rootdir/out/sso/loginserver/bin/lgweb_sso"
+CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build $tags -o "$rootdir/out/sso/loginserver/bin/lgweb"
 if [ $? -ne 0 ]; then
 	echo "lgweb golang 项目编译出错,请检查"
 	exit 1
@@ -92,7 +95,7 @@ echo "--------------------------------------"
 
 echo "----------4:生成mgrapi数据----------"
 cd $rootdir/mgrserver/mgrapi/
-CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build  $tags -o "$rootdir/out/sso/mgrserver/bin/mgrapi_sso"
+CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build  $tags -o "$rootdir/out/sso/mgrserver/bin/mgrapi"
 if [ $? -ne 0 ]; then
 	echo "mgrapi 项目编译出错,请检查"
 	exit 1
@@ -103,7 +106,7 @@ mkdir -p $rootdir/out/sso/mgrserver/image
 
 echo "----------5:生成mgrweb数据------------"
 cd $rootdir/mgrserver/mgrweb/
-CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build  $tags -o "$rootdir/out/sso/mgrserver/bin/mgrweb_sso"
+CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build  $tags -o "$rootdir/out/sso/mgrserver/bin/mgrweb"
 if [ $? -ne 0 ]; then
 	echo "mgrweb golang 项目编译出错,请检查"
 	exit

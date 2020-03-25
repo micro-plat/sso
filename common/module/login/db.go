@@ -66,7 +66,7 @@ func (l *DBMember) Query(u, p, ident string) (s *model.MemberState, err error) {
 		ExtParams:     row.GetString("ext_params"),
 		Status:        row.GetInt("status"),
 		Source:        row.GetString("source"),
-		SourceID:      row.GetInt("source_id"),
+		SourceID:      row.GetString("source_id"),
 		LastLoginTime: row.GetString("last_login_time"),
 	}
 

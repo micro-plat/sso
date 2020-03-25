@@ -1,4 +1,4 @@
-// +build !ebs
+// +build ebs
 
 package main
 
@@ -14,11 +14,11 @@ func main() {
 
 	app := &mgrweb{
 		hydra.NewApp(
-			hydra.WithPlatName("sso_v3"),
+			hydra.WithPlatName("17ebs_sso"),
 			hydra.WithSystemName("mgrweb"),
 			hydra.WithServerTypes("web"),
 		),
 	}
 	app.install()
-	app.Start() //
+	app.Start()
 }

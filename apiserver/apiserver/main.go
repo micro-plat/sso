@@ -1,3 +1,5 @@
+// +build !ebs
+
 package main
 
 import (

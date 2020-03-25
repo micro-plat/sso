@@ -1,8 +1,9 @@
 // +build prod
-// +build !ebs
+// +build ebs
 
 package main
 
+//
 import (
 	"github.com/micro-plat/hydra/conf"
 	"github.com/micro-plat/sso/mgrserver/mgrapi/modules/model"
@@ -26,10 +27,10 @@ func (s *SSO) install() {
 			conf.NewJWT("__jwt__", "HS512", "bf8f3171946d8d5a13cca23aa6080c8e", 36000, "/sso/login/verify", "/image/upload").WithHeaderStore()))
 
 	s.Conf.API.SetApp(model.Conf{
-		PicHost:    "http://bj.images.cdqykj.cn",
-		Secret:     "B128F779D5741E701923346F7FA9F95C",
-		SsoApiHost: "http://api.sso.18jiayou.com",
-		//SsoApiHost: "http://api.sso.18jiayou0.com:6689",
-		Ident: "sso",
+		PicHost: "http://bj.images.cdqykj.cn",
+		Secret:  "B128F779D5741E701923346F7FA9F95C",
+		//SsoApiHost: "http://api.sso.18jiayou.com:6689",
+		SsoApiHost: "http://api.sso.18jiayou0.com:6689",
+		Ident:      "17ebs_sso",
 	})
 }

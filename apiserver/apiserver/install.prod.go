@@ -17,8 +17,8 @@ func (s *SSO) install() {
 	s.Conf.Plat.SetCache(conf.NewRedisCacheConfForProd(1, "#redis_string"))
 
 	s.Conf.API.SetApp(model.Conf{
-		UserLoginFailCount: 5,
-		UserLockTime:       24 * 60 * 60,
-		//此处还会配置某个系统默认对应的角色
+		UserLoginFailCount:    5,
+		UserLockTime:          24 * 60 * 60,
+		AddUserUseDefaultRole: `{"crp-psms":123456}`,
 	})
 }
