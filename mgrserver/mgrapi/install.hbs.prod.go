@@ -30,7 +30,7 @@ func (s *SSO) install() {
 		PicHost: "http://bj.images.cdqykj.cn",
 		Secret:  "B128F779D5741E701923346F7FA9F95C",
 		//SsoApiHost: "http://api.sso.18jiayou0.com:6689",
-		SsoApiHost: "http://api.sso.18jiayou.com:6689",
+		SsoApiHost: "http://api.sso.18jiayou.com",
 		Ident:      "hbs_sso",
 	})
 }
