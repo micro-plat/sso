@@ -27,7 +27,7 @@
         themes: "", //顶部左侧背景颜色,顶部右侧背景颜色,右边菜单背景颜色
         menus: [{}],  //菜单数据
         systemName: "用户权限系统",  //系统名称
-        userinfo: {name:'wule',role:"管理员"},
+        userinfo: {name:'',role:"管理员"},
         indexUrl: "/user/index",
         items:[]
       }
