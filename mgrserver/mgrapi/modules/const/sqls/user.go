@@ -24,7 +24,9 @@ group by t.user_id,
 			t.mobile,
 			t.email,
 			t.create_time,
-			t.ext_params
+			t.ext_params,
+			t.full_name,
+      		t.wx_openid
 order by t.status,t.user_id
 limit @start, @ps
 `

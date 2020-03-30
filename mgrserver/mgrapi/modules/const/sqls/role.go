@@ -26,8 +26,6 @@ from
 where 
 	1 = 1 #role_sql
 	and if(@status <> -1, t.status=@status,1=1)
-order by 
-	t.role_id
 `
 
 //UpdateRoleStatus 修改角色状态
