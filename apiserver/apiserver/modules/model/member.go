@@ -20,6 +20,7 @@ type MemberState struct {
 	LoginURL       string `json:"login_url"`
 	Code           string `json:"code"`
 	ProfilePercent int    `json:"profile_percent"`
+	LastLoginTime  string `json:"last_login_time"`
 	LoginTimeout   int    `json:"login_timeout" m2s:"login_timeout"`
 	ExtParams      string `json:"ext_params" m2s:"ext_params"`
 }

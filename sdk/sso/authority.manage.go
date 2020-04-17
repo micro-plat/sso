@@ -1,6 +1,7 @@
 package sso
 
 import (
+	"fmt"
 	"strings"
 
 	"github.com/micro-plat/hydra/context"
@@ -25,6 +26,7 @@ func CheckAndSetMember(ctx *context.Context, isReallyTimeCheckUser ...bool) erro
 	//验证用户是否登录
 	var m LoginState
 	if err := ctx.Request.GetJWT(&m); err != nil {
+		fmt.Println("获取请求jwt失败：%v", err)
 		return context.NewError(context.ERR_FORBIDDEN, err)
 	}
 

@@ -12,7 +12,7 @@ func Bind(app *hydra.MicroApp, ssoApiHost, ident, secret string) error {
 	if err := saveSSOClient(ssoApiHost, ident, secret); err != nil {
 		return err
 	}
-
+	fmt.Println("获取相关信息")
 	app.Micro("/sso/login/verify", loginVerify)
 	app.Micro("/sso/member/menus/get", userMenus)
 	app.Micro("/sso/member/systems/get", userSystems)

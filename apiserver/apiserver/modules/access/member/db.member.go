@@ -125,6 +125,7 @@ func (l *DBMember) QueryByID(uid int, ident string) (s *model.MemberState, err e
 	s.UserName = data.Get(0).GetString("user_name")
 	s.ExtParams = data.Get(0).GetString("ext_params")
 	s.SysIdent = ident
+	s.LastLoginTime = data.Get(0).GetString("last_login_time")
 
 	return
 }
