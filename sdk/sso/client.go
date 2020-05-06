@@ -60,6 +60,12 @@ func (client *Client) GetAllUser(source string, sourceID string) (*[]*User, erro
 	return s.GetAllUser(source, sourceID)
 }
 
+//ForgetPwd 忘记密码并修改密码
+func (client *Client) ForgetPwd(source, sourceID, possword string) error {
+	s := newUser(client.cfg)
+	return s.ForgetPwd(source, sourceID, possword)
+}
+
 //GetUserDisplayTags 获取用户有权限的Tags
 func (client *Client) GetUserDisplayTags(UserID int, tags string) (result []types.XMap, err error) {
 	tagInput := strings.Split(tags, ",")

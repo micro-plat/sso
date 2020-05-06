@@ -31,6 +31,7 @@ func BindSass(app *hydra.MicroApp, ssoApiHost, ident, secret string) error {
 	}
 	app.Micro("/sso/member/menus/get", userMenus)
 	app.Micro("/sso/member/changepwd", changePwd)
+	app.Micro("/sso/member/forgetpwd", forgetPwd)
 	app.Micro("/sso/member/all/get", getAllUser)
 
 	return nil
@@ -145,6 +146,19 @@ func getTags(ctx *context.Context) (r interface{}) {
 
 	ctx.Log.Info("2. 返回数据")
 	return data
+}
+
+//forgetPwd 忘记密码并修改密码
+func forgetPwd(ctx *context.Context) (r interface{}) {
+	ctx.Log.Info("--------忘记密码并修改密码----------")
+
+	ctx.Log.Info("1: 验证参数")
+	if err := ctx.Request.Check("source", "source_id", "possword"); err != nil {
+		return context.NewError(context.ERR_NOT_ACCEPTABLE, err)
+	}
+
+	ctx.Log.Info("2: 调用sdk忘记密码并修改密码")
+	return GetSSOClient().ForgetPwd(ctx.Request.GetString("source"), ctx.Request.GetString("source_id"), ctx.Request.GetString("possword"))
 }
 
 //ChangePwd 修改密码

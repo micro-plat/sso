@@ -4,6 +4,7 @@ import (
 	"github.com/micro-plat/hydra/component"
 	"github.com/micro-plat/sso/apiserver/apiserver/services/login"
 	"github.com/micro-plat/sso/apiserver/apiserver/services/member"
+	"github.com/micro-plat/sso/apiserver/apiserver/services/password"
 	"github.com/micro-plat/sso/apiserver/apiserver/services/permission"
 	"github.com/micro-plat/sso/apiserver/apiserver/services/system"
 	"github.com/micro-plat/sso/apiserver/apiserver/services/user"
@@ -49,6 +50,7 @@ func (r *SSO) init() {
 	r.Micro("/system/info/get", system.NewInfoHandler)               //获取子系统信息
 	r.Micro("/login/auth", login.NewAuthorizeHandler)                //用户跳转登录后的认证(不是用户名密码登录)
 	r.Micro("/permission/config", permission.NewDataPerssionHandler) //【数据权限】相关接口
+	r.Micro("/member/forget/password", password.NewPasswordHandler)  // 忘记密码再修改密码
 
 	//以下接口是为sass系统使用
 	r.Micro("/user", user.NewUserHandler)                  //用户相关接口
