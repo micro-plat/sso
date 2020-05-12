@@ -1,5 +1,4 @@
-// +build !hbs
-// +build !17supv2
+// +build 17supv2
 
 package main
 
@@ -16,7 +15,7 @@ type SSO struct {
 func main() {
 	app := &SSO{
 		hydra.NewApp(
-			hydra.WithPlatName("sso_v3"),
+			hydra.WithPlatName("yxtx_17supv2_sso"),
 			hydra.WithSystemName("mgrapi"),
 			hydra.WithServerTypes("api")),
 	}

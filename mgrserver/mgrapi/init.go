@@ -39,7 +39,7 @@ func (r *SSO) init() {
 		if _, err := c.GetCache(); err != nil {
 			return err
 		}
-		
+
 		dds.Bind(r.MicroApp, "db")
 		if err := ssoSdk.Bind(r.MicroApp, conf.SsoApiHost, conf.Ident, conf.Secret); err != nil {
 			return err
