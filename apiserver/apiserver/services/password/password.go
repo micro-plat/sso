@@ -25,12 +25,12 @@ func (u *PasswordHandler) ChangeHandle(ctx *context.Context) (r interface{}) {
 	ctx.Log.Info("-------忘记密码再修改密码------")
 
 	ctx.Log.Info("-------验证参数------")
-	if err := ctx.Request.Check("source", "source_id", "password"); err != nil {
+	if err := ctx.Request.Check("source", "user_name", "password"); err != nil {
 		return context.NewError(context.ERR_NOT_ACCEPTABLE, err)
 	}
 
 	ctx.Log.Info("-------获取数据------")
-	err := u.sys.ForgetPassword(ctx.Request.GetString("source"), ctx.Request.GetString("source_id"), ctx.Request.GetString("password"))
+	err := u.sys.ForgetPassword(ctx.Request.GetString("source"), ctx.Request.GetString("user_name"), ctx.Request.GetString("password"))
 	if err != nil {
 		return err
 	}

@@ -19,6 +19,6 @@ func (s *SSO) install() {
 	s.Conf.API.SetApp(model.Conf{
 		UserLoginFailCount:    5,
 		UserLockTime:          24 * 60 * 60,
-		AddUserUseDefaultRole: `{"crp-psms":123456}`,
+		AddUserUseDefaultRole: `{"mer17sup":1}`,
 	})
 }
