@@ -12,6 +12,7 @@ func main() {
 
 	app := &lgweb{
 		hydra.NewApp(
+			// hydra.WithPlatName("17sup_v2_sso"),
 			hydra.WithPlatName("sso_v3"),
 			hydra.WithSystemName("lgweb"),
 			hydra.WithServerTypes("web"),

@@ -1,6 +1,8 @@
 <template>
   <div id="app">
     <login-with-up
+      :requireOper="false"
+      :bgImageUrl="bgImageUrl"
       :copyright="copyright"
       :systemName="systemName"
       :requireCode="requireCode"
@@ -15,6 +17,8 @@
       :codeLabel="codeLabel"
       :codeHolder="codeHolder"
       :sendBtnLabel="sendBtnLabel"
+      :copyrightcode="copyrightcode"
+      :copyRightCallBack="copyRight"
       ref="LoginUp">
     </login-with-up>
   </div>
@@ -34,8 +38,10 @@
     name: 'app',
     data () {
       return {
-        systemName: "能源业务中心运营管理系统",
-        copyright:"四川千行你我科技有限公司Copyright©" + new Date().getFullYear() +" 版权所有",
+        systemName: "",
+        bgImageUrl: "http://images.yxtx888.net/sso/background.jpg",
+        copyright:  "北京卓易豪斯科技有限公司Copyright©" + new Date().getFullYear() +"版权所有" ,
+        copyrightcode:"蜀ICP备20003360号",
         callback:"",
         changePwd:0,
         ident: "",
@@ -45,10 +51,13 @@
         loginNameHolder:"请输入用户名",
         loginPwdLabel:"密码",
         loginPwdHolder:"请输入用户密码",
-        codeLabel:"微信验证码",
-        codeHolder:"请输入微信验证码",
-        sendBtnLabel:"获取微信验证码",
-        requireCode:false,
+        // codeLabel:"短信验证码",
+        // codeHolder:"请输入短信验证码",
+        // sendBtnLabel:"获取短信验证码",
+        codeLabel:process.env.service.codeLabel,
+        codeHolder:process.env.service.codeHolder,
+        sendBtnLabel:process.env.service.sendBtnLabel,
+        requireCode:true,
 
         errorTemplate:{
             901: "系统被锁定,不能登录",
@@ -57,7 +66,7 @@
             905: "用户不存在",
             906: "没有相关系统权限,不能登录",
             907: "用户名或密码错误",
-            912: "请先绑定微信账户,并且关注【运维云管家】",
+            912: "请先绑定手机号",
             913: "验证码不能为空",
             914: "验证码过期或不存在,重新发送验证码",
             915: "验证码错误",
@@ -74,9 +83,10 @@
     },
 
     mounted(){
+      
       window.localStorage.removeItem("__sso_jwt__");
 
-      document.title = "登录-能源业务中心运营管理系统";
+      document.title = "登录";
       this.callback = this.$route.query.callback;
       this.changePwd = this.$route.query.changepwd;
       this.ident = this.$route.params.ident ? this.$route.params.ident : "";
@@ -98,11 +108,13 @@
 
       //发送微信验证码
       getCodeCall(e){
+        console.log(process.env.service,"process.env.service")
          e.ident = this.ident;
+        //  e.ident = "sso";
          this.$refs.LoginUp.showError("发送验证码中...");
          this.$post("/member/sendcode", e)
           .then(res=>{
-            this.$refs.LoginUp.showError("微信验证码发送成功,【运维云管家】中查看");
+            this.$refs.LoginUp.showError(process.env.service.showText);
             this.$refs.LoginUp.countDown();
           })
           .catch(err=>{
@@ -151,6 +163,9 @@
               }
               this.$refs.LoginUp.showError(msg)
           });
+      },
+      copyRight(){
+        window.open("http://www.beian.miit.gov.cn")
       }
 
     }
