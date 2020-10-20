@@ -19,6 +19,7 @@ import (
 	"github.com/micro-plat/sso/loginserver/lgapi/modules/access/member"
 	"github.com/micro-plat/sso/loginserver/lgapi/modules/access/system"
 	"github.com/micro-plat/sso/loginserver/lgapi/modules/const/enum"
+	"github.com/micro-plat/sso/loginserver/lgapi/modules/const/sqls"
 	"github.com/micro-plat/sso/loginserver/lgapi/modules/model"
 )
 
@@ -37,6 +38,7 @@ type IMemberLogic interface {
 	UpdateUserOpenID(data map[string]string) error
 	ValidUserInfo(userName string) (string, error)
 	QueryUserInfoByID(uid int64) (db.QueryRow, error)
+	ValidUserAndGetUserInfo(userName string) (db.QueryRow, error)
 }
 
 //MemberLogic 用户登录管理
@@ -239,4 +241,34 @@ func (m *MemberLogic) ValidUserInfo(userName string) (string, error) {
 		return "", context.NewError(model.ERR_USER_NOTBINDWX, "用户还未绑定微信账户")
 	}
 	return datas.Get(0).GetString("wx_openid"), nil
+}
+
+//ValidUserAndGetUserInfo 验证用户是否存在并获取用户信息
+func (m *MemberLogic) ValidUserAndGetUserInfo(userName string) (db.QueryRow, error) {
+	db := m.c.GetRegularDB()
+
+	count, q, a, err := db.Scalar(sqls.ValidUserNameExist, map[string]interface{}{
+		"user_name": userName,
+	})
+	if err != nil {
+		return nil, fmt.Errorf("验证用户是否存在失败(err:%v),sql:%s,参数:%v", err, q, a)
+	}
+
+	if types.GetInt(count) <= 0 {
+		return nil, fmt.Errorf("用户不存在:%s", userName)
+	}
+
+	userInfo, q, a, err := db.Query(sqls.QueryUserByUserName, map[string]interface{}{
+		"user_name": userName,
+	})
+
+	if err != nil {
+		return nil, fmt.Errorf("根据用户名获取用户信息失败(err:%v),sql:%s,参数:%v", err, q, a)
+	}
+
+	if len(userInfo.Get(0).GetString("mobile")) == 0 {
+		return nil, fmt.Errorf("用户没有绑定手机号")
+	}
+
+	return userInfo.Get(0), nil
 }

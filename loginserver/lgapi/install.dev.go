@@ -27,4 +27,8 @@ func (s *SSO) install() {
 		UserLoginFailCount: 5,
 		UserLockTime:       24 * 60 * 60,
 	})
+	s.Conf.Plat.SetVarConf("conf", "sms_conf", `{
+		"sms_temp_id":"70001",
+		"default_code":true
+	}`)
 }

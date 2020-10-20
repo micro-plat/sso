@@ -13,8 +13,8 @@ func (s *SSO) install() {
 	s.IsDebug = false
 	s.Conf.SetInput(`#redis_string`, `redis连接串`, ``)
 	s.Conf.SetInput(`#mysql_db_string`, `mysql数据库连接串`, `username:password@tcp(host)/sso?charset=utf8`)
-
-	s.Conf.API.SetMain(conf.NewAPIServerConf(":6687"))
+	s.Conf.API.SetMainConf(`{"address":":#api_port"}`) //线上
+	// s.Conf.API.SetMain(conf.NewAPIServerConf(":6687"))
 	s.Conf.API.SetHeaders(conf.NewHeader().WithCrossDomain().WithAllowHeaders("X-Requested-With", "Content-Type", "__sso_jwt__"))
 	s.Conf.Plat.SetDB(conf.NewMysqlConfForProd("#mysql_db_string"))
 	s.Conf.Plat.SetCache(conf.NewRedisCacheConfForProd(1, "#redis_string"))

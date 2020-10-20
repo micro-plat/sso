@@ -7,7 +7,7 @@ require (
 	github.com/micro-plat/hydra v0.13.3
 	github.com/micro-plat/lib4go v0.4.0
 	github.com/micro-plat/sso v1.3.1
-	gitlab.100bm.cn/micro-plat/vcs/vcs v0.0.1
+	gitlab.100bm.cn/micro-plat/vcs/vcs v0.0.0-20200526082626-015e61669b4c
 )
 
 replace github.com/micro-plat/sso => ../../../../../github.com/micro-plat/sso

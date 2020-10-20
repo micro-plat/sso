@@ -3,7 +3,7 @@ package sqls
 //QueryUserByUserName 根据用户名获取用户信息
 const QueryUserByUserName = `
 select 
-	user_id,user_name,password,status,wx_openid,ext_params 
+	user_id,mobile,user_name,password,status,wx_openid,ext_params 
 from sso_user_info 
 where user_name=@user_name
 limit 1;`
@@ -87,3 +87,9 @@ set
 	t.changepwd_times = t.changepwd_times + 1
 where 
 	t.user_id = @user_id`
+
+//ValidUserNameExist 验证用户是否存在
+const ValidUserNameExist = `
+select t.* from sso_user_info t 
+where t.user_name = @user_name
+`

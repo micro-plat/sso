@@ -14,6 +14,7 @@ func main() {
 	app := &SSO{
 		hydra.NewApp(
 			hydra.WithPlatName("sso_v3"),
+			// hydra.WithPlatName("17sup_v2_sso"),
 			hydra.WithSystemName("lgapi"),
 			hydra.WithServerTypes("api")),
 	}
