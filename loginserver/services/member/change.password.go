@@ -25,6 +25,7 @@ func NewChangePwdHandler() (u *ChangePwdHandler) {
 //Handle 修改用户密码
 func (u *ChangePwdHandler) Handle(ctx hydra.IContext) (r interface{}) {
 	ctx.Log().Info("-------修改用户密码---------")
+
 	if err := ctx.Request().Check("expassword", "newpassword"); err != nil {
 		return errs.NewError(http.StatusNotAcceptable, err)
 	}
