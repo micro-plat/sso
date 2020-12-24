@@ -96,7 +96,7 @@
 
     methods:{
       controlLoginType() {
-        this.$post("/system/config/get", {ident: this.ident})
+        this.$post("/mgrweb/system/config/get", {ident: this.ident})
         .then(res => {
             this.loginTitle = "登录到【" + res.system_name + "】";
             this.requireCode = res.require_wx_code;
@@ -112,7 +112,7 @@
          e.ident = this.ident;
         //  e.ident = "sso";
          this.$refs.LoginUp.showError("发送验证码中...");
-         this.$post("/member/sendcode", e)
+         this.$post("/mgrweb/member/sendcode", e)
           .then(res=>{
             this.$refs.LoginUp.showError(process.env.service.showText);
             this.$refs.LoginUp.countDown();
@@ -134,7 +134,7 @@
           username:e.username,
           wxcode:e.wxcode
         }
-        this.$post("/member/login", req)
+        this.$post("/mgrweb/member/login", req)
           .then(res => {
             setTimeout(() => {
               if (this.changePwd == 1) {

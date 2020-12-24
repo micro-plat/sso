@@ -47,9 +47,9 @@ export function changeUrl() {
  * @param {*回调地址, 请带上 http / https} callBackUrl
  */
 export function setRouteBeforeLogin() {
-    VueCookies.remove("__jwt__");
-    localStorage.removeItem("__jwt__");
-    sessionStorage.removeItem("__jwt__");
+    VueCookies.remove("__sso_jwt__");
+    localStorage.removeItem("__sso_jwt__");
+    sessionStorage.removeItem("__sso_jwt__");
 
     if (window.location.pathname != "/" && window.location.pathname != "/login" && window.location.pathname != "/login/") {
         window.localStorage.setItem("beforeLoginUrl", window.location.pathname);
@@ -94,9 +94,9 @@ function changeRouteAfterLogin(vueRouter,userName, userRole) {
  * @param {sso登录地址，和跳转地址不一样, 请注意,不然退不出去, 请带上http} loginUrl 
  */
 function signOut() {
-    VueCookies.remove("__jwt__");
-    localStorage.removeItem("__jwt__");
-    sessionStorage.removeItem("__jwt__");
+    VueCookies.remove("__sso_jwt__");
+    localStorage.removeItem("__sso_jwt__");
+    sessionStorage.removeItem("__sso_jwt__");
 
     window.location.href = window.ssoconfig.loginWebHost + "/" + window.ssoconfig.ident + "/login";
 }
@@ -106,9 +106,9 @@ function signOut() {
  * @param {sso修改密码地址,请带上http} changePwdUrl 
  */
 function changePwd() {
-    VueCookies.remove("__jwt__");
-    localStorage.removeItem("__jwt__");
-    sessionStorage.removeItem("__jwt__");
+    VueCookies.remove("__sso_jwt__");
+    localStorage.removeItem("__sso_jwt__");
+    sessionStorage.removeItem("__sso_jwt__");
 
     window.location.href = window.ssoconfig.loginWebHost + "/" + window.ssoconfig.ident + "/changepwd";
 }

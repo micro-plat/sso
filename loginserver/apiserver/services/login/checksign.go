@@ -7,9 +7,9 @@ import (
 
 	"github.com/micro-plat/hydra"
 	"github.com/micro-plat/lib4go/errs"
+	"github.com/micro-plat/lib4go/net"
+	"github.com/micro-plat/lib4go/security/md5"
 	"github.com/micro-plat/sso/loginserver/apiserver/modules/logic"
-	"github.com/qxnw/lib4go/net"
-	"github.com/qxnw/lib4go/security/md5"
 )
 
 //CheckSignHandler is

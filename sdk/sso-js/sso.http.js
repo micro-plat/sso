@@ -10,9 +10,9 @@ let GetTocken = (function () {
     if (!window.sso_StoragePlace){
         return "";
     }
-    var jwt = window.localStorage.getItem("__jwt__");
+    var jwt = window.localStorage.getItem("__sso_jwt__");
     if (window.sso_StoragePlace == "sessionStorage") {
-        jwt = window.sessionStorage.getItem("__jwt__");
+        jwt = window.sessionStorage.getItem("__sso_jwt__");
     }
     return jwt;
 });
@@ -22,9 +22,9 @@ function SetToken(response) {
         return;
     }
     if (window.sso_StoragePlace == "sessionStorage") {
-        window.sessionStorage.setItem("__jwt__", response.headers.__jwt__);
+        window.sessionStorage.setItem("__sso_jwt__", response.headers.__sso_jwt__);
     } else {
-        window.localStorage.setItem("__jwt__", response.headers.__jwt__);
+        window.localStorage.setItem("__sso_jwt__", response.headers.__sso_jwt__);
     }
 }
 
@@ -57,7 +57,7 @@ axios.interceptors.request.use(
         config.headers = {
           'X-Request-Id':userName + '-' + guid(),
           'Content-Type': 'application/x-www-form-urlencoded',
-          '__jwt__': GetTocken()
+          '__sso_jwt__': GetTocken()
         };
 
         return config;
@@ -70,7 +70,7 @@ axios.interceptors.request.use(
 //http response 拦截器
 axios.interceptors.response.use(
     response => {
-        if (response.headers.__jwt__) {
+        if (response.headers.__sso_jwt__) {
             SetToken(response);
         }
         if (response.status == 200){

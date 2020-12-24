@@ -5,3 +5,4 @@ logs/
 conf/
 /loginserver/loginserver
 /mgrserver/mgrserver
+*bin/

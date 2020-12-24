@@ -3,6 +3,9 @@ package mgrapp
 import (
 	"github.com/micro-plat/hydra"
 	"github.com/micro-plat/hydra/components"
+	_ "github.com/micro-plat/hydra/components/caches/cache/gocache"
+	_ "github.com/micro-plat/hydra/components/caches/cache/redis"
+	_ "github.com/micro-plat/hydra/components/queues/mq/redis"
 	"github.com/micro-plat/hydra/conf/app"
 	"github.com/micro-plat/hydra/hydra/servers/http"
 	"github.com/micro-plat/sso/common/dds"
@@ -30,24 +33,20 @@ var App = hydra.NewApp(
 func init() {
 	install()
 
-	// //每个请求执行前执行
-	// r.Handling(func(ctx hydra.IContext) (rt interface{}) {
-	// 	ctx.Log().Info("handling.....")
-	// 	//验证jwt并缓存登录用户信息
-	// 	if err := ssosdk.CheckAndSetMember(ctx); err != nil {
-	// 		return err
-	// 	}
-	// 	return nil
-	// })
-
-	hydra.OnReady(func() error {
-		//检查配置信息
-		var conf model.Conf
-		appConf, err := app.Cache.GetAPPConf(http.Web)
-		if err != nil {
+	//每个请求执行前执行
+	App.OnHandleExecuting(func(ctx hydra.IContext) (rt interface{}) {
+		ctx.Log().Info("handling.....")
+		//验证jwt并缓存登录用户信息
+		if err := ssoSdk.CheckAndSetMember(ctx); err != nil {
 			return err
 		}
-		_, err = appConf.GetServerConf().GetSubObject("app", &conf)
+		return nil
+	})
+
+	App.OnStarting(func(appconf app.IAPPConf) error {
+		//检查配置信息
+		var conf model.Conf
+		_, err := appconf.GetServerConf().GetSubObject("app", &conf)
 		if err != nil {
 			return err
 		}
@@ -69,7 +68,6 @@ func init() {
 		if err := ssoSdk.Bind(App, conf.SsoApiHost, conf.Ident, conf.Secret); err != nil {
 			return err
 		}
-
 		return nil
 	})
 

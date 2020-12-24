@@ -417,7 +417,7 @@ export default {
     computed:{
       headers(){
         return {
-          "__jwt__": localStorage.getItem("__jwt__")
+          "__sso_jwt__": localStorage.getItem("__sso_jwt__")
         }
       }
     },

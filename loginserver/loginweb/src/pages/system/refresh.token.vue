@@ -14,7 +14,7 @@
     },
     methods:{
         refreshToken() {
-            this.$post("/member/refresh", {})
+            this.$post("/mgrweb/member/refresh", {})
         }
         
     }

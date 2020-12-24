@@ -114,7 +114,7 @@ func (u *DbSystem) Add(input *model.AddSystemInput) (err error) {
 		"theme":         input.Theme,
 		"ident":         input.Ident,
 		"wechat_status": input.Wechat_status,
-		"login_url":     "http://member/login",
+		"login_url":     "http://mgrweb/member/login",
 		"secret":        input.Secret,
 	}
 	_, q, a, err := db.Execute(sqls.AddSubSystem, params)

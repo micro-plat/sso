@@ -3,6 +3,9 @@ package loginapp
 import (
 	"github.com/micro-plat/hydra"
 	"github.com/micro-plat/hydra/components"
+	_ "github.com/micro-plat/hydra/components/caches/cache/gocache"
+	_ "github.com/micro-plat/hydra/components/caches/cache/redis"
+	_ "github.com/micro-plat/hydra/components/queues/mq/redis"
 	"github.com/micro-plat/hydra/conf/app"
 	"github.com/micro-plat/hydra/hydra/servers/http"
 	"github.com/micro-plat/sso/common/module/model"
@@ -30,9 +33,7 @@ var App = hydra.NewApp(
 func init() {
 	//设置配置参数
 	install()
-
-	//服务启动检查
-	hydra.OnReady(func() error {
+	App.OnStarting(func(appConf app.IAPPConf) error {
 		_, err := components.Def.DB().GetDB("db")
 		if err != nil {
 			return err
@@ -44,11 +45,7 @@ func init() {
 		}
 
 		var conf model.Conf
-		varConf, err := app.Cache.GetVarConf()
-		if err != nil {
-			return err
-		}
-
+		varConf := appConf.GetVarConf()
 		_, err = varConf.GetObject("loginconf", "app", &conf)
 		if err != nil {
 			return err
@@ -64,15 +61,24 @@ func init() {
 		return nil
 	})
 
+	//对web后台接口添加全局后处理钩子函数   如果存在jwt的登录信息,就设置到response中返回给前端
+	App.OnHandleExecuted(func(ctx hydra.IContext) interface{} {
+		auth := ctx.User().Auth().Request()
+		if auth != nil {
+			ctx.User().Auth().Response(auth)
+		}
+		return nil
+	})
+
 	//web接口
-	App.API("/login/check", login.NewLoginCheckHandler)       //验证用户是否已登录
-	App.API("/member/login", login.NewLoginHandler)           //用户登录相关
-	App.API("/member/bind", member.NewBindWxHandler)          //绑定微信
-	App.API("/member/changepwd", member.NewChangePwdHandler)  //修改密码
-	App.API("/member/refresh", member.NewRefleshTokenHandler) //刷新用户token
-	App.API("/member/sendcode", member.NewSendCodeHandler)    //发送验证码
-	App.API("/member/system/get", member.NewUserSysHandler)   //获取用户可进的系统信息
-	App.API("/system/config/get", system.NewSystemHandler)    //获取系统的一些配置信息
+	App.API("/mgrweb/login/check", login.NewLoginCheckHandler)       //验证用户是否已登录
+	App.API("/mgrweb/member/login", login.NewLoginHandler)           //用户登录相关
+	App.API("/mgrweb/member/bind", member.NewBindWxHandler)          //绑定微信
+	App.API("/mgrweb/member/changepwd", member.NewChangePwdHandler)  //修改密码
+	App.API("/mgrweb/member/refresh", member.NewRefleshTokenHandler) //刷新用户token
+	App.API("/mgrweb/member/sendcode", member.NewSendCodeHandler)    //发送验证码
+	App.API("/mgrweb/member/system/get", member.NewUserSysHandler)   //获取用户可进的系统信息
+	App.API("/mgrweb/system/config/get", system.NewSystemHandler)    //获取系统的一些配置信息
 	//web接口
 
 	//api 接口

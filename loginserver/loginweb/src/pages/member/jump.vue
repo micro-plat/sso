@@ -26,7 +26,7 @@
 
     methods:{
         checkAndJumpLogin() {
-            this.$post("/login/check",{ident:this.ident})
+            this.$post("/mgrweb/login/check",{ident:this.ident})
             .then(res =>{
                 this.notice = "已登录,跳转中..."; 
                 if (this.callback) { //本地测试走这条线

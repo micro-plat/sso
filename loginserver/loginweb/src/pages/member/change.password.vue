@@ -87,7 +87,7 @@
                 return;
             }
             this.errorMsg = '';
-            this.$post("/member/changepwd", {expassword:this.expassword.trim(), newpassword:this.password1.trim()})
+            this.$post("/mgrweb/member/changepwd", {expassword:this.expassword.trim(), newpassword:this.password1.trim()})
                 .then(res => {
                     this.errorMsg = "密码修改成功";
                      setTimeout(() => {

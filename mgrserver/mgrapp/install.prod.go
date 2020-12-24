@@ -8,6 +8,7 @@ import (
 	"github.com/micro-plat/hydra"
 	"github.com/micro-plat/hydra/conf/server/auth/jwt"
 	"github.com/micro-plat/hydra/conf/server/header"
+	"github.com/micro-plat/hydra/conf/server/static"
 	"github.com/micro-plat/hydra/conf/vars/cache/cacheredis"
 	"github.com/micro-plat/hydra/conf/vars/db"
 	"github.com/micro-plat/sso/mgrserver/webserver/modules/model"
@@ -15,8 +16,9 @@ import (
 
 //bindConf 绑定启动配置， 启动时检查注册中心配置是否存在，不存在则引导用户输入配置参数并自动创建到注册中心
 func install() {
-	hydra.Conf.Web("#api_port").Static().Header(header.WithCrossDomain()).
+	hydra.Conf.Web("#api_port").Static(static.WithArchive("static.zip")).Header(header.WithCrossDomain()).
 		Jwt(jwt.WithName("__sso_jwt__"),
+			jwt.WithAuthURL(""),
 			jwt.WithMode("HS512"),
 			jwt.WithSecret("bf8f3171946d8d5a13cca23aa6080c8e"),
 			jwt.WithExpireAt(36000),
