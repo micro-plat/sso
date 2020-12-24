@@ -54,7 +54,7 @@ func loginVerify(ctx hydra.IContext) (r interface{}) {
 	}
 
 	ctx.Log().Infof("data: %v", data)
-	ctx.Response.SetJWT(data)
+	// ctx.Response.SetJWT(data)
 
 	ctx.Log().Info("3: 返回用户数据")
 	return map[string]interface{}{

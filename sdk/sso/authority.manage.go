@@ -1,18 +1,20 @@
 package sso
 
 import (
+	"net/http"
 	"strings"
 
 	"github.com/micro-plat/hydra"
+	"github.com/micro-plat/lib4go/errs"
 )
 
 //GetMember 获取登录用户信息
 func GetMember(ctx hydra.IContext) *LoginState {
-	v, _ := ctx.Meta.Get("login-state")
-	if v == nil {
+	var s LoginState
+	if err := ctx.User().Auth().Bind(&s); err != nil {
 		return nil
 	}
-	return v.(*LoginState)
+	return &s
 }
 
 //CheckAndSetMember 验证jwt同时保存用户登录信息
@@ -24,6 +26,9 @@ func CheckAndSetMember(ctx hydra.IContext, isReallyTimeCheckUser ...bool) error 
 
 	//验证用户是否登录
 	var m LoginState
+	// if err := ctx.User().Auth().Bind(&m); err != nil {
+	// 	return errs.NewError(http.StatusForbidden, err)
+	// }
 	// if err := ctx.Request().GetJWT(&m); err != nil {
 	// 	fmt.Println("获取请求jwt失败：%v", err)
 	// 	return errs.NewError(http.StatusForbidden, err)

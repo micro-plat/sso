@@ -3,7 +3,6 @@ package sso
 import (
 	"encoding/json"
 	"fmt"
-	"time"
 
 	"github.com/micro-plat/hydra/components"
 	"github.com/micro-plat/lib4go/errs"
