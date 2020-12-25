@@ -20,7 +20,8 @@ func install() {
 		APIKEY("SVS:///check_sign", apikey.WithExcludes("/sso/login/verify", "/image/upload"))
 
 	hydra.Conf.Web("#web_port", api.WithTimeout(300, 300), api.WithDNS("loginapi.sso.18jiayou.com")).
-		Static(static.WithArchive("static.zip")).
+		Static(static.WithArchive("static.zip"),
+			static.WithRewriters("/", "/index.htm", "/default.html", "/default.htm", "/choose", "/refresh", "/errpage", "/bindnotice", "/wxcallback/*", "/bindwx", "/*/changepwd", "/*/jump", "/*/login")).
 		Header(header.WithCrossDomain(), header.WithAllowHeaders("X-Requested-With", "Content-Type", "__sso_jwt__")).
 		Jwt(jwt.WithName("__sso_jwt__"),
 			jwt.WithMode("HS512"),
@@ -35,7 +36,7 @@ func install() {
 		AddUserUseDefaultRole: `{"mer17sup":1}`,
 	})
 	hydra.Conf.Vars().DB().MySQLByConnStr("db", "#mysql_db_string", db.WithConnect(20, 10, 600))
-	hydra.Conf.Vars().Cache().Redis("redis", "#redis_string", cacheredis.WithDbIndex(1))
+	hydra.Conf.Vars().Cache().Redis("cache", "#redis_string", cacheredis.WithDbIndex(1))
 	hydra.Conf.Vars().Cache().GoCache("gocache")
 	hydra.Conf.Vars().HTTP("http")
 }

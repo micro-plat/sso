@@ -22,8 +22,7 @@ func install() {
 			jwt.WithSecret("bf8f3171946d8d5a13cca23aa6080c8e"),
 			jwt.WithExpireAt(36000),
 			jwt.WithHeader(),
-			jwt.WithExcludes("/sso/login/verify", "/image/upload",
-				"/external/other", "/user/index", "/sys/index", "/sys/func/*", "/sys/data/permission/*", "/user/role", "/role/auth/*", "/role/dataauth/*", "/ssocallback")).
+			jwt.WithExcludes("/sso/login/verify", "/image/upload")).
 		Sub("app", model.Conf{
 			PicHost:    "http://sso2.100bm.cn",
 			Secret:     "B128F779D5741E701923346F7FA9F95C",
@@ -32,7 +31,7 @@ func install() {
 		})
 
 	hydra.Conf.Vars().DB().MySQL("db", "root", "rTo0CesHi2018Qx", "192.168.0.36:3306", "sso", db.WithConnect(20, 10, 600))
-	hydra.Conf.Vars().Cache().Redis("redis", `192.168.0.111:6379,192.168.0.112:6379,192.168.0.113:6379,192.168.0.114:6379,192.168.0.115:6379,192.168.0.116:6379`, cacheredis.WithDbIndex(1))
+	hydra.Conf.Vars().Cache().Redis("cache", `192.168.0.111:6379,192.168.0.112:6379,192.168.0.113:6379,192.168.0.114:6379,192.168.0.115:6379,192.168.0.116:6379`, cacheredis.WithDbIndex(1))
 	hydra.Conf.Vars().Cache().GoCache("gocache")
 	hydra.Conf.Vars().HTTP("http")
 }
