@@ -14,14 +14,16 @@ import (
 
 //bindConf 绑定启动配置， 启动时检查注册中心配置是否存在，不存在则引导用户输入配置参数并自动创建到注册中心
 func install() {
-	hydra.Conf.Web("6677").Static(static.WithArchive("static.zip")).Header(header.WithCrossDomain(), header.WithAllowHeaders("__sso_jwt__")).
+	hydra.Conf.Web("6677").Static(static.WithArchive("static.zip"),
+		static.WithRewriters("/", "/index.htm", "/default.html", "/default.htm", "/external/other", "/user/index", "/sys/index", "/sys/func/*", "/sys/data/permission/*", "/user/role", "/role/auth/*", "/role/dataauth/*", "/ssocallback")).
+		Header(header.WithCrossDomain(), header.WithAllowHeaders("__sso_jwt__")).
 		Jwt(jwt.WithName("__sso_jwt__"),
-			jwt.WithAuthURL("http://192.168.5.94:6687/"),
 			jwt.WithMode("HS512"),
 			jwt.WithSecret("bf8f3171946d8d5a13cca23aa6080c8e"),
 			jwt.WithExpireAt(36000),
 			jwt.WithHeader(),
-			jwt.WithExcludes("/sso/login/verify", "/image/upload")).
+			jwt.WithExcludes("/sso/login/verify", "/image/upload",
+				"/external/other", "/user/index", "/sys/index", "/sys/func/*", "/sys/data/permission/*", "/user/role", "/role/auth/*", "/role/dataauth/*", "/ssocallback")).
 		Sub("app", model.Conf{
 			PicHost:    "http://sso2.100bm.cn",
 			Secret:     "B128F779D5741E701923346F7FA9F95C",

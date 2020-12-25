@@ -18,7 +18,6 @@ import (
 func install() {
 	hydra.Conf.Web("#api_port").Static(static.WithArchive("static.zip")).Header(header.WithCrossDomain()).
 		Jwt(jwt.WithName("__sso_jwt__"),
-			jwt.WithAuthURL(""),
 			jwt.WithMode("HS512"),
 			jwt.WithSecret("bf8f3171946d8d5a13cca23aa6080c8e"),
 			jwt.WithExpireAt(36000),
@@ -31,7 +30,7 @@ func install() {
 			Ident:      "sso",
 		})
 	hydra.Conf.Vars().DB().MySQLByConnStr("db", "#mysql_db_string", db.WithConnect(20, 10, 600))
-	hydra.Conf.Vars().Cache().Redis("redis", "#redis_string", cacheredis.WithDbIndex(1))
+	hydra.Conf.Vars().Cache().Redis("redis", "#", cacheredis.WithDbIndex(1))
 	hydra.Conf.Vars().Cache().GoCache("gocache")
 	hydra.Conf.Vars().HTTP("http")
 }

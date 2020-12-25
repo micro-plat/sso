@@ -71,14 +71,14 @@ func init() {
 	})
 
 	//web接口
-	App.API("/mgrweb/login/check", login.NewLoginCheckHandler)       //验证用户是否已登录
-	App.API("/mgrweb/member/login", login.NewLoginHandler)           //用户登录相关
-	App.API("/mgrweb/member/bind", member.NewBindWxHandler)          //绑定微信
-	App.API("/mgrweb/member/changepwd", member.NewChangePwdHandler)  //修改密码
-	App.API("/mgrweb/member/refresh", member.NewRefleshTokenHandler) //刷新用户token
-	App.API("/mgrweb/member/sendcode", member.NewSendCodeHandler)    //发送验证码
-	App.API("/mgrweb/member/system/get", member.NewUserSysHandler)   //获取用户可进的系统信息
-	App.API("/mgrweb/system/config/get", system.NewSystemHandler)    //获取系统的一些配置信息
+	App.Web("/mgrweb/login/check", login.NewLoginCheckHandler)       //验证用户是否已登录
+	App.Web("/mgrweb/member/login", login.NewLoginHandler)           //用户登录相关
+	App.Web("/mgrweb/member/bind", member.NewBindWxHandler)          //绑定微信
+	App.Web("/mgrweb/member/changepwd", member.NewChangePwdHandler)  //修改密码
+	App.Web("/mgrweb/member/refresh", member.NewRefleshTokenHandler) //刷新用户token
+	App.Web("/mgrweb/member/sendcode", member.NewSendCodeHandler)    //发送验证码
+	App.Web("/mgrweb/member/system/get", member.NewUserSysHandler)   //获取用户可进的系统信息
+	App.Web("/mgrweb/system/config/get", system.NewSystemHandler)    //获取系统的一些配置信息
 	//web接口
 
 	//api 接口
