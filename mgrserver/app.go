@@ -9,6 +9,7 @@ import (
 	"github.com/micro-plat/hydra/conf/app"
 	"github.com/micro-plat/hydra/hydra/servers/http"
 	"github.com/micro-plat/sso/common/dds"
+	_ "github.com/micro-plat/sso/mgrserver/mgrapi/modules/const/sqls/mysql"
 	"github.com/micro-plat/sso/mgrserver/mgrapi/modules/model"
 	"github.com/micro-plat/sso/mgrserver/mgrapi/services/base"
 	"github.com/micro-plat/sso/mgrserver/mgrapi/services/function"
@@ -54,7 +55,7 @@ func init() {
 			return err
 		}
 
-		_, err = components.Def.DB().GetDB("db")
+		_, err = components.Def.DB().GetDB()
 		if err != nil {
 			return err
 		}

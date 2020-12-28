@@ -35,7 +35,7 @@ func init() {
 
 	//启动时参数配置检查
 	App.OnStarting(func(appConf app.IAPPConf) error {
-		_, err := components.Def.DB().GetDB("db")
+		_, err := components.Def.DB().GetDB()
 		if err != nil {
 			return err
 		}
