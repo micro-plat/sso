@@ -5,7 +5,7 @@
 #############################################
 
 #获取当前目录
-rootdir=${pwd}
+rootdir=$(pwd)
 
 rm -rf $rootdir/out 
 echo "" 
@@ -33,7 +33,7 @@ rm -rf out/mysql
 echo "3. 打包处理mgrserver"
 cd $rootdir/mgrserver/mgrweb
 echo "a. 下载npm 数据包：npm install"
-npm install 
+#npm install 
 if [ $? -ne 0 ]; then
 	echo "npm install 出错"
 	exit 1
@@ -47,20 +47,22 @@ if [ $? -ne 0 ]; then
 fi
 
 echo "c. 压缩：dist/static"
-tar -zcvf static.tar.gz dist/static/*
+cd dist/static
+tar -zcvf static.tar.gz *
 if [ $? -ne 0 ]; then
 	echo "tar -zcvf static.tar.gz dist/static/* 出错"
 	exit 1
 fi
 
-rm -rf $rootdir/mgrserver/mgrweb/dist
+mkdir -p ${rootdir}/out/mgrserver/
 
 mv static.tar.gz ${rootdir}/out/mgrserver/
 
 sleep 0.1
 
+cd $rootdir
 echo "d. 使用go-bindata 整合static文件"
-go-bindata -o=mgrserver/mgrapi/web/static.go -pkg=web out/mgrserver/static.tar.gz
+go-bindata -o=mgrserver/mgrapi/web/static.go -pkg=web $rootdir/out/mgrserver/static.tar.gz
 if [ $? -ne 0 ]; then
 	echo "go-bindata 整合static出错"
 	exit 1
@@ -82,7 +84,7 @@ echo "4. 打包处理loginserver"
 
 cd $rootdir/loginserver/loginweb
 echo "a. 下载npm 数据包：npm install"
-npm install 
+#npm install 
 if [ $? -ne 0 ]; then
 	echo "npm install 出错"
 	exit 1
@@ -96,13 +98,12 @@ if [ $? -ne 0 ]; then
 fi
 
 echo "c. 压缩：dist/static"
-tar -zcvf static.tar.gz dist/static/*
+cd dist/static
+tar -zcvf static.tar.gz *
 if [ $? -ne 0 ]; then
 	echo "tar -zcvf static.tar.gz dist/static/* 出错"
 	exit 1
 fi
-
-rm -rf $rootdir/loginserver/mgrweb/dist
 
 mkdir -p ${rootdir}/out/loginserver/
 
@@ -110,8 +111,9 @@ mv static.tar.gz ${rootdir}/out/loginserver/
 
 sleep 0.1
 
+cd $rootdir
 echo "d. 使用go-bindata 整合static文件"
-go-bindata -o=loginserver/mgrapi/web/static.go -pkg=web out/loginserver/static.tar.gz
+go-bindata -o=loginserver/loginapi/web/static.go -pkg=web  ${rootdir}/out/loginserver/static.tar.gz
 if [ $? -ne 0 ]; then
 	echo "go-bindata 整合static出错"
 	exit 1
@@ -122,16 +124,18 @@ echo "e. 生成loginserver"
 cd $rootdir/loginserver
 CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o "$rootdir/out/loginserver/bin/loginserver"
 if [ $? -ne 0 ]; then
-	echo "mgrserver 项目编译出错,请检查"
+	echo "loginserver 项目编译出错,请检查"
 	exit 1
 fi
 
 
-rm -rf ${rootdir}/out/mgrserver/static.tar.gz
-rm -rf ${rootdir}/out/loginserver/static.tar.gz
+#rm -rf ${rootdir}/out/mgrserver/static.tar.gz
+#rm -rf ${rootdir}/out/loginserver/static.tar.gz
+#rm -rf ${rootdir}/mgrserver/mgrweb/dist
+#rm -rf ${rootdir}/loginserver/loginweb/dist
+
 
 echo ""
 echo "---------打包loginserver-success-------------------" 
 echo ""
 echo "-----------打包内容${rootdir}/out目录中-------------"
-
