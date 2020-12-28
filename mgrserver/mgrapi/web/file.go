@@ -1,11 +1,10 @@
 package web
 
 import (
-	"io/ioutil"
 	"os"
-	"path/filepath"
 
 	"github.com/micro-plat/hydra"
+	"github.com/micro-plat/sso/common/archive"
 )
 
 //Archive 归档文件
@@ -13,29 +12,9 @@ var Archive = "./static.tar.gz"
 
 func init() {
 	hydra.OnReady(func() error {
-		//处理网址程序
-		_, err := os.Stat(Archive)
-		if err == nil {
-			return nil
-		}
-		if !os.IsNotExist(err) {
-			return err
-		}
-		for _, v := range AssetNames() {
-			err := os.MkdirAll(filepath.Dir(v), 0777)
-			if err != nil {
-				return err
-			}
-			buff, err := Asset(v)
-			if err != nil {
-				return err
-			}
-			err = ioutil.WriteFile(v, buff, 0777)
-			if err != nil {
-				return err
-			}
-		}
-		return nil
+		return archive.OnReady(Archive, AssetNames, Asset)
 	})
-
+	hydra.G.AddCloser(func() error {
+		return os.Remove(Archive)
+	})
 }

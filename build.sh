@@ -62,9 +62,9 @@ mv static.tar.gz ${rootdir}/out/mgrserver/
 
 sleep 0.1
 
-cd $rootdir
 echo "d. 使用go-bindata 整合static文件"
-go-bindata -o=mgrserver/mgrapi/web/static.go -pkg=web $rootdir/out/mgrserver/static.tar.gz
+cd $rootdir/out/mgrserver/
+go-bindata -o=${rootdir}/mgrserver/mgrapi/web/static.go -pkg=web static.tar.gz
 if [ $? -ne 0 ]; then
 	echo "go-bindata 整合static出错"
 	exit 1
@@ -114,9 +114,9 @@ mv static.tar.gz ${rootdir}/out/loginserver/
 
 sleep 0.1
 
-cd $rootdir
 echo "d. 使用go-bindata 整合static文件"
-go-bindata -o=loginserver/loginapi/web/static.go -pkg=web  ${rootdir}/out/loginserver/static.tar.gz
+cd ${rootdir}/out/loginserver/
+go-bindata -o=${rootdir}/loginserver/loginapi/web/static.go -pkg=web  static.tar.gz
 if [ $? -ne 0 ]; then
 	echo "go-bindata 整合static出错"
 	exit 1

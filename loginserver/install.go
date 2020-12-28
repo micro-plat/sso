@@ -10,6 +10,8 @@ import (
 	"github.com/micro-plat/hydra/conf/vars/cache/cacheredis"
 	"github.com/micro-plat/hydra/conf/vars/db"
 	"github.com/micro-plat/sso/common/module/model"
+	"github.com/micro-plat/sso/loginserver/loginapi/web"
+
 )
 
 //bindConf 绑定启动配置， 启动时检查注册中心配置是否存在，不存在则引导用户输入配置参数并自动创建到注册中心
@@ -43,7 +45,7 @@ func devConf() {
 
 	//登录的界面配置
 	hydra.Conf.Web("6687", api.WithTimeout(300, 300), api.WithDNS("login.sso.taosytest.com")).
-		Static(static.WithArchive("static.zip"),
+		Static(static.WithArchive(web.Archive),
 			static.WithRewriters("/", "/index.htm", "/default.html", "/default.htm", "/choose", "/refresh", "/errpage", "/bindnotice", "/wxcallback/*", "/bindwx", "/*/changepwd", "/*/jump", "/*/login")).
 		Header(header.WithCrossDomain(), header.WithAllowHeaders("X-Requested-With", "Content-Type", "__sso_jwt__")).
 		Jwt(jwt.WithName("__sso_jwt__"),
@@ -67,7 +69,7 @@ func prodConf() {
 		APIKEY("SVS:///check_sign", apikey.WithExcludes("/sso/login/verify", "/image/upload"))
 
 	hydra.Conf.Web("#web_port", api.WithTimeout(300, 300), api.WithDNS("loginapi.sso.18jiayou.com")).
-		Static(static.WithArchive("static.zip"),
+		Static(static.WithArchive(web.Archive),
 			static.WithRewriters("/", "/index.htm", "/default.html", "/default.htm", "/choose", "/refresh", "/errpage", "/bindnotice", "/wxcallback/*", "/bindwx", "/*/changepwd", "/*/jump", "/*/login")).
 		Header(header.WithCrossDomain(), header.WithAllowHeaders("X-Requested-With", "Content-Type", "__sso_jwt__")).
 		Jwt(jwt.WithName("__sso_jwt__"),
