@@ -85,13 +85,13 @@ func init() {
 	App.Micro("/member/menu/get", apimember.NewMenuHandler)            //获取用户菜单数据
 	App.Micro("/member/tags/get", apimember.NewTagHandler)             //获取用户有权限的tag数据
 	App.Micro("/member/info/get", apimember.NewMemberHandler)          //获取用户信息
-	App.Micro("/role/user/get", apimember.NewRoleHandler)              //获取角色下的所有用户
+	App.Micro("/member/forget/password", password.NewPasswordHandler)  // 忘记密码再修改密码
 	App.Micro("/member/system/get", apimember.NewMemberSysHandler)     //获取用户可用的子系统
 	App.Micro("/member/all/get", apimember.NewMemberGetAllHandler)     //获取所有用户信息
+	App.Micro("/role/user/get", apimember.NewRoleHandler)              //获取角色下的所有用户
 	App.Micro("/system/info/get", apisystem.NewInfoHandler)            //获取子系统信息
 	App.Micro("/login/auth", apilogin.NewAuthorizeHandler)             //用户跳转登录后的认证(不是用户名密码登录)
 	App.Micro("/permission/config", permission.NewDataPerssionHandler) //【数据权限】相关接口
-	App.Micro("/member/forget/password", password.NewPasswordHandler)  // 忘记密码再修改密码
 
 	//以下接口是为sass系统使用
 	App.Micro("/user", user.NewUserHandler)                     //用户相关接口
