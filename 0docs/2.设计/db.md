@@ -21,7 +21,7 @@
 
 | 字段名      | 类型          | 默认值  | 为空  |  约束  | 描述                 |
 | ----------- | ------------- | :-----: | :---: | :----: | :------------------- |
-| id          | bigint(20)    |         |  否   | PK, IS | 功能编号             |
+| id          | bigint(20)    |         |  否   | PK, IS | 功能编号           32  |
 | name        | varchar(64)  |         |  否   |  IUS   | 功能名称             |
 | parent      | bigint(20)    |         |  否   |  IUS   | 父级编号             |
 | sys_id      | bigint(20)    |         |  否   |  IUS   | 系统编号             |
@@ -38,7 +38,7 @@
 | 字段名          | 类型           | 默认值  | 为空  |  约束  | 描述                         |
 | --------------- | -------------- | :-----: | :---: | :----: | :--------------------------- |
 | user_id         | bigint(20)     |         |  否   | PK, IS | id                           |
-| full_name       | varchar(10)   |         |  否   | PK, IS | 用户全名                     |
+| full_name       | varchar(32)   |         |  否   | PK, IS | 用户全名                     |
 | user_name       | varchar(64)   |         |  否   |  IUS   | 用户名                       |
 | password        | varchar(32)   |         |  否   |  IUS   | 密码                         |
 | email           | varchar(32)   |         |  是   |  IUS   | email                        |
@@ -46,10 +46,13 @@
 | mobile          | varchar(12)   |         |  否   |  IUS   | 电话号码                     |
 | wx_openid       | varchar(64)   |         |  是   |  IUS   | 微信openid                   |
 | create_time     | date           | sysdate |  否   |  IUS   | 创建时间                     |
-| changepwd_times | tinyint(2）     |    0    |  否   |  IUS   | 密码修改次数                 |
-| source          | varchar(36）  |         |  否   |  IUS   | 来源                         |
-| source_id       | varchar(120） |         |  否   |  IUS   | 来源id                       |
+| changepwd_times | bigint(20）     |    0    |  否   |  IUS   | 密码修改次数                 |
 | ext_params      | varchar(1024) |         |  是   |  IUS   | 扩展参数                     |
+| last_login_time     | date           |  |  是   |  IUS   | 最后登录时间                     |
+| source_id       | varchar(128） |         |  否   |  IUS   | 来源id                       |
+| source          | varchar(36）  |         |  否   |  IUS   | 来源                         |
+
+
 
 ### 4. 角色表[sso_role_info]
 
