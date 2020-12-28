@@ -29,7 +29,7 @@
 | icon        | varchar(64)  |         |  是   |  IUS   | 图标                 |
 | path        | varchar(256) |         |  否   |  IUS   | 地址                 |
 | enable      | tinyint(1)     |    0    |  否   |  IUS   | 状态 1: 禁用 0: 正常 |
-| create_time | date          | sysdate |  否   |  IUS   | 创建时间             |
+| create_time | datetime          | current_timestamp |  否   |  IUS   | 创建时间             |
 | sortrank    | bigint(20)    |         |  否   |  IUS   | 排序编号             |
 | is_open     | tinyint(1)     |    0    |  是   |  IUS   | 是否展开             |
 
@@ -45,12 +45,12 @@
 | status          | tinyint(1)      |    1    |  否   |   IS   | 状态 0: 正常 1: 锁定 2: 禁用 |
 | mobile          | varchar(12)   |         |  否   |  IUS   | 电话号码                     |
 | wx_openid       | varchar(64)   |         |  是   |  IUS   | 微信openid                   |
-| create_time     | date           | sysdate |  否   |  IUS   | 创建时间                     |
-| changepwd_times | bigint(20）     |    0    |  否   |  IUS   | 密码修改次数                 |
+| create_time     | datetime           | current_timestamp |  否   |  IUS   | 创建时间                     |
+| changepwd_times | bigint(20)     |    0    |  否   |  IUS   | 密码修改次数                 |
 | ext_params      | varchar(1024) |         |  是   |  IUS   | 扩展参数                     |
-| last_login_time     | date           |  |  是   |  IUS   | 最后登录时间                     |
-| source_id       | varchar(128） |         |  否   |  IUS   | 来源id                       |
-| source          | varchar(36）  |         |  否   |  IUS   | 来源                         |
+| last_login_time     | datetime           |  |  是   |  IUS   | 最后登录时间                     |
+| source_id       | varchar(128) |         |  否   |  IUS   | 来源id                       |
+| source          | varchar(36)  |         |  否   |  IUS   | 来源                         |
 
 
 
@@ -61,7 +61,7 @@
 | role_id     | bigint(20)   |         |  否   | PK, IS | 角色id               |
 | name        | varchar(64) |         |  否   |  IUS   | 角色名称             |
 | status      | tinyint(1)    |    0    |  否   |   IS   | 状态 1: 禁用 0: 正常 |
-| create_time | date         | sysdate |  否   |  IUS   | 创建时间             |
+| create_time | datetime         | current_timestamp |  否   |  IUS   | 创建时间             |
 
 ### 5. 角色表[sso_role_menu]
 
@@ -72,7 +72,7 @@
 | role_id     | bigint(20) |    0    |  否   |   IS   | 角色id               |
 | menu_id     | bigint(20) |    0    |  否   |   IS   | 菜单id               |
 | enable      | tinyint(1)  |    0    |  否   |   IS   | 状态 1: 禁用 0: 正常 |
-| create_time | date       | sysdate |  否   |  IUS   | 创建时间             |
+| create_time | datetime       | current_timestamp |  否   |  IUS   | 创建时间             |
 | sortrank    | bigint(20) |    0    |  否   |   IS   | 排序编号             |
 
 
@@ -85,7 +85,7 @@
 | role_id              | bigint(20) |         |  否   |  IUS   | 角色编号 |
 | permission_config_id | bigint(20) |         |  否   |  IUS   | 规则id   |
 | status      | tinyint(1)    |    0    |  否   |   IS   | 状态 1: 禁用 0: 正常 |
-| create_time          | date       | sysdate |  否   |   IS   | 创建时间 |
+| create_time          | datetime       | current_timestamp |  否   |   IS   | 创建时间 |
 
 
 ### 7. 用户角色关联表[sso_user_role]
@@ -108,7 +108,7 @@
 | name           | varchar(128) |        |  否   |   IS   | 名称                 |
 | table_name     | varchar(128) |        |  否   |   IS   | 表名                 |
 | operate_action | varchar(64)  |        |  否   |   IS   | 操作动作             |
-| rules          | CLOB          |        |  是   |   IS   | 规则json             |
+| rules          | text          |        |  是   |   IS   | 规则json             |
 | remark         | varchar(256) |        |  否   |   IS   | 说明                 |
 | status         | tinyint(4)     |   0    |  否   |   IS   | 状态 0: 启用 1: 禁用 |
 
@@ -121,7 +121,7 @@
 | type        | tinyint(2)     |        |  否   |  IUS   | 类型,10.登录操作 20.系统数据操作  30.角色数据操作  40.菜单数据操作  50.用户数据操作 |
 | sys_id      | bigint(20)    |        |  否   |  IUS   | 系统编号                                                                            |
 | user_id     | bigint(20)    |        |  否   |   IS   | 操作人id                                                                            |
-| create_time | date          |   sysdate     |  否   |   IS   | 创建时间                                                                            |
+| create_time | datetime          |   current_timestamp     |  否   |   IS   | 创建时间                                                                            |
 | content     | varchar(512) |        |  否   |   IS   | 内容I                                                                               |
 
 ### 10. 字典表[dds_dictionary_info]
