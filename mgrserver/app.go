@@ -9,6 +9,7 @@ import (
 	"github.com/micro-plat/hydra/conf/app"
 	"github.com/micro-plat/hydra/hydra/servers/http"
 	"github.com/micro-plat/sso/common/dds"
+	_ "github.com/micro-plat/sso/mgrserver/mgrapi/modules/const/sqls/mysql"
 	"github.com/micro-plat/sso/mgrserver/mgrapi/modules/model"
 	"github.com/micro-plat/sso/mgrserver/mgrapi/services/base"
 	"github.com/micro-plat/sso/mgrserver/mgrapi/services/function"
@@ -21,7 +22,6 @@ import (
 	ssoSdk "github.com/micro-plat/sso/sdk/sso"
 )
 
-//yxtx_17supv2_sso   hbs_sso
 var App = hydra.NewApp(
 	hydra.WithPlatName("sso_new", "新版sso"),
 	hydra.WithSystemName("mgrserver", "sso单点登录管理系统"),
@@ -43,6 +43,7 @@ func init() {
 		return nil
 	})
 
+	//启动事检查配置是否正确
 	App.OnStarting(func(appconf app.IAPPConf) error {
 		//检查配置信息
 		var conf model.Conf
@@ -54,7 +55,7 @@ func init() {
 			return err
 		}
 
-		_, err = components.Def.DB().GetDB("db")
+		_, err = components.Def.DB().GetDB()
 		if err != nil {
 			return err
 		}

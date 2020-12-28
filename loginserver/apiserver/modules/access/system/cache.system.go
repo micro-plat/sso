@@ -39,14 +39,14 @@ func (l *CacheSystem) Save(s db.QueryRow) (err error) {
 	if err != nil {
 		return err
 	}
-	cache := components.Def.Cache().GetRegularCache()
+	cache := components.Def.Cache().GetRegularCache("redis")
 	key := types.Translate(cacheFormat, "ident", s.GetString("ident"))
 	return cache.Set(key, string(buff), l.cacheTime)
 }
 
 //Query 获取系统信息
 func (l *CacheSystem) Query(ident string) (ls db.QueryRow, err error) {
-	cache := components.Def.Cache().GetRegularCache()
+	cache := components.Def.Cache().GetRegularCache("redis")
 	key := types.Translate(cacheFormat, "ident", ident)
 	v, err := cache.Get(key)
 	if err != nil {

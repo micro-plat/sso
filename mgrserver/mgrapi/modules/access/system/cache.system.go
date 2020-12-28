@@ -43,7 +43,7 @@ func (l *CacheSystem) Save(s db.QueryRow) (err error) {
 	if err != nil {
 		return err
 	}
-	cache := components.Def.Cache().GetRegularCache()
+	cache := components.Def.Cache().GetRegularCache("redis")
 	key := types.Translate(cacheFormat, "ident", s.GetString("ident"))
 	return cache.Set(key, string(buff), l.cacheTime)
 }
@@ -51,7 +51,7 @@ func (l *CacheSystem) Save(s db.QueryRow) (err error) {
 //Query 用户登录
 func (l *CacheSystem) Query(ident string) (ls db.QueryRow, err error) {
 	//从缓存中查询用户数据
-	cache := components.Def.Cache().GetRegularCache()
+	cache := components.Def.Cache().GetRegularCache("redis")
 	key := types.Translate(cacheFormat, "ident", ident)
 	v, err := cache.Get(key)
 	if err != nil {
@@ -74,7 +74,7 @@ func (l *CacheSystem) SaveSysInfo(name string, status string, pi int, ps int, s 
 	if err != nil {
 		return err
 	}
-	cache := components.Def.Cache().GetRegularCache()
+	cache := components.Def.Cache().GetRegularCache("redis")
 	keyData := types.Translate(cacheFormatSys, "name", name, "status", status, "pi", pi, "ps", ps)
 	keyCount := types.Translate(cacheFormatSysCount, "name", name, "status", status)
 	if err := cache.Set(keyData, string(buff), l.cacheTime); err != nil {
@@ -86,7 +86,7 @@ func (l *CacheSystem) SaveSysInfo(name string, status string, pi int, ps int, s 
 //QuerySysInfo  获取缓存系统数据
 func (l *CacheSystem) QuerySysInfo(name string, status string, pi int, ps int) (ls db.QueryRows, count int, err error) {
 	//从缓存中获取系统数据
-	cache := components.Def.Cache().GetRegularCache()
+	cache := components.Def.Cache().GetRegularCache("redis")
 	keyData := types.Translate(cacheFormatSys, "name", name, "status", status, "pi", pi, "ps", ps)
 	keyCount := types.Translate(cacheFormatSysCount, "name", name, "status", status)
 	v, err := cache.Get(keyData)
@@ -109,6 +109,6 @@ func (l *CacheSystem) QuerySysInfo(name string, status string, pi int, ps int) (
 
 //FreshSysInfo 刷新缓存
 func (l *CacheSystem) FreshSysInfo() (err error) {
-	cache := components.Def.Cache().GetRegularCache()
+	cache := components.Def.Cache().GetRegularCache("redis")
 	return cache.Delete(cacheFormatSysDel)
 }

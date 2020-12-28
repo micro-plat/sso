@@ -21,7 +21,6 @@ import (
 	"github.com/micro-plat/sso/loginserver/apiserver/services/user"
 )
 
-//17sup_v2_sso   hbs_sso
 var App = hydra.NewApp(
 	hydra.WithPlatName("sso_new", "新版sso"),
 	hydra.WithSystemName("loginserver", "sso单点登录服务"),
@@ -33,8 +32,10 @@ var App = hydra.NewApp(
 func init() {
 	//设置配置参数
 	install()
+
+	//启动时参数配置检查
 	App.OnStarting(func(appConf app.IAPPConf) error {
-		_, err := components.Def.DB().GetDB("db")
+		_, err := components.Def.DB().GetDB()
 		if err != nil {
 			return err
 		}

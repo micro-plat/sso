@@ -38,7 +38,7 @@ func (l *CacheSystemFunc) Save(sysID int, data []map[string]interface{}) (err er
 	if err != nil {
 		return err
 	}
-	cache := components.Def.Cache().GetRegularCache()
+	cache := components.Def.Cache().GetRegularCache("redis")
 	key := types.Translate(cacheFormat, "sysid", sysID)
 	return cache.Set(key, string(buff), l.cacheTime)
 }
@@ -46,7 +46,7 @@ func (l *CacheSystemFunc) Save(sysID int, data []map[string]interface{}) (err er
 //Query 获取缓存中功能数据
 func (l *CacheSystemFunc) Query(sysID int) (data []map[string]interface{}, err error) {
 	//从缓存中查询功能数据
-	cache := components.Def.Cache().GetRegularCache()
+	cache := components.Def.Cache().GetRegularCache("redis")
 	key := types.Translate(cacheFormat, "sysid", sysID)
 	v, err := cache.Get(key)
 	if err != nil {
@@ -64,7 +64,7 @@ func (l *CacheSystemFunc) Query(sysID int) (data []map[string]interface{}, err e
 
 //Fresh 刷新缓存
 func (l *CacheSystemFunc) Fresh() (err error) {
-	cache := components.Def.Cache().GetRegularCache()
+	cache := components.Def.Cache().GetRegularCache("redis")
 	_ = cache.Delete(cacheMenuAll)
 	return cache.Delete(cacheFormatDel)
 }
