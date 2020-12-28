@@ -59,7 +59,7 @@ func devConf() {
 
 //生产环境配置
 func prodConf() {
-	hydra.Conf.Web("#api_port").Static(static.WithArchive("static.zip"),
+	hydra.Conf.Web("#api_port").Static(static.WithArchive(web.Archive),
 		static.WithRewriters("/", "/index.htm", "/default.html", "/default.htm", "/external/other", "/user/index", "/sys/index", "/sys/func/*", "/sys/data/permission/*", "/user/role", "/role/auth/*", "/role/dataauth/*", "/ssocallback")).
 		Header(header.WithCrossDomain()).
 		Jwt(jwt.WithName("__sso_jwt__"),
@@ -74,6 +74,6 @@ func prodConf() {
 			SsoApiHost: "http://api.sso.18jiayou.com",
 			Ident:      "sso",
 		})
-	hydra.Conf.Vars().DB().MySQLByConnStr("db", "#", db.WithConnect(20, 10, 600))
-	hydra.Conf.Vars().Cache().Redis("redis", "#", cacheredis.WithDbIndex(1))
+	hydra.Conf.Vars().DB().MySQLByConnStr("db", "#mysql_db_string", db.WithConnect(20, 10, 600))
+	hydra.Conf.Vars().Cache().Redis("redis", "#redis_string", cacheredis.WithDbIndex(1))
 }
