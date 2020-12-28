@@ -5,7 +5,7 @@
 #############################################
 
 #获取当前目录
-rootdir=${pwd}
+rootdir=$(pwd)
 
 rm -rf $rootdir/out 
 echo "" 
@@ -30,37 +30,42 @@ fi
 rm -rf out/mysql 
 
 
-echo "3. 打包处理mgrserver"
+echo "3. 打包处理mgrserver ${rootdir}/mgrserver/mgrweb"
 cd $rootdir/mgrserver/mgrweb
-echo "a. 下载npm 数据包：npm install"
-npm install 
-if [ $? -ne 0 ]; then
-	echo "npm install 出错"
-	exit 1
-fi
+# echo "a. 下载npm 数据包：npm install"
+# npm install 
+# if [ $? -ne 0 ]; then
+# 	echo "npm install 出错"
+# 	exit 1
+# fi
 
-echo "b. 打包项目：npm run build"
-npm run build 
-if [ $? -ne 0 ]; then
-	echo "npm run build 出错"
-	exit 1
-fi
+# echo "b. 打包项目：npm run build"
+# npm run build 
+# if [ $? -ne 0 ]; then
+# 	echo "npm run build 出错"
+# 	exit 1
+# fi
 
 echo "c. 压缩：dist/static"
-tar -zcvf static.tar.gz dist/static/*
+tar -zcvf static.tar.gz dist/static/* 
+# zip -r static.zip dist/static/static dist/static/index.html
 if [ $? -ne 0 ]; then
 	echo "tar -zcvf static.tar.gz dist/static/* 出错"
 	exit 1
 fi
 
-rm -rf $rootdir/mgrserver/mgrweb/dist
+# rm -rf $rootdir/mgrserver/mgrweb/dist
+
+mkdir -p ${rootdir}/out/mgrserver/
 
 mv static.tar.gz ${rootdir}/out/mgrserver/
+
+# mv static.zip ${rootdir}/out/mgrserver/
 
 sleep 0.1
 
 echo "d. 使用go-bindata 整合static文件"
-go-bindata -o=mgrserver/mgrapi/web/static.go -pkg=web out/mgrserver/static.tar.gz
+go-bindata -o=mgrserver/mgrapi/web/static.go -pkg=web ${rootdir}/out/mgrserver/static.tar.gz
 if [ $? -ne 0 ]; then
 	echo "go-bindata 整合static出错"
 	exit 1
@@ -81,37 +86,39 @@ echo ""
 echo "4. 打包处理loginserver"
 
 cd $rootdir/loginserver/loginweb
-echo "a. 下载npm 数据包：npm install"
-npm install 
-if [ $? -ne 0 ]; then
-	echo "npm install 出错"
-	exit 1
-fi
+# echo "a. 下载npm 数据包：npm install"
+# npm install 
+# if [ $? -ne 0 ]; then
+# 	echo "npm install 出错"
+# 	exit 1
+# fi
 
-echo "b. 打包项目：npm run build"
-npm run build 
-if [ $? -ne 0 ]; then
-	echo "npm run build 出错"
-	exit 1
-fi
+# echo "b. 打包项目：npm run build"
+# npm run build 
+# if [ $? -ne 0 ]; then
+# 	echo "npm run build 出错"
+# 	exit 1
+# fi
 
 echo "c. 压缩：dist/static"
 tar -zcvf static.tar.gz dist/static/*
+# zip -r static.zip dist/static/static dist/static/index.html
 if [ $? -ne 0 ]; then
 	echo "tar -zcvf static.tar.gz dist/static/* 出错"
 	exit 1
 fi
 
-rm -rf $rootdir/loginserver/mgrweb/dist
+# rm -rf $rootdir/loginserver/mgrweb/dist
 
 mkdir -p ${rootdir}/out/loginserver/
 
 mv static.tar.gz ${rootdir}/out/loginserver/
+# mv static.zip ${rootdir}/out/mgrserver/
 
 sleep 0.1
 
 echo "d. 使用go-bindata 整合static文件"
-go-bindata -o=loginserver/mgrapi/web/static.go -pkg=web out/loginserver/static.tar.gz
+go-bindata -o=loginserver/mgrapi/web/static.go -pkg=web ${rootdir}/out/loginserver/static.tar.gz
 if [ $? -ne 0 ]; then
 	echo "go-bindata 整合static出错"
 	exit 1
