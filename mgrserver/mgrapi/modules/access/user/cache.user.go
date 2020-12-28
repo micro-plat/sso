@@ -38,14 +38,14 @@ func NewCacheUser() *CacheUser {
 
 //DeleteLockUserInfo 解锁用户(删除缓存key)
 func (l *CacheUser) DeleteLockUserInfo(userName string) error {
-	cache := components.Def.Cache().GetRegularCache()
+	cache := components.Def.Cache().GetRegularCache("redis")
 	key := types.Translate(cacheConst.CacheLoginFailCount, "user_name", userName)
 	return cache.Delete(key)
 }
 
 func (l *CacheUser) QueryUserBySys(sysID, pi, ps int) (data db.QueryRows, counr int, err error) {
 	//从缓存中查询用户列表数据
-	cache := components.Def.Cache().GetRegularCache()
+	cache := components.Def.Cache().GetRegularCache("redis")
 	keyData := types.Translate(cacheConst.CacheUserSysFormat, "sysID", sysID, "pi", pi, "ps", ps)
 	keyCount := types.Translate(cacheConst.CacheUserSysCountFormat, "sysID", sysID)
 	v, err := cache.Get(keyData)
@@ -73,7 +73,7 @@ func (l *CacheUser) SaveUserBySys(sysID, pi, ps int, data db.QueryRows, count in
 		return err
 	}
 
-	cache := components.Def.Cache().GetRegularCache()
+	cache := components.Def.Cache().GetRegularCache("redis")
 	keyData := types.Translate(cacheConst.CacheUserSysFormat, "sysID", sysID, "pi", pi, "ps", ps)
 	keyCount := types.Translate(cacheConst.CacheUserSysCountFormat, "sysID", sysID)
 	if err := cache.Set(keyData, string(buff), l.cacheTime); err != nil {
@@ -89,7 +89,7 @@ func (l *CacheUser) Save(s *model.QueryUserInput, data db.QueryRows, count int) 
 		return err
 	}
 
-	cache := components.Def.Cache().GetRegularCache()
+	cache := components.Def.Cache().GetRegularCache("redis")
 	keyData := types.Translate(cacheConst.CacheUserListFormat, "userName", s.UserName, "roleID", s.RoleID, "pageSize", s.PageSize, "pageIndex", s.PageIndex)
 	keyCount := types.Translate(cacheConst.CacheUserListCountFormat, "userName", s.UserName, "roleID", s.RoleID)
 	if err := cache.Set(keyData, string(buff), l.cacheTime); err != nil {
@@ -101,7 +101,7 @@ func (l *CacheUser) Save(s *model.QueryUserInput, data db.QueryRows, count int) 
 //Query 获取用户列表数据
 func (l *CacheUser) Query(s *model.QueryUserInput) (data db.QueryRows, total int, err error) {
 	//从缓存中查询用户列表数据
-	cache := components.Def.Cache().GetRegularCache()
+	cache := components.Def.Cache().GetRegularCache("redis")
 	keyData := types.Translate(cacheConst.CacheUserListFormat, "userName", s.UserName, "roleID", s.RoleID, "pageSize", s.PageSize, "pageIndex", s.PageIndex)
 	keyCount := types.Translate(cacheConst.CacheUserListCountFormat, "userName", s.UserName, "roleID", s.RoleID)
 	v, err := cache.Get(keyData)
@@ -125,7 +125,7 @@ func (l *CacheUser) Query(s *model.QueryUserInput) (data db.QueryRows, total int
 
 //Delete 缓存用户列表信息删除
 func (l *CacheUser) Delete() error {
-	cache := components.Def.Cache().GetRegularCache()
+	cache := components.Def.Cache().GetRegularCache("redis")
 	if err := cache.Delete(cacheConst.CacheUserListAll); err != nil {
 		return err
 	}
@@ -138,7 +138,7 @@ func (l *CacheUser) SaveUser(userID int, data db.QueryRow) error {
 	if err != nil {
 		return err
 	}
-	cache := components.Def.Cache().GetRegularCache()
+	cache := components.Def.Cache().GetRegularCache("redis")
 	key := types.Translate(cacheConst.CacheUserFormat, "userID", userID)
 	return cache.Set(key, string(buff), l.cacheTime)
 }
@@ -146,7 +146,7 @@ func (l *CacheUser) SaveUser(userID int, data db.QueryRow) error {
 //QueryUser 获取用户数据
 func (l *CacheUser) QueryUser(userID int) (data db.QueryRow, err error) {
 	//从缓存中查询用户数据
-	cache := components.Def.Cache().GetRegularCache()
+	cache := components.Def.Cache().GetRegularCache("redis")
 	key := types.Translate(cacheConst.CacheUserFormat, "userID", userID)
 	v, err := cache.Get(key)
 	if err != nil {
@@ -164,6 +164,6 @@ func (l *CacheUser) QueryUser(userID int) (data db.QueryRow, err error) {
 
 //DeleteUser 缓存用户信息删除
 func (l *CacheUser) DeleteUser() error {
-	cache := components.Def.Cache().GetRegularCache()
+	cache := components.Def.Cache().GetRegularCache("redis")
 	return cache.Delete(cacheConst.CacheUserDeleteFormat)
 }

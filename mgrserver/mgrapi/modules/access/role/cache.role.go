@@ -44,7 +44,7 @@ func NewCacheRole() *CacheRole {
 	}
 }
 func (l *CacheRole) Get(sysID, roleID int, path string) (data db.QueryRows, err error) {
-	cache := components.Def.Cache().GetRegularCache()
+	cache := components.Def.Cache().GetRegularCache("redis")
 	key := types.Translate(cachePageAuth, "sysID", sysID, "roleID", roleID, "path", path)
 	v, err := cache.Get(key)
 	if err != nil {
@@ -65,7 +65,7 @@ func (l *CacheRole) SetPageAuth(sysID int, roleID int, path string, data db.Quer
 	if err != nil {
 		return err
 	}
-	cache := components.Def.Cache().GetRegularCache()
+	cache := components.Def.Cache().GetRegularCache("redis")
 	key := types.Translate(cachePageAuth, "sysID", sysID, "roleID", roleID, "path", path)
 	return cache.Set(key, string(buff), l.cacheTime)
 }
@@ -76,7 +76,7 @@ func (l *CacheRole) Save(s *model.QueryRoleInput, data db.QueryRows, count int) 
 	if err != nil {
 		return err
 	}
-	cache := components.Def.Cache().GetRegularCache()
+	cache := components.Def.Cache().GetRegularCache("redis")
 	keyData := types.Translate(cacheRoleListFormat, "roleName", s.RoleName, "pageSize", s.PageSize, "pageIndex", s.PageIndex)
 	keyCount := types.Translate(cacheRoleListCountFormat, "roleName", s.RoleName)
 	if err := cache.Set(keyData, string(buff), l.cacheTime); err != nil {
@@ -88,7 +88,7 @@ func (l *CacheRole) Save(s *model.QueryRoleInput, data db.QueryRows, count int) 
 //Query 获取角色列表数据
 func (l *CacheRole) Query(s *model.QueryRoleInput) (data db.QueryRows, count int, err error) {
 	//从缓存中查询角色列表数据
-	cache := components.Def.Cache().GetRegularCache()
+	cache := components.Def.Cache().GetRegularCache("redis")
 	keyData := types.Translate(cacheRoleListFormat, "roleName", s.RoleName, "pageSize", s.PageSize, "pageIndex", s.PageIndex)
 	keyCount := types.Translate(cacheRoleListCountFormat, "roleName", s.RoleName)
 	v, err := cache.Get(keyData)
@@ -112,7 +112,7 @@ func (l *CacheRole) Query(s *model.QueryRoleInput) (data db.QueryRows, count int
 
 //Delete 缓存角色列表信息删除
 func (l *CacheRole) Delete() error {
-	cache := components.Def.Cache().GetRegularCache()
+	cache := components.Def.Cache().GetRegularCache("redis")
 	if err := cache.Delete(cacheRoleListAll); err != nil {
 		return err
 	}
@@ -128,7 +128,7 @@ func (l *CacheRole) SaveAuthMenu(sysID int64, roleID int64, data []map[string]in
 	if err != nil {
 		return err
 	}
-	cache := components.Def.Cache().GetRegularCache()
+	cache := components.Def.Cache().GetRegularCache("redis")
 	key := types.Translate(cacheRoleFormat, "roleID", roleID, "sysID", sysID)
 	return cache.Set(key, string(buff), l.cacheTime)
 }
@@ -136,7 +136,7 @@ func (l *CacheRole) SaveAuthMenu(sysID int64, roleID int64, data []map[string]in
 //QueryAuthMenu 获取角色菜单数据
 func (l *CacheRole) QueryAuthMenu(sysID int64, roleID int64) (data []map[string]interface{}, err error) {
 	//从缓存中查询角色菜单数据
-	cache := components.Def.Cache().GetRegularCache()
+	cache := components.Def.Cache().GetRegularCache("redis")
 	key := types.Translate(cacheRoleFormat, "roleID", roleID, "sysID", sysID)
 	v, err := cache.Get(key)
 	if err != nil {
@@ -154,6 +154,6 @@ func (l *CacheRole) QueryAuthMenu(sysID int64, roleID int64) (data []map[string]
 
 //DeleteAuthMenu 缓存角色菜单信息删除
 func (l *CacheRole) DeleteAuthMenu() error {
-	cache := components.Def.Cache().GetRegularCache()
+	cache := components.Def.Cache().GetRegularCache("redis")
 	return cache.Delete(cacheRoleAll)
 }

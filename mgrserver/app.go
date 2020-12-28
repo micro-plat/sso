@@ -21,7 +21,6 @@ import (
 	ssoSdk "github.com/micro-plat/sso/sdk/sso"
 )
 
-//yxtx_17supv2_sso   hbs_sso
 var App = hydra.NewApp(
 	hydra.WithPlatName("sso_new", "新版sso"),
 	hydra.WithSystemName("mgrserver", "sso单点登录管理系统"),
@@ -43,6 +42,7 @@ func init() {
 		return nil
 	})
 
+	//启动事检查配置是否正确
 	App.OnStarting(func(appconf app.IAPPConf) error {
 		//检查配置信息
 		var conf model.Conf
