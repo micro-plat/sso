@@ -11,6 +11,7 @@ replace github.com/lib4dev/vcs => ../../../github.com/lib4dev/vcs
 require (
 	github.com/Owen-Zhang/base64Captcha v0.0.0-20200225080800-fd8d3d1462c2
 	github.com/asaskevich/govalidator v0.0.0-20200907205600-7a23bdc65eef
+	github.com/go-bindata/go-bindata v3.1.2+incompatible // indirect
 	github.com/go-sql-driver/mysql v1.4.1
 	github.com/jmz331/gpinyin v0.0.0-20150408151959-c4a0503fb352
 	github.com/micro-plat/hydra v0.13.3

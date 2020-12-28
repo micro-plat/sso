@@ -30,7 +30,7 @@ fi
 rm -rf out/mysql 
 
 
-echo "3. 打包处理mgrserver"
+echo "3. 打包处理mgrserver ${rootdir}/mgrserver/mgrweb"
 cd $rootdir/mgrserver/mgrweb
 echo "a. 下载npm 数据包：npm install"
 #npm install 
@@ -57,6 +57,8 @@ fi
 mkdir -p ${rootdir}/out/mgrserver/
 
 mv static.tar.gz ${rootdir}/out/mgrserver/
+
+# mv static.zip ${rootdir}/out/mgrserver/
 
 sleep 0.1
 
@@ -108,6 +110,7 @@ fi
 mkdir -p ${rootdir}/out/loginserver/
 
 mv static.tar.gz ${rootdir}/out/loginserver/
+# mv static.zip ${rootdir}/out/mgrserver/
 
 sleep 0.1
 
