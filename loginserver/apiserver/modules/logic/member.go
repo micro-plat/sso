@@ -70,7 +70,7 @@ func (m *MemberLogic) GetUserInfoByCode(code, ident string) (res *model.LoginSta
 
 	userStr, err := m.cache.GetUserInfoByCode(code)
 	if err != nil || userStr == "" {
-		return nil, errs.NewError(model.ERR_LOGIN_ERROR, fmt.Sprintf("没有登录记录,请先登录,err:%s", err))
+		return nil, errs.NewError(model.ERR_LOGIN_ERROR, fmt.Sprintf("没有登录记录,请先登录,err:%v", err))
 	}
 
 	userID := types.GetInt(userStr, -1)
