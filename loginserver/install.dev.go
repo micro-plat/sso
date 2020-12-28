@@ -16,9 +16,12 @@ import (
 
 //bindConf 绑定启动配置， 启动时检查注册中心配置是否存在，不存在则引导用户输入配置参数并自动创建到注册中心
 func install() {
+
+	//外部接口使用
 	hydra.Conf.API("6689", api.WithDNS("api.sso.taosytest.com")).Header(header.WithCrossDomain()).
 		APIKEY("SVS:///check_sign", apikey.WithExcludes("/sso/login/verify", "/image/upload"))
 
+	//登录的界面配置
 	hydra.Conf.Web("6687", api.WithTimeout(300, 300), api.WithDNS("login.sso.taosytest.com")).
 		Static(static.WithArchive("static.zip"),
 			static.WithRewriters("/", "/index.htm", "/default.html", "/default.htm", "/choose", "/refresh", "/errpage", "/bindnotice", "/wxcallback/*", "/bindwx", "/*/changepwd", "/*/jump", "/*/login")).
