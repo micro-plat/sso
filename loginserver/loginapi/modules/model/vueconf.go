@@ -28,6 +28,15 @@ type VueConf struct {
 
 	//ShowText 短信验证码发送触发成功说明
 	ShowText string `json:"showText" valid:"required"`
+
+	//StaticImageUrl 静态图片地址
+	StaticImageUrl string `json:"staticImageUrl" valid:"required"`
+
+	//CompanyRight 网站所属公司说明
+	CompanyRight string `json:"companyRight" valid:"required"`
+
+	//CompanyRightcode 网站所属公司编码
+	CompanyRightCode string `json:"companyRightCode" valid:"required"`
 }
 
 //Valid 验证配置参数是否合法

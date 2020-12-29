@@ -21,7 +21,7 @@ import (
 	"github.com/micro-plat/sso/loginserver/apiserver/services/permission"
 	apisystem "github.com/micro-plat/sso/loginserver/apiserver/services/system"
 	"github.com/micro-plat/sso/loginserver/apiserver/services/user"
-	"github.com/micro-plat/sso/loginserver/apiserver/services/vueconf"
+	"github.com/micro-plat/sso/loginserver/loginapi/services/vueconf"
 )
 
 var App = hydra.NewApp(
@@ -63,16 +63,16 @@ func init() {
 			return err
 		}
 
-		var vueconf cmodel.VueConf
-		if _, err = appConf.GetServerConf().GetSubObject("vueconf", &vueconf); err != nil {
+		var vueConf cmodel.VueConf
+		if _, err = appConf.GetServerConf().GetSubObject("vueconf", &vueConf); err != nil {
 			return err
 		}
 
-		if err := vueconf.Valid(); err != nil {
+		if err := vueConf.Valid(); err != nil {
 			return err
 		}
 
-		if err := cmodel.SaveConf(&vueconf); err != nil {
+		if err := cmodel.SaveConf(&vueConf); err != nil {
 			return err
 		}
 		return nil
