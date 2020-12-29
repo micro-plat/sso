@@ -51,9 +51,10 @@ func devConf() {
 			Secret:     "B128F779D5741E701923346F7FA9F95C",
 			SsoApiHost: "http://192.168.5.94:6689",
 			Ident:      "sso",
-		}).Sub("vueconf", model.VueConf{
-			Ident:"sso",
-			LoginWebHost:"http://"
+		}).
+		Sub("vueconf", model.VueConf{
+			Ident:        "sso",
+			LoginWebHost: "http://",
 		})
 
 	hydra.Conf.Vars().DB().MySQL("db", "root", "rTo0CesHi2018Qx", "192.168.0.36:3306", "sso_new", db.WithConnect(20, 10, 600))
@@ -76,9 +77,10 @@ func prodConf() {
 			Secret:     "B128F779D5741E701923346F7FA9F95C",
 			SsoApiHost: "http://api.sso.18jiayou.com",
 			Ident:      "sso",
-		}).Sub("vueconf", model.VueConf{
-			Ident:"sso",
-			LoginWebHost:"http://"
+		}).
+		Sub("vueconf", model.VueConf{
+			Ident:        "sso",
+			LoginWebHost: "http://",
 		})
 	hydra.Conf.Vars().DB().MySQLByConnStr("db", "#mysql_db_string", db.WithConnect(20, 10, 600))
 	hydra.Conf.Vars().Cache().Redis("redis", "#redis_string", cacheredis.WithDbIndex(1))
