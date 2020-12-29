@@ -1,11 +1,73 @@
 #!/bin/sh
 
 #############################################
-# ./builid.sh 
+# ./builid.sh pkg
 #############################################
 
 #获取当前目录
 rootdir=$(pwd)
+PATH=$PATH:$GOPATH/bin
+
+pkg=$1
+
+build_static(){
+	filepath=$1
+	echo "" > $filepath/static.go
+	echo "package web" >> $filepath/static.go
+	echo "import \"fmt\"" >> $filepath/static.go
+	echo "func Asset(name string) ([]byte, error) { return nil, fmt.Errorf(\"Asset %s not found\", name) }" >> $filepath/static.go
+	echo "func AssetNames() []string              { return []string{} }" >> $filepath/static.go
+}
+
+
+echo "" 
+echo "-----------打包检查（phorcys， go-bindata) ---"
+echo "" 
+echo "1. 检查 phorcys 存在"
+which phorcys
+if [ $? -ne 0 ]; then
+	echo "1.a. phorcys 不存在，执行安装"
+	
+	dir=$GOPATH/src/gitlab.100bm.cn/devtools/phorcys/phorcys
+	if [ ! -d  $dir ] ; then
+		cd $GOPATH/src/
+		mkdir -p gitlab.100bm.cn/devtools/phorcys
+		cd gitlab.100bm.cn/devtools/phorcys
+
+		echo "1.b. 下载phorcys"
+		git clone https://gitlab.100bm.cn/devtools/phorcys/phorcys.git
+		
+		git checkout dev
+	fi
+	cd $dir
+	git pull 
+	echo "1.c. 编译phorcys"
+	go install 
+
+fi 
+
+cd $rootdir
+echo "1. 检查 go-bindata 存在"
+
+which go-bindata
+if [ $? -ne 0 ]; then
+	echo "2.a. go-bindata 不存在，执行安装"
+	dir=$GOPATH/src/github.com/go-bindata/go-bindata
+	if [ ! -d  $dir ] ; then
+		cd $GOPATH/src
+		mkdir -p github.com/go-bindata
+		cd github.com/go-bindata
+		
+		echo "2.b. 下载go-bindata"
+		git clone https://github.com/go-bindata/go-bindata.git
+	fi
+	
+	cd $dir
+	git pull 
+	cd go-bindata
+ 	echo "2.c. 编译go-bindata"
+	go install 
+fi 
 
 rm -rf $rootdir/out 
 echo "" 
@@ -32,12 +94,12 @@ rm -rf out/mysql
 
 echo "3. 打包处理mgrserver ${rootdir}/mgrserver/mgrweb"
 cd $rootdir/mgrserver/mgrweb
-echo "a. 下载npm 数据包：npm install"
+#echo "a. 下载npm 数据包：npm install"
 #npm install 
-if [ $? -ne 0 ]; then
-	echo "npm install 出错"
-	exit 1
-fi
+# if [ $? -ne 0 ]; then
+# 	echo "npm install 出错"
+# 	exit 1
+# fi
 
 echo "b. 打包项目：npm run build"
 npm run build 
@@ -58,17 +120,20 @@ mkdir -p ${rootdir}/out/mgrserver/
 
 mv static.tar.gz ${rootdir}/out/mgrserver/
 
-# mv static.zip ${rootdir}/out/mgrserver/
-
-sleep 0.1
-
-echo "d. 使用go-bindata 整合static文件"
-cd $rootdir/out/mgrserver/
-go-bindata -o=${rootdir}/mgrserver/mgrapi/web/static.go -pkg=web static.tar.gz
-if [ $? -ne 0 ]; then
-	echo "go-bindata 整合static出错"
-	exit 1
+if [ "$pkg" = "pkg" ] ; then 
+	echo "d. 使用go-bindata 整合static文件"
+	sleep 0.1
+	cd $rootdir/out/mgrserver/
+	go-bindata -o=${rootdir}/mgrserver/mgrapi/web/static.go -pkg=web static.tar.gz
+	if [ $? -ne 0 ]; then
+		echo "go-bindata 整合static出错"
+		exit 1
+	fi
+else
+	echo "build_static 1"
+	build_static ${rootdir}/mgrserver/mgrapi/web
 fi
+
 
 
 echo "e. 生成mgrserver"
@@ -85,12 +150,12 @@ echo ""
 echo "4. 打包处理loginserver"
 
 cd $rootdir/loginserver/loginweb
-echo "a. 下载npm 数据包：npm install"
+#echo "a. 下载npm 数据包：npm install"
 #npm install 
-if [ $? -ne 0 ]; then
-	echo "npm install 出错"
-	exit 1
-fi
+# if [ $? -ne 0 ]; then
+# 	echo "npm install 出错"
+# 	exit 1
+# fi
 
 echo "b. 打包项目：npm run build"
 npm run build 
@@ -110,16 +175,19 @@ fi
 mkdir -p ${rootdir}/out/loginserver/
 
 mv static.tar.gz ${rootdir}/out/loginserver/
-# mv static.zip ${rootdir}/out/mgrserver/
 
-sleep 0.1
-
-echo "d. 使用go-bindata 整合static文件"
-cd ${rootdir}/out/loginserver/
-go-bindata -o=${rootdir}/loginserver/loginapi/web/static.go -pkg=web  static.tar.gz
-if [ $? -ne 0 ]; then
-	echo "go-bindata 整合static出错"
-	exit 1
+if [ "$pkg" = "pkg" ] ; then 
+	echo "d. 使用go-bindata 整合static文件"
+	sleep 0.1
+	cd ${rootdir}/out/loginserver/
+	go-bindata -o=${rootdir}/loginserver/loginapi/web/static.go -pkg=web  static.tar.gz
+	if [ $? -ne 0 ]; then
+		echo "go-bindata 整合static出错"
+		exit 1
+	fi
+else
+	echo "build_static 2"
+	build_static ${rootdir}/loginserver/loginapi/web
 fi
 
 
