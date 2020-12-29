@@ -70,5 +70,5 @@ func checkSign(ctx hydra.IContext, secret string) error {
 	if strings.EqualFold(expect, sign) {
 		return nil
 	}
-	return fmt.Errorf("签名验证失败")
+	return fmt.Errorf("签名验证失败,expect:", expect, ",sign:", sign)
 }
