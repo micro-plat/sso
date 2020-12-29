@@ -10,7 +10,6 @@ import (
 
 //Get 获取某个类型下面的字典信息
 func Get(dicType string) ([]types.XMap, error) {
-
 	dbe := components.Def.DB().GetRegularDB()
 	data, q, a, err := dbe.Query(sqls.Get, map[string]interface{}{
 		"type": dicType,

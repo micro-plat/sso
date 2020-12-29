@@ -3,24 +3,18 @@ package dds
 import (
 	"fmt"
 	"net/http"
-	"sync"
 
 	"github.com/micro-plat/hydra"
-
 	"github.com/micro-plat/lib4go/errs"
 	"github.com/micro-plat/sso/common/dds/access/dictionary"
 	"github.com/micro-plat/sso/common/dds/access/province"
 	"github.com/micro-plat/sso/common/dds/const/config"
 )
 
-var once sync.Once
-
 //Bind 绑定字典api对外接口
 //配置参数，如传入url前缀, "test" 生成url => /test/dds/dictionary/get
 func Bind(app *hydra.MicroApp, options ...config.Option) {
-	once.Do(func() {
-		bindAPI(app, options...)
-	})
+	bindAPI(app, options...)
 }
 
 //bindAPI 绑定一个前端api接口
