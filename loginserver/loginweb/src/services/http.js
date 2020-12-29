@@ -2,7 +2,7 @@ import axios from 'axios';
 const Qs = require('qs');
 axios.defaults.timeout = 5000;
 axios.defaults.withCredentials = true;
-axios.defaults.baseURL = process.env.service.url;
+axios.defaults.baseURL = window.globalConfig.url;
 
 
 let GetTocken = (function () {

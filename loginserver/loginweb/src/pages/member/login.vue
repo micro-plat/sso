@@ -54,9 +54,9 @@
         // codeLabel:"短信验证码",
         // codeHolder:"请输入短信验证码",
         // sendBtnLabel:"获取短信验证码",
-        codeLabel:process.env.service.codeLabel,
-        codeHolder:process.env.service.codeHolder,
-        sendBtnLabel:process.env.service.sendBtnLabel,
+        codeLabel:window.globalConfig.codeLabel,
+        codeHolder:window.globalConfig.codeHolder,
+        sendBtnLabel:window.globalConfig.sendBtnLabel,
         requireCode:true,
 
         errorTemplate:{
@@ -108,13 +108,13 @@
 
       //发送微信验证码
       getCodeCall(e){
-        console.log(process.env.service,"process.env.service")
+        console.log(window.globalConfig,"window.globalConfig")
          e.ident = this.ident;
         //  e.ident = "sso";
          this.$refs.LoginUp.showError("发送验证码中...");
          this.$post("/mgrweb/member/sendcode", e)
           .then(res=>{
-            this.$refs.LoginUp.showError(process.env.service.showText);
+            this.$refs.LoginUp.showError(window.globalConfig.showText);
             this.$refs.LoginUp.countDown();
           })
           .catch(err=>{

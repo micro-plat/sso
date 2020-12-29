@@ -10,28 +10,30 @@ type AssetNamesFunc func() []string
 
 type AssetFunc func(string) ([]byte, error)
 
-func OnReady(archive string, namesFunc AssetNamesFunc, assetFunc AssetFunc) error {
+func OnReady(archive string, namesFunc AssetNamesFunc, assetFunc AssetFunc) (isAuto bool, err error) {
 	//处理网址程序
-	_, err := os.Stat(archive)
+	_, err = os.Stat(archive)
 	if err == nil {
-		return nil
+		return
 	}
 	if !os.IsNotExist(err) {
-		return err
+		return
 	}
+	isAuto = true
 	for _, v := range namesFunc() {
-		err := os.MkdirAll(filepath.Dir(v), 0777)
+		err = os.MkdirAll(filepath.Dir(v), 0777)
 		if err != nil {
-			return err
+			return
 		}
-		buff, err := assetFunc(v)
-		if err != nil {
-			return err
+		buff, err1 := assetFunc(v)
+		if err1 != nil {
+			err = err1
+			return
 		}
 		err = ioutil.WriteFile(v, buff, 0777)
 		if err != nil {
-			return err
+			return
 		}
 	}
-	return nil
+	return
 }

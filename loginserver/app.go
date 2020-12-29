@@ -8,6 +8,7 @@ import (
 	_ "github.com/micro-plat/hydra/components/queues/mq/redis"
 	"github.com/micro-plat/hydra/conf/app"
 	"github.com/micro-plat/hydra/hydra/servers/http"
+	"github.com/micro-plat/sso/common/config"
 	"github.com/micro-plat/sso/common/module/model"
 	cmember "github.com/micro-plat/sso/loginserver/loginapi/modules/access/member"
 	cmodel "github.com/micro-plat/sso/loginserver/loginapi/modules/model"
@@ -21,7 +22,6 @@ import (
 	"github.com/micro-plat/sso/loginserver/apiserver/services/permission"
 	apisystem "github.com/micro-plat/sso/loginserver/apiserver/services/system"
 	"github.com/micro-plat/sso/loginserver/apiserver/services/user"
-	"github.com/micro-plat/sso/loginserver/loginapi/services/vueconf"
 )
 
 var App = hydra.NewApp(
@@ -71,10 +71,6 @@ func init() {
 		if err := vueConf.Valid(); err != nil {
 			return err
 		}
-
-		if err := cmodel.SaveConf(&vueConf); err != nil {
-			return err
-		}
 		return nil
 	})
 
@@ -107,8 +103,6 @@ func init() {
 	App.Web("/mgrweb/member/sendcode", member.NewSendCodeHandler)    //发送验证码
 	App.Web("/mgrweb/member/system/get", member.NewUserSysHandler)   //获取用户可进的系统信息
 	App.Web("/mgrweb/system/config/get", system.NewSystemHandler)    //获取系统的一些配置信息
-	App.Web("/vue/config/get", vueconf.NewGetVueConfHandler)         //获取前端页面配置
-
 	//web接口
 
 	//api 接口
@@ -128,4 +122,7 @@ func init() {
 	App.Micro("/verifycode/get", apilogin.NewVerifyCodeHandler) //生成图片验证码(这个现在没用,以后可能会用到)
 	App.Micro("/check_sign", apilogin.NewCheckSignHandler)      //检查签名
 	//api 接口
+
+	//vue config
+	App.Micro("/config/vue", config.VueHandler)
 }

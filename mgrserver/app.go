@@ -8,6 +8,7 @@ import (
 	_ "github.com/micro-plat/hydra/components/queues/mq/redis"
 	"github.com/micro-plat/hydra/conf/app"
 	"github.com/micro-plat/hydra/hydra/servers/http"
+	"github.com/micro-plat/sso/common/config"
 	"github.com/micro-plat/sso/common/dds"
 	_ "github.com/micro-plat/sso/mgrserver/mgrapi/modules/const/sqls/mysql"
 	"github.com/micro-plat/sso/mgrserver/mgrapi/modules/model"

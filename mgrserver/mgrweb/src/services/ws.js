@@ -1,5 +1,5 @@
 import ReconnectingWebSocket from 'reconnecting-websocket';
-const wsURL = process.env.service.ws
+const wsURL = window.globalConfig.ws
 
 export function ws() {
     const options = {

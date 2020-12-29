@@ -2,9 +2,10 @@ import axios from 'axios';
 import {changeUrl, setRouteBeforeLogin} from './sso.login.js'
 
 const Qs = require('qs');
+
 axios.defaults.timeout = 5000;
 axios.defaults.withCredentials = true;
-axios.defaults.baseURL = ""; //process.env.service.url;
+axios.defaults.baseURL = "";
 
 let GetTocken = (function () {
     if (!window.sso_StoragePlace){
