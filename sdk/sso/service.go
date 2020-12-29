@@ -3,29 +3,26 @@ package sso
 import (
 	"fmt"
 	"net/http"
-	"sync"
 
 	"github.com/micro-plat/hydra"
 	"github.com/micro-plat/lib4go/errs"
 )
 
-var once sync.Once
+//Bind 绑定注册路由
+func Bind(app *hydra.MicroApp) {
+	app.Micro("/sso/login/verify", loginVerify)
+	app.Micro("/sso/member/menus/get", userMenus)
+	app.Micro("/sso/member/systems/get", userSystems)
+	app.Micro("/sso/member/all/get", getAllUser)
+	app.Micro("/sso/system/info/get", systemInfo)
+	app.Micro("/sso/member/tag/display", getTags)
+}
 
-//Bind 自动生成相关的api接口(登录回调验证、获取菜单、获取系统信息)
-func Bind(app *hydra.MicroApp, ssoApiHost, ident, secret string) error {
+//BindConfig 自动生成相关的api接口(登录回调验证、获取菜单、获取系统信息)
+func BindConfig(ssoApiHost, ident, secret string) error {
 	if err := saveSSOClient(ssoApiHost, ident, secret); err != nil {
 		return err
 	}
-
-	once.Do(func() {
-		app.Micro("/sso/login/verify", loginVerify)
-		app.Micro("/sso/member/menus/get", userMenus)
-		app.Micro("/sso/member/systems/get", userSystems)
-		app.Micro("/sso/member/all/get", getAllUser)
-		app.Micro("/sso/system/info/get", systemInfo)
-		app.Micro("/sso/member/tag/display", getTags)
-	})
-
 	return nil
 }
 

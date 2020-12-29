@@ -33,7 +33,7 @@ func NewCacheMember() *CacheMember {
 
 // GetUserInfoByCode 通过key取缓存的登录用户
 func (l *CacheMember) GetUserInfoByCode(code string) (info string, err error) {
-	cache := components.Def.Cache().GetRegularCache()
+	cache := components.Def.Cache().GetRegularCache("redis")
 	cachekey := types.Translate(cachekey.CacheLoginUser, "code", code)
 	info, err = cache.Get(cachekey)
 	return
@@ -41,14 +41,14 @@ func (l *CacheMember) GetUserInfoByCode(code string) (info string, err error) {
 
 // DeleteInfoByCode code
 func (l *CacheMember) DeleteInfoByCode(code string) {
-	cache := components.Def.Cache().GetRegularCache()
+	cache := components.Def.Cache().GetRegularCache("redis")
 	cachekey := types.Translate(cachekey.CacheLoginUser, "code", code)
 	cache.Delete(cachekey)
 }
 
 //GetLoginFailCnt 获取登录失败次数
 func (l *CacheMember) GetLoginFailCnt(userName string) (int, error) {
-	cache := components.Def.Cache().GetRegularCache()
+	cache := components.Def.Cache().GetRegularCache("redis")
 	key := types.Translate(cachekey.CacheLoginFailCount, "user_name", userName)
 	s, err := cache.Get(key)
 	if err != nil {
@@ -62,14 +62,14 @@ func (l *CacheMember) GetLoginFailCnt(userName string) (int, error) {
 
 //ExistsUnLockTime 解锁时间是否过期
 func (l *CacheMember) ExistsUnLockTime(userName string) bool {
-	cache := components.Def.Cache().GetRegularCache()
+	cache := components.Def.Cache().GetRegularCache("redis")
 	key := types.Translate(cachekey.CacheLoginFailUnLockTime, "user_name", userName)
 	return cache.Exists(key)
 }
 
 //SetLoginFail 设置登录失败次数
 func (l *CacheMember) SetLoginFail(userName string) (int, error) {
-	cache := components.Def.Cache().GetRegularCache()
+	cache := components.Def.Cache().GetRegularCache("redis")
 	key := types.Translate(cachekey.CacheLoginFailCount, "user_name", userName)
 	v, err := cache.Increment(key, 1)
 	if err != nil {
@@ -80,28 +80,28 @@ func (l *CacheMember) SetLoginFail(userName string) (int, error) {
 
 //SetLoginSuccess 设置为登录成功
 func (l *CacheMember) SetLoginSuccess(userName string) error {
-	cache := components.Def.Cache().GetRegularCache()
+	cache := components.Def.Cache().GetRegularCache("redis")
 	key := types.Translate(cachekey.CacheLoginFailCount, "user_name", userName)
 	return cache.Delete(key)
 }
 
 //SetUnLockTime 设置解锁过期时间
 func (l *CacheMember) SetUnLockTime(userName string, expire int) error {
-	cache := components.Def.Cache().GetRegularCache()
+	cache := components.Def.Cache().GetRegularCache("redis")
 	key := types.Translate(cachekey.CacheLoginFailUnLockTime, "user_name", userName)
 	return cache.Set(key, time.Now().Add(time.Second*time.Duration(expire)).Format("2006-01-02 15:04:05"), expire)
 }
 
 //SaveLoginVerifyCode 保存登录验证码
 func (l *CacheMember) SaveLoginVerifyCode(userName, verfiyCode string, expire int) error {
-	cache := components.Def.Cache().GetRegularCache()
+	cache := components.Def.Cache().GetRegularCache("redis")
 	key := types.Translate(cachekey.CacheLoginVerifyCode, "user_name", userName)
 	return cache.Set(key, verfiyCode, expire)
 }
 
 //GetLoginVerifyCode 获取登录验证码
 func (l *CacheMember) GetLoginVerifyCode(userName string) (string, error) {
-	cache := components.Def.Cache().GetRegularCache()
+	cache := components.Def.Cache().GetRegularCache("redis")
 	key := types.Translate(cachekey.CacheLoginVerifyCode, "user_name", userName)
 	code, err := cache.Get(key)
 	if err != nil {
