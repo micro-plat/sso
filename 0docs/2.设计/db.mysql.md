@@ -49,8 +49,8 @@
 | changepwd_times | bigint(20)     |    0    |  否   |  IUS   | 密码修改次数                 |
 | ext_params      | varchar(1024) |         |  是   |  IUS   | 扩展参数                     |
 | last_login_time     | datetime           |  |  是   |  IUS   | 最后登录时间                     |
-| source_id       | varchar(128) |         |  否   |  IUS   | 来源id                       |
-| source          | varchar(36)  |         |  否   |  IUS   | 来源                         |
+| source_id       | varchar(128) |    0     |  否   |  IUS   | 来源id                       |
+| source          | varchar(36)  |    ''     |  否   |  IUS   | 来源                         |
 
 
 

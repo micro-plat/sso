@@ -10,7 +10,6 @@ import (
 
 	"github.com/micro-plat/hydra/components"
 	"github.com/micro-plat/lib4go/errs"
-	"github.com/micro-plat/lib4go/security/md5"
 	"github.com/micro-plat/lib4go/types"
 	"github.com/micro-plat/sso/common/module/const/enum"
 	"github.com/micro-plat/sso/common/module/model"
@@ -84,7 +83,7 @@ func (m *LoginLogic) ChangePwd(userID int, expassword string, newpassword string
 		return err
 	}
 
-	if strings.EqualFold(strings.ToLower(md5.Encrypt(expassword)), strings.ToLower(data.Get(0).GetString("password"))) {
+	if strings.EqualFold(strings.ToLower(expassword), strings.ToLower(data.Get(0).GetString("password"))) {
 		m.cache.SetLoginSuccess(userInfo.GetString("user_name"))
 		return m.db.ChangePwd(userID, newpassword)
 	}

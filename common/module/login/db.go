@@ -6,7 +6,6 @@ import (
 	"github.com/micro-plat/hydra/components"
 	"github.com/micro-plat/lib4go/db"
 	"github.com/micro-plat/lib4go/errs"
-	"github.com/micro-plat/lib4go/security/md5"
 	"github.com/micro-plat/lib4go/types"
 	"github.com/micro-plat/sso/common/module/const/sqls"
 	"github.com/micro-plat/sso/common/module/model"
@@ -113,7 +112,7 @@ func (l *DBMember) ChangePwd(userID int, newpassword string) (err error) {
 	db := components.Def.DB().GetRegularDB()
 	_, _, _, err = db.Execute(sqls.SetNewPwd, map[string]interface{}{
 		"user_id":  userID,
-		"password": md5.Encrypt(newpassword),
+		"password": newpassword,
 	})
 	if err != nil {
 		return err

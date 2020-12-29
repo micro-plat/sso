@@ -62,6 +62,7 @@ func init() {
 		if err := model.SaveConf(&conf); err != nil {
 			return err
 		}
+
 		return nil
 	})
 
@@ -115,5 +116,5 @@ func init() {
 	//api 接口
 
 	//vue config
-	App.Micro("/config/vue", config.Vue("loginserver"))
+	App.Micro("/config/vue", config.VueHandler)
 }
