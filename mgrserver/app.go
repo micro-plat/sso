@@ -60,10 +60,6 @@ func init() {
 			return err
 		}
 
-		if err := cmodel.SaveVueConf(&vueconf); err != nil {
-			return err
-		}
-
 		//检查配置信息
 		var conf model.Conf
 		_, err := appconf.GetServerConf().GetSubObject("app", &conf)

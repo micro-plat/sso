@@ -45,13 +45,16 @@ func devConf() {
 			jwt.WithSecret("bf8f3171946d8d5a13cca23aa6080c8e"),
 			jwt.WithExpireAt(36000),
 			jwt.WithHeader(),
-			jwt.WithExcludes("/sso/login/verify", "/image/upload", "/vue/config/get")).
+			jwt.WithExcludes("/sso/login/verify", "/image/upload", "/config/vue")).
 		Sub("app", model.Conf{
 			PicHost:    "http://sso2.100bm.cn",
 			Secret:     "B128F779D5741E701923346F7FA9F95C",
 			SsoApiHost: "http://192.168.5.94:6689",
 			Ident:      "sso",
-		}).Sub("vueconf", model.VueConf{})
+		}).Sub("vueconf", model.VueConf{
+			Ident:"sso",
+			LoginWebHost:"http://"
+		})
 
 	hydra.Conf.Vars().DB().MySQL("db", "root", "rTo0CesHi2018Qx", "192.168.0.36:3306", "sso_new", db.WithConnect(20, 10, 600))
 	hydra.Conf.Vars().Cache().Redis("redis", `192.168.0.111:6379,192.168.0.112:6379,192.168.0.113:6379,192.168.0.114:6379,192.168.0.115:6379,192.168.0.116:6379`, cacheredis.WithDbIndex(1))
@@ -67,12 +70,15 @@ func prodConf() {
 			jwt.WithSecret("bf8f3171946d8d5a13cca23aa6080c8e"),
 			jwt.WithExpireAt(36000),
 			jwt.WithHeader(),
-			jwt.WithExcludes("/sso/login/verify", "/image/upload", "/vue/config/get")).
+			jwt.WithExcludes("/sso/login/verify", "/image/upload", "/config/vue")).
 		Sub("app", model.Conf{
 			PicHost:    "http://bj.images.cdqykj.cn",
 			Secret:     "B128F779D5741E701923346F7FA9F95C",
 			SsoApiHost: "http://api.sso.18jiayou.com",
 			Ident:      "sso",
+		}).Sub("vueconf", model.VueConf{
+			Ident:"sso",
+			LoginWebHost:"http://"
 		})
 	hydra.Conf.Vars().DB().MySQLByConnStr("db", "#mysql_db_string", db.WithConnect(20, 10, 600))
 	hydra.Conf.Vars().Cache().Redis("redis", "#redis_string", cacheredis.WithDbIndex(1))

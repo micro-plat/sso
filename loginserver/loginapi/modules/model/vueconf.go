@@ -46,32 +46,3 @@ func (c VueConf) Valid() error {
 	}
 	return nil
 }
-
-func (c VueConf) ToJson() (string, error) {
-	b, err := json.Marshal(&c)
-	if err != nil {
-		return "", err
-	}
-	return string(b), nil
-}
-
-//SaveConf 保存当前应用程序配置
-func SaveConf(m *VueConf) error {
-	cache := components.Def.Cache().GetRegularCache("gocache")
-	str, err := m.ToJson()
-	if err != nil {
-		return err
-	}
-	return cache.Set("__VueConf__", str, -1)
-}
-
-//GetConf 获取当前应用程序配置
-func GetConf() string {
-	cache := components.Def.Cache().GetRegularCache("gocache")
-	confStr, err := cache.Get("__VueConf__")
-	if err != nil {
-		panic(err)
-	}
-
-	return confStr
-}
