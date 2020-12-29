@@ -51,7 +51,7 @@ func (ch *ImageHandler) Handle(ctx hydra.IContext) (r interface{}) {
 	if err != nil {
 		return err
 	}
-	return url
+	return map[string]string{"data": url}
 }
 
 //saveImg 保存图片
