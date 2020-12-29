@@ -8,6 +8,7 @@ import (
 	_ "github.com/micro-plat/hydra/components/queues/mq/redis"
 	"github.com/micro-plat/hydra/conf/app"
 	"github.com/micro-plat/hydra/hydra/servers/http"
+	"github.com/micro-plat/sso/common/config"
 	"github.com/micro-plat/sso/common/dds"
 	_ "github.com/micro-plat/sso/mgrserver/mgrapi/modules/const/sqls/mysql"
 	"github.com/micro-plat/sso/mgrserver/mgrapi/modules/model"
@@ -85,4 +86,7 @@ func init() {
 	App.Micro("/system/permission", permission.NewDataPermissionHandler) //数据权限功能相关接口
 	App.Micro("/auth/permission", permission.NewAuthPermissionHandler)   //数据权限管理
 	App.Micro("/image/upload", image.NewImageHandler("../image"))        //图片上传
+
+	//vue config
+	App.Micro("/config/vue", config.Vue("mgrserver"))
 }

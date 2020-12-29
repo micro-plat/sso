@@ -8,7 +8,7 @@ import {ssoConfig} from './sso.login';
  * @param {子系统标识} sysIdent}
  */
 export function ssoHttpConfig(apiHost,storagePlace, ssoHost, sysIdent) {
-    if (!apiHost || !ssoHost || !sysIdent) {
+    if (!ssoHost || !sysIdent) {
         console.log("ssoHttpConfig 输入参数有误");
         return
     }

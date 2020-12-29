@@ -8,6 +8,7 @@ import (
 	_ "github.com/micro-plat/hydra/components/queues/mq/redis"
 	"github.com/micro-plat/hydra/conf/app"
 	"github.com/micro-plat/hydra/hydra/servers/http"
+	"github.com/micro-plat/sso/common/config"
 	"github.com/micro-plat/sso/common/module/model"
 	cmember "github.com/micro-plat/sso/loginserver/loginapi/modules/access/member"
 	cmodel "github.com/micro-plat/sso/loginserver/loginapi/modules/model"
@@ -112,4 +113,7 @@ func init() {
 	App.Micro("/verifycode/get", apilogin.NewVerifyCodeHandler) //生成图片验证码(这个现在没用,以后可能会用到)
 	App.Micro("/check_sign", apilogin.NewCheckSignHandler)      //检查签名
 	//api 接口
+
+	//vue config
+	App.Micro("/config/vue", config.Vue("loginserver"))
 }
