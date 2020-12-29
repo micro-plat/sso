@@ -328,8 +328,8 @@ export default {
         if (newValue && newValue.length >= 2) {
           this.$http.post("/user/generateusername", {full_name: newValue})
           .then(res => {
-            this.userInfo.user_name = res.data;
-            this.userInfo.email_pre = res.data;
+            this.userInfo.user_name = res;
+            this.userInfo.email_pre = res;
           })
         }
       }
