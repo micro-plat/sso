@@ -11,6 +11,7 @@ import (
 	"github.com/micro-plat/sso/common/dds"
 	_ "github.com/micro-plat/sso/mgrserver/mgrapi/modules/const/sqls/mysql"
 	"github.com/micro-plat/sso/mgrserver/mgrapi/modules/model"
+	cmodel "github.com/micro-plat/sso/mgrserver/mgrapi/modules/model"
 	"github.com/micro-plat/sso/mgrserver/mgrapi/services/base"
 	"github.com/micro-plat/sso/mgrserver/mgrapi/services/function"
 	"github.com/micro-plat/sso/mgrserver/mgrapi/services/image"
@@ -18,6 +19,7 @@ import (
 	"github.com/micro-plat/sso/mgrserver/mgrapi/services/role"
 	"github.com/micro-plat/sso/mgrserver/mgrapi/services/system"
 	"github.com/micro-plat/sso/mgrserver/mgrapi/services/user"
+	"github.com/micro-plat/sso/mgrserver/mgrapi/services/vueconf"
 
 	ssoSdk "github.com/micro-plat/sso/sdk/sso"
 )
@@ -48,6 +50,19 @@ func init() {
 
 	//启动事检查配置是否正确
 	App.OnStarting(func(appconf app.IAPPConf) error {
+		var vueconf cmodel.VueConf
+		if _, err := appconf.GetServerConf().GetSubObject("vueconf", &vueconf); err != nil {
+			return err
+		}
+
+		if err := vueconf.Valid(); err != nil {
+			return err
+		}
+
+		if err := cmodel.SaveVueConf(&vueconf); err != nil {
+			return err
+		}
+
 		//检查配置信息
 		var conf model.Conf
 		_, err := appconf.GetServerConf().GetSubObject("app", &conf)
@@ -85,4 +100,5 @@ func init() {
 	App.Micro("/system/permission", permission.NewDataPermissionHandler) //数据权限功能相关接口
 	App.Micro("/auth/permission", permission.NewAuthPermissionHandler)   //数据权限管理
 	App.Micro("/image/upload", image.NewImageHandler("../image"))        //图片上传
+	App.Micro("/vue/config/get", vueconf.NewGetVueConfHandler)           //获取前端页面配置
 }
