@@ -9,6 +9,8 @@ import (
 	"github.com/micro-plat/hydra/conf/app"
 	"github.com/micro-plat/hydra/hydra/servers/http"
 	"github.com/micro-plat/sso/common/module/model"
+	cmember "github.com/micro-plat/sso/loginserver/loginapi/modules/access/member"
+	cmodel "github.com/micro-plat/sso/loginserver/loginapi/modules/model"
 	"github.com/micro-plat/sso/loginserver/loginapi/services/login"
 	"github.com/micro-plat/sso/loginserver/loginapi/services/member"
 	"github.com/micro-plat/sso/loginserver/loginapi/services/system"
@@ -58,6 +60,17 @@ func init() {
 
 		if err := model.SaveConf(&conf); err != nil {
 			return err
+		}
+		return nil
+	})
+
+	App.OnHandleExecuting(func(ctx hydra.IContext) interface{} {
+		if ctx.User().Auth().Request() != nil {
+			var out cmodel.LoginState
+			if err := ctx.User().Auth().Bind(&out); err != nil {
+				return err
+			}
+			cmember.Save(ctx, &out)
 		}
 		return nil
 	})
