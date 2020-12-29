@@ -32,15 +32,12 @@ func (ch *ImageHandler) Handle(ctx hydra.IContext) (r interface{}) {
 	ctx.Log().Info("--上传图片--")
 
 	ctx.Log().Info("1.检查参数")
-	if err := ctx.Request().Check("file"); err != nil {
+	if err := ctx.Request().Check("filename"); err != nil {
 		return err
 	}
 
 	ctx.Log().Info("2.检查图片格式")
-	filename, err := ctx.Request().GetFileName("file")
-	if err != nil {
-		return err
-	}
+	filename := ctx.Request().GetString("filename")
 	extName := filepath.Ext(filename)
 	if !util.IsImage(extName) {
 		return fmt.Errorf("不是有效的图片格式：%v", util.ImageExts)
@@ -56,7 +53,7 @@ func (ch *ImageHandler) Handle(ctx hydra.IContext) (r interface{}) {
 
 //saveImg 保存图片
 func (ch *ImageHandler) saveImg(extName string, ctx hydra.IContext) (picURL string, err error) {
-	uf, err := ctx.Request().GetFileBody("filename")
+	uf, err := ctx.Request().GetFileBody("file")
 	if err != nil {
 		return "", fmt.Errorf("无法读取上传的文件:image(err:%v)", err)
 	}
