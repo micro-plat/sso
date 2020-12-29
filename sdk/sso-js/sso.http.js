@@ -99,6 +99,7 @@ function fetch(url, params = {}, config={}) {
         axios.get(url, {params: params}, config)
             .then(response => {
                 if (response.status == 200) {
+                    console.log("---fetch--:",response.data)
                     resolve(response.data);
                 }
             })
@@ -121,6 +122,7 @@ function fetch(url, params = {}, config={}) {
         axios.post(url, data, config)
             .then(response => {
                 if (response.status == 200) {
+                    console.log("--post-",response.data)
                     resolve(response.data);
                 }
             }, err => {
@@ -141,6 +143,7 @@ function patch(url, data = {}, config={}) {
         axios.patch(url, data, config)
             .then(response => {
                 if (response.status == 200) {
+                    console.log("--patch-",response.data)
                     resolve(response.data);
                 }
             }, err => {
@@ -162,6 +165,7 @@ function put(url, data = {}, config={}) {
         axios.put(url, data, config)
             .then(response => {
                 if (response.status == 200) {
+                    console.log("--put-",response.data)
                     resolve(response.data);
                 }
             }, err => {
@@ -183,6 +187,7 @@ function del(url, data = {}, config={}) {
         axios.delete(url, {data:data}, config)
             .then(response => {
                 if (response.status == 200) {
+                    console.log("--del-",response.data)
                     resolve(response.data);
                 }
             }, err => {

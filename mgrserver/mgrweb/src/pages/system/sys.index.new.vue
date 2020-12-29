@@ -522,7 +522,7 @@ export default {
   data() {
     return {
       options: {
-        target: process.env.VUE_APP_API_URL+'/image/upload',   //上传地址
+        target: '/image/upload',   //上传地址
         testChunks: false,
         withCredentials:true,   //携带jwt
         singleFile:true,        //单文件上传
@@ -585,6 +585,7 @@ export default {
   },
   methods: {
     fileEditSuccess (rootFile, file, message, chunk) {
+      consloe.log("fileEditSuccess:",message)
       let data =JSON.parse(message);
       this.editData.logo=data.data;
     },

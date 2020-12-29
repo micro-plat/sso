@@ -57,6 +57,7 @@ export function fetch(url, params = {}) {
             })
             .then(response => {
                 if (response.status == 200) {
+                    console.log("--fetch-",response.data)
                     resolve(response.data);
                 }
             })
@@ -83,6 +84,7 @@ export function post(url, data = {}) {
         axios.post(url, data)
             .then(response => {
                 if (response.status == 200) {
+                    console.log("--post-",response.data)
                     resolve(response.data);
                 }
             }, err => {
@@ -103,6 +105,7 @@ export function patch(url, data = {}) {
         axios.patch(url, data)
             .then(response => {
                 if (response.status == 200) {
+                    console.log("--post-",response.data)
                     resolve(response.data);
                 }
             }, err => {
@@ -124,6 +127,7 @@ export function put(url, data = {}) {
         axios.put(url, data)
             .then(response => {
                 if (response.status == 200) {
+                    console.log("--post-",response.data)
                     resolve(response.data);
                 }
             }, err => {
@@ -145,6 +149,7 @@ export function del(url, data = {}) {
         axios.delete(url, data)
             .then(response => {
                 if (response.status == 200) {
+                    console.log("--post-",response.data)
                     resolve(response.data);
                 }
             }, err => {
