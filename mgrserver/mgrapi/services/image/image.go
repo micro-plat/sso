@@ -32,12 +32,12 @@ func (ch *ImageHandler) Handle(ctx hydra.IContext) (r interface{}) {
 	ctx.Log().Info("--上传图片--")
 
 	ctx.Log().Info("1.检查参数")
-	if err := ctx.Request().Check("filename"); err != nil {
+	if err := ctx.Request().Check("file"); err != nil {
 		return err
 	}
 
 	ctx.Log().Info("2.检查图片格式")
-	filename, err := ctx.Request().GetFileName("filename")
+	filename, err := ctx.Request().GetFileName("file")
 	if err != nil {
 		return err
 	}

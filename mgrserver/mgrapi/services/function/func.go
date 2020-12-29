@@ -30,7 +30,7 @@ func (u *SystemFuncHandler) GetHandle(ctx hydra.IContext) (r interface{}) {
 	ctx.Log().Info("------查询系统模块数据------")
 
 	ctx.Log().Info("1.参数检查")
-	if err := ctx.Request().Bind("id"); err != nil {
+	if err := ctx.Request().Check("id"); err != nil {
 		return errs.NewError(http.StatusNotAcceptable, err)
 	}
 
