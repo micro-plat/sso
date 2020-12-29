@@ -33,6 +33,9 @@ var App = hydra.NewApp(
 func init() {
 	install()
 
+	dds.Bind(App)
+	ssoSdk.Bind(App)
+
 	//每个请求执行前执行
 	App.OnHandleExecuting(func(ctx hydra.IContext) (rt interface{}) {
 		ctx.Log().Info("handling.....")
@@ -51,6 +54,7 @@ func init() {
 		if err != nil {
 			return err
 		}
+
 		if err := model.SaveConf(&conf); err != nil {
 			return err
 		}
@@ -65,8 +69,7 @@ func init() {
 			return err
 		}
 
-		dds.Bind(App)
-		if err := ssoSdk.Bind(App, conf.SsoApiHost, conf.Ident, conf.Secret); err != nil {
+		if err := ssoSdk.BindConfig(conf.SsoApiHost, conf.Ident, conf.Secret); err != nil {
 			return err
 		}
 		return nil

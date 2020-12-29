@@ -1,7 +1,10 @@
 package login
 
 import (
+	"net/http"
+
 	"github.com/micro-plat/hydra"
+	"github.com/micro-plat/lib4go/errs"
 	"github.com/micro-plat/sso/loginserver/loginapi/modules/access/member"
 	"github.com/micro-plat/sso/loginserver/loginapi/modules/logic"
 )
@@ -24,6 +27,9 @@ func (u *LoginCheckHandler) Handle(ctx hydra.IContext) (r interface{}) {
 
 	ctx.Log().Info("1: 获取登录用户信息")
 	mem := member.Get(ctx)
+	if mem == nil {
+		return errs.NewError(http.StatusForbidden, "登录失效")
+	}
 
 	ctx.Log().Info("2:判断系统是否被禁用")
 	ident := ctx.Request().GetString("ident")
