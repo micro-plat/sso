@@ -47,8 +47,6 @@ sign := md5. Encrypt(raw + secret)
 
 ``` 
 
-secret由千行提供，请联系运营
-
 ## 二. 接口规范
 
 该接口文档是基于sdk对接, 以下提供的请求路径为sdk方法名; 
