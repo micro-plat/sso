@@ -8,7 +8,7 @@ import (
 )
 
 //Archive 归档文件
-var Archive = "./static.tar.gz"
+var Archive = "./mgr.static.tar.gz"
 
 func init() {
 	isAutoArchiveFile := false
