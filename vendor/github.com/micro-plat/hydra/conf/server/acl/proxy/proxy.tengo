@@ -1,0 +1,14 @@
+    request := import("request")
+    app := import("app")
+    text := import("text")
+    types :=import("types")
+
+    getUpCluster := func(){
+        ip := request.getClientIP()
+        current:= app.getCurrentClusterName()
+        if text.has_prefix(ip,"192.168."){
+            return app.getClusterNameBy("a")
+        }
+        return current
+    }
+    upcluster := getUpCluster()
