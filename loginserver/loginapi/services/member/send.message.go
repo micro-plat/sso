@@ -9,12 +9,12 @@ import (
 	"strconv"
 	"time"
 
+	"github.com/lib4dev/vcs"
 	"github.com/micro-plat/hydra"
 	"github.com/micro-plat/hydra/components"
 	"github.com/micro-plat/lib4go/errs"
 	"github.com/micro-plat/sso/common/module/model"
 	"github.com/micro-plat/sso/loginserver/loginapi/modules/logic"
-	"gitlab.100bm.cn/micro-plat/vcs/vcs"
 )
 
 //SendMessageHandler 发送短信验证码
