@@ -1,11 +1,8 @@
-# 千行单点登录系统对接规范 V4.0
+# 单点登录系统对接规范 V4.0
 
 ## 一. 文档说明
 
 本文档主要说明子系统对接统一登录系统的交互流程和接口开发规范
-
-接口签名方式: 业务参数, timestamp(Unix时间)按照asc码排序, 不需要任何链接字符拼接成签名原串raw(例如:ident123456timestamp25425325125userID52425)    
-sign=md5(raw+secrect)  
 
 ### 1.1 流程说明
 
@@ -48,7 +45,7 @@ raw := `data[{"title":"20元抵扣券"}]failed_code000failed_msg查询成功orde
 
 sign := md5. Encrypt(raw + secret)
 
-```
+``` 
 
 secret由千行提供，请联系运营
 
@@ -56,15 +53,61 @@ secret由千行提供，请联系运营
 
 该接口文档是基于sdk对接, 以下提供的请求路径为sdk方法名; 
 
+``` Go
+//sdk引入方式
+import "github.com/micro-plat/sso/sdk/sso"
+
+var App = hydra.NewApp(
+	hydra.WithPlatName("sso_new", "新版sso"),
+	hydra.WithSystemName("mgrserver", "sso单点登录管理系统"),
+	hydra.WithUsage("单点登录管理系统"),
+	hydra.WithServerTypes(http.Web),
+	hydra.WithClusterName("prod"))
+
+func init() {
+    //绑定注册接口
+    sso.Bind(App)
+
+    //初始化接口调用配置
+    sso.BindConfig(SsoApiHost, Ident, Secret)
+
+    	//每个请求执行前执行
+	App.OnHandleExecuting(func(ctx hydra.IContext) (rt interface{}) {
+		//验证jwt并缓存登录用户信息
+		if err := sso.CheckAndSetMember(ctx); err != nil {
+			return err
+		}
+		return nil
+    })
+}
+```
+
 ### 2.1  ⽤⼾登录验证以及返回⽤⼾信息(CheckCodeLogin)
 
-**由于现在是跳转登录的⽅式, 因此sso回调⼦系统地址后，⼦系统要调用此接口验证登录的合性**
+由于现在是跳转登录的⽅式, 因此sso回调⼦系统地址后，⼦系统要调用此接口验证登录的合性
 
 #### 2.1.1 请求参数
 
 |参数 |类型|可空|示例|说明|
 | -------------|:--------------:|:--------------:|:--------------:|:--------------:|
 |code| string| 否|123456|调转登录返回给⼦系统的code|
+
+请求示例:
+
+``` Go
+import "github.com/micro-plat/sso/sdk/sso"
+
+func main(){
+    loginInfo,err:= sso.CheckCodeLogin("code")
+    if err != nil {
+        fmt.Println("err:",err)
+        return
+    }
+
+    fmt.Println("loginInfo struct:",loginInfo)
+}
+
+```
 
 #### 2.1.2 响应参数：
 
@@ -92,6 +135,23 @@ secret由千行提供，请联系运营
 | -------------|:--------------:|:--------------:|:--------------:|:--------------:|
 |userName| string| 否|admin|用户名|
 
+请求示例:
+
+``` Go
+import "github.com/micro-plat/sso/sdk/sso"
+
+func main(){
+    userInfo,err:= sso.GetUserInfoByName("admin")
+    if err != nil {
+        fmt.Println("err:",err)
+        return
+    }
+
+    fmt.Println("userInfo struct:",userInfo)
+}
+
+```
+
 #### 2.2.2 响应参数：
 
 |参数 |类型|可空|示例|说明|
@@ -113,9 +173,26 @@ secret由千行提供，请联系运营
 | -------------|:--------------:|:--------------:|:--------------:|:--------------:|
 |userID| string| 否|123456|用户编号|
 
+请求示例:
+
+``` Go
+import "github.com/micro-plat/sso/sdk/sso"
+
+func main(){
+    menusArry,err:= sso.GetUserMenu("123456")
+    if err != nil {
+        fmt.Println("err:",err)
+        return
+    }
+
+    fmt.Println("menusArry []struct:",menusArry)
+}
+
+```
+
 #### 2.3.2 响应参数：
 
-**返回值为以下对象数组**
+返回值为以下对象数组
 
 |参数 |类型|可空|示例|说明|
 | -------------|:--------------:|:--------------:|:--------------:|:--------------:|
@@ -138,6 +215,23 @@ secret由千行提供，请联系运营
 | -------------|:--------------:|:--------------:|:--------------:|:--------------:|
 |ident| string| 否|sso|系统标识码|
 
+请求示例:
+
+``` Go
+import "github.com/micro-plat/sso/sdk/sso"
+
+func main(){
+    sysInfo,err:= sso.GetSystemInfo("ssonew")
+    if err != nil {
+        fmt.Println("err:",err)
+        return
+    }
+
+    fmt.Println("sysInfo struct:",sysInfo)
+}
+
+```
+
 #### 2.4.2 响应参数：
 
 |参数 |类型|可空|示例|说明|
@@ -157,6 +251,23 @@ secret由千行提供，请联系运营
 |参数 |类型|可空|示例|说明|
 | -------------|:--------------:|:--------------:|:--------------:|:--------------:|
 |userID| string| 否|123456|用户编号|
+
+请求示例:
+
+``` Go
+import "github.com/micro-plat/sso/sdk/sso"
+
+func main(){
+    sysArry,err:= sso.GetUserOtherSystems("12456")
+    if err != nil {
+        fmt.Println("err:",err)
+        return
+    }
+
+    fmt.Println("sysArry []struct:",sysArry)
+}
+
+```
 
 #### 2.5.2 响应参数：
 
@@ -178,6 +289,23 @@ secret由千行提供，请联系运营
 | -------------|:--------------:|:--------------:|:--------------:|:--------------:|
 |source| string| 否|wx|用户来源|
 |sourceID| string| 否|123456|用户来源id|
+
+请求示例:
+
+``` Go
+import "github.com/micro-plat/sso/sdk/sso"
+
+func main(){
+    usersArry,err:= sso.GetAllUser("source","sourceID")
+    if err != nil {
+        fmt.Println("err:",err)
+        return
+    }
+
+    fmt.Println("usersArry []struct:",usersArry)
+}
+
+```
 
 #### 2.6.2 响应参数：
 
@@ -202,9 +330,26 @@ secret由千行提供，请联系运营
 |sourceID| string| 否|123456|用户来源id|
 |possword| string| 否|e10adc3949ba59abbe56e057f20f883e|密码 md5|
 
+请求示例:
+
+``` Go
+import "github.com/micro-plat/sso/sdk/sso"
+
+func main(){
+    err:= sso.ForgetPwd("source","sourceID","possword")
+    if err != nil {
+        fmt.Println("err:",err)
+        return
+    }
+
+    fmt.Println("success")
+}
+
+```
+
 #### 2.7.2 响应参数：
 
-**返回值为error, 如果error为空则标识操作成功**
+返回值为error, 如果error为空则标识操作成功
 
 ### 2.8  获取用户有权限的Tags(GetUserTags)
 
@@ -215,9 +360,27 @@ secret由千行提供，请联系运营
 |UserID| string| 否|123456|用户编号|
 |tags| string| 否|tag1, tag2, tag3|验证的tag列表|
 
+请求示例:
+
+``` Go
+import "github.com/micro-plat/sso/sdk/sso"
+
+func main(){
+
+    tagMaps, err:= sso.GetUserTags("UserID","tags")
+    if err != nil {
+        fmt.Println("err:",err)
+        return
+    }
+
+    fmt.Println("tagMaps []map:",tagMaps)
+
+}
+```
+
 #### 2.8.2 响应参数：
 
-**返回值为以下格式的[]map**
+返回值为以下格式的[]map
 
 |参数 |类型|可空|示例|说明|
 | -------------|:--------------:|:--------------:|:--------------:|:--------------:|
@@ -238,9 +401,25 @@ secret由千行提供，请联系运营
 |sourceID   | string| 是|123456|用户来源|
 |sourceSecrect| string| 否|e10adc3949ba59abbe56e057f20f883e|签名密钥(对应的系统的签名密钥)|
 
+请求示例:
+
+``` Go
+import "github.com/micro-plat/sso/sdk/sso"
+
+func main(){
+     err:= sso.AddUser("userName", "mobile", "fullName", "targetIdent", "source", "sourceSecrect" , "sourceID" , 123)
+    if err != nil {
+        fmt.Println("err:",err)
+        return
+    }
+
+    fmt.Println("success")
+}
+```
+
 #### 2.9.2 响应参数：
 
-**返回值为error, 如果error为空则标识操作成功**
+返回值为error, 如果error为空则标识操作成功
 
 ### 2.10  系统登录(Login)
 
@@ -250,6 +429,22 @@ secret由千行提供，请联系运营
 | -------------|:--------------:|:--------------:|:--------------:|:--------------:|
 |userName   | string| 否|admin|用户名|
 |password     | string| 否|e10adc3949ba59abbe56e057f20f883e|密码 md5|
+
+请求示例:
+
+``` Go
+import "github.com/micro-plat/sso/sdk/sso"
+
+func main(){
+     loginInfo,err:= sso.Login("userName", "password")
+    if err != nil {
+        fmt.Println("err:",err)
+        return
+    }
+
+    fmt.Println("loginInfo struct:",loginInfo)
+}
+```
 
 #### 2.10.2 响应参数：
 
@@ -279,37 +474,42 @@ secret由千行提供，请联系运营
 |expassword     | string| 否|e10adc3949ba59abbe56e057f20f883e|原密码, md5|
 |newpassword   | string| 否|e10adc3949ba59abbe56e057f20f883e|新密码, md5|
 
+请求示例:
+
+``` Go
+import "github.com/micro-plat/sso/sdk/sso"
+
+func main(){
+    err:= sso.ChangePwd(123456, "expassword", "newpassword")
+    if err != nil {
+        fmt.Println("err:",err)
+        return
+    }
+
+    fmt.Println("success")
+}
+```
+
 #### 2.11.2 响应参数：
 
-**返回值为error, 如果error为空则标识操作成功**
+返回值为error, 如果error为空则标识操作成功
 
 ## 三、附件
 
 ### 3.1 接口错误码
 
-**所有的错误码都在返回的error对象中**
+所有的错误码都在返回的error对象中
 
-|错误码	 |结果说明|
-| -------------|:--------------:|
-| 403    | 登录失效|
-| 404    | 服务不存在|
-|406   | 参数错误|
-| 500  |系统错误|
-| 510  |系统错误|
-| 901  |系统被锁定|
-| 902  |用户被锁定|
-| 903  |用户被禁用|
-| 904  |登录出错, 稍后再试|
-| 905  |用户不存在|
-| 906  |没有相关系统权限|
-| 907  |用户名或密码错误|
-| 908  |用户原密码错误|
-| 909  |绑定信息错误(绑定用户微信账号)|
-| 910  |用户已绑定微信|
-| 911  |绑定超时(微信绑定)|
-| 912  |用户还未绑定微信账户|
-| 913  |验证码为空|
-| 914  |验证码过期|
-| 915  |验证码错误|
-| 916  |二维码超时(用户系统生成的二维码时间过期)|
-| 917  |一个微信只能绑定一个账户|
+|错误码	 |结果说明|错误码	 |结果说明|
+| -------------|:--------------:| -------------|:--------------:|
+| 403           |登录失效       | 907           |用户名或密码错误|
+| 404           |服务不存在     | 908           |用户原密码错误|
+| 406            |参数错误       | 909           |绑定信息错误(绑定用户微信账号)|
+| 500           |系统错误       | 910           |用户已绑定微信|
+| 510           |系统错误       | 911           |绑定超时(微信绑定)|
+| 901           |系统被锁定       | 912           |用户还未绑定微信账户|
+| 902           |用户被锁定       | 913           |验证码为空|
+| 903           |用户被禁用       | 914           |验证码过期|
+| 904           |登录出错, 稍后再试| 915           |验证码错误|
+| 905           |用户不存在| 916           |二维码超时(用户系统生成的二维码时间过期)|
+| 906           |没有相关系统权限| 917           |一个微信只能绑定一个账户|
