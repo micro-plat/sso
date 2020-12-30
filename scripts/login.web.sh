@@ -30,16 +30,16 @@ fi
 
 echo "2. 压缩：loginweb/dist/static"
 cd dist/static
-rm -f static.tar.gz
-tar -zcvf static.tar.gz * > /dev/null
+rm -f login.static.tar.gz
+tar -zcvf login.static.tar.gz * > /dev/null
 if [ $? -ne 0 ]; then
-	echo "tar -zcvf static.tar.gz dist/static/* 出错"
+	echo "tar -zcvf login.static.tar.gz dist/static/* 出错"
 	exit 1
 fi
 
-mkdir -p ${rootdir}/out/loginserver/bin
+mkdir -p ${rootdir}/out
 
-mv static.tar.gz ${rootdir}/out/loginserver/bin
+mv login.static.tar.gz ${rootdir}/out/
 sleep 0.1
 
 echo "3. 生成资源文件:loginserver/loginapi/web/static.go"
@@ -50,8 +50,8 @@ if [ "$pkg" = "none" ] ; then
 	sh $rootdir/scripts/empty.asset.sh ${rootdir}/loginserver/loginapi/web 
 else
 	echo "3.1. 整合static.tar.gz文件"
-	cd ${rootdir}/out/loginserver/bin
-	go-bindata -o=${rootdir}/loginserver/loginapi/web/static.go -pkg=web  static.tar.gz > /dev/null
+	cd ${rootdir}/out
+	go-bindata -o=${rootdir}/loginserver/loginapi/web/static.go -pkg=web  login.static.tar.gz > /dev/null
 	if [ $? -ne 0 ]; then
 		echo "go-bindata 整合static出错"
 		exit 1
