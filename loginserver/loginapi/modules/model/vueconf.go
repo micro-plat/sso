@@ -1,11 +1,9 @@
 package model
 
 import (
-	"encoding/json"
 	"fmt"
 
 	"github.com/asaskevich/govalidator"
-	"github.com/micro-plat/hydra/components"
 )
 
 //VueConf 前端页面配置
