@@ -21,6 +21,7 @@ import (
 	"github.com/micro-plat/sso/loginserver/apiserver/services/permission"
 	apisystem "github.com/micro-plat/sso/loginserver/apiserver/services/system"
 	"github.com/micro-plat/sso/loginserver/apiserver/services/user"
+	"github.com/micro-plat/sso/loginserver/apiserver/services/vueconf"
 )
 
 var App = hydra.NewApp(
@@ -61,6 +62,19 @@ func init() {
 		if err := model.SaveConf(&conf); err != nil {
 			return err
 		}
+
+		var vueconf cmodel.VueConf
+		if _, err = appConf.GetServerConf().GetSubObject("vueconf", &vueconf); err != nil {
+			return err
+		}
+
+		if err := vueconf.Valid(); err != nil {
+			return err
+		}
+
+		if err := cmodel.SaveConf(&vueconf); err != nil {
+			return err
+		}
 		return nil
 	})
 
@@ -93,6 +107,8 @@ func init() {
 	App.Web("/mgrweb/member/sendcode", member.NewSendCodeHandler)    //发送验证码
 	App.Web("/mgrweb/member/system/get", member.NewUserSysHandler)   //获取用户可进的系统信息
 	App.Web("/mgrweb/system/config/get", system.NewSystemHandler)    //获取系统的一些配置信息
+	App.Web("/vue/config/get", vueconf.NewGetVueConfHandler)         //获取前端页面配置
+
 	//web接口
 
 	//api 接口
