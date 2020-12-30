@@ -8,6 +8,7 @@ import (
 
 //VueConf 前端页面配置
 type VueConf struct {
+	APIURL string `json:"apiURL"`
 
 	//Wxcallbackhost 微信回调host
 	Wxcallbackhost string `json:"wxcallbackhost"`
@@ -28,7 +29,7 @@ type VueConf struct {
 	ShowText string `json:"showText" valid:"required"`
 
 	//StaticImageUrl 静态图片地址
-	StaticImageUrl string `json:"staticImageUrl" valid:"required"`
+	StaticImageUrl string `json:"staticImageUrl"`
 
 	//CompanyRight 网站所属公司说明
 	CompanyRight string `json:"companyRight" valid:"required"`

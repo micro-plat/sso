@@ -194,8 +194,8 @@ func GetDataPermission(userID int64, tableName string, opt ...PermissionOption) 
 *source 来源, 加油站、公司、下游渠道等
 *sourceID 来源编号
  */
-func AddUser(userName, mobile, fullName, targetIdent, source, sourceSecrect string, sourceID string) error {
-	return GetSSOClient().AddUser(userName, mobile, fullName, targetIdent, source, sourceSecrect, sourceID)
+func AddUser(userName, mobile, fullName, targetIdent, source, sourceSecrect string, sourceID string, roleID int) error {
+	return GetSSOClient().AddUser(userName, mobile, fullName, targetIdent, source, sourceSecrect, sourceID, roleID)
 }
 
 //Login 用户密码登录, 密码请用md5加密

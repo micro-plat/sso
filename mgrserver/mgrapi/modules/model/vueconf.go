@@ -8,7 +8,7 @@ import (
 
 //VueConf 前端页面配置
 type VueConf struct {
-
+	APIURL string `json:"apiURL"`
 	//Ident .
 	Ident string `json:"ident" valid:"required"`
 

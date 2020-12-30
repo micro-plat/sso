@@ -25,9 +25,8 @@ Vue.use(VeeValidate,config);
 
 
 import {ssoHttpConfig} from 'qxnw-sso';
-//var conf = window.globalConfig;
 var conf = window.globalConfig
-var ssocfg =  ssoHttpConfig(conf.VUE_APP_API_URL, "localStorage", conf.LOGIN_WEB_HOST, conf.IDENT);
+var ssocfg =  ssoHttpConfig(conf.apiURL ||"", "localStorage", conf.loginWebHost, conf.ident);
 
 Vue.prototype.$sso = ssocfg.sso;
 Vue.prototype.$http = ssocfg.http;

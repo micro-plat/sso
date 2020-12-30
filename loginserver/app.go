@@ -1,6 +1,8 @@
 package main
 
 import (
+	"fmt"
+
 	"github.com/micro-plat/hydra"
 	"github.com/micro-plat/hydra/components"
 	_ "github.com/micro-plat/hydra/components/caches/cache/gocache"
@@ -62,17 +64,20 @@ func init() {
 		if err := model.SaveConf(&conf); err != nil {
 			return err
 		}
+		return nil
+	}, http.API)
 
+	App.OnStarting(func(appConf app.IAPPConf) error {
 		var vueConf cmodel.VueConf
-		if _, err = appConf.GetServerConf().GetSubObject("vueconf", &vueConf); err != nil {
-			return err
+		if _, err := appConf.GetServerConf().GetSubObject("vueconf", &vueConf); err != nil {
+			return fmt.Errorf("GetSubObject:vueconf:%v", err)
 		}
 
 		if err := vueConf.Valid(); err != nil {
 			return err
 		}
 		return nil
-	})
+	}, http.Web)
 
 	App.OnHandleExecuting(func(ctx hydra.IContext) interface{} {
 		if ctx.User().Auth().Request() != nil {

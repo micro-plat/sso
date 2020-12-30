@@ -102,9 +102,8 @@ func prodConf() {
 		})
 
 	hydra.Conf.Vars().Custom("conf", "app", model.Conf{
-		UserLoginFailCount:    5,
-		UserLockTime:          24 * 60 * 60,
-		AddUserUseDefaultRole: `{"mer17sup":1}`,
+		UserLoginFailCount: 5,
+		UserLockTime:       24 * 60 * 60,
 	})
 	hydra.Conf.Vars().DB().MySQLByConnStr("db", "#mysql_db_string", db.WithConnect(20, 10, 600))
 	hydra.Conf.Vars().Cache().Redis("redis", "#redis_string", cacheredis.WithDbIndex(1))

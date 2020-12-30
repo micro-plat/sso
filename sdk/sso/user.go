@@ -3,6 +3,7 @@ package sso
 import (
 	"fmt"
 	"net/url"
+	"strconv"
 	"time"
 
 	"github.com/micro-plat/lib4go/net"
@@ -167,7 +168,7 @@ func (u *userLogic) getRoleUsers(userID int64) (userIds string, err error) {
 }
 
 //AddUser 增加用户
-func (u *userLogic) AddUser(userName, mobile, fullName, targetIdent, source, sourceSecrect string, sourceID string) error {
+func (u *userLogic) AddUser(userName, mobile, fullName, targetIdent, source, sourceSecrect string, sourceID string, roleID int) error {
 	cfg := u.cfg
 	values := net.NewValues()
 	values.Set("ident", targetIdent)
@@ -178,6 +179,7 @@ func (u *userLogic) AddUser(userName, mobile, fullName, targetIdent, source, sou
 	values.Set("target_ident", targetIdent)
 	values.Set("source", source)
 	values.Set("source_id", sourceID)
+	values.Set("role_id", strconv.Itoa(roleID))
 
 	values = values.Sort()
 	raw := values.Join("", "") + sourceSecrect

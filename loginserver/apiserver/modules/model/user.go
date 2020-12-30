@@ -10,4 +10,5 @@ type UserInputNew struct {
 	TargetIdent string `form:"target_ident" json:"target_ident" valid:"required"` //目标ident(系统)
 	Source      string `form:"source" json:"source"`                              //来源
 	SourceID    string `form:"source_id" json:"source_id"`                        //来源id
+	RoleID      int    `form:"role_id" json:"role_id" valid:"required"`
 }

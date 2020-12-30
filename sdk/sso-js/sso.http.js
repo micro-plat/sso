@@ -80,7 +80,7 @@ axios.interceptors.response.use(
         return response;
     },
     error => {
-        if (error.response.status == 403) {
+        if (error.response && error.response.status == 403) {
             return setRouteBeforeLogin();
         }
         return Promise.reject(error)

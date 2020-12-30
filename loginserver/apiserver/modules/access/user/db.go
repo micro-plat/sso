@@ -60,40 +60,48 @@ func (l *DBUser) AddUser(req model.UserInputNew) error {
 		return fmt.Errorf("添加用户发生错误(err:%v),sql:%s,输入参数:%v", err, q, a)
 	}
 
-	params["user_id"] = userID
-	conf := commodel.GetConf() //取默认配置的角色
-	if strings.EqualFold(conf.AddUserUseDefaultRole, "") {
-		dbTrans.Commit()
-		return nil
-	}
-	var roleConfig map[string]int
-	err = json.Unmarshal([]byte(conf.AddUserUseDefaultRole), &roleConfig)
-	if err != nil {
-		dbTrans.Commit()
-		return fmt.Errorf("新增用户取默认角色配置出错: %+v", err)
-	}
-	roleID, flag := roleConfig[req.TargetIdent]
-	if !flag {
-		dbTrans.Commit()
-		return nil
-	}
+	l.adapterRoleID(req)
+	if req.RoleID != 0 {
 
-	systemInfo, err := l.sys.Get(req.TargetIdent)
-	if err != nil {
-		dbTrans.Rollback()
-		return err
-	}
+		params["user_id"] = userID
 
-	params["role_id"] = roleID
-	params["sys_id"] = systemInfo.GetInt("id")
-	_, q, a, err = dbTrans.Execute(sqls.AddUserRole, params)
-	if err != nil {
-		dbTrans.Rollback()
-		return fmt.Errorf("关联用户角色发生错误(err:%v),sql:%s,输入参数:%v", err, q, a)
+		systemInfo, err := l.sys.Get(req.TargetIdent)
+		if err != nil {
+			dbTrans.Rollback()
+			return err
+		}
+
+		params["role_id"] = req.RoleID
+		params["sys_id"] = systemInfo.GetInt("id")
+		_, q, a, err = dbTrans.Execute(sqls.AddUserRole, params)
+		if err != nil {
+			dbTrans.Rollback()
+			return fmt.Errorf("关联用户角色发生错误(err:%v),sql:%s,输入参数:%v", err, q, a)
+		}
 	}
 
 	dbTrans.Commit()
 	return nil
+}
+
+func (l *DBUser) adapterRoleID(req model.UserInputNew) {
+	if req.RoleID != 0 {
+		return
+	}
+	conf := commodel.GetConf() //取默认配置的角色
+	if strings.EqualFold(conf.AddUserUseDefaultRole, "") {
+		return
+	}
+	var roleConfig map[string]int
+	err := json.Unmarshal([]byte(conf.AddUserUseDefaultRole), &roleConfig)
+	if err != nil {
+		return
+	}
+	roleID, ok := roleConfig[req.TargetIdent]
+	if !ok {
+		return
+	}
+	req.RoleID = roleID
 }
 
 //GetUserInfoByName 根据用户名查询用户信息
