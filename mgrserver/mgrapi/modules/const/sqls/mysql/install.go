@@ -2,13 +2,20 @@ package mysql
 
 import (
 	"github.com/micro-plat/hydra"
+	"github.com/micro-plat/sso/mgrserver/mgrapi/modules/const/sqls/mysql/data"
+	"github.com/micro-plat/sso/mgrserver/mgrapi/modules/const/sqls/mysql/scheme"
 )
 
 func init() {
 
-	names := AssetNames()
-	for i := range names {
-		bytes, _ := Asset(names[i])
+	schemeNames := scheme.AssetNames()
+	for i := range schemeNames {
+		bytes, _ := scheme.Asset(schemeNames[i])
+		hydra.Installer.DB.AddSQL(string(bytes))
+	}
+	dataNames := data.AssetNames()
+	for i := range dataNames {
+		bytes, _ := scheme.Asset(dataNames[i])
 		hydra.Installer.DB.AddSQL(string(bytes))
 	}
 }
