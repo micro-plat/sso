@@ -13,7 +13,7 @@ module.exports = {
         // url: '"http://47.96.91.131:6687"', //北京卓易豪斯
         //url: '"http://loginapi.sso.18jiayou.com"'
         // url: '"//login.sso.18jiayou.com/loginapi"',   //线上环境(跳转登录的api地址)(北京机房)
-        url: '"http://192.168.5.94:6687"', //
+        url: '""', //
         codeLabel: '"短信验证码"',
         codeHolder: '"请输入短信验证码"',
         sendBtnLabel:'"获取短信验证码"',

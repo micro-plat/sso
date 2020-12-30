@@ -53,14 +53,17 @@ func devConf() {
 			jwt.WithSecret("bf8f3171946d8d5a13cca23aa6080c8e"),
 			jwt.WithExpireAt(36000),
 			jwt.WithHeader(),
-			jwt.WithExcludes("/vue/config/get", "/mgrweb/system/config/get", "/mgrweb/member/login", "/mgrweb/member/bind/check", "/mgrweb/member/bind/save", "/mgrweb/member/sendcode")).
+			jwt.WithExcludes("/config/vue", "/mgrweb/system/config/get", "/mgrweb/member/login", "/mgrweb/member/bind/check", "/mgrweb/member/bind/save", "/mgrweb/member/sendcode")).
 		Sub("vueconf", &cmodel.VueConf{
-			Wxcallbackhost: "http://ssov3.100bm.com",
-			Wxcallbackurl:  "/wxcallback",
-			CodeLabel:      "短信验证码",
-			CodeHolder:     "请输入短信验证码",
-			SendBtnLable:   "获取短信验证码",
-			ShowText:       "短信验证码发送成功",
+			Wxcallbackhost:   "http://ssov3.100bm.com",
+			Wxcallbackurl:    "/wxcallback",
+			CodeLabel:        "短信验证码",
+			CodeHolder:       "请输入短信验证码",
+			SendBtnLable:     "获取短信验证码",
+			ShowText:         "短信验证码发送成功",
+			StaticImageUrl:   "http://images.yxtx888.net",
+			CompanyRight:     "四川千行你我科技有限公司",
+			CompanyRightCode: "蜀ICP备20003360号",
 		})
 
 	hydra.Conf.Vars().Custom("loginconf", "app", model.Conf{
@@ -85,7 +88,18 @@ func prodConf() {
 			jwt.WithSecret("f0abd74b09bcc61449d66ae5d8128c18"),
 			jwt.WithExpireAt(36000),
 			jwt.WithHeader(),
-			jwt.WithExcludes("/vue/config/get", "/mgrweb/system/config/get", "/mgrweb/member/login", "/mgrweb/member/bind/check", "/mgrweb/member/bind/save", "/mgrweb/member/sendcode"))
+			jwt.WithExcludes("/config/vue", "/mgrweb/system/config/get", "/mgrweb/member/login", "/mgrweb/member/bind/check", "/mgrweb/member/bind/save", "/mgrweb/member/sendcode")).
+		Sub("vueconf", &cmodel.VueConf{
+			Wxcallbackhost:   "http://ssov3.100bm.com",
+			Wxcallbackurl:    "/wxcallback",
+			CodeLabel:        "短信验证码",
+			CodeHolder:       "请输入短信验证码",
+			SendBtnLable:     "获取短信验证码",
+			ShowText:         "短信验证码发送成功",
+			StaticImageUrl:   "http://images.yxtx888.net",
+			CompanyRight:     "四川千行你我科技有限公司",
+			CompanyRightCode: "蜀ICP备20003360号",
+		})
 
 	hydra.Conf.Vars().Custom("conf", "app", model.Conf{
 		UserLoginFailCount:    5,

@@ -7,11 +7,10 @@ module.exports = merge(prodEnv, {
     service: {
         wxcallbackhost: '"http://ssov3.100bm.cn"',
         wxcallbackurl: '"/wxcallback"',
-        url: '"http://192.168.5.94:6687"',   
+        url: '',   
         codeLabel: '"短信验证码"',
         codeHolder: '"请输入短信验证码"',
         sendBtnLabel:'"获取短信验证码"',
         showText:'"短信验证码发送成功"'
-        //url: '"http://loginapi.sso.18jiayou1.com:6687"'
     }
 });

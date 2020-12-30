@@ -49,7 +49,7 @@
             this.$post("/mgrweb/member/bind/check",{user_id:this.userId, sign:this.sign, timestamp:this.timestamp})
             .then(res =>{
                 var url = res.wxlogin_url + "?" + "appid=" + res.appid + "&state=" + res.state + "&redirect_uri=" +
-                        encodeURIComponent(process.env.service.wxcallbackhost + process.env.service.wxcallbackurl + "/bind") +
+                        encodeURIComponent(window.globalConfig.wxcallbackhost + window.globalConfig.wxcallbackurl + "/bind") +
                         "&response_type=code&scope=snsapi_base#wechat_redirect"; 
                 console.log(url);
                 window.location.href = url;  

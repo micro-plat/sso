@@ -39,9 +39,9 @@
     data () {
       return {
         systemName: "",
-        bgImageUrl: "http://images.yxtx888.net/sso/background.jpg",
-        copyright:  "北京卓易豪斯科技有限公司Copyright©" + new Date().getFullYear() +"版权所有" ,
-        copyrightcode:"蜀ICP备20003360号",
+        bgImageUrl: window.globalConfig.staticImageUrl ,//"http://images.yxtx888.net/sso/background.jpg",
+        copyright: (window.globalConfig.companyRight||"") + "Copyright©" + new Date().getFullYear() +"版权所有",//"北京卓易豪斯科技有限公司Copyright©" + new Date().getFullYear() +"版权所有" ,
+        copyrightcode: window.globalConfig.companyRightCode ,//"蜀ICP备20003360号",
         callback:"",
         changePwd:0,
         ident: "",
@@ -51,12 +51,10 @@
         loginNameHolder:"请输入用户名",
         loginPwdLabel:"密码",
         loginPwdHolder:"请输入用户密码",
-        // codeLabel:"短信验证码",
-        // codeHolder:"请输入短信验证码",
-        // sendBtnLabel:"获取短信验证码",
-        codeLabel:process.env.service.codeLabel,
-        codeHolder:process.env.service.codeHolder,
-        sendBtnLabel:process.env.service.sendBtnLabel,
+
+        codeLabel:window.globalConfig.codeLabel,
+        codeHolder:window.globalConfig.codeHolder,
+        sendBtnLabel:window.globalConfig.sendBtnLabel,
         requireCode:true,
 
         errorTemplate:{
@@ -108,13 +106,13 @@
 
       //发送微信验证码
       getCodeCall(e){
-        console.log(process.env.service,"process.env.service")
+        console.log(window.globalConfig,"window.globalConfig")
          e.ident = this.ident;
         //  e.ident = "sso";
          this.$refs.LoginUp.showError("发送验证码中...");
          this.$post("/mgrweb/member/sendcode", e)
           .then(res=>{
-            this.$refs.LoginUp.showError(process.env.service.showText);
+            this.$refs.LoginUp.showError(window.globalConfig.showText);
             this.$refs.LoginUp.countDown();
           })
           .catch(err=>{

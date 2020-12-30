@@ -46,7 +46,8 @@
         password1: "",
         password2: "",
         errorMsg: "",
-        copyRight: "四川千行你我科技有限公司Copyright©" + new Date().getFullYear() +" 版权所有"
+        copyRight: (window.globalConfig.companyRight||"") + "Copyright©" + new Date().getFullYear() +"版权所有",
+         
       }
     },
     created() {

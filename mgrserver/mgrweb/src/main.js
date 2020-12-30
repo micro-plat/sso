@@ -1,8 +1,7 @@
 import "jquery"
 import "bootstrap"
-
+ 
 import Vue from 'vue'
-import Vuex from 'vuex'
 import App from './App'
 import router from './router'
 
@@ -26,9 +25,9 @@ Vue.use(VeeValidate,config);
 
 
 import {ssoHttpConfig} from 'qxnw-sso';
-//var conf = process.env.service;
-var conf = process.env
-var ssocfg =  ssoHttpConfig(conf.VUE_APP_API_URL, "localStorage", conf.SSO_WEB_HOST, conf.IDENT);
+//var conf = window.globalConfig;
+var conf = window.globalConfig
+var ssocfg =  ssoHttpConfig(conf.VUE_APP_API_URL, "localStorage", conf.LOGIN_WEB_HOST, conf.IDENT);
 
 Vue.prototype.$sso = ssocfg.sso;
 Vue.prototype.$http = ssocfg.http;
@@ -46,3 +45,4 @@ new Vue({
     },
     template: '<App/>'
 });
+  

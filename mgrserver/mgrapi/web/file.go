@@ -11,10 +11,15 @@ import (
 var Archive = "./static.tar.gz"
 
 func init() {
-	hydra.OnReady(func() error {
-		return archive.OnReady(Archive, AssetNames, Asset)
+	isAutoArchiveFile := false
+	hydra.OnReady(func() (err error) {
+		isAutoArchiveFile, err = archive.OnReady(Archive, AssetNames, Asset)
+		return
 	})
 	hydra.G.AddCloser(func() error {
-		return os.Remove(Archive)
+		if isAutoArchiveFile {
+			return os.Remove(Archive)
+		}
+		return nil
 	})
 }
