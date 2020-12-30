@@ -1,9 +1,11 @@
+!*.go
 *node_modules/
 *dist/
 .vscode/
 logs/
-conf/
+conf/*.toml
+conf/logger.json
 /loginserver/loginserver
 /mgrserver/mgrserver
-*bin/
+*/bin/
 *out/
