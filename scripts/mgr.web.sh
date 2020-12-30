@@ -1,7 +1,7 @@
 #!/bin/sh
 
 PATH=$PATH:$GOPATH/bin
-rootdir=$(pwd)
+rootdir=$(dirname $(pwd)) 
 pkg=$1
 
 echo ""
@@ -11,7 +11,7 @@ echo ""
 cd $rootdir/mgrserver/mgrweb
 
 echo "1. 打包项目：npm run build"
-npm run build  > /dev/null 2>&1
+npm run build  > /dev/null 
 if [ $? -ne 0 ]; then
 	echo "npm run build 出错"
 	exit 1
@@ -31,10 +31,13 @@ mkdir -p ${rootdir}/out/mgrserver/bin
 mv static.tar.gz ${rootdir}/out/mgrserver/bin
 
 sleep 0.1
-echo "3. 生成资源文件:loginserver/loginapi/web/static.go"
-
-if [ "$pkg" = "pkg" ] ; then 
-	echo "a. 整合static.tar.gz文件"
+echo "3. 生成资源文件:loginserver/loginapi/web/static.go" 
+if [ "$pkg" = "none" ] ; then 
+	echo "3.1. 生成空文件文件"
+ 	sh $rootdir/scripts/empty.asset.sh ${rootdir}/mgrserver/mgrapi/web
+	
+else
+	echo "3.1. 整合static.tar.gz文件"
 	sleep 0.1
 	cd $rootdir/out/mgrserver/bin
 	go-bindata -o=${rootdir}/mgrserver/mgrapi/web/static.go -pkg=web static.tar.gz > /dev/null
@@ -42,12 +45,8 @@ if [ "$pkg" = "pkg" ] ; then
 		echo "go-bindata 整合static出错"
 		exit 1
 	fi
-else
-	echo "b. 生成空文件文件"
-	cd $rootdir
-	sh empty.asset.sh ${rootdir}/mgrserver/mgrapi/web
+	echo "3.2. 请重新执行sh build.sh生成mgrserver二进制文件"
 fi
-
 
 echo ""
 echo "---------打包mgrserver(mgrweb)-success------------------" 
