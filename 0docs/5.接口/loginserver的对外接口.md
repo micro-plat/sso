@@ -1,290 +1,315 @@
-#### 1 API接口说明
+# 千行单点登录系统对接规范 V4.0
 
-现将所有调用的api调用都包成了sdk, 项目在 sdk/sso
+## 一. 文档说明
 
-接口签名方式:业务参数,timestamp(Unix时间)按照asc码排序,不需要任何链接字符拼接成签名原串raw(例如:ident123456timestamp25425325125userID52425)    
-sign=md5(raw+secrect)   
+本文档主要说明子系统对接统一登录系统的交互流程和接口开发规范
 
-###### 1.1  ⽤⼾登录验证以及返回⽤⼾信息(跳转登录后)
+接口签名方式: 业务参数, timestamp(Unix时间)按照asc码排序, 不需要任何链接字符拼接成签名原串raw(例如:ident123456timestamp25425325125userID52425)    
+sign=md5(raw+secrect)  
 
-``` go
-CheckCodeLogin(code string)
+### 1.1 流程说明
+
+![avatar](./流程说明.png)
+
+### 1.2 协议格式
+
+编码： 统一使用 utf-8 编码进行传输、加密、解密、数据转换等
+协议： 所有接口都是通过 sdk 请求，所有响应内容都是 都被解析为struct对象或error; 
+
+### 1.3 参数签名
+
+请求参数必须通过签名的方式保证数据的合法性和未被篡改， 参数 sign 为签名串，构建方式为: 所有请求参数组成键值对（如:channel_no=csh)通过 ASCII 顺序连接字符串, 并且不使用任何链接字符， 最后拼接secret, 使用 md5 加密生成签名串。如:
+
+``` json
+secret := "5c3f7743e352b8a677d44396ad24ba63"
+sign := md5.Encrypt("identssorequest_no194182214638126timestamp20160512101002" + secret) 
 ```
 
-``` 
-由于现在是跳转登录的⽅式,因此sso回调⼦系统地址后，⼦系统要验证登录的合性
+某些字段的值是 json(如下面的data), 则应使用压缩后的json格式。如：
+
+``` json
+{
+    "userid": "123456",
+    "password": "5c3f7743e352b8a677d44396ad24ba63",
+    "full_name": "张三",
+    "data": [
+        {
+            "title": "******",
+        }
+    ]
+}
 ```
 
-输⼊参数
+拼接顺序:
 
-|参数 |类型|说明|
-| -------------|:--------------:|:--------------:|
-|code| string| 调转登录返回给⼦系统的code|
+```json 
+secret := "5c3f7743e352b8a677d44396ad24ba63"
+raw := `data[{"title":"20元抵扣券"}]failed_code000failed_msg查询成功order_id1507917362062278request_no194182214638126statusSUCCESS`
 
-输出
+sign := md5. Encrypt(raw + secret)
 
-|参数 |类型|说明|
-| -------------|:--------------:|:--------------:|
-|UserID |string |⽤⼾标识|
-|UserName |string |⽤⼾名称|
-|FullName |string |⽤⼾全名称|
-|SysIdent |string |系统编码|
-|RoleID |int |角色id|
-|Status |int |用户状态|
-|RoleName |string |⻆⾊名称|
-|SystemID |int |系统编号|
-|IndexURL |string |登录回调地址|
-|ExtParams |string |⽤⼾扩展参数(⼀个json对象)|
-|Source |string |用户来源|
-|SourceID |string |用户来源id|
-|LastLoginTime |string |最后登录时间|
-
-###### 1.2  根据⽤⼾名获取⽤⼾信息
-
-``` go
-GetUserInfoByName(userName string)
 ```
 
-输⼊参数
+secret由千行提供，请联系运营
+
+## 二. 接口规范
 
-|参数 |类型|说明|
-| -------------|:--------------:|:--------------:|
-|userName| string| ⽤⼾名称|
+该接口文档是基于sdk对接, 以下提供的请求路径为sdk方法名; 
 
-输出
+### 2.1  ⽤⼾登录验证以及返回⽤⼾信息(CheckCodeLogin)
 
-|参数 |类型|说明|
-| -------------|:--------------:|:--------------:|
-|UserID |string |⽤⼾标识|
-|UserName |string |⽤⼾名称|
-|FullName |string |⽤⼾全名称|
-|WxOpID |string |微信openID|
-|Mobile |string |联系电话|
-|Email |string |邮箱|
-|Status |string |联系电话|
-|ExtParams |string| ⽤⼾扩展参数(⼀个json对象)|
+**由于现在是跳转登录的⽅式, 因此sso回调⼦系统地址后，⼦系统要调用此接口验证登录的合性**
 
+#### 2.1.1 请求参数
 
-###### 1.3 获取⽤⼾在某个⼦系统下的菜单数据
+|参数 |类型|可空|示例|说明|
+| -------------|:--------------:|:--------------:|:--------------:|:--------------:|
+|code| string| 否|123456|调转登录返回给⼦系统的code|
 
-``` go
-GetUserMenu(userID int)
-```
+#### 2.1.2 响应参数：
+
+|参数 |类型|可空|示例|说明|
+| -------------|:--------------:|:--------------:|:--------------:|:--------------:|
+|UserID         |string |否| 123456 |⽤⼾标识|
+|UserName       |string |否| admin |⽤⼾名称|
+|FullName       |string |否| 张三 |⽤⼾全名称|
+|SysIdent       |string |否| sso |系统编码|
+|RoleID         |int    |否| 1 |角色id|
+|Status         |int    |否| 0 |用户状态 0: 启用  1: 锁定 2: 禁用|
+|RoleName       |string |否| 管理员 |⻆⾊名称|
+|SystemID       |int    |否| 0 |系统编号|
+|IndexURL       |string |否| http://0.0.0.0:8080/ssocallback |登录回调地址|
+|ExtParams      |string |是|  |⽤⼾扩展参数(⼀个json对象)|
+|Source         |string |是| Wx |用户来源|
+|SourceID       |string |是| 12345 |用户来源id|
+|LastLoginTime |string  |否| 2020-01-01 12:12:00 |最后登录时间|
 
-输⼊参数
+### 2.2  根据⽤⼾名获取⽤⼾信息(GetUserInfoByName)
 
-|参数 |类型|说明|
-| -------------|:--------------:|:--------------:|
-|userID| int |⽤⼾标识|
+#### 2.2.1 请求参数
+
+|参数 |类型|可空|示例|说明|
+| -------------|:--------------:|:--------------:|:--------------:|:--------------:|
+|userName| string| 否|admin|用户名|
+
+#### 2.2.2 响应参数：
+
+|参数 |类型|可空|示例|说明|
+| -------------|:--------------:|:--------------:|:--------------:|:--------------:|
+|UserID         |string |否| 123456 |⽤⼾标识|
+|UserName       |string |否| admin |⽤⼾名称|
+|FullName       |string |否| 张三 |⽤⼾全名称|
+|WxOpID         |string |是| openid |微信openid|
+|Mobile         |string |否| 1820032215 |联系电话|
+|Email          |string |是| admin@100bm.cn |邮箱|
+|Status         |string |否| 0 |用户状态 0: 启用  1: 锁定 2: 禁用|
+|ExtParams      |string |是|  |⽤⼾扩展参数(⼀个json对象)|
 
-输出下面对象列表
+### 2.3  获取⽤⼾⼦系统的菜单数据(GetUserMenu)
 
-|参数 |类型|说明|
-| -------------|:--------------:|:--------------:|
-|ID |string |菜单标识
-|Name |string |菜单名称
-|Level |string |级次
-|IsOpen |string |是否展开
-|Icon |string |图标
-|SystemID |string |系统标识
-|Parent |string |⽗级编号
-|Path |string |路由地址
-|Sortrank |string |排序编号
-|Children |对象数组 |⼦菜单
+#### 2.3.1 请求参数
 
-###### 1.4 获取⼦系统信息
+|参数 |类型|可空|示例|说明|
+| -------------|:--------------:|:--------------:|:--------------:|:--------------:|
+|userID| string| 否|123456|用户编号|
 
-``` go
-GetSystemInfo()
-```
+#### 2.3.2 响应参数：
 
-输⼊参数(无)
+**返回值为以下对象数组**
 
-输出
+|参数 |类型|可空|示例|说明|
+| -------------|:--------------:|:--------------:|:--------------:|:--------------:|
+|ID         |string |否| 1 |菜单标识|
+|Name       |string |否| 用户管理 |菜单名称|
+|Level      |string |否| 1 |级次|
+|IsOpen     |string |否| 0 |是否展开 (0: 展开 1: 关闭)|
+|Icon       |string |是| fa fa-users-test-info |图标|
+|SystemID   |string |否| 0 |系统编号|
+|Parent     |string |否| 0 |⽗级编号|
+|Path       |string |是|  |⽤⼾扩展参数(路由地址)|
+|Sortrank   |string |否| 1 |排序编号|
+|Children   |[]当前对象 |是|  |⽤⼾扩展参数(⼦菜单)|
 
-|参数 |类型|说明|
-| -------------|:--------------:|:--------------:|
-|ID |string |系统标识
-|Ident |string |系统ident(英⽂名称)
-|Name |string |系统名称
-|Theme |string |主题样式
-|Layout |string |⻚⾯布局样式
-|IndexUrl |string |登录回调地址
-|Logo |string |系统图标地址
+### 2.4  获取⽤⼾⼦系统的菜单数据(GetSystemInfo)
 
-###### 1.5 获取当前用户可访问的其他子系统
+#### 2.4.1 请求参数
 
-``` go
-GetUserOtherSystems(userID string)
-```
+|参数 |类型|可空|示例|说明|
+| -------------|:--------------:|:--------------:|:--------------:|:--------------:|
+|ident| string| 否|sso|系统标识码|
 
-输⼊参数
+#### 2.4.2 响应参数：
 
-|参数 |类型|说明|
-| -------------|:--------------:|:--------------:|
-|userID| string| ⽤⼾编号|
+|参数 |类型|可空|示例|说明|
+| -------------|:--------------:|:--------------:|:--------------:|:--------------:|
+|ID         |string |否| 123456 |系统标识|
+|Ident      |string |否| sso |系统ident(英⽂名称)|
+|Name       |string |否| 张三 |系统名称|
+|Theme      |string |是| openid |主题样式|
+|Layout     |string |是| app-aside-fixed |⻚⾯布局样式|
+|IndexUrl   |string |否| http://127.0.0.1:8080/ssocallback |登录回调地址|
+|Logo       |string |是| http://static.100bm.cn/logo.png |系统图标地址|
 
-输出下面对象列表
+### 2.5  获取用户可访问的子系统(GetUserOtherSystems)
 
-|参数 |类型|说明|
-| -------------|:--------------:|:--------------:|
-|ID |string |系统标识
-|Ident |string |系统ident(英⽂名称)
-|Name |string |系统名称
-|Theme |string |主题样式
-|Layout |string |⻚⾯布局样式
-|IndexUrl |string |登录回调地址
-|Logo |string |系统图标地址
+#### 2.5.1 请求参数
 
+|参数 |类型|可空|示例|说明|
+| -------------|:--------------:|:--------------:|:--------------:|:--------------:|
+|userID| string| 否|123456|用户编号|
 
+#### 2.5.2 响应参数：
 
-###### 1.6 获取某来源所有的用户列表
+|参数 |类型|可空|示例|说明|
+| -------------|:--------------:|:--------------:|:--------------:|:--------------:|
+|ID         |string |否| 123456 |系统标识|
+|Ident      |string |否| sso |系统ident(英⽂名称)|
+|Name       |string |否| 张三 |系统名称|
+|Theme      |string |是| openid |主题样式|
+|Layout     |string |是| app-aside-fixed |⻚⾯布局样式|
+|IndexUrl   |string |否| http://127.0.0.1:8080/ssocallback |登录回调地址|
+|Logo       |string |是| http://static.100bm.cn/logo.png |系统图标地址|
 
-``` go
-GetAllUser(source string, sourceID string)
-```
+### 2.6  获取某来源所有的用户列表(GetAllUser)
 
-输⼊参数
+#### 2.6.1 请求参数
 
-|参数 |类型|说明|
-| -------------|:--------------:|:--------------:|
-|source| string| 用户来源|
-|sourceID| string| 用户来源id|
+|参数 |类型|可空|示例|说明|
+| -------------|:--------------:|:--------------:|:--------------:|:--------------:|
+|source| string| 否|wx|用户来源|
+|sourceID| string| 否|123456|用户来源id|
 
-输出下面对象列表
+#### 2.6.2 响应参数：
 
+|参数 |类型|可空|示例|说明|
+| -------------|:--------------:|:--------------:|:--------------:|:--------------:|
+|UserID         |string |否| 123456 |⽤⼾标识|
+|UserName       |string |否| admin |⽤⼾名称|
+|FullName       |string |否| 张三 |⽤⼾全名称|
+|WxOpID         |string |是| openid |微信openid|
+|Mobile         |string |否| 1820032215 |联系电话|
+|Email          |string |是| admin@100bm.cn |邮箱|
+|Status         |string |否| 0 |用户状态 0: 启用  1: 锁定 2: 禁用|
+|ExtParams      |string |是|  |⽤⼾扩展参数(⼀个json对象)|
 
-|参数 |类型|说明|
-| -------------|:--------------:|:--------------:|
-|UserID |string |⽤⼾标识|
-|UserName |string |⽤⼾名称|
-|FullName |string |⽤⼾全名称|
-|WxOpID |string |微信openID|
-|Mobile |string |联系电话|
-|Email |string |邮箱|
-|Status |string |联系电话|
-|ExtParams |string| ⽤⼾扩展参数(⼀个json对象)|
+### 2.7  忘记并修改密码(ForgetPwd)
 
+#### 2.7.1 请求参数
 
+|参数 |类型|可空|示例|说明|
+| -------------|:--------------:|:--------------:|:--------------:|:--------------:|
+|source| string| 否|wx|用户来源|
+|sourceID| string| 否|123456|用户来源id|
+|possword| string| 否|e10adc3949ba59abbe56e057f20f883e|密码 md5|
 
-###### 1.7 忘记并修改密码
+#### 2.7.2 响应参数：
 
-``` go
-ForgetPwd(source, sourceID, possword string)
-```
+**返回值为error, 如果error为空则标识操作成功**
 
-输⼊参数
-
-|参数 |类型|说明|
-| -------------|:--------------:|:--------------:|
-|source| string| 用户来源|
-|sourceID| string| 用户来源id|
-|possword| string| 新密码|
-
-无返回值
-
-
-
-###### 1.8 获取用户有权限的Tags
-
-``` go
-GetUserTags(UserID int, tags string)
-```
-
-输⼊参数
-
-|参数 |类型|说明|
-| -------------|:--------------:|:--------------:|
-|UserID| string| 用户编号|
-|tags| string| tags|
-
-返回值:
-```json
-[
-    {
-        "tag":"tag1",
-        "display":false
-    },
-    {
-        "tag":"tag2",
-        "display":true
-    }
-]
-```
-
-
-###### 1.9 添加用户
-
-``` go
-AddUser(userName, mobile, fullName, targetIdent, source, sourceSecrect, sourceID string)
-```
-
-输⼊参数
-
-|参数 |类型|说明|
-| -------------|:--------------:|:--------------:|
-|userName| string| 用户名|
-|mobile| string| 联系电话|
-|fullName| string| 用户全名|
-|targetIdent| string| 系统编号|
-|source| string| 用户来源|
-|sourceID| string| 用户来源|
-|sourceSecrect| string| 签名密钥|
-
-密钥是默认密码:请联系服务提供方获取
-
-无返回值
-
-###### 1.10 系统登录
-
-``` go
-Login(userName, password string)
-```
-
-输⼊参数
-
-|参数 |类型|说明|
-| -------------|:--------------:|:--------------:|
-|userName| string| 用户名|
-|password| string| 联系电话,通过md5|
-
-
-输出
-
-|参数 |类型|说明|
-| -------------|:--------------:|:--------------:|
-|UserID |string |⽤⼾标识|
-|UserName |string |⽤⼾名称|
-|FullName |string |⽤⼾全名称|
-|SysIdent |string |系统编码|
-|RoleID |int |角色id|
-|Status |int |用户状态|
-|RoleName |string |⻆⾊名称|
-|SystemID |int |系统编号|
-|IndexURL |string |登录回调地址|
-|ExtParams |string |⽤⼾扩展参数(⼀个json对象)|
-|Source |string |用户来源|
-|SourceID |string |用户来源id|
-|LastLoginTime |string |最后登录时间|
-
-
-
-###### 1.11 系统登录
-
-``` go
-ChangePwd(userID int64, expassword, newpassword string)
-```
-
-输⼊参数
-
-|参数 |类型|说明|
-| -------------|:--------------:|:--------------:|
-|userID| string| 用户名|
-|expassword| string| 原密码,通过md5|
-|newpassword| string| 新密码,通过md5|
-
-
-无返回值
-
-
-
+### 2.8  获取用户有权限的Tags(GetUserTags)
+
+#### 2.8.1 请求参数
+
+|参数 |类型|可空|示例|说明|
+| -------------|:--------------:|:--------------:|:--------------:|:--------------:|
+|UserID| string| 否|123456|用户编号|
+|tags| string| 否|tag1, tag2, tag3|验证的tag列表|
+
+#### 2.8.2 响应参数：
+
+**返回值为以下格式的[]map**
+
+|参数 |类型|可空|示例|说明|
+| -------------|:--------------:|:--------------:|:--------------:|:--------------:|
+|tag| string| 否|tag1|系统标识|
+|display| bool| 否|true|是否有权限 true: 有  false: 无|
+
+### 2.9  添加用户(AddUser)
+
+#### 2.9.1 请求参数
+
+|参数 |类型|可空|示例|说明|
+| -------------|:--------------:|:--------------:|:--------------:|:--------------:|
+|userName   | string| 否|admin|用户名|
+|mobile     | string| 否|18200358452|联系电话|
+|fullName   | string| 否|张三|用户全名|
+|targetIdent| string| 否|sso|系统编号|
+|source     | string| 是|wx|用户来源|
+|sourceID   | string| 是|123456|用户来源|
+|sourceSecrect| string| 否|e10adc3949ba59abbe56e057f20f883e|签名密钥(对应的系统的签名密钥)|
+
+#### 2.9.2 响应参数：
+
+**返回值为error, 如果error为空则标识操作成功**
+
+### 2.10  系统登录(Login)
+
+#### 2.10.1 请求参数
+
+|参数 |类型|可空|示例|说明|
+| -------------|:--------------:|:--------------:|:--------------:|:--------------:|
+|userName   | string| 否|admin|用户名|
+|password     | string| 否|e10adc3949ba59abbe56e057f20f883e|密码 md5|
+
+#### 2.10.2 响应参数：
+
+|参数 |类型|可空|示例|说明|
+| -------------|:--------------:|:--------------:|:--------------:|:--------------:|
+|UserID         |string |否| 123456 |⽤⼾标识|
+|UserName       |string |否| admin |⽤⼾名称|
+|FullName       |string |否| 张三 |⽤⼾全名称|
+|SysIdent       |string |否| sso |系统编码|
+|RoleID         |int    |否| 1 |角色id|
+|Status         |int    |否| 0 |用户状态 0: 启用  1: 锁定 2: 禁用|
+|RoleName       |string |否| 管理员 |⻆⾊名称|
+|SystemID       |int    |否| 0 |系统编号|
+|IndexURL       |string |否| http://0.0.0.0:8080/ssocallback |登录回调地址|
+|ExtParams      |string |是|  |⽤⼾扩展参数(⼀个json对象)|
+|Source         |string |是| Wx |用户来源|
+|SourceID       |string |是| 12345 |用户来源id|
+|LastLoginTime |string  |否| 2020-01-01 12:12:00 |最后登录时间|
+
+### 2.11  修改密码(ChangePwd)
+
+#### 2.11.1 请求参数
+
+|参数 |类型|可空|示例|说明|
+| -------------|:--------------:|:--------------:|:--------------:|:--------------:|
+|userID   | string| 否|1231456|用户名|
+|expassword     | string| 否|e10adc3949ba59abbe56e057f20f883e|原密码, md5|
+|newpassword   | string| 否|e10adc3949ba59abbe56e057f20f883e|新密码, md5|
+
+#### 2.11.2 响应参数：
+
+**返回值为error, 如果error为空则标识操作成功**
+
+## 三、附件
+
+### 3.1 接口错误码
+
+**所有的错误码都在返回的error对象中**
+
+|错误码	 |结果说明|
+| -------------|:--------------:|
+| 403    | 登录失效|
+| 404    | 服务不存在|
+|406   | 参数错误|
+| 500  |系统错误|
+| 510  |系统错误|
+| 901  |系统被锁定|
+| 902  |用户被锁定|
+| 903  |用户被禁用|
+| 904  |登录出错, 稍后再试|
+| 905  |用户不存在|
+| 906  |没有相关系统权限|
+| 907  |用户名或密码错误|
+| 908  |用户原密码错误|
+| 909  |绑定信息错误(绑定用户微信账号)|
+| 910  |用户已绑定微信|
+| 911  |绑定超时(微信绑定)|
+| 912  |用户还未绑定微信账户|
+| 913  |验证码为空|
+| 914  |验证码过期|
+| 915  |验证码错误|
+| 916  |二维码超时(用户系统生成的二维码时间过期)|
+| 917  |一个微信只能绑定一个账户|
