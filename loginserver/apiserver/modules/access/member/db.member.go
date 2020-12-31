@@ -8,6 +8,7 @@ import (
 	"github.com/micro-plat/hydra/components"
 	"github.com/micro-plat/lib4go/db"
 	"github.com/micro-plat/lib4go/errs"
+	commodle "github.com/micro-plat/sso/common/module/model"
 	"github.com/micro-plat/sso/loginserver/apiserver/modules/const/sqls"
 	"github.com/micro-plat/sso/loginserver/apiserver/modules/model"
 )
@@ -94,7 +95,7 @@ func (l *DBMember) QueryByID(uid int, ident string) (s *model.MemberState, err e
 		return nil, errs.NewError(http.StatusServiceUnavailable, "暂时无法登录系统")
 	}
 	if data.IsEmpty() {
-		return nil, errs.NewError(model.ERR_USER_NOTEXISTS, "用户不存在")
+		return nil, errs.NewError(commodle.ERR_USER_NOTEXISTS, "用户不存在")
 	}
 
 	s = &model.MemberState{}
@@ -110,7 +111,7 @@ func (l *DBMember) QueryByID(uid int, ident string) (s *model.MemberState, err e
 	}
 
 	if roles.IsEmpty() {
-		return nil, errs.NewError(model.ERR_USER_HASNOROLES, "用户没有相关系统权限")
+		return nil, errs.NewError(commodle.ERR_USER_HASNOROLES, "用户没有相关系统权限")
 	}
 
 	s.RoleID = roles.Get(0).GetInt("role_id")

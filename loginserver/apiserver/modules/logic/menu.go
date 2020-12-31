@@ -3,10 +3,11 @@ package logic
 import (
 	"github.com/micro-plat/lib4go/errs"
 	"github.com/micro-plat/lib4go/types"
+	commodle "github.com/micro-plat/sso/common/module/model"
+
 	"github.com/micro-plat/sso/loginserver/apiserver/modules/access/menu"
 	"github.com/micro-plat/sso/loginserver/apiserver/modules/access/system"
 	"github.com/micro-plat/sso/loginserver/apiserver/modules/const/enum"
-	"github.com/micro-plat/sso/loginserver/apiserver/modules/model"
 )
 
 // IMenuLogic interface
@@ -36,7 +37,7 @@ func (m *MenuLogic) Query(uid int64, ident string) ([]map[string]interface{}, er
 		return nil, err
 	}
 	if status == enum.SystemDisable {
-		return nil, errs.NewError(model.ERR_SYS_LOCKED, "系统被禁用")
+		return nil, errs.NewError(commodle.ERR_SYS_LOCKED, "系统被禁用")
 	}
 
 	return m.db.Query(uid, ident)

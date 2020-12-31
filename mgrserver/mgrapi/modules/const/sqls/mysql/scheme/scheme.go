@@ -103,7 +103,7 @@ func outMysqlSchemeDds_area_infoSql() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "out/mysql/scheme/dds_area_info.sql", size: 652, mode: os.FileMode(509), modTime: time.Unix(1609321853, 0)}
+	info := bindataFileInfo{name: "out/mysql/scheme/dds_area_info.sql", size: 652, mode: os.FileMode(509), modTime: time.Unix(1609394494, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -123,7 +123,7 @@ func outMysqlSchemeDds_dictionary_infoSql() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "out/mysql/scheme/dds_dictionary_info.sql", size: 449, mode: os.FileMode(509), modTime: time.Unix(1609321853, 0)}
+	info := bindataFileInfo{name: "out/mysql/scheme/dds_dictionary_info.sql", size: 449, mode: os.FileMode(509), modTime: time.Unix(1609394494, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -143,7 +143,7 @@ func outMysqlSchemeSso_data_permissionSql() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "out/mysql/scheme/sso_data_permission.sql", size: 691, mode: os.FileMode(509), modTime: time.Unix(1609321853, 0)}
+	info := bindataFileInfo{name: "out/mysql/scheme/sso_data_permission.sql", size: 691, mode: os.FileMode(509), modTime: time.Unix(1609394494, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -163,7 +163,7 @@ func outMysqlSchemeSso_operate_logSql() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "out/mysql/scheme/sso_operate_log.sql", size: 629, mode: os.FileMode(509), modTime: time.Unix(1609321853, 0)}
+	info := bindataFileInfo{name: "out/mysql/scheme/sso_operate_log.sql", size: 629, mode: os.FileMode(509), modTime: time.Unix(1609394494, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -183,7 +183,7 @@ func outMysqlSchemeSso_role_datapermissionSql() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "out/mysql/scheme/sso_role_datapermission.sql", size: 600, mode: os.FileMode(509), modTime: time.Unix(1609321853, 0)}
+	info := bindataFileInfo{name: "out/mysql/scheme/sso_role_datapermission.sql", size: 600, mode: os.FileMode(509), modTime: time.Unix(1609394494, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -203,7 +203,7 @@ func outMysqlSchemeSso_role_infoSql() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "out/mysql/scheme/sso_role_info.sql", size: 446, mode: os.FileMode(509), modTime: time.Unix(1609321853, 0)}
+	info := bindataFileInfo{name: "out/mysql/scheme/sso_role_info.sql", size: 446, mode: os.FileMode(509), modTime: time.Unix(1609394494, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -223,7 +223,7 @@ func outMysqlSchemeSso_role_menuSql() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "out/mysql/scheme/sso_role_menu.sql", size: 634, mode: os.FileMode(509), modTime: time.Unix(1609321853, 0)}
+	info := bindataFileInfo{name: "out/mysql/scheme/sso_role_menu.sql", size: 634, mode: os.FileMode(509), modTime: time.Unix(1609394494, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -243,7 +243,7 @@ func outMysqlSchemeSso_system_infoSql() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "out/mysql/scheme/sso_system_info.sql", size: 989, mode: os.FileMode(509), modTime: time.Unix(1609321853, 0)}
+	info := bindataFileInfo{name: "out/mysql/scheme/sso_system_info.sql", size: 989, mode: os.FileMode(509), modTime: time.Unix(1609394494, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -263,7 +263,7 @@ func outMysqlSchemeSso_system_menuSql() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "out/mysql/scheme/sso_system_menu.sql", size: 780, mode: os.FileMode(509), modTime: time.Unix(1609321853, 0)}
+	info := bindataFileInfo{name: "out/mysql/scheme/sso_system_menu.sql", size: 780, mode: os.FileMode(509), modTime: time.Unix(1609394494, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -283,7 +283,7 @@ func outMysqlSchemeSso_user_infoSql() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "out/mysql/scheme/sso_user_info.sql", size: 1105, mode: os.FileMode(509), modTime: time.Unix(1609321853, 0)}
+	info := bindataFileInfo{name: "out/mysql/scheme/sso_user_info.sql", size: 1105, mode: os.FileMode(509), modTime: time.Unix(1609394494, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -303,7 +303,7 @@ func outMysqlSchemeSso_user_roleSql() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "out/mysql/scheme/sso_user_role.sql", size: 489, mode: os.FileMode(509), modTime: time.Unix(1609321853, 0)}
+	info := bindataFileInfo{name: "out/mysql/scheme/sso_user_role.sql", size: 489, mode: os.FileMode(509), modTime: time.Unix(1609394494, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }

@@ -15,7 +15,7 @@ func init() {
 	}
 	dataNames := data.AssetNames()
 	for i := range dataNames {
-		bytes, _ := scheme.Asset(dataNames[i])
+		bytes, _ := data.Asset(dataNames[i])
 		hydra.Installer.DB.AddSQL(string(bytes))
 	}
 }

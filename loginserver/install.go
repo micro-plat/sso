@@ -55,13 +55,13 @@ func devConf() {
 			jwt.WithHeader(),
 			jwt.WithExcludes("/config/vue", "/mgrweb/system/config/get", "/mgrweb/member/login", "/mgrweb/member/bind/check", "/mgrweb/member/bind/save", "/mgrweb/member/sendcode")).
 		Sub("vueconf", &cmodel.VueConf{
-			Wxcallbackhost:   "http://ssov3.100bm.com",
+			Wxcallbackhost:   "http://ssov4.100bm0.com",
 			Wxcallbackurl:    "/wxcallback",
 			CodeLabel:        "短信验证码",
 			CodeHolder:       "请输入短信验证码",
 			SendBtnLable:     "获取短信验证码",
 			ShowText:         "短信验证码发送成功",
-			StaticImageUrl:   "http://images.yxtx888.net",
+			StaticImageUrl:   "",
 			CompanyRight:     "四川千行你我科技有限公司",
 			CompanyRightCode: "蜀ICP备20003360号",
 		})
@@ -90,7 +90,7 @@ func prodConf() {
 			jwt.WithHeader(),
 			jwt.WithExcludes("/config/vue", "/mgrweb/system/config/get", "/mgrweb/member/login", "/mgrweb/member/bind/check", "/mgrweb/member/bind/save", "/mgrweb/member/sendcode")).
 		Sub("vueconf", &cmodel.VueConf{
-			Wxcallbackhost:   "http://ssov3.100bm.com",
+			Wxcallbackhost:   "http://ssov4.100bm.com",
 			Wxcallbackurl:    "/wxcallback",
 			CodeLabel:        "短信验证码",
 			CodeHolder:       "请输入短信验证码",

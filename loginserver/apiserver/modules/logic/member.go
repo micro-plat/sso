@@ -8,6 +8,7 @@ import (
 	"github.com/micro-plat/lib4go/errs"
 	"github.com/micro-plat/lib4go/types"
 
+	commodle "github.com/micro-plat/sso/common/module/model"
 	"github.com/micro-plat/sso/loginserver/apiserver/modules/access/member"
 	"github.com/micro-plat/sso/loginserver/apiserver/modules/const/config"
 	"github.com/micro-plat/sso/loginserver/apiserver/modules/const/enum"
@@ -56,11 +57,11 @@ func (m *MemberLogic) QueryUserInfo(u string, ident string) (ls db.QueryRow, err
 	}
 
 	if ls.GetInt("status") == enum.UserLock {
-		return nil, errs.NewError(model.ERR_USER_LOCKED, "用户被锁定暂时无法登录")
+		return nil, errs.NewError(commodle.ERR_USER_LOCKED, "用户被锁定暂时无法登录")
 	}
 
 	if ls.GetInt("status") == enum.UserDisable {
-		return nil, errs.NewError(model.ERR_USER_FORBIDDEN, "用户被禁用请联系管理员")
+		return nil, errs.NewError(commodle.ERR_USER_FORBIDDEN, "用户被禁用请联系管理员")
 	}
 	return ls, err
 }
@@ -70,12 +71,12 @@ func (m *MemberLogic) GetUserInfoByCode(code, ident string) (res *model.LoginSta
 
 	userStr, err := m.cache.GetUserInfoByCode(code)
 	if err != nil || userStr == "" {
-		return nil, errs.NewError(model.ERR_LOGIN_ERROR, fmt.Sprintf("没有登录记录,请先登录,err:%v", err))
+		return nil, errs.NewError(commodle.ERR_LOGIN_ERROR, fmt.Sprintf("没有登录记录,请先登录,err:%v", err))
 	}
 
 	userID := types.GetInt(userStr, -1)
 	if userID == -1 {
-		return nil, errs.NewError(model.ERR_LOGIN_ERROR, "登录出错，请重新登录")
+		return nil, errs.NewError(commodle.ERR_LOGIN_ERROR, "登录出错，请重新登录")
 	}
 
 	m.cache.DeleteInfoByCode(code)
@@ -86,10 +87,10 @@ func (m *MemberLogic) GetUserInfoByCode(code, ident string) (res *model.LoginSta
 
 	status := userTemp.Status
 	if status == enum.UserLock {
-		return nil, errs.NewError(model.ERR_USER_LOCKED, "用户被锁定暂时无法登录")
+		return nil, errs.NewError(commodle.ERR_USER_LOCKED, "用户被锁定暂时无法登录")
 	}
 	if status == enum.UserDisable {
-		return nil, errs.NewError(model.ERR_USER_FORBIDDEN, "用户被禁用请联系管理员")
+		return nil, errs.NewError(commodle.ERR_USER_FORBIDDEN, "用户被禁用请联系管理员")
 	}
 
 	return (*model.LoginState)(userTemp), nil
