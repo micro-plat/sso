@@ -170,9 +170,9 @@ function put(url, data = {}, config={}) {
                     resolve(response.data);
                 }
             }, err => {
-                reject(err)
-            })
-    })
+                reject(err);
+            });
+    });
 }
 
 

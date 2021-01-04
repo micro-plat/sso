@@ -1,6 +1,6 @@
 {
   "name": "qxnw-sso",
-  "version": "1.0.19",
+  "version": "1.0.20",
   "description": "与sso对接",
   "main": "sso.js",
   "scripts": {
