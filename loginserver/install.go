@@ -77,7 +77,7 @@ func devConf() {
 //生产环境配置
 func prodConf() {
 	hydra.Conf.API("###api_port", api.WithDNS("api.sso.18jiayou.com")).Header(header.WithCrossDomain()).
-		APIKEY("SVS:///check_sign", apikey.WithExcludes("/sso/login/verify", "/image/upload"))
+		APIKEY("ivk:///check_sign", apikey.WithInvoker("ivk:///check_sign"), apikey.WithExcludes("/sso/login/verify", "/image/upload"))
 
 	hydra.Conf.Web("###web_port", api.WithTimeout(300, 300), api.WithDNS("loginapi.sso.18jiayou.com")).
 		Static(static.WithArchive(web.Archive),
@@ -101,7 +101,7 @@ func prodConf() {
 			CompanyRightCode: "蜀ICP备20003360号",
 		})
 
-	hydra.Conf.Vars().Custom("conf", "app", model.Conf{
+	hydra.Conf.Vars().Custom("loginconf", "app", model.Conf{
 		UserLoginFailCount: 5,
 		UserLockTime:       24 * 60 * 60,
 	})

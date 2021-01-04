@@ -1,6 +1,8 @@
 package main
 
 import (
+	"fmt"
+
 	"github.com/micro-plat/hydra"
 	"github.com/micro-plat/hydra/components"
 	_ "github.com/micro-plat/hydra/components/caches/cache/gocache"
@@ -52,36 +54,36 @@ func init() {
 	App.OnStarting(func(appconf app.IAPPConf) error {
 		var vueconf cmodel.VueConf
 		if _, err := appconf.GetServerConf().GetSubObject("vueconf", &vueconf); err != nil {
-			return err
+			return fmt.Errorf("获取vueconf配置失败,err:%v", err)
 		}
 
 		if err := vueconf.Valid(); err != nil {
-			return err
+			return fmt.Errorf("vueconf配置数据错误,err:%v", err)
 		}
 
 		//检查配置信息
 		var conf model.Conf
 		_, err := appconf.GetServerConf().GetSubObject("app", &conf)
 		if err != nil {
-			return err
+			return fmt.Errorf("获取appconf配置失败,err:%v", err)
 		}
 
 		if err := model.SaveConf(&conf); err != nil {
-			return err
+			return fmt.Errorf("保存appconf配置到本地缓存失败,err:%v", err)
 		}
 
 		_, err = components.Def.DB().GetDB()
 		if err != nil {
-			return err
+			return fmt.Errorf("db数据库配置错误,err:%v", err)
 		}
 
 		_, err = components.Def.Cache().GetCache("redis")
 		if err != nil {
-			return err
+			return fmt.Errorf("cache-redis缓存配置错误,err:%v", err)
 		}
 
 		if err := ssoSdk.BindConfig(conf.SsoApiHost, conf.Ident, conf.Secret); err != nil {
-			return err
+			return fmt.Errorf("ssoSdk-绑定配置失败,err:%v", err)
 		}
 		return nil
 	})

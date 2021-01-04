@@ -42,27 +42,27 @@ func init() {
 	App.OnStarting(func(appConf app.IAPPConf) error {
 		_, err := components.Def.DB().GetDB()
 		if err != nil {
-			return err
+			return fmt.Errorf("db数据库配置错误,err:%v", err)
 		}
 
 		_, err = components.Def.Cache().GetCache("redis")
 		if err != nil {
-			return err
+			return fmt.Errorf("redis缓存配置错误,err:%v", err)
 		}
 
 		var conf model.Conf
 		varConf := appConf.GetVarConf()
 		_, err = varConf.GetObject("loginconf", "app", &conf)
 		if err != nil {
-			return err
+			return fmt.Errorf("loginconf配置错误,err:%v", err)
 		}
 
 		if err := conf.Valid(); err != nil {
-			return err
+			return fmt.Errorf("loginconf配置数据库错误,err:%v", err)
 		}
 
 		if err := model.SaveConf(&conf); err != nil {
-			return err
+			return fmt.Errorf("loginconf配置保存到本地缓存失败,err:%v", err)
 		}
 		return nil
 	}, http.API)
@@ -70,11 +70,11 @@ func init() {
 	App.OnStarting(func(appConf app.IAPPConf) error {
 		var vueConf cmodel.VueConf
 		if _, err := appConf.GetServerConf().GetSubObject("vueconf", &vueConf); err != nil {
-			return fmt.Errorf("GetSubObject:vueconf:%v", err)
+			return fmt.Errorf("获取vueconf配置失败:%v", err)
 		}
 
 		if err := vueConf.Valid(); err != nil {
-			return err
+			return fmt.Errorf("vueconf配置数据失败,err:%v", err)
 		}
 		return nil
 	}, http.Web)
