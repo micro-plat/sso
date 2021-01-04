@@ -5,8 +5,13 @@
     <meta charset="utf-8">
     <meta name="description" content="app, web app, responsive, responsive layout, admin, admin panel, admin dashboard, flat, flat ui, ui kit, AngularJS, ui route, charts, widgets, components" />
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
-    <script type="text/javascript" src="/config/vue" ></script>
-
+    <% if(process.env.NODE_ENV=="production") { %>
+    <script type="text/javascript" src="/config/vue?t=<%= new Date().getTime() %>" ></script>
+    <% } else{  %>
+    <script type="text/javascript" >
+        window.globalConfig= <%= JSON.stringify( process.env)%>
+    </script>
+    <% }   %>
     <title></title>
 
     <!--<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.1.0/css/all.css" integrity="sha384-lKuwvrZot6UHsBSfcMvOkWwlCMgc0TaWr+30HWe3a4ltaBwTZhyTEggF5tJv8tbt" crossorigin="anonymous">-->
