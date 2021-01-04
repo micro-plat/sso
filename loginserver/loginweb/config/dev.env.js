@@ -1,11 +1,10 @@
 'use strict'
 const merge = require('webpack-merge')
-const prodEnv = require('./prod.env')
-
-module.exports = merge(prodEnv, {
+ 
+module.exports = merge({
     NODE_ENV: '"development"',
     service: {
-        wxcallbackhost: '"http://ssov3.100bm.cn"',
+        wxcallbackhost: '"http://ssov4.100bm.cn"',
         wxcallbackurl: '"/wxcallback"',
         url: '',   
         codeLabel: '"短信验证码"',
