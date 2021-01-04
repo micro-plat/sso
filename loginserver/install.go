@@ -76,10 +76,10 @@ func devConf() {
 
 //生产环境配置
 func prodConf() {
-	hydra.Conf.API("#api_port", api.WithDNS("api.sso.18jiayou.com")).Header(header.WithCrossDomain()).
+	hydra.Conf.API("###api_port", api.WithDNS("api.sso.18jiayou.com")).Header(header.WithCrossDomain()).
 		APIKEY("SVS:///check_sign", apikey.WithExcludes("/sso/login/verify", "/image/upload"))
 
-	hydra.Conf.Web("#web_port", api.WithTimeout(300, 300), api.WithDNS("loginapi.sso.18jiayou.com")).
+	hydra.Conf.Web("###web_port", api.WithTimeout(300, 300), api.WithDNS("loginapi.sso.18jiayou.com")).
 		Static(static.WithArchive(web.Archive),
 			static.WithRewriters("/", "/index.htm", "/default.html", "/default.htm", "/choose", "/refresh", "/errpage", "/bindnotice", "/wxcallback/*", "/bindwx", "/*/changepwd", "/*/jump", "/*/login")).
 		Header(header.WithCrossDomain(), header.WithAllowHeaders("X-Requested-With", "Content-Type", "__sso_jwt__")).
@@ -105,6 +105,6 @@ func prodConf() {
 		UserLoginFailCount: 5,
 		UserLockTime:       24 * 60 * 60,
 	})
-	hydra.Conf.Vars().DB().MySQLByConnStr("db", "#mysql_db_string", db.WithConnect(20, 10, 600))
-	hydra.Conf.Vars().Cache().Redis("redis", "#redis_string", cacheredis.WithDbIndex(1))
+	hydra.Conf.Vars().DB().MySQLByConnStr("db", "###mysql_db_string", db.WithConnect(20, 10, 600))
+	hydra.Conf.Vars().Cache().Redis("redis", "###redis_string", cacheredis.WithDbIndex(1))
 }
