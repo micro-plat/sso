@@ -71,6 +71,8 @@ github.com/go-sql-driver/mysql
 github.com/golang/freetype
 github.com/golang/freetype/raster
 github.com/golang/freetype/truetype
+# github.com/golang/mock v1.4.3
+## explicit
 # github.com/golang/protobuf v1.4.3
 github.com/golang/protobuf/proto
 github.com/golang/protobuf/ptypes
@@ -86,7 +88,8 @@ github.com/gorilla/websocket
 # github.com/jmz331/gpinyin v0.0.0-20150408151959-c4a0503fb352
 ## explicit
 github.com/jmz331/gpinyin
-# github.com/json-iterator/go v1.1.9
+# github.com/json-iterator/go v1.1.10
+## explicit
 github.com/json-iterator/go
 # github.com/juju/ansiterm v0.0.0-20180109212912-720a0952cc2a
 github.com/juju/ansiterm
@@ -99,7 +102,7 @@ github.com/leodido/go-urn
 github.com/lib4dev/cli
 github.com/lib4dev/cli/cmds
 github.com/lib4dev/cli/logger
-# github.com/lib4dev/vcs v0.0.0-00010101000000-000000000000 => ../../../github.com/lib4dev/vcs
+# github.com/lib4dev/vcs v1.0.0
 ## explicit
 github.com/lib4dev/vcs
 github.com/lib4dev/vcs/modules/const/cachekey
@@ -123,7 +126,7 @@ github.com/mholt/archiver
 # github.com/micro-plat/gmq v1.0.1
 github.com/micro-plat/gmq/mqtt
 github.com/micro-plat/gmq/mqtt/client
-# github.com/micro-plat/hydra v1.0.2 => ../../../github.com/micro-plat/hydra
+# github.com/micro-plat/hydra v1.0.5
 ## explicit
 github.com/micro-plat/hydra
 github.com/micro-plat/hydra/components
@@ -229,7 +232,7 @@ github.com/micro-plat/hydra/registry/watcher
 github.com/micro-plat/hydra/registry/watcher/wchild
 github.com/micro-plat/hydra/registry/watcher/wvalue
 github.com/micro-plat/hydra/services
-# github.com/micro-plat/lib4go v1.0.9 => ../../../github.com/micro-plat/lib4go
+# github.com/micro-plat/lib4go v1.0.10
 ## explicit
 github.com/micro-plat/lib4go/concurrent/cmap
 github.com/micro-plat/lib4go/db
@@ -255,9 +258,11 @@ github.com/micro-plat/lib4go/tgo
 github.com/micro-plat/lib4go/types
 github.com/micro-plat/lib4go/utility
 github.com/micro-plat/lib4go/zk
-# github.com/modern-go/concurrent v0.0.0-20180228061459-e0a39a4cb421
+# github.com/modern-go/concurrent v0.0.0-20180306012644-bacd9c7ef1dd
+## explicit
 github.com/modern-go/concurrent
-# github.com/modern-go/reflect2 v0.0.0-20180701023420-4b7aa43c6742
+# github.com/modern-go/reflect2 v1.0.1
+## explicit
 github.com/modern-go/reflect2
 # github.com/nwaples/rardecode v1.1.0
 github.com/nwaples/rardecode
@@ -338,7 +343,8 @@ golang.org/x/text/unicode/bidi
 golang.org/x/text/unicode/norm
 # golang.org/x/time v0.0.0-20201208040808-7e3f01d25324
 golang.org/x/time/rate
-# google.golang.org/appengine v1.4.0
+# google.golang.org/appengine v1.6.5
+## explicit
 google.golang.org/appengine/cloudsql
 # google.golang.org/genproto v0.0.0-20200526211855-cb27e3aa2013
 google.golang.org/genproto/googleapis/rpc/status
@@ -421,6 +427,3 @@ google.golang.org/protobuf/types/known/timestamppb
 gopkg.in/yaml.v2
 # gopkg.in/yaml.v3 v3.0.0-20200615113413-eeeca48fe776
 gopkg.in/yaml.v3
-# github.com/micro-plat/hydra => ../../../github.com/micro-plat/hydra
-# github.com/micro-plat/lib4go => ../../../github.com/micro-plat/lib4go
-# github.com/lib4dev/vcs => ../../../github.com/lib4dev/vcs
