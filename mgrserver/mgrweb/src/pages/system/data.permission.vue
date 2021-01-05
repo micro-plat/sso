@@ -201,8 +201,7 @@
 <script>
   import pager from "vue-simple-pager"
   import PullTo from 'vue-pull-to'
-  import {EnumUtility,EnumFilter} from 'qxnw-enum';
-export default {
+ export default {
   components: {
     "bootstrap-modal": require("vue2-bootstrap-modal"),
     pager,

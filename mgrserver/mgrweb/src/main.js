@@ -32,8 +32,27 @@ Vue.prototype.$sso = ssocfg.sso;
 Vue.prototype.$http = ssocfg.http;
 
 Vue.config.productionTip = false;
-Vue.prototype.EnumUtility = new EnumUtility() // 枚举字典
+Vue.prototype.EnumUtility = new EnumUtility(); // 枚举字典
+Vue.prototype.EnumUtility.defaultCallback(function(type){
+  debugger
+  var result = []
+  $.ajax({
+    url: (window.globalConfig.apiURL ||"") + "/dds/dictionary/get",
+    data:  { dic_type: type },
+    async: false,
+    // beforeSend: function (request) {
+    //   request.setRequestHeader("__sso_jwt__", GetTocken())
+    //   request.setRequestHeader("Content-Type", "application/x-www-form-urlencoded")
+    // },
+    type: "GET",
+    success: function (data) {
+      console.log("/dds/dictionary/get:",type,data);
+      result = data;
+    }
+  });
 
+  return result; 
+});
   /* eslint-disable no-new */
 new Vue({
     el: '#vapp',

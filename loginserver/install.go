@@ -53,7 +53,7 @@ func devConf() {
 			jwt.WithSecret("bf8f3171946d8d5a13cca23aa6080c8e"),
 			jwt.WithExpireAt(36000),
 			jwt.WithHeader(),
-			jwt.WithExcludes("/config/vue", "/mgrweb/system/config/get", "/mgrweb/member/login", "/mgrweb/member/bind/check", "/mgrweb/member/bind/save", "/mgrweb/member/sendcode")).
+			jwt.WithExcludes("/config/vue", "/mgrweb/system/config/get", "/mgrweb/member/login", "/mgrweb/member/bind/check", "/mgrweb/member/bind/save", "/mgrweb/member/sendcode", "/dds/dictionary/get")).
 		Sub("vueconf", &cmodel.VueConf{
 			Wxcallbackhost:   "http://ssov4.100bm0.com",
 			Wxcallbackurl:    "/wxcallback",
@@ -88,7 +88,7 @@ func prodConf() {
 			jwt.WithSecret("f0abd74b09bcc61449d66ae5d8128c18"),
 			jwt.WithExpireAt(36000),
 			jwt.WithHeader(),
-			jwt.WithExcludes("/config/vue", "/mgrweb/system/config/get", "/mgrweb/member/login", "/mgrweb/member/bind/check", "/mgrweb/member/bind/save", "/mgrweb/member/sendcode")).
+			jwt.WithExcludes("/config/vue", "/mgrweb/system/config/get", "/mgrweb/member/login", "/mgrweb/member/bind/check", "/mgrweb/member/bind/save", "/mgrweb/member/sendcode", "/dds/dictionary/get")).
 		Sub("vueconf", &cmodel.VueConf{
 			Wxcallbackhost:   "//web.sso.18jiayou.com",
 			Wxcallbackurl:    "/wxcallback",
