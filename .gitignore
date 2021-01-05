@@ -8,4 +8,4 @@ conf/logger.json
 /loginserver/loginserver
 /mgrserver/mgrserver
 */bin/
-*out/
+out/
