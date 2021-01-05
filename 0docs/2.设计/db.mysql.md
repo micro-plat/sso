@@ -128,6 +128,7 @@
 | value   | varchar(32) |        |  否   |     | 值                   |
 | type    | varchar(32) |        |  否   |     | 类型                 |
 | sort_no | bigint(20)  |   0    |  否   |      | 排序值               |
+| group_code | varchar2(32)   |   *    |  否   |                                 | 分组编号 |
 | status  | tinyint(1)  |        |  否   |      | 状态 1: 禁用 0: 启用 |
 
 ### 11. 地区表[dds_area_info]
