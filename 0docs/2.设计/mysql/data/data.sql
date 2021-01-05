@@ -1,8 +1,8 @@
-INSERT INTO dds_dictionary_info VALUES (1, '新增', '新增', 'operate_action', 0, 0,"*");
-INSERT INTO dds_dictionary_info VALUES (2, '修改', '修改', 'operate_action', 0, 0,"*");
-INSERT INTO dds_dictionary_info VALUES (3, '启用', '启用', 'operate_action', 0, 0,"*");
-INSERT INTO dds_dictionary_info VALUES (4, '禁用', '禁用', 'operate_action', 0, 0,"*");
-INSERT INTO dds_dictionary_info VALUES (5, '锁定', '锁定', 'operate_action', 0, 0,"*");
+INSERT INTO dds_dictionary_info VALUES (1, '新增', '新增', 'operate_action', 0,'*', 0);
+INSERT INTO dds_dictionary_info VALUES (2, '修改', '修改', 'operate_action', 0,'*', 0);
+INSERT INTO dds_dictionary_info VALUES (3, '启用', '启用', 'operate_action', 0,'*', 0);
+INSERT INTO dds_dictionary_info VALUES (4, '禁用', '禁用', 'operate_action', 0,'*', 0);
+INSERT INTO dds_dictionary_info VALUES (5, '锁定', '锁定', 'operate_action', 0,'*', 0);
 INSERT INTO sso_role_info VALUES (1, '管理员', 0, '2018-6-27 03:06:54');
 INSERT INTO sso_role_menu VALUES (1, 1, 1, 1, 1, '2019-12-17 14:31:33', 1);
 INSERT INTO sso_role_menu VALUES (2, 1, 1, 2, 1, '2019-12-17 14:31:33', 2);

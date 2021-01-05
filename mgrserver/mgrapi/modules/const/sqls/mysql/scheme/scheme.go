@@ -103,12 +103,12 @@ func outMysqlSchemeDds_area_infoSql() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "out/mysql/scheme/dds_area_info.sql", size: 652, mode: os.FileMode(509), modTime: time.Unix(1609394494, 0)}
+	info := bindataFileInfo{name: "out/mysql/scheme/dds_area_info.sql", size: 652, mode: os.FileMode(509), modTime: time.Unix(1609812489, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
 
-var _outMysqlSchemeDds_dictionary_infoSql = []byte("\x1f\x8b\x08\x00\x00\x00\x00\x00\x00\xff\x84\xd0\xb1\x4a\xc3\x40\x1c\xc7\xf1\x39\x79\x8a\xdf\x96\x14\x1c\xda\x2a\x22\x95\x0e\x69\x7a\x6a\xb0\x4d\x25\xa6\x43\xa7\x10\x7b\xad\x1e\xa4\x77\x92\x5c\x0a\xdd\xda\xc1\x45\x51\x8b\x14\xdc\x04\x17\xed\x22\xea\x22\xa2\xbe\x4e\x1a\x1f\x43\x4a\xc0\x76\xb0\xb8\x7f\x3f\xf7\xe3\xfe\xaa\x62\x3a\xc4\x70\x09\x5c\xa3\x52\x23\x00\xa5\x91\x47\x59\x5b\x32\xc1\xfd\x70\xe0\x31\xde\x15\xd0\x55\x45\x61\x14\x47\xec\x98\x71\xa9\x17\xf3\x39\x80\x0b\x09\x1e\x07\x01\x8c\xa6\xdb\xf0\x2c\xdb\x74\x48\x9d\xd8\x2e\xda\xa2\xd7\xeb\x70\x09\x8d\x51\x0d\x6b\xaa\xa2\x70\xbf\xd7\x41\xdf\x0f\xdb\x27\x7e\xa8\x6f\x6e\x2c\xd3\x45\x9c\x8c\x2f\xd3\xc7\x97\x0c\xf4\xfd\x20\x5e\x88\xf5\xe2\x0a\x31\xfc\xca\x72\x39\x38\xfd\xbf\x4e\x5f\x3f\x93\xbb\x8b\x0c\x44\x22\x94\x1e\x17\xcb\xbf\xa1\x9d\xae\x1f\x07\x12\xf9\xbf\xec\xec\xea\x26\xf9\xb8\xfe\xdd\x8b\xa4\x2f\xe3\x08\x92\xf1\xc1\x9c\x17\x56\x0c\x9e\xbf\xcd\x86\x23\x14\x4a\x48\x1f\x46\xe9\x64\x8a\x7c\x09\xc9\xf8\x39\x9d\x4c\xb3\x57\x0e\x1c\xab\x6e\x38\x2d\xec\x93\x16\x74\x46\x73\x39\x10\x7b\xd7\xb2\x49\xd9\xe2\x5c\x54\x2b\x40\x95\xec\x18\xcd\x9a\x0b\x73\xcf\x70\x0e\x89\x5b\x8e\x65\x77\x0b\x66\xa3\x3e\x3f\x72\x59\x4b\x9e\x6e\x93\xb3\xf7\xef\xfb\xa9\xb6\xad\xfe\x04\x00\x00\xff\xff\x70\xb6\x2c\x96\xc1\x01\x00\x00")
+var _outMysqlSchemeDds_dictionary_infoSql = []byte("\x1f\x8b\x08\x00\x00\x00\x00\x00\x00\xff\x84\x91\x41\x4b\x2a\x51\x18\x86\xd7\x33\xbf\xe2\xdb\xcd\x78\xb9\x0b\xf5\x5e\x2e\x17\xc3\xc5\x38\x9e\x6a\x48\xc7\x98\xc6\x85\xab\x61\x9a\xa3\x76\x60\x3c\x47\xc6\x33\x82\x3b\x85\x8a\x28\x4a\x09\xa9\x5d\xd0\xa6\xdc\x44\xb5\xa9\x48\xff\xce\x78\xfa\x19\x21\x53\x69\xa0\xb4\x7f\x9f\xf7\x7d\x3e\x3e\x59\xd2\x2d\xa4\xd9\x08\x6c\x2d\x57\x40\x00\x18\xb7\x1c\x4c\x3c\x4e\x18\x75\x83\x8e\x43\x68\x8d\x81\x2a\x4b\x12\xc1\xb0\x4b\xea\x84\x72\x35\x9d\x4c\x00\x50\xc6\x81\x86\xbe\x0f\x5a\xd9\x2e\x39\x86\xa9\x5b\xa8\x88\x4c\x1b\x3c\xd6\x68\x54\x29\x07\x85\x60\x05\x7e\xcb\x92\x44\xdd\x46\x15\xda\x6e\xe0\xed\xb9\x81\xfa\xef\xef\x22\x3a\x0f\x47\x83\x53\x71\xfb\x10\x03\x6d\xd7\x0f\xe7\xc4\x9f\xf4\x0a\xa2\x3b\x89\xe3\xbc\xd3\xfc\x39\x2d\x1e\xc7\xd1\xd5\x49\x0c\xb4\x58\xc0\x1d\xca\x16\xaf\xc1\xd5\x9a\x1b\xfa\x1c\x92\xcb\xd8\xe9\xd9\x79\xf4\xda\xff\xda\xab\x07\x2c\x6c\x3a\x1e\xc3\xdf\x57\x3f\x2b\x94\x5f\xca\x52\xdd\xa3\x43\x31\xde\x17\x93\x8b\xa8\xff\xfc\xa1\xc1\x5d\x1e\xb6\x80\x13\xda\x99\x69\xa4\x56\x88\x1f\x3f\x4d\xbb\x3d\x48\x65\x40\xdc\xf4\xc4\x70\x04\xc9\x0c\x44\x83\x7b\x31\x1c\xc5\x2d\xdb\x96\x51\xd4\xac\x0a\x6c\xa1\x0a\xa8\x04\x27\x12\x80\xcc\x0d\xc3\x44\x59\x83\x52\x96\xcf\x01\xe4\xd1\xba\x56\x2e\xd8\xa0\x6f\x6a\xd6\x0e\xb2\xb3\x21\xaf\xfd\x07\xbd\x54\x9c\x3d\x2b\xab\x44\x77\x97\xd1\xc1\xcb\xdb\xf5\x48\x59\x93\xdf\x03\x00\x00\xff\xff\x2d\x12\xc5\xed\x09\x02\x00\x00")
 
 func outMysqlSchemeDds_dictionary_infoSqlBytes() ([]byte, error) {
 	return bindataRead(
@@ -123,7 +123,7 @@ func outMysqlSchemeDds_dictionary_infoSql() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "out/mysql/scheme/dds_dictionary_info.sql", size: 449, mode: os.FileMode(509), modTime: time.Unix(1609394494, 0)}
+	info := bindataFileInfo{name: "out/mysql/scheme/dds_dictionary_info.sql", size: 521, mode: os.FileMode(509), modTime: time.Unix(1609812489, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -143,7 +143,7 @@ func outMysqlSchemeSso_data_permissionSql() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "out/mysql/scheme/sso_data_permission.sql", size: 691, mode: os.FileMode(509), modTime: time.Unix(1609394494, 0)}
+	info := bindataFileInfo{name: "out/mysql/scheme/sso_data_permission.sql", size: 691, mode: os.FileMode(509), modTime: time.Unix(1609812489, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -163,7 +163,7 @@ func outMysqlSchemeSso_operate_logSql() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "out/mysql/scheme/sso_operate_log.sql", size: 629, mode: os.FileMode(509), modTime: time.Unix(1609394494, 0)}
+	info := bindataFileInfo{name: "out/mysql/scheme/sso_operate_log.sql", size: 629, mode: os.FileMode(509), modTime: time.Unix(1609812489, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -183,7 +183,7 @@ func outMysqlSchemeSso_role_datapermissionSql() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "out/mysql/scheme/sso_role_datapermission.sql", size: 600, mode: os.FileMode(509), modTime: time.Unix(1609394494, 0)}
+	info := bindataFileInfo{name: "out/mysql/scheme/sso_role_datapermission.sql", size: 600, mode: os.FileMode(509), modTime: time.Unix(1609812489, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -203,7 +203,7 @@ func outMysqlSchemeSso_role_infoSql() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "out/mysql/scheme/sso_role_info.sql", size: 446, mode: os.FileMode(509), modTime: time.Unix(1609394494, 0)}
+	info := bindataFileInfo{name: "out/mysql/scheme/sso_role_info.sql", size: 446, mode: os.FileMode(509), modTime: time.Unix(1609812489, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -223,7 +223,7 @@ func outMysqlSchemeSso_role_menuSql() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "out/mysql/scheme/sso_role_menu.sql", size: 634, mode: os.FileMode(509), modTime: time.Unix(1609394494, 0)}
+	info := bindataFileInfo{name: "out/mysql/scheme/sso_role_menu.sql", size: 634, mode: os.FileMode(509), modTime: time.Unix(1609812489, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -243,7 +243,7 @@ func outMysqlSchemeSso_system_infoSql() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "out/mysql/scheme/sso_system_info.sql", size: 989, mode: os.FileMode(509), modTime: time.Unix(1609394494, 0)}
+	info := bindataFileInfo{name: "out/mysql/scheme/sso_system_info.sql", size: 989, mode: os.FileMode(509), modTime: time.Unix(1609812489, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -263,7 +263,7 @@ func outMysqlSchemeSso_system_menuSql() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "out/mysql/scheme/sso_system_menu.sql", size: 780, mode: os.FileMode(509), modTime: time.Unix(1609394494, 0)}
+	info := bindataFileInfo{name: "out/mysql/scheme/sso_system_menu.sql", size: 780, mode: os.FileMode(509), modTime: time.Unix(1609812489, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -283,7 +283,7 @@ func outMysqlSchemeSso_user_infoSql() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "out/mysql/scheme/sso_user_info.sql", size: 1105, mode: os.FileMode(509), modTime: time.Unix(1609394494, 0)}
+	info := bindataFileInfo{name: "out/mysql/scheme/sso_user_info.sql", size: 1105, mode: os.FileMode(509), modTime: time.Unix(1609812489, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -303,7 +303,7 @@ func outMysqlSchemeSso_user_roleSql() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "out/mysql/scheme/sso_user_role.sql", size: 489, mode: os.FileMode(509), modTime: time.Unix(1609394494, 0)}
+	info := bindataFileInfo{name: "out/mysql/scheme/sso_user_role.sql", size: 489, mode: os.FileMode(509), modTime: time.Unix(1609812489, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
