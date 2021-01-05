@@ -76,7 +76,7 @@
       },
       //用户可用的其他系统
       getUserOtherSys() {
-        this.$http.get("sso/member/systems/get")
+        this.$http.get("/sso/member/systems/get")
         .then(res => {
          this.items = this.$sso.transformSysInfo(res);
         })
