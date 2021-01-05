@@ -35,9 +35,9 @@ func (d *DbOperate) SysOperate(m *sso.LoginState, method string, r ...interface{
 		"user_id": m.UserID,
 		"content": fmt.Sprintf("{\"desc\":%s,\"data\":%v}", method, r),
 	}
-	_, q, a, err := db.Execute(sqls.AddOperate, params)
+	_, err = db.Execute(sqls.AddOperate, params)
 	if err != nil {
-		return fmt.Errorf("添加系统操作行为数据发生错误(err:%v),sql:%s,输入参数:%v,", err, q, a)
+		return fmt.Errorf("添加系统操作行为数据发生错误(err:%v)", err)
 	}
 	return nil
 }
@@ -51,9 +51,9 @@ func (d *DbOperate) RoleOperate(m *sso.LoginState, method string, r ...interface
 		"user_id": m.UserID,
 		"content": fmt.Sprintf("{\"desc\":%s,\"data\":%v}", method, r),
 	}
-	_, q, a, err := db.Execute(sqls.AddOperate, params)
+	_, err = db.Execute(sqls.AddOperate, params)
 	if err != nil {
-		return fmt.Errorf("添加角色操作行为数据发生错误(err:%v),sql:%s,输入参数:%v,", err, q, a)
+		return fmt.Errorf("添加角色操作行为数据发生错误(err:%v)", err)
 	}
 	return nil
 }
@@ -67,9 +67,9 @@ func (d *DbOperate) MenuOperate(m *sso.LoginState, method string, r ...interface
 		"user_id": m.UserID,
 		"content": fmt.Sprintf("{\"desc\":%s,\"data\":%v}", method, r),
 	}
-	_, q, a, err := db.Execute(sqls.AddOperate, params)
+	_, err = db.Execute(sqls.AddOperate, params)
 	if err != nil {
-		return fmt.Errorf("添加菜单操作行为数据发生错误(err:%v),sql:%s,输入参数:%v,", err, q, a)
+		return fmt.Errorf("添加菜单操作行为数据发生错误(err:%v)", err)
 	}
 	return nil
 }
@@ -83,9 +83,9 @@ func (d *DbOperate) UserOperate(m *sso.LoginState, method string, r ...interface
 		"user_id": m.UserID,
 		"content": fmt.Sprintf("{\"desc\":%s,\"data\":%v}", method, r),
 	}
-	_, q, a, err := db.Execute(sqls.AddOperate, params)
+	_, err = db.Execute(sqls.AddOperate, params)
 	if err != nil {
-		return fmt.Errorf("添加用户操作行为数据发生错误(err:%v),sql:%s,输入参数:%v,", err, q, a)
+		return fmt.Errorf("添加用户操作行为数据发生错误(err:%v)", err)
 	}
 	return nil
 }

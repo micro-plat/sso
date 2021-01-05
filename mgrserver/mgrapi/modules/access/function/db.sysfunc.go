@@ -26,11 +26,11 @@ func NewDbSystemFunc() *DbSystemFunc {
 //Query 获取功能信息列表
 func (u *DbSystemFunc) Get(sysid int) (results []map[string]interface{}, err error) {
 	db := components.Def.DB().GetRegularDB()
-	data, q, a, err := db.Query(sqls.QuerySysFuncList, map[string]interface{}{
+	data, err := db.Query(sqls.QuerySysFuncList, map[string]interface{}{
 		"sysid": sysid,
 	})
 	if err != nil {
-		return nil, fmt.Errorf("获取系统管理列表发生错误(err:%v),sqls:%s,输入参数:%v,", err, q, a)
+		return nil, fmt.Errorf("获取系统管理列表发生错误(err:%v)", err)
 	}
 
 	result := make([]map[string]interface{}, 0, 4)
@@ -65,23 +65,23 @@ func (u *DbSystemFunc) Get(sysid int) (results []map[string]interface{}, err err
 
 func (u *DbSystemFunc) ChangeStatus(id int, status int) (err error) {
 	db := components.Def.DB().GetRegularDB()
-	_, q, a, err := db.Execute(sqls.EnableSysFunc, map[string]interface{}{
+	_, err = db.Execute(sqls.EnableSysFunc, map[string]interface{}{
 		"id":     id,
 		"enable": status,
 	})
 	if err != nil {
-		return fmt.Errorf("禁用/启用系统功能发生错误(err:%v),sqls:%s,参数：%v", err, q, a)
+		return fmt.Errorf("禁用/启用系统功能发生错误(err:%v)", err)
 	}
 	return nil
 }
 
 func (u *DbSystemFunc) Delete(id int) (err error) {
 	db := components.Def.DB().GetRegularDB()
-	_, q, a, err := db.Execute(sqls.DeleteSysFunc, map[string]interface{}{
+	_, err = db.Execute(sqls.DeleteSysFunc, map[string]interface{}{
 		"id": id,
 	})
 	if err != nil {
-		return fmt.Errorf("删除系统功能发生错误(err:%v),sqls:%s,参数：%v", err, q, a)
+		return fmt.Errorf("删除系统功能发生错误(err:%v)", err)
 	}
 	return nil
 }
@@ -96,9 +96,9 @@ func (u *DbSystemFunc) Edit(input *model.SystemFuncEditInput) (err error) {
 		"path":     input.Path,
 		"is_open":  input.IsOpen,
 	}
-	_, q, a, err := db.Execute(sqls.EditSysFunc, params)
+	_, err = db.Execute(sqls.EditSysFunc, params)
 	if err != nil {
-		return fmt.Errorf("编辑系统功能发生错误(err:%v),sql:%s,参数：%v", err, q, a)
+		return fmt.Errorf("编辑系统功能发生错误(err:%v)", err)
 	}
 	return nil
 }
@@ -117,22 +117,20 @@ func (u *DbSystemFunc) Add(input *model.SystemFuncAddInput) (err error) {
 	}
 	var (
 		sortrank interface{}
-		q        string
-		arg      []interface{}
 	)
 
 	//1: 查询目录结构中的最大值
-	sortrank, q, arg, err = db.Scalar(sqls.GetSysFuncSortRank, params)
+	sortrank, err = db.Scalar(sqls.GetSysFuncSortRank, params)
 	if err != nil {
-		return fmt.Errorf("添加系统功能发生错误(err:%v),sql:%s,参数：%v", err, q, arg)
+		return fmt.Errorf("添加系统功能发生错误(err:%v)", err)
 	}
 
 	fmt.Println(sortrank)
 
 	params["sortrank"] = sortrank
-	_, q, arg, err = db.Execute(sqls.AddSysFunc, params)
+	_, err = db.Execute(sqls.AddSysFunc, params)
 	if err != nil {
-		return fmt.Errorf("添加系统功能发生错误(err:%v),sql:%s,参数：%v", err, q, arg)
+		return fmt.Errorf("添加系统功能发生错误(err:%v)", err)
 	}
 	return nil
 }

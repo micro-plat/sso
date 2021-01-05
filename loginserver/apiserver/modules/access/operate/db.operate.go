@@ -29,9 +29,9 @@ func (d *DbOperate) LoginOperate(m *model.LoginState) (err error) {
 		"user_id": m.UserID,
 		"content": fmt.Sprintf(`{"desc":"%s","data":"%v"}`, "用户登录", m.UserName),
 	}
-	_, q, a, err := db.Execute(sqls.AddOperate, params)
+	_, err = db.Execute(sqls.AddOperate, params)
 	if err != nil {
-		return fmt.Errorf("添加登录行为数据发生错误(err:%v),sql:%s,输入参数:%v,", err, q, a)
+		return fmt.Errorf("添加登录行为数据发生错误(err:%v)", err)
 	}
 	return nil
 

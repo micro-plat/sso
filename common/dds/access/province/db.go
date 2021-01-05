@@ -15,11 +15,11 @@ func GetProvince(parentCode ...string) ([]types.XMap, error) {
 	if parentCode != nil && len(parentCode) != 0 && parentCode[0] != "" {
 		code = parentCode[0]
 	}
-	data, q, _, err := dbe.Query(sqls.GetProvince, map[string]interface{}{
+	data, err := dbe.Query(sqls.GetProvince, map[string]interface{}{
 		"parent_code": code,
 	})
 	if err != nil {
-		return nil, fmt.Errorf("获取省信息出错: sql:%s, err:%+v", q, err)
+		return nil, fmt.Errorf("获取省信息出错: err:%+v", err)
 	}
 	return data, nil
 }
@@ -27,12 +27,12 @@ func GetProvince(parentCode ...string) ([]types.XMap, error) {
 //GetCitys 根据省获取市信息
 func GetCitys(parentCode, grade string) ([]types.XMap, error) {
 	dbe := components.Def.DB().GetRegularDB()
-	data, q, arg, err := dbe.Query(sqls.GetCityByProvinceID, map[string]interface{}{
+	data, err := dbe.Query(sqls.GetCityByProvinceID, map[string]interface{}{
 		"parent_code": parentCode,
 		"grade":       grade,
 	})
 	if err != nil {
-		return nil, fmt.Errorf("获取市信息出错: sql:%s, arg:%+v, err:%+v", q, arg, err)
+		return nil, fmt.Errorf("获取市信息出错: err:%+v", err)
 	}
 	return data, nil
 }
@@ -40,9 +40,9 @@ func GetCitys(parentCode, grade string) ([]types.XMap, error) {
 //GetAll 根据省获取市信息
 func GetAll() ([]types.XMap, error) {
 	dbe := components.Def.DB().GetRegularDB()
-	data, q, arg, err := dbe.Query(sqls.GetAll, map[string]interface{}{})
+	data, err := dbe.Query(sqls.GetAll, map[string]interface{}{})
 	if err != nil {
-		return nil, fmt.Errorf("获取市信息出错: sql:%s, arg:%+v, err:%+v", q, arg, err)
+		return nil, fmt.Errorf("获取市信息出错: err:%+v", err)
 	}
 	return data, nil
 }

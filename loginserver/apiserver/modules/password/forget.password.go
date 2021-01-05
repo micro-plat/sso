@@ -24,13 +24,13 @@ func NewForgetPassword() *ForgetPassword {
 // ForgetPassword 忘记密码
 func (o *ForgetPassword) ForgetPassword(source, userName, newPassword string) (err error) {
 	db := components.Def.DB().GetRegularDB()
-	lastInsertID, affectedRow, q, a, err := db.Executes(sqls.ForgetPassword, map[string]interface{}{
+	lastInsertID, affectedRow, err := db.Executes(sqls.ForgetPassword, map[string]interface{}{
 		"source":    source,
 		"user_name": userName,
 		"password":  newPassword,
 	})
 	if err != nil {
-		return fmt.Errorf("忘记密码数据发生错误(err:%v),sql:%s,参数：%v,lastInsertID:%v,受影响的行数：%v", err, q, a, lastInsertID, affectedRow)
+		return fmt.Errorf("忘记密码数据发生错误(err:%v)lastInsertID:%v,受影响的行数：%v", err, lastInsertID, affectedRow)
 	}
 	return nil
 }

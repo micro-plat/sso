@@ -95,7 +95,7 @@ github.com/juju/ansiterm/tabwriter
 github.com/keybase/go-ps/darwincgo
 # github.com/leodido/go-urn v1.2.0
 github.com/leodido/go-urn
-# github.com/lib4dev/cli v1.2.6
+# github.com/lib4dev/cli v1.2.8
 github.com/lib4dev/cli
 github.com/lib4dev/cli/cmds
 github.com/lib4dev/cli/logger

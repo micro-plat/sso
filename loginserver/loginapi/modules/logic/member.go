@@ -240,23 +240,23 @@ func (m *MemberLogic) ValidUserInfo(userName string) (string, error) {
 //ValidUserAndGetUserInfo 验证用户是否存在并获取用户信息
 func (m *MemberLogic) ValidUserAndGetUserInfo(userName string) (db.QueryRow, error) {
 	db := components.Def.DB().GetRegularDB()
-	count, q, a, err := db.Scalar(sqls.ValidUserNameExist, map[string]interface{}{
+	count, err := db.Scalar(sqls.ValidUserNameExist, map[string]interface{}{
 		"user_name": userName,
 	})
 	if err != nil {
-		return nil, fmt.Errorf("验证用户是否存在失败(err:%v),sql:%s,参数:%v", err, q, a)
+		return nil, fmt.Errorf("验证用户是否存在失败(err:%v)", err)
 	}
 
 	if types.GetInt(count) <= 0 {
 		return nil, fmt.Errorf("用户不存在:%s", userName)
 	}
 
-	userInfo, q, a, err := db.Query(sqls.QueryUserByUserName, map[string]interface{}{
+	userInfo, err := db.Query(sqls.QueryUserByUserName, map[string]interface{}{
 		"user_name": userName,
 	})
 
 	if err != nil {
-		return nil, fmt.Errorf("根据用户名获取用户信息失败(err:%v),sql:%s,参数:%v", err, q, a)
+		return nil, fmt.Errorf("根据用户名获取用户信息失败(err:%v)", err)
 	}
 
 	if len(userInfo.Get(0).GetString("mobile")) == 0 {

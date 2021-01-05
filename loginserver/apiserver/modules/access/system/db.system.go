@@ -24,7 +24,7 @@ func NewDbSystem() *DbSystem {
 //Get 从数据库中获取系统信息
 func (l *DbSystem) Get(ident string) (s db.QueryRow, err error) {
 	db := components.Def.DB().GetRegularDB()
-	data, _, _, err := db.Query(sqls.QuerySystemInfo, map[string]interface{}{
+	data, err := db.Query(sqls.QuerySystemInfo, map[string]interface{}{
 		"ident": ident,
 	})
 

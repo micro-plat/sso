@@ -54,10 +54,10 @@ func (l *DBUser) AddUser(req model.UserInputNew) error {
 	}
 
 	params["password"] = md5.Encrypt(enum.UserDefaultPassword)
-	userID, _, q, a, err := dbTrans.Executes(sqls.AddUserInfo, params)
+	userID, _, err := dbTrans.Executes(sqls.AddUserInfo, params)
 	if err != nil {
 		dbTrans.Rollback()
-		return fmt.Errorf("添加用户发生错误(err:%v),sql:%s,输入参数:%v", err, q, a)
+		return fmt.Errorf("添加用户发生错误(err:%v)", err)
 	}
 
 	l.adapterRoleID(req)
@@ -73,10 +73,10 @@ func (l *DBUser) AddUser(req model.UserInputNew) error {
 
 		params["role_id"] = req.RoleID
 		params["sys_id"] = systemInfo.GetInt("id")
-		_, q, a, err = dbTrans.Execute(sqls.AddUserRole, params)
+		_, err = dbTrans.Execute(sqls.AddUserRole, params)
 		if err != nil {
 			dbTrans.Rollback()
-			return fmt.Errorf("关联用户角色发生错误(err:%v),sql:%s,输入参数:%v", err, q, a)
+			return fmt.Errorf("关联用户角色发生错误(err:%v)", err)
 		}
 	}
 
@@ -107,7 +107,7 @@ func (l *DBUser) adapterRoleID(req model.UserInputNew) {
 //GetUserInfoByName 根据用户名查询用户信息
 func (l *DBUser) GetUserInfoByName(userName string) (data db.QueryRow, err error) {
 	db := components.Def.DB().GetRegularDB()
-	result, _, _, err := db.Query(sqls.GetUserInfoByName, map[string]interface{}{"user_name": userName})
+	result, err := db.Query(sqls.GetUserInfoByName, map[string]interface{}{"user_name": userName})
 	if err != nil {
 		return nil, err
 	}

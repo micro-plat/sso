@@ -44,13 +44,13 @@ func (u *DbUser) Query(input *model.QueryUserInput) (data db.QueryRows, total in
 		"start":     (input.PageIndex - 1) * input.PageSize,
 		"ps":        input.PageSize,
 	}
-	count, q, a, err := db.Scalar(sqls.QueryUserInfoListCount, params)
+	count, err := db.Scalar(sqls.QueryUserInfoListCount, params)
 	if err != nil {
-		return nil, 0, fmt.Errorf("获取用户信息列表条数发生错误(err:%v),sql:%s,输入参数:%v", err, q, a)
+		return nil, 0, fmt.Errorf("获取用户信息列表条数发生错误(err:%v)", err)
 	}
-	data, q, a, err = db.Query(sqls.QueryUserInfoList, params)
+	data, err = db.Query(sqls.QueryUserInfoList, params)
 	if err != nil {
-		return nil, 0, fmt.Errorf("获取用户信息列表发生错误(err:%v),sql:%s,输入参数:%v", err, q, a)
+		return nil, 0, fmt.Errorf("获取用户信息列表发生错误(err:%v)", err)
 	}
 
 	params["user_id_string"] = ""
@@ -67,9 +67,9 @@ func (u *DbUser) Query(input *model.QueryUserInput) (data db.QueryRows, total in
 		params["user_id_string"] = strings.Join(userids, ",")
 	}
 
-	sysRoles, q, a, err := db.Query(sqls.QueryUserRoleList, params)
+	sysRoles, err := db.Query(sqls.QueryUserRoleList, params)
 	if err != nil {
-		return nil, 0, fmt.Errorf("获取用户信息列表发生错误(err:%v),sql:%s,输入参数:%v", err, q, a)
+		return nil, 0, fmt.Errorf("获取用户信息列表发生错误(err:%v)", err)
 	}
 
 	roles := make(map[string][]map[string]string)
@@ -99,13 +99,13 @@ func (u *DbUser) Query(input *model.QueryUserInput) (data db.QueryRows, total in
 //ChangeStatus 修改用户状态
 func (u *DbUser) ChangeStatus(userID int, status int) (err error) {
 	db := components.Def.DB().GetRegularDB()
-	_, q, a, err := db.Execute(sqls.UpdateUserStatus, map[string]interface{}{
+	_, err = db.Execute(sqls.UpdateUserStatus, map[string]interface{}{
 		"user_id": userID,
 		"status":  status,
 	})
 
 	if err != nil {
-		return fmt.Errorf("修改用户状态发生错误(err:%v),sql:%s,输入参数:%v", err, q, a)
+		return fmt.Errorf("修改用户状态发生错误(err:%v)", err)
 	}
 	return nil
 }
@@ -118,20 +118,20 @@ func (u *DbUser) Delete(userID int) (err error) {
 		return fmt.Errorf("开启DB事务出错(err:%v)", err)
 	}
 
-	_, q, a, err := dbTrans.Execute(sqls.DeleteUser, map[string]interface{}{
+	_, err = dbTrans.Execute(sqls.DeleteUser, map[string]interface{}{
 		"user_id": userID,
 	})
 	if err != nil {
 		dbTrans.Rollback()
-		return fmt.Errorf("删除用户发生错误(err:%v),sql:%s,输入参数:%v", err, q, a)
+		return fmt.Errorf("删除用户发生错误(err:%v)", err)
 	}
 
-	_, q, a, err = dbTrans.Execute(sqls.DelUserRole, map[string]interface{}{
+	_, err = dbTrans.Execute(sqls.DelUserRole, map[string]interface{}{
 		"user_id": userID,
 	})
 	if err != nil {
 		dbTrans.Rollback()
-		return fmt.Errorf("删除用户角色发生错误(err:%v),sql:%s,输入参数:%v", err, q, a)
+		return fmt.Errorf("删除用户角色发生错误(err:%v)", err)
 	}
 
 	dbTrans.Commit()
@@ -141,11 +141,11 @@ func (u *DbUser) Delete(userID int) (err error) {
 //Get 查询用户信息
 func (u *DbUser) Get(userID int) (data db.QueryRow, err error) {
 	db := components.Def.DB().GetRegularDB()
-	result, q, a, err := db.Query(sqls.QueryUserInfo, map[string]interface{}{
+	result, err := db.Query(sqls.QueryUserInfo, map[string]interface{}{
 		"user_id": userID,
 	})
 	if err != nil {
-		return nil, fmt.Errorf("查询用户信息发生错误(err:%v),sql:%s,输入参数:%v", err, q, a)
+		return nil, fmt.Errorf("查询用户信息发生错误(err:%v)", err)
 	}
 
 	if result.IsEmpty() {
@@ -157,19 +157,19 @@ func (u *DbUser) Get(userID int) (data db.QueryRow, err error) {
 
 func (u *DbUser) GetAll(sysID, pi, ps int) (data db.QueryRows, count int, err error) {
 	db := components.Def.DB().GetRegularDB()
-	c, q, a, err := db.Scalar(sqls.QueryUserBySysCount, map[string]interface{}{
+	c, err := db.Scalar(sqls.QueryUserBySysCount, map[string]interface{}{
 		"sys_id": sysID,
 	})
 	if err != nil {
-		return nil, 0, fmt.Errorf("获取用户信息列表条数发生错误(err:%v),sql:%s,输入参数:%v", err, q, a)
+		return nil, 0, fmt.Errorf("获取用户信息列表条数发生错误(err:%v)", err)
 	}
-	data, q, a, err = db.Query(sqls.QueryUserBySysList, map[string]interface{}{
+	data, err = db.Query(sqls.QueryUserBySysList, map[string]interface{}{
 		"sys_id": sysID,
 		"pi":     pi,
 		"ps":     ps,
 	})
 	if err != nil {
-		return nil, 0, fmt.Errorf("获取用户列表发生错误(err:%v),sql:%s,输入参数:%v,", err, q, a)
+		return nil, 0, fmt.Errorf("获取用户列表发生错误(err:%v)", err)
 	}
 	return data, types.GetInt(c), nil
 
@@ -187,16 +187,16 @@ func (u *DbUser) Edit(input *model.UserInputNew) (err error) {
 		return fmt.Errorf("Struct2Map Error(err:%v)", err)
 	}
 
-	_, q, a, err := dbTrans.Execute(sqls.EditUserInfo, params)
+	_, err = dbTrans.Execute(sqls.EditUserInfo, params)
 	if err != nil {
 		dbTrans.Rollback()
-		return fmt.Errorf("编辑用户信息发生错误(err:%v),sql:%s,输入参数:%v", err, q, a)
+		return fmt.Errorf("编辑用户信息发生错误(err:%v)", err)
 	}
 
-	_, q, a, err = dbTrans.Execute(sqls.DelUserRole, params)
+	_, err = dbTrans.Execute(sqls.DelUserRole, params)
 	if err != nil {
 		dbTrans.Rollback()
-		return fmt.Errorf("删除用户原角色信息发生错误(err:%v),sql:%s,输入参数:%v", err, q, a)
+		return fmt.Errorf("删除用户原角色信息发生错误(err:%v)", err)
 	}
 
 	as := strings.Split(input.Auth, "|")
@@ -204,10 +204,10 @@ func (u *DbUser) Edit(input *model.UserInputNew) (err error) {
 		as1 := strings.Split(as[i], ",")
 		params["sys_id"] = as1[0]
 		params["role_id"] = as1[1]
-		_, q, a, err = dbTrans.Execute(sqls.AddUserRole, params)
+		_, err = dbTrans.Execute(sqls.AddUserRole, params)
 		if err != nil {
 			dbTrans.Rollback()
-			return fmt.Errorf("添加用户角色发生错误(err:%v),sql:%s,输入参数:%v", err, q, a)
+			return fmt.Errorf("添加用户角色发生错误(err:%v)", err)
 		}
 	}
 
@@ -229,10 +229,10 @@ func (u *DbUser) Add(input *model.UserInputNew) (err error) {
 	}
 
 	params["password"] = md5.Encrypt(enum.UserDefaultPassword)
-	user_id, _, q, a, err := dbTrans.Executes(sqls.AddUserInfo, params)
+	user_id, _, err := dbTrans.Executes(sqls.AddUserInfo, params)
 	if err != nil {
 		dbTrans.Rollback()
-		return fmt.Errorf("添加用户发生错误(err:%v),sql:%s,输入参数:%v", err, q, a)
+		return fmt.Errorf("添加用户发生错误(err:%v)", err)
 	}
 
 	params["user_id"] = user_id
@@ -241,10 +241,10 @@ func (u *DbUser) Add(input *model.UserInputNew) (err error) {
 		as1 := strings.Split(as[i], ",")
 		params["sys_id"] = as1[0]
 		params["role_id"] = as1[1]
-		_, q, a, err = dbTrans.Execute(sqls.AddUserRole, params)
+		_, err = dbTrans.Execute(sqls.AddUserRole, params)
 		if err != nil {
 			dbTrans.Rollback()
-			return fmt.Errorf("添加用户角色发生错误(err:%v),sql:%s,输入参数:%v", err, q, a)
+			return fmt.Errorf("添加用户角色发生错误(err:%v)", err)
 		}
 	}
 
@@ -260,9 +260,9 @@ func (u *DbUser) EditInfo(username string, tel string, email string) (err error)
 		"tel":      tel,
 		"email":    email,
 	}
-	_, q, a, err := db.Execute(sqls.EditInfo, params)
+	_, err = db.Execute(sqls.EditInfo, params)
 	if err != nil {
-		return fmt.Errorf("编辑个人资料发生错误(err:%v),sql:%s,参数：%v", err, q, a)
+		return fmt.Errorf("编辑个人资料发生错误(err:%v)", err)
 	}
 	return nil
 
@@ -271,12 +271,12 @@ func (u *DbUser) EditInfo(username string, tel string, email string) (err error)
 //ResetPwd ResetPwd
 func (u *DbUser) ResetPwd(userID int) (err error) {
 	db := components.Def.DB().GetRegularDB()
-	_, q, a, err := db.Execute(sqls.SetNewPwd, map[string]interface{}{
+	_, err = db.Execute(sqls.SetNewPwd, map[string]interface{}{
 		"user_id":  userID,
 		"password": md5.Encrypt(enum.UserDefaultPassword),
 	})
 	if err != nil {
-		return fmt.Errorf("重置用户密码发生错误(err:%v),sql:%s,参数：%v", err, q, a)
+		return fmt.Errorf("重置用户密码发生错误(err:%v)", err)
 	}
 	return nil
 }
@@ -284,7 +284,7 @@ func (u *DbUser) ResetPwd(userID int) (err error) {
 //GetUserInfoByName 根据用户名查询用户信息
 func (u *DbUser) GetUserInfoByName(userName string) (data db.QueryRow, err error) {
 	db := components.Def.DB().GetRegularDB()
-	result, _, _, err := db.Query(sqls.GetUserInfoByName, map[string]interface{}{"user_name": userName})
+	result, err := db.Query(sqls.GetUserInfoByName, map[string]interface{}{"user_name": userName})
 	if err != nil {
 		return nil, err
 	}
@@ -297,7 +297,7 @@ func (u *DbUser) GetUserInfoByName(userName string) (data db.QueryRow, err error
 //GetUserInfoByFullName 根据姓名查询用户信息
 func (u *DbUser) GetUserInfoByFullName(fullName string) (data db.QueryRow, err error) {
 	db := components.Def.DB().GetRegularDB()
-	result, _, _, err := db.Query(sqls.GetUserInfoByFullName, map[string]interface{}{"full_name": fullName})
+	result, err := db.Query(sqls.GetUserInfoByFullName, map[string]interface{}{"full_name": fullName})
 	if err != nil {
 		return nil, err
 	}

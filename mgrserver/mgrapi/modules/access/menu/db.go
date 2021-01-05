@@ -29,7 +29,7 @@ func NewDbSystemMenu() *DbSystemMenu {
 //Export 导出菜单
 func (l *DbSystemMenu) Export(sysID int) (s db.QueryRows, err error) {
 	db := components.Def.DB().GetRegularDB()
-	data, _, _, err := db.Query(sqls.QuerySystemMenuInfo, map[string]interface{}{
+	data, err := db.Query(sqls.QuerySystemMenuInfo, map[string]interface{}{
 		"sys_id": sysID,
 	})
 	if err != nil {
@@ -42,7 +42,7 @@ func (l *DbSystemMenu) Export(sysID int) (s db.QueryRows, err error) {
 //Exists 判断一个系统下面是否有菜单数据
 func (l *DbSystemMenu) Exists(sysID string) (bool, error) {
 	db := components.Def.DB().GetRegularDB()
-	count, _, _, err := db.Scalar(sqls.ExistsSystemMenu, map[string]interface{}{
+	count, err := db.Scalar(sqls.ExistsSystemMenu, map[string]interface{}{
 		"sys_id": sysID,
 	})
 	if err != nil {
@@ -111,7 +111,7 @@ func (l *DbSystemMenu) insertLevelData(trans db.IDBTrans, oldIDMaping map[string
 				continue
 			}
 		}
-		id, _, q, a, err := trans.Executes(sqls.AddSystemMenu, map[string]interface{}{
+		id, _, err := trans.Executes(sqls.AddSystemMenu, map[string]interface{}{
 			"name":     val.Name,
 			"parent":   newParent,
 			"sys_id":   sysID,
@@ -124,7 +124,7 @@ func (l *DbSystemMenu) insertLevelData(trans db.IDBTrans, oldIDMaping map[string
 		})
 		if err != nil {
 			trans.Rollback()
-			return fmt.Errorf("导入菜单出错: sysID:%s, levelID:%d, q:%s,a:%+v,err:%+v", sysID, levelID, q, a, err)
+			return fmt.Errorf("导入菜单出错: sysID:%s, levelID:%d, err:%+v", sysID, levelID, err)
 		}
 		if levelID != 4 {
 			oldIDMaping[val.ID] = id

@@ -33,7 +33,7 @@ func NewDBMember() *DBMember {
 //QueryAllUserInfo 获取全部用户
 func (l *DBMember) QueryAllUserInfo(source string, sourceID string) (s db.QueryRows, err error) {
 	db := components.Def.DB().GetRegularDB()
-	data, _, _, err := db.Query(sqls.QueryAllUserInfo, map[string]interface{}{
+	data, err := db.Query(sqls.QueryAllUserInfo, map[string]interface{}{
 		"source":    source,
 		"source_id": sourceID,
 	})
@@ -47,7 +47,7 @@ func (l *DBMember) QueryAllUserInfo(source string, sourceID string) (s db.QueryR
 func (l *DBMember) QueryByUserName(u string, ident string) (info db.QueryRow, err error) {
 	//根据用户名，查询用户信息
 	db := components.Def.DB().GetRegularDB()
-	data, _, _, err := db.Query(sqls.QueryUserByUserName, map[string]interface{}{
+	data, err := db.Query(sqls.QueryUserByUserName, map[string]interface{}{
 		"user_name": u,
 	})
 	if err != nil {
@@ -57,7 +57,7 @@ func (l *DBMember) QueryByUserName(u string, ident string) (info db.QueryRow, er
 		return nil, errs.NewError(http.StatusForbidden, "用户不存在")
 	}
 	//查询用户所在系统的登录地址及角色编号
-	roles, _, _, err := db.Query(sqls.QueryUserRole, map[string]interface{}{
+	roles, err := db.Query(sqls.QueryUserRole, map[string]interface{}{
 		"user_id": data.Get(0).GetInt64("user_id", -1),
 		"ident":   ident,
 	})
@@ -74,7 +74,7 @@ func (l *DBMember) QueryByUserName(u string, ident string) (info db.QueryRow, er
 //QueryUserSystem 查询用户可用的子系统
 func (l *DBMember) QueryUserSystem(userID int, ident string) (s db.QueryRows, err error) {
 	db := components.Def.DB().GetRegularDB()
-	data, _, _, err := db.Query(sqls.QueryUserSystem, map[string]interface{}{
+	data, err := db.Query(sqls.QueryUserSystem, map[string]interface{}{
 		"user_id": userID,
 		"ident":   ident,
 	})
@@ -87,7 +87,7 @@ func (l *DBMember) QueryUserSystem(userID int, ident string) (s db.QueryRows, er
 // QueryByID 根据userid查询用户信息
 func (l *DBMember) QueryByID(uid int, ident string) (s *model.MemberState, err error) {
 	db := components.Def.DB().GetRegularDB()
-	data, _, _, err := db.Query(
+	data, err := db.Query(
 		sqls.QueryUserInfoByUID, map[string]interface{}{
 			"user_id": uid,
 		})
@@ -101,7 +101,7 @@ func (l *DBMember) QueryByID(uid int, ident string) (s *model.MemberState, err e
 	s = &model.MemberState{}
 
 	//查询用户所在系统的登录地址及角色编号
-	roles, _, _, err := db.Query(sqls.QueryUserRole, map[string]interface{}{
+	roles, err := db.Query(sqls.QueryUserRole, map[string]interface{}{
 		"user_id": data.Get(0).GetInt64("user_id", -1),
 		"ident":   ident,
 	})
@@ -132,12 +132,12 @@ func (l *DBMember) QueryByID(uid int, ident string) (s *model.MemberState, err e
 //GetAllUserInfoByUserRole 获取和当前用户同一个角色的用户ids
 func (l *DBMember) GetAllUserInfoByUserRole(userID int, ident string) (string, error) {
 	db := components.Def.DB().GetRegularDB()
-	userInfo, q, args, err := db.Query(sqls.GetAllUserInfoByUserRole, map[string]interface{}{
+	userInfo, err := db.Query(sqls.GetAllUserInfoByUserRole, map[string]interface{}{
 		"user_id": userID,
 		"ident":   ident,
 	})
 	if err != nil {
-		return "", fmt.Errorf("GetAllUserInfoByUserRole出错: sql:%s, args:%+v, err:%+v", q, args, err)
+		return "", fmt.Errorf("GetAllUserInfoByUserRole出错: err:%+v", err)
 	}
 	var userIDArray []string
 	for _, item := range userInfo {

@@ -25,7 +25,7 @@ func NewDbSystem() *DbSystem {
 //QueryUserSystem 还回用户可用的子系统
 func (l *DbSystem) QueryUserSystem(userId int64) (s db.QueryRows, err error) {
 	db := components.Def.DB().GetRegularDB()
-	data, _, _, err := db.Query(
+	data, err := db.Query(
 		sqls.SearchUserSystemInfo, map[string]interface{}{
 			"user_id": userId,
 		})
@@ -35,7 +35,7 @@ func (l *DbSystem) QueryUserSystem(userId int64) (s db.QueryRows, err error) {
 //QuerySysInfoByIdent
 func (l *DbSystem) QuerySysInfoByIdent(ident string) (db.QueryRow, error) {
 	db := components.Def.DB().GetRegularDB()
-	data, _, _, err := db.Query(
+	data, err := db.Query(
 		sqls.QuerySysInfoByIdent, map[string]interface{}{
 			"ident": ident,
 		})

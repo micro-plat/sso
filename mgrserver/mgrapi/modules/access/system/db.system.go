@@ -34,7 +34,7 @@ func NewDbSystem() *DbSystem {
 //Get 从数据库中获取系统信息
 func (l *DbSystem) Get(ident string) (s db.QueryRow, err error) {
 	db := components.Def.DB().GetRegularDB()
-	data, _, _, err := db.Query(sqls.QuerySystemInfo, map[string]interface{}{
+	data, err := db.Query(sqls.QuerySystemInfo, map[string]interface{}{
 		"ident": ident,
 	})
 	return data.Get(0), err
@@ -42,7 +42,7 @@ func (l *DbSystem) Get(ident string) (s db.QueryRow, err error) {
 
 func (l *DbSystem) GetAll(userId int64) (s db.QueryRows, err error) {
 	db := components.Def.DB().GetRegularDB()
-	data, _, _, err := db.Query(sqls.QueryAllSystemInfo, map[string]interface{}{
+	data, err := db.Query(sqls.QueryAllSystemInfo, map[string]interface{}{
 		"user_id": userId,
 	})
 	return data, err
@@ -52,15 +52,15 @@ func (l *DbSystem) GetAll(userId int64) (s db.QueryRows, err error) {
 //Query 获取用系统列表
 func (u *DbSystem) Query(name string, status string, pi int, ps int) (data db.QueryRows, count int, err error) {
 	db := components.Def.DB().GetRegularDB()
-	c, q, a, err := db.Scalar(sqls.QuerySubSystemTotalCount, map[string]interface{}{
+	c, err := db.Scalar(sqls.QuerySubSystemTotalCount, map[string]interface{}{
 		"name":   " and name like '%" + name + "%'",
 		"enable": status,
 	})
 
 	if err != nil {
-		return nil, 0, fmt.Errorf("获取系统管理列表条数发生错误(err:%v),sql:(%s),输入参数:%v,", err, q, a)
+		return nil, 0, fmt.Errorf("获取系统管理列表条数发生错误(err:%v)", err)
 	}
-	data, q, a, err = db.Query(sqls.QuerySubSystemPageList, map[string]interface{}{
+	data, err = db.Query(sqls.QuerySubSystemPageList, map[string]interface{}{
 		"name":   " and t.name like '%" + name + "%'",
 		"enable": status,
 		"start":  (pi - 1) * ps,
@@ -68,7 +68,7 @@ func (u *DbSystem) Query(name string, status string, pi int, ps int) (data db.Qu
 	})
 
 	if err != nil {
-		return nil, 0, fmt.Errorf("获取系统管理列表发生错误(err:%v),sql:%s,输入参数:%v,", err, q, a)
+		return nil, 0, fmt.Errorf("获取系统管理列表发生错误(err:%v)", err)
 	}
 
 	return data, types.GetInt(c), nil
@@ -76,11 +76,11 @@ func (u *DbSystem) Query(name string, status string, pi int, ps int) (data db.Qu
 
 func (u *DbSystem) Delete(id int) (err error) {
 	db := components.Def.DB().GetRegularDB()
-	_, q, a, err := db.Execute(sqls.DeleteSubSystemById, map[string]interface{}{
+	_, err = db.Execute(sqls.DeleteSubSystemById, map[string]interface{}{
 		"id": id,
 	})
 	if err != nil {
-		return fmt.Errorf("删除系统管理列表发生错误(err:%v),sql:%s,输入参数:%v,", err, q, a)
+		return fmt.Errorf("删除系统管理列表发生错误(err:%v)", err)
 	}
 	return nil
 }
@@ -88,7 +88,7 @@ func (u *DbSystem) Delete(id int) (err error) {
 //ExistsNameOrIdent xx
 func (u *DbSystem) ExistsNameOrIdent(name, ident string) (int, error) {
 	db := components.Def.DB().GetRegularDB()
-	count, _, _, err := db.Scalar(sqls.ExistsNameOrIdent, map[string]interface{}{
+	count, err := db.Scalar(sqls.ExistsNameOrIdent, map[string]interface{}{
 		"name":  name,
 		"ident": ident,
 	})
@@ -117,21 +117,21 @@ func (u *DbSystem) Add(input *model.AddSystemInput) (err error) {
 		"login_url":     "http://mgrweb/member/login",
 		"secret":        input.Secret,
 	}
-	_, q, a, err := db.Execute(sqls.AddSubSystem, params)
+	_, err = db.Execute(sqls.AddSubSystem, params)
 	if err != nil {
-		return fmt.Errorf("添加系统管理数据发生错误(err:%v),sql:%s,输入参数:%v,", err, q, a)
+		return fmt.Errorf("添加系统管理数据发生错误(err:%v)", err)
 	}
 	return nil
 }
 
 func (u *DbSystem) ChangeStatus(sysId int, status int) (err error) {
 	db := components.Def.DB().GetRegularDB()
-	_, q, a, err := db.Execute(sqls.UpdateEnable, map[string]interface{}{
+	_, err = db.Execute(sqls.UpdateEnable, map[string]interface{}{
 		"id":     sysId,
 		"enable": status,
 	})
 	if err != nil {
-		return fmt.Errorf("更新系统管理状态发生错误(err:%v),sql:%s,输入参数:%v,", err, q, a)
+		return fmt.Errorf("更新系统管理状态发生错误(err:%v)", err)
 	}
 	return nil
 }
@@ -150,9 +150,9 @@ func (u *DbSystem) Edit(input *model.SystemEditInput) (err error) {
 		"ident":         input.Ident,
 		"wechat_status": input.Wechat_status,
 	}
-	_, q, a, err := db.Execute(sqls.UpdateEdit, params)
+	_, err = db.Execute(sqls.UpdateEdit, params)
 	if err != nil {
-		return fmt.Errorf("更新系统管理数据发生错误(err:%v),sql:%s,输入参数:%v,", err, q, a)
+		return fmt.Errorf("更新系统管理数据发生错误(err:%v)", err)
 	}
 	return nil
 }
@@ -173,10 +173,10 @@ func (u *DbSystem) Sort(sysID, sortRank, levelID, id, parentId int, isUp bool) (
 	}
 
 	db := components.Def.DB().GetRegularDB()
-	data, q, a, err := db.Query(sqls.QuerySsoSystemMenu, params)
+	data, err := db.Query(sqls.QuerySsoSystemMenu, params)
 
 	if err != nil {
-		return fmt.Errorf("查询系统列表错误(err:%v),sql:%s,输入参数:%v,", err, q, a)
+		return fmt.Errorf("查询系统列表错误(err:%v)", err)
 	}
 
 	if len(data) <= 0 {
@@ -190,7 +190,7 @@ func (u *DbSystem) Sort(sysID, sortRank, levelID, id, parentId int, isUp bool) (
 		return fmt.Errorf("调换的菜单时创建事务失败: %s", err.Error())
 	}
 
-	_, q, a, err = trans.Execute(sqls.UpSsoSystemMenu,
+	_, err = trans.Execute(sqls.UpSsoSystemMenu,
 		map[string]interface{}{
 			"sys_id":   sysID,
 			"level_id": levelID,
@@ -200,10 +200,10 @@ func (u *DbSystem) Sort(sysID, sortRank, levelID, id, parentId int, isUp bool) (
 
 	if err != nil {
 		trans.Rollback()
-		return fmt.Errorf("更新系统管理排序发生错误(err:%v),sql:%s,输入参数:%v,", err, q, a)
+		return fmt.Errorf("更新系统管理排序发生错误(err:%v)", err)
 	}
 
-	_, q, a, err = trans.Execute(sqls.UpSsoSystemMenu,
+	_, err = trans.Execute(sqls.UpSsoSystemMenu,
 		map[string]interface{}{
 			"sys_id":   changeRow.GetString("sys_id"),
 			"level_id": changeRow.GetString("level_id"),
@@ -213,7 +213,7 @@ func (u *DbSystem) Sort(sysID, sortRank, levelID, id, parentId int, isUp bool) (
 
 	if err != nil {
 		trans.Rollback()
-		return fmt.Errorf("更新系统管理排序发生错误(err:%v),sql:%s,输入参数:%v,", err, q, a)
+		return fmt.Errorf("更新系统管理排序发生错误(err:%v)", err)
 	}
 
 	trans.Commit()
@@ -224,16 +224,16 @@ func (u *DbSystem) Sort(sysID, sortRank, levelID, id, parentId int, isUp bool) (
 func (u *DbSystem) GetUsers(systemName string) (user db.QueryRows, allUser db.QueryRows, err error) {
 
 	db := components.Def.DB().GetRegularDB()
-	data, q, a, err := db.Query(sqls.GetUsers, map[string]interface{}{
+	data, err := db.Query(sqls.GetUsers, map[string]interface{}{
 		"system_name": systemName,
 	})
 	if err != nil {
-		return nil, nil, fmt.Errorf("获取系统下所有用户发生错误(err:%v),sql:%s,输入参数:%v,", err, q, a)
+		return nil, nil, fmt.Errorf("获取系统下所有用户发生错误(err:%v)", err)
 	}
 
-	datas, q, a, err := db.Query(sqls.GetAllUser, map[string]interface{}{})
+	datas, err := db.Query(sqls.GetAllUser, map[string]interface{}{})
 	if err != nil {
-		return nil, nil, fmt.Errorf("获取所有用户发生错误(err:%v),sql:%s,输入参数:%v,", err, q, a)
+		return nil, nil, fmt.Errorf("获取所有用户发生错误(err:%v)", err)
 	}
 	return data, datas, nil
 
@@ -242,7 +242,7 @@ func (u *DbSystem) GetUsers(systemName string) (user db.QueryRows, allUser db.Qu
 //ChangeSecret 修改秘钥
 func (u *DbSystem) ChangeSecret(id int, secret string) error {
 	db := components.Def.DB().GetRegularDB()
-	_, _, _, err := db.Execute(sqls.ChangeSecret, map[string]interface{}{
+	_, err := db.Execute(sqls.ChangeSecret, map[string]interface{}{
 		"id":     id,
 		"secret": secret,
 	})

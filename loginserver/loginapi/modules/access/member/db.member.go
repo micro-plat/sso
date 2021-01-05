@@ -38,14 +38,14 @@ func NewDBMember() *DBMember {
 //UnLock 解锁被锁定的用户
 func (l *DBMember) UnLock(userName string) error {
 	db := components.Def.DB().GetRegularDB()
-	_, _, _, err := db.Execute(sqls.UnLockMember, map[string]interface{}{"user_name": userName})
+	_, err := db.Execute(sqls.UnLockMember, map[string]interface{}{"user_name": userName})
 	return err
 }
 
 //Query 用户登录时从数据库获取信息
 func (l *DBMember) Query(u, p, ident string) (s *model.MemberState, err error) {
 	db := components.Def.DB().GetRegularDB()
-	data, _, _, errt := db.Query(sqls.QueryUserByUserName, map[string]interface{}{
+	data, errt := db.Query(sqls.QueryUserByUserName, map[string]interface{}{
 		"user_name": u,
 	})
 	if errt != nil {
@@ -64,7 +64,7 @@ func (l *DBMember) Query(u, p, ident string) (s *model.MemberState, err error) {
 		Status:    row.GetInt("status"),
 	}
 
-	roles, _, _, erro := db.Query(sqls.QueryUserRole, map[string]interface{}{
+	roles, erro := db.Query(sqls.QueryUserRole, map[string]interface{}{
 		"user_id": data.Get(0).GetInt64("user_id", -1),
 		"ident":   ident,
 	})
@@ -85,7 +85,7 @@ func (l *DBMember) Query(u, p, ident string) (s *model.MemberState, err error) {
 func (l *DBMember) ChangePwd(userID int, expassword string, newpassword string) (err error) {
 	db := components.Def.DB().GetRegularDB()
 
-	data, _, _, err := db.Query(sqls.QueryOldPwd, map[string]interface{}{
+	data, err := db.Query(sqls.QueryOldPwd, map[string]interface{}{
 		"user_id": userID,
 	})
 
@@ -96,7 +96,7 @@ func (l *DBMember) ChangePwd(userID int, expassword string, newpassword string) 
 	if strings.ToLower(md5.Encrypt(expassword)) != strings.ToLower(data.Get(0).GetString("password")) {
 		return errs.NewError(model.ERR_USER_OLDPWDWRONG, "原密码错误")
 	}
-	_, _, _, err = db.Execute(sqls.SetNewPwd, map[string]interface{}{
+	_, err = db.Execute(sqls.SetNewPwd, map[string]interface{}{
 		"user_id":  userID,
 		"password": md5.Encrypt(newpassword),
 	})
@@ -109,7 +109,7 @@ func (l *DBMember) ChangePwd(userID int, expassword string, newpassword string) 
 // CheckUserHasAuth xx
 func (l *DBMember) CheckUserHasAuth(ident string, userID int64) error {
 	db := components.Def.DB().GetRegularDB()
-	count, _, _, err := db.Scalar(sqls.QueryUserRoleCount, map[string]interface{}{
+	count, err := db.Scalar(sqls.QueryUserRoleCount, map[string]interface{}{
 		"user_id": userID,
 		"ident":   ident,
 	})
@@ -125,7 +125,7 @@ func (l *DBMember) CheckUserHasAuth(ident string, userID int64) error {
 //GetUserInfo 根据用户名获取用户信息
 func (l *DBMember) GetUserInfo(u string) (db.QueryRows, error) {
 	db := components.Def.DB().GetRegularDB()
-	data, _, _, err := db.Query(sqls.QueryUserByUserName, map[string]interface{}{
+	data, err := db.Query(sqls.QueryUserByUserName, map[string]interface{}{
 		"user_name": u,
 	})
 	return data, err
@@ -134,7 +134,7 @@ func (l *DBMember) GetUserInfo(u string) (db.QueryRows, error) {
 //QueryByID 根据用户编号获取用户信息
 func (l *DBMember) QueryByID(uid int64) (db.QueryRow, error) {
 	db := components.Def.DB().GetRegularDB()
-	data, _, _, err := db.Query(sqls.QueryUserInfoByUID, map[string]interface{}{
+	data, err := db.Query(sqls.QueryUserInfoByUID, map[string]interface{}{
 		"user_id": uid,
 	})
 	if err != nil {
@@ -149,7 +149,7 @@ func (l *DBMember) QueryByID(uid int64) (db.QueryRow, error) {
 //UpdateUserStatus 更新用户状态
 func (l *DBMember) UpdateUserStatus(userID int64, status int) error {
 	db := components.Def.DB().GetRegularDB()
-	_, _, _, err := db.Execute(sqls.UpdateUserStatus, map[string]interface{}{
+	_, err := db.Execute(sqls.UpdateUserStatus, map[string]interface{}{
 		"user_id": userID,
 		"status":  status,
 	})
@@ -159,7 +159,7 @@ func (l *DBMember) UpdateUserStatus(userID int64, status int) error {
 //UpdateUserOpenID 保存用户的openId信息
 func (l *DBMember) UpdateUserOpenID(data map[string]string) error {
 	db := components.Def.DB().GetRegularDB()
-	exists, _, _, err1 := db.Scalar(sqls.OpenIDIsExists, map[string]interface{}{
+	exists, err1 := db.Scalar(sqls.OpenIDIsExists, map[string]interface{}{
 		"openid": data["openid"],
 	})
 	if err1 != nil {
@@ -168,7 +168,7 @@ func (l *DBMember) UpdateUserOpenID(data map[string]string) error {
 	if types.GetInt(exists, 0) == 1 {
 		return errs.NewError(model.ERR_OPENID_ONLY_BIND_Once, "一个微信只能绑定一个账户")
 	}
-	_, _, _, err := db.Execute(sqls.AddUserOpenID, map[string]interface{}{
+	_, err := db.Execute(sqls.AddUserOpenID, map[string]interface{}{
 		"user_id": data["userid"],
 		"openid":  data["openid"],
 	})

@@ -25,25 +25,25 @@ func NewDBDataPermission() *DBDataPermission {
 //GetUserDataPermissionConfigs 获取某个用户的数据权限规则配置信息
 func (l *DBDataPermission) GetUserDataPermissionConfigs(req model.DataPermissionGetReq) (result db.QueryRows, err error) {
 	db := components.Def.DB().GetRegularDB()
-	data, q, a, err := db.Query(sqls.QueryUserDataPermission, map[string]interface{}{
+	data, err := db.Query(sqls.QueryUserDataPermission, map[string]interface{}{
 		"user_id":        req.UserID,
 		"ident":          req.Ident,
 		"table_name":     req.TableName,
 		"operate_action": req.OperateAction,
 	})
 	if err != nil {
-		return nil, fmt.Errorf("获取某个用户的数据权限规则配置信息 QueryUserDataPermission 出错: q:%s,a:%+v, err:%+v", q, a, err)
+		return nil, fmt.Errorf("获取某个用户的数据权限规则配置信息 QueryUserDataPermission 出错: err:%+v", err)
 	}
 	return data, nil
 
 	// if data.IsEmpty() {
 	// 	return result, nil
 	// }
-	// configs, q, args, err := db.Query(sqls.QueryPermissionConfig, map[string]interface{}{
+	// configs, err := db.Query(sqls.QueryPermissionConfig, map[string]interface{}{
 	// 	"ids": data.Get(0).GetString("permissions"),
 	// })
 	// if err != nil {
-	// 	return result, fmt.Errorf("QueryPermissionConfig出错: sql:%s, args:%+v, err:%+v", q, args, err)
+	// 	return result, fmt.Errorf("QueryPermissionConfig出错: err:%+v", err)
 	// }
 	// return configs, nil
 }

@@ -23,7 +23,7 @@ func NewMenu() *Menu {
 //Query 获取用户指定系统的菜单信息
 func (l *Menu) Query(uid int64, ident string) ([]map[string]interface{}, error) {
 	db := components.Def.DB().GetRegularDB()
-	data, _, _, err := db.Query(sqls.QueryUserMenus, map[string]interface{}{
+	data, err := db.Query(sqls.QueryUserMenus, map[string]interface{}{
 		"user_id": uid,
 		"ident":   ident,
 	})
@@ -56,12 +56,12 @@ func (l *Menu) Query(uid int64, ident string) ([]map[string]interface{}, error) 
 //QueryUserMenuTags 获取用户有权限的tags
 func (l *Menu) QueryUserMenuTags(uid int64, ident string) (types.XMaps, error) {
 	db := components.Def.DB().GetRegularDB()
-	data, q, args, err := db.Query(sqls.QueryUserMenuTags, map[string]interface{}{
+	data, err := db.Query(sqls.QueryUserMenuTags, map[string]interface{}{
 		"user_id": uid,
 		"ident":   ident,
 	})
 	if err != nil {
-		return nil, fmt.Errorf("QueryUserMenuTags出错: sql:%s, args:%+v, err:%+v", q, args, err)
+		return nil, fmt.Errorf("QueryUserMenuTags出错: err:%+v", err)
 	}
 	return data, nil
 }
