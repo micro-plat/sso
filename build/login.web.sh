@@ -3,6 +3,7 @@
 PATH=$PATH:$GOPATH/bin
 rootdir=$(dirname $(pwd)) 
 pkg=$1
+filename=login.static.zip
 
 echo ""
 echo "---------打包loginserver(loginweb)--------------------" 
@@ -30,33 +31,29 @@ fi
 
 echo "2. 压缩：loginweb/dist/static"
 cd dist/static
-rm -f login.static.tar.gz
-tar -zcvf login.static.tar.gz * > /dev/null
+rm -f $filename
+zip -r $filename  * > /dev/null
 if [ $? -ne 0 ]; then
-	echo "tar -zcvf login.static.tar.gz dist/static/* 出错"
+	echo "tar -zcvf $filename dist/static/* 出错"
 	exit 1
 fi
 
 mkdir -p ${rootdir}/out
 
-mv login.static.tar.gz ${rootdir}/out/
+mv $filename ${rootdir}/out/
 sleep 0.1
 
-echo "3. 生成资源文件:loginserver/loginapi/web/static.go"
+echo "3. 生成资源文件:loginserver/static.go"
 
-if [ "$pkg" = "none" ] ; then 
-	echo "3.1. 生成空文件文件"
-	cd $rootdir
-	sh $rootdir/scripts/empty.asset.sh ${rootdir}/loginserver/loginapi/web 
-else
+if [ "$pkg" != "none" ] ; then 
 	echo "3.1. 整合static.tar.gz文件"
 	cd ${rootdir}/out
-	go-bindata -o=${rootdir}/loginserver/loginapi/web/static.go -pkg=web  login.static.tar.gz > /dev/null
+	go-bindata -o=${rootdir}/loginserver/static.go -pkg=main  $filename > /dev/null
 	if [ $? -ne 0 ]; then
 		echo "go-bindata 整合static出错"
 		exit 1
 	fi 
-	echo "3.2. 请重新执行sh build.sh生成loginserver二进制文件"
+	sh $rootdir/build/empty.asset.sh ${rootdir}/loginserver 
 
 fi
 echo ""

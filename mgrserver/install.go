@@ -8,12 +8,11 @@ import (
 	"github.com/micro-plat/hydra/conf/vars/cache/cacheredis"
 	"github.com/micro-plat/hydra/conf/vars/db"
 	"github.com/micro-plat/sso/mgrserver/mgrapi/modules/model"
-	"github.com/micro-plat/sso/mgrserver/mgrapi/web"
 )
 
 //bindConf 绑定启动配置， 启动时检查注册中心配置是否存在，不存在则引导用户输入配置参数并自动创建到注册中心
 func install() {
-	hydra.OnReady(func() error {
+	hydra.OnReadying(func() error {
 		//配置共有配置
 		pubConf()
 
@@ -37,7 +36,7 @@ func pubConf() {
 
 //测试环境配置
 func devConf() {
-	hydra.Conf.Web("6677").Static(static.WithArchive(web.Archive),
+	hydra.Conf.Web("6677").Static(
 		static.WithRewriters("/", "/index.htm", "/default.html", "/default.htm", "/external/other", "/user/index", "/sys/index", "/sys/func/*", "/sys/data/permission/*", "/user/role", "/role/auth/*", "/role/dataauth/*", "/ssocallback")).
 		Header(header.WithCrossDomain(), header.WithAllowHeaders("__sso_jwt__")).
 		Jwt(jwt.WithName("__sso_jwt__"),
@@ -63,7 +62,7 @@ func devConf() {
 
 //生产环境配置
 func prodConf() {
-	hydra.Conf.Web("###api_port").Static(static.WithArchive(web.Archive),
+	hydra.Conf.Web("###api_port").Static(
 		static.WithRewriters("/", "/index.htm", "/default.html", "/default.htm", "/external/other", "/user/index", "/sys/index", "/sys/func/*", "/sys/data/permission/*", "/user/role", "/role/auth/*", "/role/dataauth/*", "/ssocallback")).
 		Header(header.WithCrossDomain()).
 		Jwt(jwt.WithName("__sso_jwt__"),

@@ -1,8 +1,23 @@
 #!/bin/sh
 
 filepath=$1
-echo "" > $filepath/static.go
-echo "package web" >> $filepath/static.go
-echo "import \"fmt\"" >> $filepath/static.go
-echo "func Asset(name string) ([]byte, error) { return nil, fmt.Errorf(\"Asset %s not found\", name) }" >> $filepath/static.go
-echo "func AssetNames() []string              { return []string{} }" >> $filepath/static.go
+echo '
+package main
+
+import (
+	"path"
+
+	"github.com/micro-plat/hydra"
+	"github.com/micro-plat/hydra/conf/server/static"
+)
+
+func init() {
+	hydra.OnReady(func() {
+		for _, v := range AssetNames() {
+			ext := path.Ext(v)
+			embed, _ := Asset(v)
+			hydra.Conf.GetWeb().Static(static.WithArchiveByEmbed(embed, ext))
+		}
+	})
+}
+' > $filepath/web.go 
