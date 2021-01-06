@@ -9,3 +9,9 @@ conf/logger.json
 /mgrserver/mgrserver
 */bin/
 out/
+
+/loginserver/static.go
+/loginserver/web.go
+
+/mgrserver/static.go
+/mgrserver/web.go

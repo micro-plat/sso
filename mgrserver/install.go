@@ -10,6 +10,12 @@ import (
 	"github.com/micro-plat/sso/mgrserver/mgrapi/modules/model"
 )
 
+var Archive = "mgr.static.zip"
+var staticOpts = []static.Option{
+	static.WithArchive(Archive),
+	static.WithRewriters("/", "/index.htm", "/default.html", "/default.htm", "/external/other", "/user/index", "/sys/index", "/sys/func/*", "/sys/data/permission/*", "/user/role", "/role/auth/*", "/role/dataauth/*", "/ssocallback"),
+}
+
 //bindConf 绑定启动配置， 启动时检查注册中心配置是否存在，不存在则引导用户输入配置参数并自动创建到注册中心
 func install() {
 	hydra.OnReadying(func() error {
@@ -36,8 +42,7 @@ func pubConf() {
 
 //测试环境配置
 func devConf() {
-	hydra.Conf.Web("6677").Static(
-		static.WithRewriters("/", "/index.htm", "/default.html", "/default.htm", "/external/other", "/user/index", "/sys/index", "/sys/func/*", "/sys/data/permission/*", "/user/role", "/role/auth/*", "/role/dataauth/*", "/ssocallback")).
+	hydra.Conf.Web("6677").Static(staticOpts...).
 		Header(header.WithCrossDomain(), header.WithAllowHeaders("__sso_jwt__")).
 		Jwt(jwt.WithName("__sso_jwt__"),
 			jwt.WithMode("HS512"),
@@ -62,8 +67,7 @@ func devConf() {
 
 //生产环境配置
 func prodConf() {
-	hydra.Conf.Web("###api_port").Static(
-		static.WithRewriters("/", "/index.htm", "/default.html", "/default.htm", "/external/other", "/user/index", "/sys/index", "/sys/func/*", "/sys/data/permission/*", "/user/role", "/role/auth/*", "/role/dataauth/*", "/ssocallback")).
+	hydra.Conf.Web("###api_port").Static(staticOpts...).
 		Header(header.WithCrossDomain()).
 		Jwt(jwt.WithName("__sso_jwt__"),
 			jwt.WithMode("HS512"),

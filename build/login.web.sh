@@ -46,7 +46,7 @@ sleep 0.1
 echo "3. 生成资源文件:loginserver/static.go"
 
 if [ "$pkg" != "none" ] ; then 
-	echo "3.1. 整合static.tar.gz文件"
+	echo "3.1. 整合$filename文件"
 	cd ${rootdir}/out
 	go-bindata -o=${rootdir}/loginserver/static.go -pkg=main  $filename > /dev/null
 	if [ $? -ne 0 ]; then

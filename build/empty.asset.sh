@@ -12,11 +12,12 @@ import (
 )
 
 func init() {
-	hydra.OnReady(func() {
+	hydra.OnReady(func() {			
 		for _, v := range AssetNames() {
 			ext := path.Ext(v)
 			embed, _ := Asset(v)
-			hydra.Conf.GetWeb().Static(static.WithArchiveByEmbed(embed, ext))
+			staticOpts = append(staticOpts,static.WithArchiveByEmbed(embed, ext))			
+			hydra.Conf.GetWeb().Static(staticOpts...)
 		}
 	})
 }

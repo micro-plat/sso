@@ -34,7 +34,7 @@ mv $filename ${rootdir}/out/
 sleep 0.1
 echo "3. 生成资源文件:loginserver/loginapi/web/static.go" 
 if [ "$pkg" != "none" ] ; then 
-	echo "3.1. 整合static.tar.gz文件"
+	echo "3.1. 整合$filename文件"
 	sleep 0.1
 	cd $rootdir/out
 	go-bindata -o=${rootdir}/mgrserver/static.go -pkg=main $filename > /dev/null
