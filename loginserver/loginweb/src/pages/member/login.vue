@@ -42,6 +42,8 @@
         bgImageUrl: window.globalConfig.staticImageUrl ,//"http://images.yxtx888.net/sso/background.jpg",
         copyright: (window.globalConfig.companyRight||"") + "Copyright©" + new Date().getFullYear() +"版权所有",//"北京卓易豪斯科技有限公司Copyright©" + new Date().getFullYear() +"版权所有" ,
         copyrightcode: window.globalConfig.companyRightCode ,//"蜀ICP备20003360号",
+        requireCode: window.globalConfig.requireCode||true,
+
         callback:"",
         changePwd:0,
         ident: "",
@@ -55,7 +57,7 @@
         codeLabel:window.globalConfig.codeLabel,
         codeHolder:window.globalConfig.codeHolder,
         sendBtnLabel:window.globalConfig.sendBtnLabel,
-        requireCode:true,
+
 
         errorTemplate:{
             901: "系统被锁定,不能登录",

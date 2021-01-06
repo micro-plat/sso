@@ -1,7 +1,7 @@
 package system
 
 import (
-	"errors"
+	"fmt"
 
 	"github.com/micro-plat/hydra/components"
 	"github.com/micro-plat/lib4go/db"
@@ -32,7 +32,7 @@ func (l *DbSystem) Get(ident string) (s db.QueryRow, err error) {
 		return nil, err
 	}
 	if data.IsEmpty() {
-		return nil, errors.New("系统不存在或则系统被禁用")
+		return nil, fmt.Errorf("系统不存在或则系统被禁用:%s", ident)
 	}
 	return data.Get(0), err
 }

@@ -14,7 +14,11 @@ pkg=$1
 echo ""
 echo "---------打包-start-----------------" 
 echo ""
-  
+
+sh login.web.sh $pkg
+sh mgr.web.sh $pkg
+
+
 #------------------------------------" 
 echo "1. loginserver 项目编译" 
 cd $rootdir/loginserver

@@ -3,39 +3,24 @@ package dds
 import (
 	"fmt"
 	"net/http"
+	"sync"
 
 	"github.com/micro-plat/hydra"
 	"github.com/micro-plat/lib4go/errs"
 	"github.com/micro-plat/sso/common/dds/access/dictionary"
 	"github.com/micro-plat/sso/common/dds/access/province"
-	"github.com/micro-plat/sso/common/dds/const/config"
 )
 
-//Bind 绑定字典api对外接口
-//配置参数，如传入url前缀, "test" 生成url => /test/dds/dictionary/get
-func Bind(app *hydra.MicroApp, options ...config.Option) {
-	bindAPI(app, options...)
-}
+var onceLock sync.Once
 
-//bindAPI 绑定一个前端api接口
-func bindAPI(app *hydra.MicroApp, options ...config.Option) {
-	urlPrex := config.GetURLPrex(options...)
-	urlDictionary := "/dds/dictionary/get"
-	urlProvince := "/dds/province/get"
-	urlCity := "/dds/city/get"
-	urlRegion := "/dds/region/get"
-
-	if urlPrex != "" {
-		urlDictionary = fmt.Sprintf("/%s%s", urlPrex, urlDictionary)
-		urlProvince = fmt.Sprintf("/%s%s", urlPrex, urlProvince)
-		urlCity = fmt.Sprintf("/%s%s", urlPrex, urlCity)
-		urlRegion = fmt.Sprintf("/%s%s", urlPrex, urlRegion)
-	}
-
-	app.Micro(urlDictionary, getDictionaryHandler) //获取字典数据
-	app.Micro(urlProvince, getProvinceHandler)     //获取省数据
-	app.Micro(urlCity, getCityHandler)             //获取市数据
-	app.Micro(urlRegion, getRegionHandler)         //获取市数据
+func init() {
+	onceLock.Do(func() {
+		app := hydra.S
+		app.Micro("/dds/dictionary/get", getDictionaryHandler) //获取字典数据
+		app.Micro("/dds/province/get", getProvinceHandler)     //获取省数据
+		app.Micro("/dds/city/get", getCityHandler)             //获取市数据
+		app.Micro("/dds/region/get", getRegionHandler)         //获取市数据
+	})
 }
 
 //GetDictionaryHandler 获取某个类型下面的字典信息

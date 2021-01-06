@@ -3,19 +3,30 @@ package sso
 import (
 	"fmt"
 	"net/http"
+	"sync"
 
 	"github.com/micro-plat/hydra"
 	"github.com/micro-plat/lib4go/errs"
 )
 
-//Bind 绑定注册路由
-func Bind(app *hydra.MicroApp) {
-	app.Micro("/sso/login/verify", loginVerify)
-	app.Micro("/sso/member/menus/get", userMenus)
-	app.Micro("/sso/member/systems/get", userSystems)
-	app.Micro("/sso/member/all/get", getAllUser)
-	app.Micro("/sso/system/info/get", systemInfo)
-	app.Micro("/sso/member/tag/display", getTags)
+var onceLock sync.Once
+
+func init() {
+	onceLock.Do(func() {
+		hydra.OnReady(func() {
+			app := hydra.S
+			app.Micro("/sso/login/verify", loginVerify)
+			app.Micro("/sso/member/menus/get", userMenus)
+			app.Micro("/sso/member/systems/get", userSystems)
+			app.Micro("/sso/member/all/get", getAllUser)
+			app.Micro("/sso/system/info/get", systemInfo)
+			app.Micro("/sso/member/tag/display", getTags)
+
+			app.Micro("/sso/member/changepwd", changePwd)
+			app.Micro("/sso/member/forgetpwd", forgetPwd)
+		})
+	})
+
 }
 
 //BindConfig 自动生成相关的api接口(登录回调验证、获取菜单、获取系统信息)
@@ -23,20 +34,6 @@ func BindConfig(ssoApiHost, ident, secret string) error {
 	if err := saveSSOClient(ssoApiHost, ident, secret); err != nil {
 		return err
 	}
-	return nil
-}
-
-//BindSass sass系统的绑定(登录通过api的方式调用, 系统信息也通过api的方式调用)
-//相当于只有菜单数据是自动绑定，后台不要管
-func BindSass(app *hydra.MicroApp, ssoApiHost, ident, secret string) error {
-	if err := saveSSOClient(ssoApiHost, ident, secret); err != nil {
-		return err
-	}
-	app.Micro("/sso/member/menus/get", userMenus)
-	app.Micro("/sso/member/changepwd", changePwd)
-	app.Micro("/sso/member/forgetpwd", forgetPwd)
-	app.Micro("/sso/member/all/get", getAllUser)
-
 	return nil
 }
 

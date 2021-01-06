@@ -3,6 +3,7 @@
     <nav-menu
       :menus="menus"
       :copyright="copyright"
+      :copyrightcode="copyrightcode"
       :themes="themes"
       :logo="logo"
       :systemName="systemName"
@@ -23,7 +24,8 @@
     data () {
       return {
         logo: "",
-        copyright: new Date().getFullYear() + " admin-web", //版权信息
+        copyright: (window.globalConfig.companyRight||"") + "Copyright©" + new Date().getFullYear() +"版权所有",//"北京卓易豪斯科技有限公司Copyright©" + new Date().getFullYear() +"版权所有" ,
+        copyrightcode: window.globalConfig.companyRightCode ,//"蜀ICP备20003360号",
         themes: "", //顶部左侧背景颜色,顶部右侧背景颜色,右边菜单背景颜色
         menus: [{}],  //菜单数据
         systemName: "用户权限系统",  //系统名称

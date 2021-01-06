@@ -11,7 +11,7 @@ import (
 	"github.com/micro-plat/hydra/conf/app"
 	"github.com/micro-plat/hydra/hydra/servers/http"
 	"github.com/micro-plat/sso/common/config"
-	"github.com/micro-plat/sso/common/dds"
+	_ "github.com/micro-plat/sso/common/dds"
 	_ "github.com/micro-plat/sso/mgrserver/mgrapi/modules/const/sqls/mysql"
 	"github.com/micro-plat/sso/mgrserver/mgrapi/modules/model"
 	cmodel "github.com/micro-plat/sso/mgrserver/mgrapi/modules/model"
@@ -36,10 +36,7 @@ var App = hydra.NewApp(
 //init 检查应用程序配置文件，并根据配置初始化服务
 func init() {
 	install()
-
-	dds.Bind(App)
-	ssoSdk.Bind(App)
-
+  
 	//每个请求执行前执行
 	App.OnHandleExecuting(func(ctx hydra.IContext) (rt interface{}) {
 		ctx.Log().Info("handling.....")

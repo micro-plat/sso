@@ -34,7 +34,6 @@ Vue.prototype.$http = ssocfg.http;
 Vue.config.productionTip = false;
 Vue.prototype.EnumUtility = new EnumUtility(); // 枚举字典
 Vue.prototype.EnumUtility.defaultCallback(function(type){
-  debugger
   var result = []
   $.ajax({
     url: (window.globalConfig.apiURL ||"") + "/dds/dictionary/get",

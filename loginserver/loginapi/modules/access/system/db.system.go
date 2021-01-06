@@ -1,7 +1,7 @@
 package system
 
 import (
-	"errors"
+	"fmt"
 
 	"github.com/micro-plat/hydra/components"
 	"github.com/micro-plat/lib4go/db"
@@ -43,7 +43,7 @@ func (l *DbSystem) QuerySysInfoByIdent(ident string) (db.QueryRow, error) {
 		return nil, err
 	}
 	if data.IsEmpty() {
-		return nil, errors.New("系统不存在")
+		return nil, fmt.Errorf("系统不存在:%s", ident)
 	}
 	return data.Get(0), nil
 }
