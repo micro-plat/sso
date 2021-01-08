@@ -10,6 +10,7 @@ import (
 type MemberState struct {
 	Password       string `json:"-"`
 	UserID         int64  `json:"user_id" m2s:"user_id"`
+	FullName       string `json:"full_name" m2s:"full_name"`
 	UserName       string `json:"user_name" m2s:"user_name"`
 	RoleName       string `json:"role_name" m2s:"role_name"`
 	SystemID       int    `json:"sys_id" `
