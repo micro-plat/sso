@@ -54,12 +54,17 @@ axios.interceptors.request.use(
         if (userInfo) {
             userName = JSON.parse(userInfo).name || '';
         }
-        
-        config.headers = {
-          'X-Request-Id':userName + '-' + guid(),
-          'Content-Type': 'application/x-www-form-urlencoded',
-          '__sso_jwt__': GetTocken()
+        var ssoHeaders = {
+            'X-Request-Id':userName + '-' + guid(),
+            'Content-Type': 'application/x-www-form-urlencoded',
+            '__sso_jwt__': GetTocken()
         };
+        cfgHeaders = config.headers || {};
+
+        for(var k in cfgHeaders){
+            ssoHeaders[k] = cfgHeaders[k];
+        }
+        config.headers = ssoHeaders;
 
         return config;
     },

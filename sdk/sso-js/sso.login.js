@@ -1,6 +1,7 @@
 import $ from "jquery"; 
 import VueCookies from 'vue-cookies';
 
+var headerKey = "__sso_jwt__";
 /**
  *  配置sso相关的host)
  * @param {*sso前端host, 登录跳转用到} loginWebHost 
@@ -47,9 +48,9 @@ export function changeUrl() {
  * @param {*回调地址, 请带上 http / https} callBackUrl
  */
 export function setRouteBeforeLogin() {
-    VueCookies.remove("__sso_jwt__");
-    localStorage.removeItem("__sso_jwt__");
-    sessionStorage.removeItem("__sso_jwt__");
+    VueCookies.remove(headerKey);
+    localStorage.removeItem(headerKey);
+    sessionStorage.removeItem(headerKey);
 
     if (window.location.pathname != "/" && window.location.pathname != "/login" && window.location.pathname != "/login/") {
         window.localStorage.setItem("beforeLoginUrl", window.location.pathname);
@@ -82,7 +83,7 @@ function changeRouteAfterLogin(vueRouter,userName, userRole) {
 
     var oldPath = window.localStorage.getItem("beforeLoginUrl");
     localStorage.removeItem("beforeLoginUrl");
-    if (oldPath && oldPath != "/" && oldPath.indexOf("/external") == 0) {
+    if (oldPath && oldPath != "/") {
         vueRouter.push(oldPath);
         return;
     }
@@ -93,12 +94,12 @@ function changeRouteAfterLogin(vueRouter,userName, userRole) {
  * 子系统退出登录,会跳转到sso登录界面
  * @param {sso登录地址，和跳转地址不一样, 请注意,不然退不出去, 请带上http} loginUrl 
  */
-function signOut() {
-    VueCookies.remove("__sso_jwt__");
-    localStorage.removeItem("__sso_jwt__");
-    sessionStorage.removeItem("__sso_jwt__");
-
-    window.location.href = window.ssoconfig.loginWebHost + "/" + window.ssoconfig.ident + "/login";
+function signOut(redirectURL) {
+    VueCookies.remove(headerKey);
+    localStorage.removeItem(headerKey);
+    sessionStorage.removeItem(headerKey);
+    redirectURL = redirectURL || window.ssoconfig.loginWebHost + "/" + window.ssoconfig.ident + "/login";
+    window.location.href = redirectURL;
 }
 
 /**
@@ -106,9 +107,9 @@ function signOut() {
  * @param {sso修改密码地址,请带上http} changePwdUrl 
  */
 function changePwd() {
-    VueCookies.remove("__sso_jwt__");
-    localStorage.removeItem("__sso_jwt__");
-    sessionStorage.removeItem("__sso_jwt__");
+    VueCookies.remove(headerKey);
+    localStorage.removeItem(headerKey);
+    sessionStorage.removeItem(headerKey);
 
     window.location.href = window.ssoconfig.loginWebHost + "/" + window.ssoconfig.ident + "/changepwd";
 }
