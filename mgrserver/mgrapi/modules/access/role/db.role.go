@@ -6,6 +6,7 @@ import (
 
 	"github.com/micro-plat/hydra/components"
 	"github.com/micro-plat/lib4go/db"
+	"github.com/micro-plat/lib4go/errs"
 	"github.com/micro-plat/lib4go/types"
 	"github.com/micro-plat/sso/mgrserver/mgrapi/modules/const/enum"
 	"github.com/micro-plat/sso/mgrserver/mgrapi/modules/const/sqls"
@@ -163,6 +164,18 @@ func (r *DbRole) Auth(input *model.RoleAuthInput) (err error) {
 		return fmt.Errorf("开启DB事务出错(err:%v)", err)
 	}
 
+	checkResult, err := db.Query(sqls.CheckSysMeun, map[string]interface{}{
+		"sys_id":      input.SysID,
+		"select_auth": input.SelectAuth,
+	})
+	if err != nil {
+		return fmt.Errorf("检查菜单列表发生错误(err:%v)", err)
+	}
+	if checkResult.IsEmpty() {
+		dbTrans.Rollback()
+		return errs.NewErrorf(enum.Invalid_Code, "角色权限修改未成功，请重试")
+	}
+
 	//删除原权限
 	_, err = dbTrans.Execute(sqls.DelRoleAuth, map[string]interface{}{
 		"role_id": input.RoleID,
@@ -179,8 +192,9 @@ func (r *DbRole) Auth(input *model.RoleAuthInput) (err error) {
 	}
 	//添加新权限
 	s := strings.Split(input.SelectAuth, ",")
+	var num int64 = 0
 	for i := 0; i < len(s); i++ {
-		_, err := dbTrans.Execute(sqls.AddRoleAuth, map[string]interface{}{
+		r, err := dbTrans.Execute(sqls.AddRoleAuth, map[string]interface{}{
 			"role_id":  input.RoleID,
 			"sys_id":   input.SysID,
 			"menu_id":  s[i],
@@ -190,8 +204,11 @@ func (r *DbRole) Auth(input *model.RoleAuthInput) (err error) {
 			dbTrans.Rollback()
 			return fmt.Errorf("添加角色权限发生错误(err:%v)", err)
 		}
+		num = num + r
 	}
+
 	dbTrans.Commit()
+
 	return nil
 }
 

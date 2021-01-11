@@ -14,3 +14,7 @@ const (
 	UserLock
 	UserDisable
 )
+
+const (
+	Invalid_Code = 655
+)

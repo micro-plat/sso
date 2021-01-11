@@ -8,6 +8,7 @@
             <div class="form-group">
               <input
                 type="text"
+                style="width: 190px"
                 class="form-control"
                 v-model="paging.username"
                 onkeypress="if(event.keyCode == 13) return false;"
@@ -37,17 +38,23 @@
           </form>
         </div>
       </div>
-      <bootstrap-modal id ="qrCodeModal" ref="qrCodeModal" :need-header="true" size="small">
+      <bootstrap-modal id="qrCodeModal" ref="qrCodeModal" :need-header="true" size="small">
         <div slot="title">绑定微信账号</div>
         <div slot="body">
           <div>
-          <div class="panel-body">
-            <div id="qrcodeTable"></div>
-          </div>
+            <div class="panel-body">
+              <div id="qrcodeTable"></div>
+            </div>
           </div>
         </div>
       </bootstrap-modal>
-      <bootstrap-modal ref="editModal" :need-header="true" :need-footer="true" :closed="resetSys" no-close-on-backdrop="true">
+      <bootstrap-modal
+        ref="editModal"
+        :need-header="true"
+        :need-footer="true"
+        :closed="resetSys"
+        no-close-on-backdrop="true"
+      >
         <div slot="title">{{isAdd == 1 ? "添加用户" : "编辑用户信息"}}</div>
         <div slot="body">
           <div class="panel panel-default">
@@ -63,7 +70,7 @@
                     v-model="userInfo.full_name"
                     placeholder="请输入姓名"
                     required
-                    maxlength="5"
+                    maxlength="20"
                   />
                   <div class="form-heigit">
                     <span v-show="errors.first('fullname')" class="text-danger">姓名不能为空！</span>
@@ -103,7 +110,9 @@
                   </div>
                 </div>
                 <div class="form-group">
-                  <div><label>邮箱</label></div>
+                  <div>
+                    <label>邮箱</label>
+                  </div>
                   <input
                     name="email_pre"
                     type="text"
@@ -114,16 +123,17 @@
                     required
                   />
                   <select class="email-select" v-model="userInfo.email_suffix">
-                     <option selected="selected" value="@100bm.cn">@100bm.cn</option>
-                     <option value="@hztx18.com">@hztx18.com</option>
+                    <option selected="selected" value="@100bm.cn">@100bm.cn</option>
+                    <option value="@hztx18.com">@hztx18.com</option>
                   </select>
                   <!-- <div class="form-heigit">
                     <span v-show="errors.first('email1')" class="text-danger">请输入正确的邮箱！</span>
-                  </div> -->
+                  </div>-->
                 </div>
                 <div class="form-group">
                   <label>扩展参数(非必须)</label>
                   <textarea
+                    maxlength="1000"
                     name="ext_params"
                     style="resize:none"
                     rows="5"
@@ -155,6 +165,7 @@
                         v-model="list.sys_id"
                         @change="sysStatus(list.sys_id,index)"
                         required
+                        style="width:200px"
                       >
                         <option value selected="selected">---请选择系统---</option>
                         <option
@@ -224,7 +235,9 @@
           <el-table-column align="center" width="170" prop="email" label="邮箱"></el-table-column>
           <el-table-column align="center" width="80" prop="status" label="状态">
             <template slot-scope="scope">
-              <el-tag :type="scope.row.status == '0' ? 'success' : 'info'" >{{scope.row.status_label}}</el-tag>
+              <el-tag
+                :type="scope.row.status == '0' ? 'success' : 'info'"
+              >{{scope.row.status_label}}</el-tag>
             </template>
           </el-table-column>
           <el-table-column align="center" width="180" prop="create_time" label="创建时间">
@@ -236,12 +249,41 @@
           <el-table-column align="center" label="操作">
             <template slot-scope="scope">
               <el-button plain type="primary" size="mini" @click="showModal(2,scope.row)">编辑</el-button>
-              <el-button plain type="success" size="mini" @click="userChange(0,scope.row.user_id, scope.row.user_name)" v-if="scope.row.status == 2">启用</el-button>
-              <el-button plain type="info" size="mini" @click="userChange(2,scope.row.user_id,scope.row.user_name)" v-if="scope.row.status == 0">禁用</el-button>
-              <el-button plain type="success" size="mini" @click="userChange(0,scope.row.user_id,scope.row.user_name)" v-if="scope.row.status == 1">解锁</el-button>
+              <el-button
+                plain
+                type="success"
+                size="mini"
+                @click="userChange(0,scope.row.user_id, scope.row.user_name)"
+                v-if="scope.row.status == 2"
+              >启用</el-button>
+              <el-button
+                plain
+                type="info"
+                size="mini"
+                @click="userChange(2,scope.row.user_id,scope.row.user_name)"
+                v-if="scope.row.status == 0"
+              >禁用</el-button>
+              <el-button
+                plain
+                type="success"
+                size="mini"
+                @click="userChange(0,scope.row.user_id,scope.row.user_name)"
+                v-if="scope.row.status == 1"
+              >解锁</el-button>
               <el-button plain type="danger" size="mini" @click="userDel(scope.row.user_id)">删除</el-button>
-              <el-button plain type="danger" size="mini" v-if="!scope.row.wx_openid && scope.row.status == 0" @click="bindWx(scope.row.user_id, scope.row.user_name)">绑定微信</el-button>
-              <el-button plain type="danger" size="mini" @click="setDefaultPwd(scope.row.user_id)">重置密码</el-button>
+              <el-button
+                plain
+                type="danger"
+                size="mini"
+                v-if="!scope.row.wx_openid && scope.row.status == 0"
+                @click="bindWx(scope.row.user_id, scope.row.user_name)"
+              >绑定微信</el-button>
+              <el-button
+                plain
+                type="danger"
+                size="mini"
+                @click="setDefaultPwd(scope.row.user_id)"
+              >重置密码</el-button>
             </template>
           </el-table-column>
         </el-table>
@@ -265,8 +307,8 @@
 <script>
 import pager from "vue-simple-pager";
 import PullTo from "vue-pull-to";
-import {trimError} from '@/services/util'
-import "@/services/qrcode.min.js"
+import { trimError } from "@/services/util";
+import "@/services/qrcode.min.js";
 
 export default {
   components: {
@@ -276,7 +318,7 @@ export default {
   },
   data() {
     return {
-      errorTemplate:{
+      errorTemplate: {
         902: "用户被锁定",
         903: "用户被禁用",
         905: "用户不存在",
@@ -297,14 +339,14 @@ export default {
         items: []
       },
       userInfo: {
-        full_name:"",
+        full_name: "",
         user_name: "",
         user_id: -1,
         lists: [],
         mobile: null,
         email: null,
-        email_pre:null,
-        email_suffix:"@100bm.cn",
+        email_pre: null,
+        email_suffix: "@100bm.cn",
         status: 0,
         is_add: 2,
         ext_params: ""
@@ -317,20 +359,21 @@ export default {
       isAdd: 1
     };
   },
-  watch:{
-    'userInfo.full_name': {
+  watch: {
+    "userInfo.full_name": {
       handler(newValue, oldValue) {
         console.log(newValue);
         if (!/^[\u4E00-\u9FA5]+[1-9]?$/.test(newValue)) {
-          return
+          return;
         }
 
         if (newValue && newValue.length >= 2) {
-          this.$http.post("/user/generateusername", {full_name: newValue})
-          .then(res => {
-            this.userInfo.user_name = res;
-            this.userInfo.email_pre = res;
-          })
+          this.$http
+            .post("/user/generateusername", { full_name: newValue })
+            .then(res => {
+              this.userInfo.user_name = res;
+              this.userInfo.email_pre = res;
+            });
         }
       }
     }
@@ -353,20 +396,21 @@ export default {
       if (this.paging.pi == 0) {
         this.paging.pi = 1;
       }
-      this.$http.post("/user/getall", this.paging)
+      this.$http
+        .post("/user/getall", this.paging)
         .then(res => {
           this.datalist.items = res.list;
           this.datalist.count = new Number(res.count);
           this.totalpage = res.count;
         })
         .catch(err => {
-            this.$notify({
-              title: "错误",
-              message: "网络错误,请稍后再试",
-              type: "error",
-              offset: 50,
-              duration: 2000
-            });
+          this.$notify({
+            title: "错误",
+            message: "网络错误,请稍后再试",
+            type: "error",
+            offset: 50,
+            duration: 2000
+          });
         });
     },
     pageChange(val) {
@@ -380,12 +424,14 @@ export default {
 
     searchClick: function() {
       this.paging.pi = 1;
+      this.paging.ps = 10;
       this.queryData();
     },
     next() {
       let pi = this.paging.pi;
       this.paging.pi = pi + 1;
-      this.$http.post("/user/getall", this.paging)
+      this.$http
+        .post("/user/getall", this.paging)
         .then(res => {
           if (res.list.length <= 0) {
             this.paging.pi = pi;
@@ -396,13 +442,13 @@ export default {
           this.totalpage = Math.ceil(this.datalist.count / this.paging.ps);
         })
         .catch(err => {
-            this.$notify({
-              title: "错误",
-              message: "网络错误,请稍后再试",
-              type: "error",
-              offset: 50,
-              duration: 2000
-            });
+          this.$notify({
+            title: "错误",
+            message: "网络错误,请稍后再试",
+            type: "error",
+            offset: 50,
+            duration: 2000
+          });
         });
     },
     stateChange(e) {
@@ -430,10 +476,9 @@ export default {
         this.userInfo.status = 0;
         this.userInfo.user_id = -1;
         this.userInfo.is_add = 1;
-        this.userInfo.lists = [{sys_id: "",role_id: ""}];
+        this.userInfo.lists = [{ sys_id: "", role_id: "" }];
         this.userInfo.email = null;
-        this.userInfo.ext_params = "",
-        this.userInfo.email_pre = "";
+        (this.userInfo.ext_params = ""), (this.userInfo.email_pre = "");
         this.userInfo.email_suffix = "@100bm.cn";
         this.selectSys.push("");
       } else {
@@ -458,26 +503,30 @@ export default {
       }
       this.$refs.editModal.open();
     },
-    userChange(status, userid,user_name) {
+    userChange(status, userid, user_name) {
       var r;
       this.$confirm("确认执行该操作吗?", "提示", {
         confirmButtonText: "确定",
         cancelButtonText: "取消",
         type: "warning"
-      })
-      .then(() => {
-        this.$http.post("/user/changestatus", {user_id: userid, status: status, user_name:user_name})
-        .then(res => {
-          this.queryData();
-          this.$notify({
-            title: "成功",
-            message: "修改状态成功",
-            type: "success",
-            offset: 50,
-            duration: 2000
-          });
-        })
-        .catch(err => {
+      }).then(() => {
+        this.$http
+          .post("/user/changestatus", {
+            user_id: userid,
+            status: status,
+            user_name: user_name
+          })
+          .then(res => {
+            this.queryData();
+            this.$notify({
+              title: "成功",
+              message: "修改状态成功",
+              type: "success",
+              offset: 50,
+              duration: 2000
+            });
+          })
+          .catch(err => {
             this.$notify({
               title: "错误",
               message: "网络错误,请稍后再试",
@@ -485,17 +534,38 @@ export default {
               offset: 50,
               duration: 2000
             });
-        });
-      })
+          });
+      });
     },
 
     bindWx(userid, userName) {
-      jQuery('#qrcodeTable canvas').remove();
+      jQuery("#qrcodeTable canvas").remove();
 
-      this.$http.post("/user/generateqrcode", {user_id: userid})
+      this.$http
+        .post("/user/generateqrcode", { user_id: userid })
         .then(res => {
-          console.log(window.globalConfig.loginWebHost + "/bindwx?userid=" + res.user_id + "&sign=" + res.sign + "&timestamp=" + res.timestamp + "&name=" + userName);
-          jQuery('#qrcodeTable').qrcode(window.globalConfig.loginWebHost+ "/bindwx?userid=" + res.user_id + "&sign=" + res.sign + "&timestamp=" + res.timestamp + "&name=" + userName);
+          console.log(
+            window.globalConfig.loginWebHost +
+              "/bindwx?userid=" +
+              res.user_id +
+              "&sign=" +
+              res.sign +
+              "&timestamp=" +
+              res.timestamp +
+              "&name=" +
+              userName
+          );
+          jQuery("#qrcodeTable").qrcode(
+            window.globalConfig.loginWebHost +
+              "/bindwx?userid=" +
+              res.user_id +
+              "&sign=" +
+              res.sign +
+              "&timestamp=" +
+              res.timestamp +
+              "&name=" +
+              userName
+          );
 
           // console.log("http://192.168.5.78:8091" + "/bindwx?userid=" + res.user_id + "&sign=" + res.sign + "&timestamp=" + res.timestamp + "&name=" + userName);
           // jQuery('#qrcodeTable').qrcode("http://192.168.5.78:8091" + "/bindwx?userid=" + res.user_id + "&sign=" + res.sign + "&timestamp=" + res.timestamp + "&name=" + userName);
@@ -504,16 +574,17 @@ export default {
         })
         .catch(err => {
           if (err.response) {
-            var msg = this.errorTemplate[err.response.status] || "出现错误,请稍后再试"
+            var msg =
+              this.errorTemplate[err.response.status] || "出现错误,请稍后再试";
             this.$notify({
-                  title: "错误",
-                  message: msg,
-                  type: "error",
-                  offset: 50,
-                  duration: 2000
-                });
+              title: "错误",
+              message: msg,
+              type: "error",
+              offset: 50,
+              duration: 2000
+            });
           }
-          console.log(err)
+          console.log(err);
         });
     },
 
@@ -522,9 +593,9 @@ export default {
         confirmButtonText: "确定",
         cancelButtonText: "取消",
         type: "warning"
-      })
-      .then(() => {
-        this.$http.post("/user/del", {user_id: userid})
+      }).then(() => {
+        this.$http
+          .post("/user/del", { user_id: userid })
           .then(res => {
             this.queryData();
             this.$notify({
@@ -544,7 +615,7 @@ export default {
               duration: 2000
             });
           });
-      })
+      });
     },
     //重置密码
     setDefaultPwd(userid) {
@@ -552,9 +623,9 @@ export default {
         confirmButtonText: "确定",
         cancelButtonText: "取消",
         type: "warning"
-      })
-      .then(() => {
-        this.$http.post("/user/setpwd", {user_id: userid})
+      }).then(() => {
+        this.$http
+          .post("/user/setpwd", { user_id: userid })
           .then(res => {
             this.$notify({
               title: "成功",
@@ -573,7 +644,7 @@ export default {
               duration: 2000
             });
           });
-      })
+      });
     },
     add() {
       this.userInfo.lists.push({
@@ -595,7 +666,7 @@ export default {
       this.$refs.editModal.close();
     },
     onQrCodeClose() {
-      jQuery('#qrcodeTable canvas').remove();
+      jQuery("#qrcodeTable canvas").remove();
       this.$refs.qrCodeModal.close();
     },
     resetSys() {
@@ -638,8 +709,8 @@ export default {
         });
         return false;
       }
-      
-      if (!(/^1[3456789]\d{9}$/.test(this.userInfo.mobile))) {
+
+      if (!/^1[3456789]\d{9}$/.test(this.userInfo.mobile)) {
         this.$notify({
           title: "警告",
           message: "请输入正确的电话号码",
@@ -659,7 +730,11 @@ export default {
         return false;
       }
 
-      if (!this.userInfo.email_pre || !this.userInfo.email_suffix) {
+      if (
+        !this.userInfo.email_pre ||
+        !this.userInfo.email_suffix ||
+        this.userInfo.email_pre.length > 21
+      ) {
         this.$notify({
           title: "警告",
           message: "请输入正确的邮箱地址",
@@ -669,12 +744,28 @@ export default {
         return false;
       }
 
+      // if (this.userInfo.ext_params > 1000) {
+      //   this.$notify({
+      //     title: "警告",
+      //     message: "拓展参数过长",
+      //     type: "warning",
+      //     offset: 50
+      //   });
+      //   return false;
+      // }
+
       var s = "";
       for (var i = 0; i < this.userInfo.lists.length; i++) {
-        s = s + this.userInfo.lists[i].sys_id + "," + this.userInfo.lists[i].role_id +"|";
+        s =
+          s +
+          this.userInfo.lists[i].sys_id +
+          "," +
+          this.userInfo.lists[i].role_id +
+          "|";
       }
       this.userInfo.auth = s;
-      this.userInfo.email = this.userInfo.email_pre + this.userInfo.email_suffix;
+      this.userInfo.email =
+        this.userInfo.email_pre + this.userInfo.email_suffix;
       this.$validator.validate().then(result => {
         if (!result) {
           return false;
@@ -689,7 +780,8 @@ export default {
             } else {
               this.userInfo.status = 2;
             }
-            this.$http.post("/user/add", this.userInfo)
+            this.$http
+              .post("/user/add", this.userInfo)
               .then(res => {
                 this.queryData();
                 this.$notify({
@@ -703,18 +795,21 @@ export default {
               })
               .catch(err => {
                 if (err.response) {
-                  var msg = this.errorTemplate[err.response.status] || "出现错误,请稍后再试"
+                  var msg =
+                    this.errorTemplate[err.response.status] ||
+                    "出现错误,请稍后再试";
                   this.$notify({
-                        title: "错误",
-                        message: msg,
-                        type: "error",
-                        offset: 50,
-                        duration: 2000
-                      });
+                    title: "错误",
+                    message: msg,
+                    type: "error",
+                    offset: 50,
+                    duration: 2000
+                  });
                 }
               });
           } else if (this.isAdd == 2) {
-            this.$http.post("/user/edit", this.userInfo)
+            this.$http
+              .post("/user/edit", this.userInfo)
               .then(res => {
                 this.queryData();
                 this.$notify({
@@ -728,14 +823,16 @@ export default {
               })
               .catch(err => {
                 if (err.response) {
-                   var msg = this.errorTemplate[err.response.status] || "出现错误,请稍后再试"
-                   this.$notify({
-                        title: "错误",
-                        message: msg,
-                        type: "error",
-                        offset: 50,
-                        duration: 2000
-                    });
+                  var msg =
+                    this.errorTemplate[err.response.status] ||
+                    "出现错误,请稍后再试";
+                  this.$notify({
+                    title: "错误",
+                    message: msg,
+                    type: "error",
+                    offset: 50,
+                    duration: 2000
+                  });
                 }
               });
           }
@@ -743,13 +840,15 @@ export default {
       });
     },
     querySys() {
-      this.$http.get("/base/getroles", {})
+      this.$http
+        .get("/base/getroles", {})
         .then(res => {
           this.roleList = res;
         })
         .catch(err => {});
 
-      this.$http.post("/base/getsystems", {})
+      this.$http
+        .post("/base/getsystems", {})
         .then(res => {
           this.sysList = res;
           for (s in this.sysList) {
@@ -798,4 +897,4 @@ export default {
   background-color: #fff;
   border: 1px solid #ccc;
 }
- </style>
+</style>

@@ -117,6 +117,15 @@ values(
 	@role_id, 
 	@permission_config_id)`
 
+//CheckSysMeun
+const CheckSysMeun = `
+SELECT
+t.id
+FROM sso_system_menu t
+where sys_id = @sys_id
+and t.parent in (#select_auth)
+`
+
 //DelRoleAuth 删除角色权限
 const DelRoleAuth = `
 delete from 

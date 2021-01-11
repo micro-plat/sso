@@ -3,24 +3,36 @@
   <div class="app-content-body fade-in-up ng-scope">
     <div class="fade-in-down ng-scope">
       <div class="wrapper wrapper-lg">
-            <vue-ztree :list='ztreeDataSource' :func='nodeClick' :checkfunc="checkFunc" :expand='expandClick'
-                       :contextmenu='contextmenuClick' :is-open='true'></vue-ztree>
+        <vue-ztree
+          :list="ztreeDataSource"
+          :func="nodeClick"
+          :checkfunc="checkFunc"
+          :expand="expandClick"
+          :contextmenu="contextmenuClick"
+          :is-open="true"
+        ></vue-ztree>
       </div>
     </div>
-    <bootstrap-modal ref="editModal1" :need-header="true" :need-footer="true" >
-      <div slot="title">
-        编辑功能
-      </div>
+    <bootstrap-modal ref="editModal1" :need-header="true" :need-footer="true">
+      <div slot="title">编辑功能</div>
       <div slot="body">
         <div class="panel panel-default">
           <div class="panel-body">
             <form role="form" class="ng-pristine ng-valid ng-submitted">
               <div class="form-group">
                 <label>功能名称</label>
-                <input class="form-control" placeholder="" v-validate="'required'" name="name1"
-                       v-model="currentData.name" type="text">
-                <div class="form-height text-danger"><span v-show="errors.first('name1')">功能名称不能为空</span></div>
-                <input class="form-control" placeholder="" v-model="currentData.id" type="hidden">
+                <input
+                  class="form-control"
+                  placeholder
+                  v-validate="'required'"
+                  name="name1"
+                  v-model="currentData.name"
+                  type="text"
+                />
+                <div class="form-height text-danger">
+                  <span v-show="errors.first('name1')">功能名称不能为空</span>
+                </div>
+                <input class="form-control" placeholder v-model="currentData.id" type="hidden" />
               </div>
             </form>
           </div>
@@ -32,30 +44,48 @@
       </div>
     </bootstrap-modal>
     <bootstrap-modal ref="editModal2" :need-header="true" :need-footer="true">
-      <div slot="title">
-        编辑功能
-      </div>
+      <div slot="title">编辑功能</div>
       <div slot="body">
         <div class="panel panel-default">
           <div class="panel-body">
             <form role="form" class="ng-pristine ng-valid ng-submitted height-min">
               <div class="form-group">
                 <label>功能名称</label>
-                <input class="form-control" placeholder="" v-validate="'required'" name="name1"
-                       v-model="currentData.name" type="text">
-                <div class="form-height text-danger"><span v-show="errors.first('name1')">功能名称不能为空</span></div>
-                <input class="form-control" placeholder="" v-model="currentData.id" type="hidden">
+                <input
+                  class="form-control"
+                  placeholder
+                  v-validate="'required'"
+                  name="name1"
+                  v-model="currentData.name"
+                  type="text"
+                />
+                <div class="form-height text-danger">
+                  <span v-show="errors.first('name1')">功能名称不能为空</span>
+                </div>
+                <input class="form-control" placeholder v-model="currentData.id" type="hidden" />
               </div>
               <div class="form-group">
                 <label>是否展开</label>
                 <div class="radio">
                   <label class="i-checks">
-                    <input type="radio" name="is_open1" v-model="currentData.is_open"  value="1" class="ng-pristine ng-untouched ng-valid">
+                    <input
+                      type="radio"
+                      name="is_open1"
+                      v-model="currentData.is_open"
+                      value="1"
+                      class="ng-pristine ng-untouched ng-valid"
+                    />
                     <i></i>
                     展开
                   </label>
                   <label class="i-checks">
-                    <input type="radio" name="is_open1" v-model="currentData.is_open" value="0" class="ng-pristine ng-untouched ng-valid">
+                    <input
+                      type="radio"
+                      name="is_open1"
+                      v-model="currentData.is_open"
+                      value="0"
+                      class="ng-pristine ng-untouched ng-valid"
+                    />
                     <i></i>
                     收起
                   </label>
@@ -65,36 +95,53 @@
               <div class="form-group">
                 <label>图标</label>
                 <span class="fa-stack fa-lg">
-                
-                     <i :class="currentData.icon +' '+ currentData.color" v-show="!currentData.iconTemp"></i>
-                    <i :class="currentData.iconTemp +' '+ currentData.color" v-show="currentData.iconTemp"></i>
-                  
+                  <i
+                    :class="currentData.icon +' '+ currentData.color"
+                    v-show="!currentData.iconTemp"
+                  ></i>
+                  <i
+                    :class="currentData.iconTemp +' '+ currentData.color"
+                    v-show="currentData.iconTemp"
+                  ></i>
                 </span>
-                <input class="form-control" placeholder="" v-validate="'required'" name="icon"
-                       v-model="currentData.iconTemp +' '+ currentData.color" type="hidden">
-                <div class="form-height text-danger"><span v-show="errors.first('icon')">图标不能为空</span></div>
+                <input
+                  class="form-control"
+                  placeholder
+                  v-validate="'required'"
+                  name="icon"
+                  v-model="currentData.iconTemp +' '+ currentData.color"
+                  type="hidden"
+                />
+                <div class="form-height text-danger">
+                  <span v-show="errors.first('icon')">图标不能为空</span>
+                </div>
               </div>
               <div class="form-group">
                 <div class="settings">
                   <!--<div class="container">-->
-                    <div class="row">
-                        <!--<div class="panel-body ng-scope">-->
-                            <div class="col col-sm-12 col-xs-8">
-                              <label class="i-checks inline m-b-sm" v-for="(v,k) in iconList" :key="k">
-                                <input type="radio" name="b" :value="v" v-model="currentData.iconTemp"
-                                       class="ng-pristine ng-untouched ng-valid" />
-                                <span class="inline clearfix pos-rlt icon-height">
-            <span class="active pos-abt w-full h-full bg-black-opacity text-center">
-               <i class="glyphicon glyphicon-ok text-white m-t-xs"></i>
-            </span>
-            <span class="fa-lg icon-padding">
-              <i :class="v" ></i>
-            </span>
-          </span>
-                              </label>
-                            </div>
-                        <!--</div>-->
+                  <div class="row">
+                    <!--<div class="panel-body ng-scope">-->
+                    <div class="col col-sm-12 col-xs-8">
+                      <label class="i-checks inline m-b-sm" v-for="(v,k) in iconList" :key="k">
+                        <input
+                          type="radio"
+                          name="b"
+                          :value="v"
+                          v-model="currentData.iconTemp"
+                          class="ng-pristine ng-untouched ng-valid"
+                        />
+                        <span class="inline clearfix pos-rlt icon-height">
+                          <span class="active pos-abt w-full h-full bg-black-opacity text-center">
+                            <i class="glyphicon glyphicon-ok text-white m-t-xs"></i>
+                          </span>
+                          <span class="fa-lg icon-padding">
+                            <i :class="v"></i>
+                          </span>
+                        </span>
+                      </label>
                     </div>
+                    <!--</div>-->
+                  </div>
                   <!--</div>-->
                 </div>
               </div>
@@ -102,22 +149,33 @@
                 <label>颜色</label>
                 <div class="settings">
                   <!--<div class="container">-->
-                    <div class="row">
-                        <!--<div class="panel-body ng-scope">-->
-                            <div class="col col-sm-12 col-xs-8">
-                              <label class="i-checks inline m-b-sm icon-color" v-for="(v,k) in colorList" :key="k">
-                                <input type="radio" name="c" :value="v" v-model="currentData.color"
-                                       class="ng-pristine ng-untouched ng-valid" />
-                                <span class="inline clearfix pos-rlt icon-height">
-            <span class="active pos-abt w-full h-full bg-black-opacity text-center">
-               <i class="glyphicon glyphicon-ok text-white m-t-xs"></i>
-            </span>
-            <i :class="v"><i class="fa  fa-circle icon-color-fa"></i></i>
-          </span>
-                              </label>
-                            </div>
-                        <!--</div>-->
+                  <div class="row">
+                    <!--<div class="panel-body ng-scope">-->
+                    <div class="col col-sm-12 col-xs-8">
+                      <label
+                        class="i-checks inline m-b-sm icon-color"
+                        v-for="(v,k) in colorList"
+                        :key="k"
+                      >
+                        <input
+                          type="radio"
+                          name="c"
+                          :value="v"
+                          v-model="currentData.color"
+                          class="ng-pristine ng-untouched ng-valid"
+                        />
+                        <span class="inline clearfix pos-rlt icon-height">
+                          <span class="active pos-abt w-full h-full bg-black-opacity text-center">
+                            <i class="glyphicon glyphicon-ok text-white m-t-xs"></i>
+                          </span>
+                          <i :class="v">
+                            <i class="fa fa-circle icon-color-fa"></i>
+                          </i>
+                        </span>
+                      </label>
                     </div>
+                    <!--</div>-->
+                  </div>
                   <!--</div>-->
                 </div>
               </div>
@@ -131,41 +189,77 @@
       </div>
     </bootstrap-modal>
     <bootstrap-modal ref="editModal3" :need-header="true" :need-footer="true">
-      <div slot="title">
-        编辑功能
-      </div>
+      <div slot="title">编辑功能</div>
       <div slot="body">
         <div class="panel panel-default">
           <div class="panel-body">
             <form role="form" class="ng-pristine ng-valid ng-submitted height-min">
               <div class="form-group">
                 <label>功能名称</label>
-                <input class="form-control" placeholder="" v-validate="'required'" name="name2"
-                       v-model="currentData.name" type="text">
-                <div class="form-height text-danger"><span v-show="errors.first('name2')">功能名称不能为空</span></div>
-                <input class="form-control" placeholder="" v-model="currentData.id" type="hidden">
+                <input
+                  class="form-control"
+                  placeholder
+                  v-validate="'required'"
+                  name="name2"
+                  v-model="currentData.name"
+                  type="text"
+                />
+                <div class="form-height text-danger">
+                  <span v-show="errors.first('name2')">功能名称不能为空</span>
+                </div>
+                <input class="form-control" placeholder v-model="currentData.id" type="hidden" />
               </div>
               <div class="form-group">
                 <label>地址</label>
-                <input class="form-control" placeholder="" v-validate="'required'" name="path"
-                       v-model="currentData.path" type="text">
-                <div class="form-height text-danger"><span v-show="errors.first('path')">地址不能为空</span></div>
+                <input
+                  class="form-control"
+                  placeholder
+                  v-validate="'required'"
+                  name="path"
+                  v-model="currentData.path"
+                  type="text"
+                />
+                <div class="form-height text-danger">
+                  <span v-show="errors.first('path')">地址不能为空</span>
+                </div>
               </div>
               <div class="form-group">
                 <label>排序编号</label>
-                <input class="form-control" placeholder="" v-validate="'required'" name="sortrank" 
-                      v-model="currentData.sortrank" type="text">
-                      <div class="form-height text-danger"><span v-show="errors.first('sortrank')">排序编号不能为空</span></div>
+                <input
+                  class="form-control"
+                  placeholder
+                  v-validate="'required'"
+                  name="sortrank"
+                  v-model="currentData.sortrank"
+                  type="text"
+                />
+                <div class="form-height text-danger">
+                  <span v-show="errors.first('sortrank')">排序编号不能为空</span>
+                </div>
               </div>
               <div class="form-group">
                 <label>图标</label>
                 <span class="fa-stack fa-lg">
-                     <i :class="currentData.icon +' '+ currentData.color" v-show="!currentData.iconTemp"></i>
-                    <i :class="currentData.iconTemp +' '+ currentData.color" v-show="currentData.iconTemp"></i>
+                  <i
+                    :class="currentData.icon +' '+ currentData.color"
+                    v-show="!currentData.iconTemp"
+                  ></i>
+                  <i
+                    :class="currentData.iconTemp +' '+ currentData.color"
+                    v-show="currentData.iconTemp"
+                  ></i>
                 </span>
-                <input class="form-control" placeholder="" v-validate="'required'" name="icon"
-                       v-model="currentData.iconTemp +' '+currentData.color" type="hidden">
-                <div class="form-height text-danger"><span v-show="errors.first('icon')">图标不能为空</span></div>
+                <input
+                  class="form-control"
+                  placeholder
+                  v-validate="'required'"
+                  name="icon"
+                  v-model="currentData.iconTemp +' '+currentData.color"
+                  type="hidden"
+                />
+                <div class="form-height text-danger">
+                  <span v-show="errors.first('icon')">图标不能为空</span>
+                </div>
               </div>
               <div class="form-group">
                 <div class="settings">
@@ -174,16 +268,21 @@
                     <!--<div class="panel-body ng-scope">-->
                     <div class="col col-sm-12 col-xs-8">
                       <label class="i-checks inline m-b-sm" v-for="(v,k) in iconList" :key="k">
-                        <input type="radio" name="b" :value="v" v-model="currentData.iconTemp"
-                               class="ng-pristine ng-untouched ng-valid" />
+                        <input
+                          type="radio"
+                          name="b"
+                          :value="v"
+                          v-model="currentData.iconTemp"
+                          class="ng-pristine ng-untouched ng-valid"
+                        />
                         <span class="inline clearfix pos-rlt icon-height">
-            <span class="active pos-abt w-full h-full bg-black-opacity text-center">
-               <i class="glyphicon glyphicon-ok text-white m-t-xs"></i>
-            </span>
-             <span class="fa-lg icon-padding">
-              <i :class="v"></i>
-            </span>
-          </span>
+                          <span class="active pos-abt w-full h-full bg-black-opacity text-center">
+                            <i class="glyphicon glyphicon-ok text-white m-t-xs"></i>
+                          </span>
+                          <span class="fa-lg icon-padding">
+                            <i :class="v"></i>
+                          </span>
+                        </span>
                       </label>
                     </div>
                     <!--</div>-->
@@ -199,25 +298,29 @@
                     <!--<div class="panel-body ng-scope">-->
                     <div class="col col-sm-12 col-xs-8">
                       <label class="i-checks inline m-b-sm" v-for="(v,k) in colorList" :key="k">
-                        <input type="radio" name="c" :value="v" v-model="currentData.color"
-                               class="ng-pristine ng-untouched ng-valid" />
+                        <input
+                          type="radio"
+                          name="c"
+                          :value="v"
+                          v-model="currentData.color"
+                          class="ng-pristine ng-untouched ng-valid"
+                        />
                         <span class="inline clearfix pos-rlt">
-            <span class="active pos-abt w-full h-full bg-black-opacity text-center">
-               <i class="glyphicon glyphicon-ok text-white m-t-xs"></i>
-            </span>
-            <i :class="v"><i class="fa  fa-circle icon-color-fa"></i></i>
-          </span>
+                          <span class="active pos-abt w-full h-full bg-black-opacity text-center">
+                            <i class="glyphicon glyphicon-ok text-white m-t-xs"></i>
+                          </span>
+                          <i :class="v">
+                            <i class="fa fa-circle icon-color-fa"></i>
+                          </i>
+                        </span>
                       </label>
                     </div>
 
                     <!--</div>-->
-
-
                   </div>
                   <!--</div>-->
                 </div>
               </div>
-
             </form>
           </div>
         </div>
@@ -228,25 +331,39 @@
       </div>
     </bootstrap-modal>
     <bootstrap-modal ref="editModal4" :need-header="true" :need-footer="true">
-      <div slot="title">
-        添加页面权限
-      </div>
+      <div slot="title">添加页面权限</div>
       <div slot="body">
         <div class="panel panel-default">
           <div class="panel-body">
             <form role="form" class="ng-pristine ng-valid ng-submitted height-min">
               <div class="form-group">
                 <label>权限名称</label>
-                <input class="form-control" placeholder="" v-validate="'required'" name="name3"
-                       v-model="currentData.name" type="text">
-                <div class="form-height text-danger"><span v-show="errors.first('name4')">权限名称不能为空</span></div>
-                <input class="form-control" placeholder="" v-model="currentData.id" type="hidden">
+                <input
+                  class="form-control"
+                  placeholder
+                  v-validate="'required'"
+                  name="name3"
+                  v-model="currentData.name"
+                  type="text"
+                />
+                <div class="form-height text-danger">
+                  <span v-show="errors.first('name4')">权限名称不能为空</span>
+                </div>
+                <input class="form-control" placeholder v-model="currentData.id" type="hidden" />
               </div>
               <div class="form-group">
                 <label>标签（tag）</label>
-                <input class="form-control" placeholder="" v-validate="'required'" name="path3"
-                       v-model="currentData.path" type="text">
-                <div class="form-height text-danger"><span v-show="errors.first('path4')">地址不能为空</span></div>
+                <input
+                  class="form-control"
+                  placeholder
+                  v-validate="'required'"
+                  name="path3"
+                  v-model="currentData.path"
+                  type="text"
+                />
+                <div class="form-height text-danger">
+                  <span v-show="errors.first('path4')">地址不能为空</span>
+                </div>
               </div>
             </form>
           </div>
@@ -258,19 +375,25 @@
       </div>
     </bootstrap-modal>
     <bootstrap-modal ref="addModal1" :need-header="true" :need-footer="true">
-      <div slot="title">
-        添加功能
-      </div>
+      <div slot="title">添加功能</div>
       <div slot="body">
         <div class="panel panel-default">
           <div class="panel-body">
             <form role="form" class="ng-pristine ng-valid ng-submitted">
               <div class="form-group">
                 <label>功能名称</label>
-                <input class="form-control" placeholder="" v-validate="'required'" name="name3"
-                       v-model="currentData.name" type="text">
-                <div class="form-height text-danger"><span v-show="errors.first('name3')">功能名称不能为空</span></div>
-                <input class="form-control" placeholder="" v-model="currentData.id" type="hidden">
+                <input
+                  class="form-control"
+                  placeholder
+                  v-validate="'required'"
+                  name="name3"
+                  v-model="currentData.name"
+                  type="text"
+                />
+                <div class="form-height text-danger">
+                  <span v-show="errors.first('name3')">功能名称不能为空</span>
+                </div>
+                <input class="form-control" placeholder v-model="currentData.id" type="hidden" />
               </div>
             </form>
           </div>
@@ -282,30 +405,51 @@
       </div>
     </bootstrap-modal>
     <bootstrap-modal ref="addModal2" :need-header="true" :need-footer="true">
-      <div slot="title">
-        添加功能
-      </div>
+      <div slot="title">添加功能</div>
       <div slot="body">
         <div class="panel panel-default">
           <div class="panel-body">
             <form role="form" class="ng-pristine ng-valid ng-submitted height-min">
               <div class="form-group">
                 <label>功能名称</label>
-                <input class="form-control" placeholder="" v-validate="'required'" name="name"
-                       v-model="currentData.name" type="text">
+                <input
+                  class="form-control"
+                  placeholder
+                  v-validate="'required'"
+                  name="name"
+                  v-model="currentData.name"
+                  type="text"
+                />
                 {{ errors.first('name') }}
-                <input class="form-control" placeholder="" v-model="currentData.id" type="hidden">
+                <input
+                  class="form-control"
+                  placeholder
+                  v-model="currentData.id"
+                  type="hidden"
+                />
               </div>
               <div class="form-group">
                 <label>是否展开</label>
                 <div class="radio">
                   <label class="i-checks">
-                    <input type="radio" name="is_open" v-model="currentData.is_open"  value="1" class="ng-pristine ng-untouched ng-valid">
+                    <input
+                      type="radio"
+                      name="is_open"
+                      v-model="currentData.is_open"
+                      value="1"
+                      class="ng-pristine ng-untouched ng-valid"
+                    />
                     <i></i>
                     展开
                   </label>
                   <label class="i-checks">
-                    <input type="radio" name="is_open" v-model="currentData.is_open" value="0" class="ng-pristine ng-untouched ng-valid">
+                    <input
+                      type="radio"
+                      name="is_open"
+                      v-model="currentData.is_open"
+                      value="0"
+                      class="ng-pristine ng-untouched ng-valid"
+                    />
                     <i></i>
                     收起
                   </label>
@@ -315,11 +459,19 @@
               <div class="form-group">
                 <label>图标</label>
                 <span class="fa-stack fa-lg">
-                   <i :class="currentData.iconTemp +' '+ currentData.color"></i>
+                  <i :class="currentData.iconTemp +' '+ currentData.color"></i>
                 </span>
-                <input class="form-control" placeholder="" v-validate="'required'" name="icon"
-                       v-model="currentData.iconTemp +' '+currentData.color" type="hidden">
-                <div class="form-height text-danger"><span v-show="errors.first('icon')">图标不能为空</span></div>
+                <input
+                  class="form-control"
+                  placeholder
+                  v-validate="'required'"
+                  name="icon"
+                  v-model="currentData.iconTemp +' '+currentData.color"
+                  type="hidden"
+                />
+                <div class="form-height text-danger">
+                  <span v-show="errors.first('icon')">图标不能为空</span>
+                </div>
               </div>
               <div class="form-group">
                 <div class="settings">
@@ -328,16 +480,21 @@
                     <!--<div class="panel-body ng-scope">-->
                     <div class="col col-sm-12 col-xs-8">
                       <label class="i-checks inline m-b-sm" v-for="(v,k) in iconList" :key="k">
-                        <input type="radio" name="c" :value="v" v-model="currentData.iconTemp"
-                               class="ng-pristine ng-untouched ng-valid" />
+                        <input
+                          type="radio"
+                          name="c"
+                          :value="v"
+                          v-model="currentData.iconTemp"
+                          class="ng-pristine ng-untouched ng-valid"
+                        />
                         <span class="inline clearfix pos-rlt icon-height">
-            <span class="active pos-abt w-full h-full bg-black-opacity text-center">
-               <i class="glyphicon glyphicon-ok text-white m-t-xs"></i>
-            </span>
-            <span class="fa-lg icon-padding">
-              <i :class="v"></i>
-            </span>
-          </span>
+                          <span class="active pos-abt w-full h-full bg-black-opacity text-center">
+                            <i class="glyphicon glyphicon-ok text-white m-t-xs"></i>
+                          </span>
+                          <span class="fa-lg icon-padding">
+                            <i :class="v"></i>
+                          </span>
+                        </span>
                       </label>
                     </div>
                     <!--</div>-->
@@ -353,14 +510,21 @@
                     <!--<div class="panel-body ng-scope">-->
                     <div class="col col-sm-12 col-xs-8">
                       <label class="i-checks inline m-b-sm" v-for="(v,k) in colorList" :key="k">
-                        <input type="radio" name="b" :value="v" v-model="currentData.color"
-                               class="ng-pristine ng-untouched ng-valid" />
+                        <input
+                          type="radio"
+                          name="b"
+                          :value="v"
+                          v-model="currentData.color"
+                          class="ng-pristine ng-untouched ng-valid"
+                        />
                         <span class="inline clearfix pos-rlt">
-            <span class="active pos-abt w-full h-full bg-black-opacity text-center">
-               <i class="glyphicon glyphicon-ok text-white m-t-xs"></i>
-            </span>
-            <i :class="v"><i class="fa fa-circle icon-color-fa"></i></i>
-          </span>
+                          <span class="active pos-abt w-full h-full bg-black-opacity text-center">
+                            <i class="glyphicon glyphicon-ok text-white m-t-xs"></i>
+                          </span>
+                          <i :class="v">
+                            <i class="fa fa-circle icon-color-fa"></i>
+                          </i>
+                        </span>
                       </label>
                     </div>
                     <!--</div>-->
@@ -378,25 +542,39 @@
       </div>
     </bootstrap-modal>
     <bootstrap-modal ref="addModal3" :need-header="true" :need-footer="true">
-      <div slot="title">
-        添加功能
-      </div>
+      <div slot="title">添加功能</div>
       <div slot="body">
         <div class="panel panel-default">
           <div class="panel-body">
             <form role="form" class="ng-pristine ng-valid ng-submitted height-min">
               <div class="form-group">
                 <label>功能名称</label>
-                <input class="form-control" placeholder="" v-validate="'required'" name="name3"
-                       v-model="currentData.name" type="text">
-                <div class="form-height text-danger"><span v-show="errors.first('name3')">功能名称不能为空</span></div>
-                <input class="form-control" placeholder="" v-model="currentData.id" type="hidden">
+                <input
+                  class="form-control"
+                  placeholder
+                  v-validate="'required'"
+                  name="name3"
+                  v-model="currentData.name"
+                  type="text"
+                />
+                <div class="form-height text-danger">
+                  <span v-show="errors.first('name3')">功能名称不能为空</span>
+                </div>
+                <input class="form-control" placeholder v-model="currentData.id" type="hidden" />
               </div>
               <div class="form-group">
                 <label>地址</label>
-                <input class="form-control" placeholder="" v-validate="'required'" name="path3"
-                       v-model="currentData.path" type="text">
-                <div class="form-height text-danger"><span v-show="errors.first('path3')">地址不能为空</span></div>
+                <input
+                  class="form-control"
+                  placeholder
+                  v-validate="'required'"
+                  name="path3"
+                  v-model="currentData.path"
+                  type="text"
+                />
+                <div class="form-height text-danger">
+                  <span v-show="errors.first('path3')">地址不能为空</span>
+                </div>
               </div>
               <!--<div class="form-group">
                 <label>排序编号</label>
@@ -407,11 +585,19 @@
               <div class="form-group">
                 <label>图标</label>
                 <span class="fa-stack fa-lg">
-                   <i :class="currentData.iconTemp +' '+ currentData.color"></i>
+                  <i :class="currentData.iconTemp +' '+ currentData.color"></i>
                 </span>
-                <input class="form-control" placeholder="" v-validate="'required'" name="icon"
-                       v-model="currentData.iconTemp + ' ' + currentData.color" type="hidden">
-                <div class="form-height text-danger"><span v-show="errors.first('icon')">图标不能为空</span></div>
+                <input
+                  class="form-control"
+                  placeholder
+                  v-validate="'required'"
+                  name="icon"
+                  v-model="currentData.iconTemp + ' ' + currentData.color"
+                  type="hidden"
+                />
+                <div class="form-height text-danger">
+                  <span v-show="errors.first('icon')">图标不能为空</span>
+                </div>
               </div>
               <div class="form-group">
                 <div class="settings">
@@ -420,16 +606,21 @@
                     <!--<div class="panel-body ng-scope">-->
                     <div class="col col-sm-12 col-xs-8">
                       <label class="i-checks inline m-b-sm" v-for="(v,k) in iconList" :key="k">
-                        <input type="radio" name="b" :value="v" v-model="currentData.iconTemp"
-                               class="ng-pristine ng-untouched ng-valid" />
+                        <input
+                          type="radio"
+                          name="b"
+                          :value="v"
+                          v-model="currentData.iconTemp"
+                          class="ng-pristine ng-untouched ng-valid"
+                        />
                         <span class="inline clearfix pos-rlt icon-height">
-            <span class="active pos-abt w-full h-full bg-black-opacity text-center">
-               <i class="glyphicon glyphicon-ok text-white m-t-xs"></i>
-            </span>
-             <span class="fa-lg icon-padding">
-              <i :class="v"></i>
-            </span>
-          </span>
+                          <span class="active pos-abt w-full h-full bg-black-opacity text-center">
+                            <i class="glyphicon glyphicon-ok text-white m-t-xs"></i>
+                          </span>
+                          <span class="fa-lg icon-padding">
+                            <i :class="v"></i>
+                          </span>
+                        </span>
                       </label>
                     </div>
                     <!--</div>-->
@@ -445,14 +636,21 @@
                     <!--<div class="panel-body ng-scope">-->
                     <div class="col col-sm-12 col-xs-8">
                       <label class="i-checks inline m-b-sm" v-for="(v,k) in colorList" :key="k">
-                        <input type="radio" name="c" :value="v" v-model="currentData.color"
-                               class="ng-pristine ng-untouched ng-valid" />
+                        <input
+                          type="radio"
+                          name="c"
+                          :value="v"
+                          v-model="currentData.color"
+                          class="ng-pristine ng-untouched ng-valid"
+                        />
                         <span class="inline clearfix pos-rlt">
-            <span class="active pos-abt w-full h-full bg-black-opacity text-center">
-               <i class="glyphicon glyphicon-ok text-white m-t-xs"></i>
-            </span>
-            <i :class="v"><i class="fa fa-circle icon-color-fa"></i></i>
-          </span>
+                          <span class="active pos-abt w-full h-full bg-black-opacity text-center">
+                            <i class="glyphicon glyphicon-ok text-white m-t-xs"></i>
+                          </span>
+                          <i :class="v">
+                            <i class="fa fa-circle icon-color-fa"></i>
+                          </i>
+                        </span>
                       </label>
                     </div>
                     <!--</div>-->
@@ -470,25 +668,39 @@
       </div>
     </bootstrap-modal>
     <bootstrap-modal ref="addModal4" :need-header="true" :need-footer="true">
-      <div slot="title">
-        添加页面权限
-      </div>
+      <div slot="title">添加页面权限</div>
       <div slot="body">
         <div class="panel panel-default">
           <div class="panel-body">
             <form role="form" class="ng-pristine ng-valid ng-submitted height-min">
               <div class="form-group">
                 <label>权限名称</label>
-                <input class="form-control" placeholder="" v-validate="'required'" name="name3"
-                       v-model="currentData.name" type="text">
-                <div class="form-height text-danger"><span v-show="errors.first('name4')">权限名称不能为空</span></div>
-                <input class="form-control" placeholder="" v-model="currentData.id" type="hidden">
+                <input
+                  class="form-control"
+                  placeholder
+                  v-validate="'required'"
+                  name="name3"
+                  v-model="currentData.name"
+                  type="text"
+                />
+                <div class="form-height text-danger">
+                  <span v-show="errors.first('name4')">权限名称不能为空</span>
+                </div>
+                <input class="form-control" placeholder v-model="currentData.id" type="hidden" />
               </div>
               <div class="form-group">
                 <label>标签（tag）</label>
-                <input class="form-control" placeholder="" v-validate="'required'" name="path3"
-                       v-model="currentData.path" type="text">
-                <div class="form-height text-danger"><span v-show="errors.first('path4')">地址不能为空</span></div>
+                <input
+                  class="form-control"
+                  placeholder
+                  v-validate="'required'"
+                  name="path3"
+                  v-model="currentData.path"
+                  type="text"
+                />
+                <div class="form-height text-danger">
+                  <span v-show="errors.first('path4')">地址不能为空</span>
+                </div>
               </div>
             </form>
           </div>
@@ -500,13 +712,12 @@
       </div>
     </bootstrap-modal>
   </div>
-
 </template>
 
 
 <script>
 import vueZtree from "@/components/vue-tree.vue";
-import bootstrapModal from "vue2-bootstrap-modal"
+import bootstrapModal from "vue2-bootstrap-modal";
 export default {
   data() {
     return {
@@ -600,12 +811,7 @@ export default {
         "fa fa-bell-o",
         "fa fa-bell-slash-o"
       ],
-      colorList: [
-        "text-success",
-        "text-primary",
-        "text-info",
-        "text-danger"
-      ],
+      colorList: ["text-success", "text-primary", "text-info", "text-danger"],
       currentData: {},
       id: null,
       showAddr: false,
@@ -623,8 +829,9 @@ export default {
   methods: {
     initData() {
       this.id = this.$route.params.id;
-      
-      this.$http.get("/system/func", { id: this.id })
+
+      this.$http
+        .get("/system/func", { id: this.id })
         .then(res => {
           if (res.length != 0) {
             this.ztreeDataSource = res;
@@ -638,84 +845,96 @@ export default {
             isNew: true,
             parentId: 0,
             parentLevel: 0,
-            level_id:1,
-          })
+            level_id: 1
+          });
         })
         .catch(err => {
           this.$notify({
-            title: '错误',
-            message: '网络错误,请稍后再试',
-            type: 'error',
+            title: "错误",
+            message: "网络错误,请稍后再试",
+            type: "error",
             offset: 50,
-            duration:2000,
+            duration: 2000
           });
         });
     },
     editFunc() {
       let data = this.currentData;
+      data.color = this.currentData.color;
       let icon = data.icon;
+      let tempList = icon.split(" ");
+      tempList.pop();
+      var tempStr = tempList.toString().replace(",", " ");
+      console.log("tempStr", tempStr);
+
+      icon = tempStr + " " + data.color;
       if (data.iconTemp != "") {
-        icon = data.iconTemp + " " + data.color
+        icon = data.iconTemp + " " + data.color;
       }
-      this.$http.post("/system/func/edit", {
-        id: data.id,
-        name: data.name,
-        sortrank:data.sortrank,
-        icon: icon,
-        path: data.path,
-        is_open: data.is_open,
-      })
-      .then(res => {
-        this.initData();
-        this.cancel();
-      })
-      .catch(err => {
-        this.$notify({
-          title: '错误',
-          message: '网络错误,请稍后再试',
-          type: 'error',
-          offset: 50,
-          duration:2000,
+
+      console.log("icon", icon);
+
+      this.$http
+        .post("/system/func/edit", {
+          id: data.id,
+          name: data.name,
+          sortrank: data.sortrank,
+          icon: icon,
+          path: data.path,
+          is_open: data.is_open
+        })
+        .then(res => {
+          this.initData();
+          this.cancel();
+        })
+        .catch(err => {
+          this.$notify({
+            title: "错误",
+            message: "网络错误,请稍后再试",
+            type: "error",
+            offset: 50,
+            duration: 2000
+          });
         });
-      });
     },
     addFunc() {
-      this.$http.post("/system/func/add", {
-        parentid: this.currentData.parentId,
-        parentlevel: this.currentData.parentLevel,
-        sysid: this.id,
-        sortrank: this.currentData.sortrank,
-        name: this.currentData.name,
-        icon: this.currentData.iconTemp +" "+ this.currentData.color,
-        path: this.currentData.path,
-        is_open: this.currentData.is_open
-      })
-      .then(res => {
-        this.initData();
-        this.cancel();
-      })
-      .catch(err => {
-        if (err.response) {
+      this.$http
+        .post("/system/func/add", {
+          parentid: this.currentData.parentId,
+          parentlevel: this.currentData.parentLevel,
+          sysid: this.id,
+          sortrank: this.currentData.sortrank,
+          name: this.currentData.name,
+          icon: this.currentData.iconTemp + " " + this.currentData.color,
+          path: this.currentData.path,
+          is_open: this.currentData.is_open
+        })
+        .then(res => {
+          this.initData();
+          this.cancel();
+        })
+        .catch(err => {
+          if (err.response) {
             switch (err.response.status) {
               case 909:
                 this.$notify({
-                  title: '错误',
-                  message: '请先保存系统根节点',
-                  type: 'error',
+                  title: "错误",
+                  message: "请先保存系统根节点",
+                  type: "error",
                   offset: 50,
-                  duration:2000,
+                  duration: 2000
                 });
-              return;
+                return;
             }
             this.$notify({
-                  title: '错误',
-                  message: '系统错误, 稍后再试',
-                  type: 'error',
-                  offset: 50,
-                  duration:2000,
-                });
-        }
-      });
+              title: "错误",
+              message: "系统错误, 稍后再试",
+              type: "error",
+              offset: 50,
+              duration: 2000
+            });
+          }
+        });
     },
 
     // 点击节点
@@ -724,11 +943,12 @@ export default {
       if (d.isSort === true) {
         this.initData();
       } else {
-        console.log(d);
-        this.$set( d, "color", "");
-        this.$set( d, "iconTemp", "");
+        // console.log(d);
+        this.$set(d, "color", "");
+        this.$set(d, "iconTemp", "");
         this.obj = d;
-        if (d.isNew == true) {  //添加
+        if (d.isNew == true) {
+          //添加
           if (d.parentLevel == 3 || d.level_id == 4) {
             this.currentData = d;
             this.$refs.addModal4.open();
@@ -745,7 +965,8 @@ export default {
             this.currentData = d;
             this.$refs.addModal1.open();
           }
-        } else {  //编辑
+        } else {
+          //编辑
 
           if (d.level_id == 4 || d.parentLevel == 3) {
             this.currentData = d;
@@ -765,11 +986,10 @@ export default {
           }
         }
       }
-      
     },
     //点击选中
     checkFunc(m) {
-      console.log("m",m)
+      // console.log("m", m);
     },
     // 右击事件
     contextmenuClick: function(m) {},

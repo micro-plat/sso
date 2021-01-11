@@ -32,7 +32,11 @@ func (u *RoleAuthHandler) SaveHandle(ctx hydra.IContext) (r interface{}) {
 	}
 
 	ctx.Log().Info("2.执行操作")
-	if err := u.roleLib.Auth(&inputData); err != nil {
+	err := u.roleLib.Auth(&inputData)
+	if _, ok := err.(*errs.Error); ok {
+		return err
+	}
+	if err != nil {
 		return errs.NewError(http.StatusNotImplemented, err)
 	}
 
