@@ -1,5 +1,5 @@
 import axios from 'axios';
-import {changeUrl, setRouteBeforeLogin} from './sso.login.js'
+import { changeUrl, setRouteBeforeLogin } from './sso.login.js'
 
 const Qs = require('qs');
 
@@ -8,7 +8,7 @@ axios.defaults.withCredentials = true;
 axios.defaults.baseURL = "";
 
 let GetTocken = (function () {
-    if (!window.sso_StoragePlace){
+    if (!window.sso_StoragePlace) {
         return "";
     }
     var jwt = window.localStorage.getItem("__sso_jwt__");
@@ -19,7 +19,7 @@ let GetTocken = (function () {
 });
 
 function SetToken(response) {
-    if (!window.sso_StoragePlace){
+    if (!window.sso_StoragePlace) {
         return;
     }
     if (window.sso_StoragePlace == "sessionStorage") {
@@ -39,10 +39,10 @@ export function httpConfig(apiBaseUrl, storagePlace) {
     window.sso_StoragePlace = storagePlace;
     return {
         get: fetch,
-        post:post,
-        patch:patch,
-        put:put,
-        del:del
+        post: post,
+        patch: patch,
+        put: put,
+        del: del
     }
 }
 
@@ -55,13 +55,13 @@ axios.interceptors.request.use(
             userName = JSON.parse(userInfo).name || '';
         }
         var ssoHeaders = {
-            'X-Request-Id':userName + '-' + guid(),
+            'X-Request-Id': userName + '-' + guid(),
             'Content-Type': 'application/x-www-form-urlencoded',
             '__sso_jwt__': GetTocken()
         };
-        cfgHeaders = config.headers || {};
+        var cfgHeaders = config.headers || {};
 
-        for(var k in cfgHeaders){
+        for (var k in cfgHeaders) {
             ssoHeaders[k] = cfgHeaders[k];
         }
         config.headers = ssoHeaders;
@@ -79,7 +79,7 @@ axios.interceptors.response.use(
         if (response.headers.__sso_jwt__) {
             SetToken(response);
         }
-        if (response.status == 200){
+        if (response.status == 200) {
             changeUrl(); //刷新sso token
         }
         return response;
@@ -100,12 +100,12 @@ axios.interceptors.response.use(
  * @returns {Promise}
  */
 
-function fetch(url, params = {}, config={}) {
+function fetch(url, params = {}, config = {}) {
     return new Promise((resolve, reject) => {
-        axios.get(url, {params: params}, config)
+        axios.get(url, { params: params }, config)
             .then(response => {
                 if (response.status == 200) {
-                    console.log("---fetch--:",response.data)
+                    console.log("---fetch--:", response.data)
                     resolve(response.data);
                 }
             })
@@ -122,13 +122,13 @@ function fetch(url, params = {}, config={}) {
  * @returns {Promise}
  */
 
- function post(url, data = {}, config={}) {
+function post(url, data = {}, config = {}) {
     data = Qs.stringify(data)
     return new Promise((resolve, reject) => {
         axios.post(url, data, config)
             .then(response => {
                 if (response.status == 200) {
-                    console.log("--post-",response.data)
+                    console.log("--post-", response.data)
                     resolve(response.data);
                 }
             }, err => {
@@ -144,12 +144,12 @@ function fetch(url, params = {}, config={}) {
  * @returns {Promise}
  */
 
-function patch(url, data = {}, config={}) {
+function patch(url, data = {}, config = {}) {
     return new Promise((resolve, reject) => {
         axios.patch(url, data, config)
             .then(response => {
                 if (response.status == 200) {
-                    console.log("--patch-",response.data)
+                    console.log("--patch-", response.data)
                     resolve(response.data);
                 }
             }, err => {
@@ -165,13 +165,13 @@ function patch(url, data = {}, config={}) {
  * @returns {Promise}
  */
 
-function put(url, data = {}, config={}) {
+function put(url, data = {}, config = {}) {
     data = Qs.stringify(data)
     return new Promise((resolve, reject) => {
         axios.put(url, data, config)
             .then(response => {
                 if (response.status == 200) {
-                    console.log("--put-",response.data)
+                    console.log("--put-", response.data)
                     resolve(response.data);
                 }
             }, err => {
@@ -188,12 +188,12 @@ function put(url, data = {}, config={}) {
  * @returns {Promise}
  */
 
-function del(url, data = {}, config={}) {
+function del(url, data = {}, config = {}) {
     return new Promise((resolve, reject) => {
-        axios.delete(url, {data:data}, config)
+        axios.delete(url, { data: data }, config)
             .then(response => {
                 if (response.status == 200) {
-                    console.log("--del-",response.data)
+                    console.log("--del-", response.data)
                     resolve(response.data);
                 }
             }, err => {
@@ -203,8 +203,8 @@ function del(url, data = {}, config={}) {
 }
 
 function guid() {
-    return 'xxxxxxxx-xxxx-4xxx'.replace(/[x]/g, function(c) {
-        var r = Math.random()*16|0, v = c == 'x' ? r : (r&0x3|0x8);
+    return 'xxxxxxxx-xxxx-4xxx'.replace(/[x]/g, function (c) {
+        var r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
         return v.toString(16);
     });
 }
