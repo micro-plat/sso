@@ -34,9 +34,10 @@ const OpenIDIsExists = `SELECT 1 FROM sso_user_info u WHERE u.wx_openid = @openi
 //QueryUserInfoByUID 查询用户信息
 const QueryUserInfoByUID = `
 select 
-	u.user_id,u.user_name,u.mobile,u.wx_openid,u.status 
+	u.user_id,u.full_name,u.user_name,u.mobile,u.wx_openid,u.status,u.last_login_time
 from sso_user_info u
-where u.user_id=@user_id;`
+where u.user_id=@user_id 
+limit 1`
 
 //UpdateUserStatus 更新用户状态
 const UpdateUserStatus = `
@@ -45,7 +46,7 @@ update sso_user_info set status = @status where user_id = @user_id limit 1;`
 //QueryUserInfoByOpenID 查询用户信息
 const QueryUserInfoByOpenID = `
 select 
-	u.user_id,u.user_name,u.password,u.status 
+	u.user_id,u.user_name,u.full_name,u.password,u.status 
 from sso_user_info u
 where u.wx_openid=@open_id; `
 
@@ -61,7 +62,7 @@ where
 	and (@ident is null or @ident=s.ident) 
 	and r.enable=1 
 	and s.enable=1
-	and i.status=0;`
+	and i.status=0`
 
 //QueryUserRole 查询系统角色列表
 const QueryUserRole = `
@@ -75,7 +76,7 @@ where
 	and (@ident is null or @ident=s.ident)  
 	and r.enable=1 
 	and s.enable=1
-	and i.status=0;`
+	and i.status=0`
 
 //QueryOldPwd .
 const QueryOldPwd = `

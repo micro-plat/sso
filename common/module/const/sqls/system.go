@@ -14,7 +14,7 @@ where role.status = 0 AND
     sys.index_url is not null and
     sys.index_url <> '' and
     ur.user_id = @user_id and
-    sys.enable=1;
+    sys.enable=1
 `
 const QuerySysInfoByIdent = `
 select 
