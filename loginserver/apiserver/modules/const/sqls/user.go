@@ -76,16 +76,6 @@ from (select
 		t.create_time
 	order by t.user_id) R`
 
-//UpdateUserStatus 获取用户信息列表数量
-const UpdateUserStatus = `
-update 
-	sso_user_info t
-set 
-	t.status = @status
-where 
-	t.user_id = @user_id
-`
-
 //DeleteUser 删除用户
 const DeleteUser = `
 delete from 
@@ -181,26 +171,6 @@ set
 	t.mobile = @tel, t.email = @email
 where 
 	t.user_name = @username`
-
-//QueryOldPwd .
-const QueryOldPwd = `
-select 
-	t.password,
-	t.changepwd_times 
-from 
-	sso_user_info t 
-where 
-	t.user_id=@user_id`
-
-//SetNewPwd .
-const SetNewPwd = `
-update 
-	sso_user_info t
-set 
-	t.password = @password,
-	t.changepwd_times = t.changepwd_times + 1
-where 
-	t.user_id = @user_id`
 
 //QueryUserBind .
 const QueryUserBind = `

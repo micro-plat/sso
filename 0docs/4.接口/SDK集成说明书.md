@@ -89,6 +89,70 @@ NODE_ENV：标识当前的执行环境，可选值：development,production
 
 ```
 
+#### 1.5 src/main.js 引入 qxnw-sso 
+
+
+```javascript
+
+import {ssoHttpConfig} from 'qxnw-sso';
+var conf = window.globalConfig
+var ssocfg =  ssoHttpConfig(conf.apiURL ||"", "localStorage", conf.loginWebHost, conf.ident);
+
+Vue.prototype.$sso = ssocfg.sso;
+Vue.prototype.$http = ssocfg.http;
+
+/*
+注：
+1. 去掉原有的引入“ utility/http.js”，并删除该文件，避免引起误解
+2. 如原先有使用到 Vue.prototype.$get,Vue.prototype.$post,Vue.prototype.$fetch 等方式。请添加如下代码
+
+Vue.prototype.$get=ssocfg.http.get;
+Vue.prototype.$post=ssocfg.http.post;
+Vue.prototype.$fetch=ssocfg.http.fetch;
+Vue.prototype.$del=ssocfg.http.del;
+Vue.prototype.$patch=ssocfg.http.patch;
+
+*/
+
+```
+
+#### 1.5 ssocallback路由处理 
+
+创建 sso.callback.vue 文件，复制添加如下内容。添加前段路由： /ssocallback 到路由表
+```javascript
+
+<template>
+</template>
+
+<script>
+  export default {
+    data () {
+      return {
+      }
+    },
+    mounted(){
+      this.validSsoLogin();
+    },
+    methods:{
+      validSsoLogin(){
+          this.$http.post("/sso/login/verify",{code: this.$route.query.code})
+            .then(res =>{
+                this.$sso.changeRouteAfterLogin(this.$router, res.user_name, res.role_name);
+            }).catch(err => {
+             if (err.response) {
+                if (err.response.status == 406) {
+                  this.$sso.errPage(0)
+                }
+              }
+              console.log(err);
+            });
+      }
+    }
+  }
+</script>
+
+```
+
 ### 2. 后端项目集成
 
 1. 引入sdk包
@@ -143,8 +207,10 @@ SsoApiHost:
 //jwt 的配置忽略中增加 "/sso/login/verify"
 
 hydra.OnReady(func() error {
-    hydra.Conf.Web("8181").
-    Jwt(jwt.WithExcludes("/sso/login/verify")).
+    hydra.Conf.Web("8181"). //端口根据业务自定定义
+    Jwt(jwt.WithHeader(),
+        jwt.WithExcludes("/sso/login/verify"),
+    )
 })
 /*
 注：

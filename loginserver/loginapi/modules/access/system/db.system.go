@@ -5,7 +5,7 @@ import (
 
 	"github.com/micro-plat/hydra/components"
 	"github.com/micro-plat/lib4go/db"
-	"github.com/micro-plat/sso/loginserver/loginapi/modules/const/sqls"
+ 	commsqls "github.com/micro-plat/sso/common/module/const/sqls"
 )
 
 type IDbSystem interface {
@@ -26,7 +26,7 @@ func NewDbSystem() *DbSystem {
 func (l *DbSystem) QueryUserSystem(userId int64) (s db.QueryRows, err error) {
 	db := components.Def.DB().GetRegularDB()
 	data, err := db.Query(
-		sqls.SearchUserSystemInfo, map[string]interface{}{
+		commsqls.SearchUserSystemInfo, map[string]interface{}{
 			"user_id": userId,
 		})
 	return data, err
@@ -36,7 +36,7 @@ func (l *DbSystem) QueryUserSystem(userId int64) (s db.QueryRows, err error) {
 func (l *DbSystem) QuerySysInfoByIdent(ident string) (db.QueryRow, error) {
 	db := components.Def.DB().GetRegularDB()
 	data, err := db.Query(
-		sqls.QuerySysInfoByIdent, map[string]interface{}{
+		commsqls.QuerySysInfoByIdent, map[string]interface{}{
 			"ident": ident,
 		})
 	if err != nil {

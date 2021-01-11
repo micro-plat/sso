@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { changeUrl, setRouteBeforeLogin } from './sso.login.js'
+import { setRouteBeforeLogin } from './sso.login.js'
 
 const Qs = require('qs');
 
@@ -78,9 +78,6 @@ axios.interceptors.response.use(
     response => {
         if (response.headers.__sso_jwt__) {
             SetToken(response);
-        }
-        if (response.status == 200) {
-            changeUrl(); //刷新sso token
         }
         return response;
     },

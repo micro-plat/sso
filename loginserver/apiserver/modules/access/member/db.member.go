@@ -8,6 +8,7 @@ import (
 	"github.com/micro-plat/hydra/components"
 	"github.com/micro-plat/lib4go/db"
 	"github.com/micro-plat/lib4go/errs"
+	commsqls "github.com/micro-plat/sso/common/module/const/sqls"
 	commodle "github.com/micro-plat/sso/common/module/model"
 	"github.com/micro-plat/sso/loginserver/apiserver/modules/const/sqls"
 	"github.com/micro-plat/sso/loginserver/apiserver/modules/model"
@@ -47,7 +48,7 @@ func (l *DBMember) QueryAllUserInfo(source string, sourceID string) (s db.QueryR
 func (l *DBMember) QueryByUserName(u string, ident string) (info db.QueryRow, err error) {
 	//根据用户名，查询用户信息
 	db := components.Def.DB().GetRegularDB()
-	data, err := db.Query(sqls.QueryUserByUserName, map[string]interface{}{
+	data, err := db.Query(commsqls.QueryUserByUserName, map[string]interface{}{
 		"user_name": u,
 	})
 	if err != nil {
@@ -57,7 +58,7 @@ func (l *DBMember) QueryByUserName(u string, ident string) (info db.QueryRow, er
 		return nil, errs.NewError(http.StatusForbidden, "用户不存在")
 	}
 	//查询用户所在系统的登录地址及角色编号
-	roles, err := db.Query(sqls.QueryUserRole, map[string]interface{}{
+	roles, err := db.Query(commsqls.QueryUserRole, map[string]interface{}{
 		"user_id": data.Get(0).GetInt64("user_id", -1),
 		"ident":   ident,
 	})
@@ -88,7 +89,7 @@ func (l *DBMember) QueryUserSystem(userID int, ident string) (s db.QueryRows, er
 func (l *DBMember) QueryByID(uid int, ident string) (s *model.MemberState, err error) {
 	db := components.Def.DB().GetRegularDB()
 	data, err := db.Query(
-		sqls.QueryUserInfoByUID, map[string]interface{}{
+		commsqls.QueryUserInfoByUID, map[string]interface{}{
 			"user_id": uid,
 		})
 	if err != nil {
@@ -101,7 +102,7 @@ func (l *DBMember) QueryByID(uid int, ident string) (s *model.MemberState, err e
 	s = &model.MemberState{}
 
 	//查询用户所在系统的登录地址及角色编号
-	roles, err := db.Query(sqls.QueryUserRole, map[string]interface{}{
+	roles, err := db.Query(commsqls.QueryUserRole, map[string]interface{}{
 		"user_id": data.Get(0).GetInt64("user_id", -1),
 		"ident":   ident,
 	})

@@ -20,6 +20,7 @@ import (
 	"github.com/micro-plat/sso/loginserver/loginapi/modules/access/system"
 	"github.com/micro-plat/sso/loginserver/loginapi/modules/const/enum"
 	"github.com/micro-plat/sso/loginserver/loginapi/modules/const/sqls"
+	commsqls "github.com/micro-plat/sso/common/module/const/sqls"
 	"github.com/micro-plat/sso/loginserver/loginapi/modules/model"
 )
 
@@ -251,7 +252,7 @@ func (m *MemberLogic) ValidUserAndGetUserInfo(userName string) (db.QueryRow, err
 		return nil, fmt.Errorf("用户不存在:%s", userName)
 	}
 
-	userInfo, err := db.Query(sqls.QueryUserByUserName, map[string]interface{}{
+	userInfo, err := db.Query(commsqls.QueryUserByUserName, map[string]interface{}{
 		"user_name": userName,
 	})
 
