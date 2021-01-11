@@ -59,7 +59,7 @@ axios.interceptors.request.use(
             'Content-Type': 'application/x-www-form-urlencoded',
             '__sso_jwt__': GetTocken()
         };
-        cfgHeaders = config.headers || {};
+        var cfgHeaders = config.headers || {};
 
         for(var k in cfgHeaders){
             ssoHeaders[k] = cfgHeaders[k];
