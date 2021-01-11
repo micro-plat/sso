@@ -83,10 +83,18 @@
     },
 
     mounted(){
-      
-      window.localStorage.removeItem("__sso_jwt__");
+      var headerKey = "__sso_jwt__";
+      VueCookies.remove(headerKey);
+      localStorage.removeItem(headerKey);
+      sessionStorage.removeItem(headerKey);
 
       document.title = "登录";
+      var redirectURL = this.$route.query.redirect;
+      if(redirectURL){
+         window.location.href = redirectURL
+         return
+      }
+
       this.callback = this.$route.query.callback;
       this.changePwd = this.$route.query.changepwd;
       this.ident = this.$route.params.ident ? this.$route.params.ident : "";

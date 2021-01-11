@@ -12,8 +12,8 @@ export function ssoConfig(loginWebHost, ident) {
         loginWebHost: loginWebHost,
         ident:ident,
     }
-    var refleshHtml = '<iframe id="ssoreflesh" src="'+ loginWebHost + '/refresh" style="display:none"></iframe>';
-    $('body').append(refleshHtml);
+    // var refleshHtml = '<iframe id="ssoreflesh" src="'+ loginWebHost + '/refresh" style="display:none"></iframe>';
+    // $('body').append(refleshHtml);
 
     var sso = {
         changeRouteAfterLogin:changeRouteAfterLogin,
@@ -24,23 +24,7 @@ export function ssoConfig(loginWebHost, ident) {
     };
     return sso;
 }
-
-/**
- * 改变url，达到刷新sso token的目的
- */
-export function changeUrl() {
-    var url = $("#ssoreflesh").attr("src");
-    if (url) {
-        var index = url.indexOf("?",0);
-        if (index > 0) {
-            url = url.substr(0, index + 1);
-        } else {
-            url += "?"
-        }
-        $("#ssoreflesh").attr("src", url + "random=" + Date.now());
-    }
-}
-
+ 
 /**
  * 跳转登录地址，同时将地址记录下来,回调时要路由到那个页面
  * @param {*sso登录地址,请带上 http / https} ssoJumpUrl 
@@ -98,8 +82,11 @@ function signOut(redirectURL) {
     VueCookies.remove(headerKey);
     localStorage.removeItem(headerKey);
     sessionStorage.removeItem(headerKey);
-    redirectURL = redirectURL || window.ssoconfig.loginWebHost + "/" + window.ssoconfig.ident + "/login";
-    window.location.href = redirectURL;
+    var loginURL = window.ssoconfig.loginWebHost + "/" + window.ssoconfig.ident + "/login";
+    if (redirectURL){
+        loginURL = loginURL + "?redirect="+encodeURIComponent(redirectURL);
+    }
+    window.location.href = loginURL;
 }
 
 /**
