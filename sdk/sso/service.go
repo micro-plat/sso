@@ -1,11 +1,13 @@
 package sso
 
 import (
+	"encoding/json"
 	"fmt"
 	"net/http"
 	"sync"
 
 	"github.com/micro-plat/hydra"
+	"github.com/micro-plat/hydra/conf/server/auth/jwt"
 	"github.com/micro-plat/lib4go/errs"
 )
 
@@ -24,6 +26,8 @@ func init() {
 
 			app.Micro("/sso/member/changepwd", changePwd)
 			app.Micro("/sso/member/forgetpwd", forgetPwd)
+
+			app.Micro("/sso/system/config", getSystemConfig)
 		})
 	})
 
@@ -174,6 +178,26 @@ func changePwd(ctx hydra.IContext) (r interface{}) {
 	ctx.Log().Info("2: 调用sdk修改密码")
 	mem := GetMember(ctx)
 	return GetSSOClient().ChangePwd(mem.UserID, ctx.Request().GetString("expassword"), ctx.Request().GetString("newpassword"))
+}
+
+//getSystemConfig VueConfig
+func getSystemConfig(ctx hydra.IContext) interface{} {
+	configData := map[string]interface{}{}
+	if _, err := ctx.APPConf().GetServerConf().GetSubObject("vueconf", &configData); err != nil {
+		return err
+	}
+	jwtConf, err := jwt.GetConf(ctx.APPConf().GetServerConf())
+	if err != nil {
+		return err
+	}
+
+	configData["jwt_name"] = jwtConf.Name
+	configData["jwt_source"] = jwtConf.Source
+	configData["jwt_authurl"] = jwtConf.AuthURL
+
+	ctx.Response().ContentType("text/plain")
+	bytes, _ := json.Marshal(configData)
+	return fmt.Sprintf("window.globalConfig=%s", string(bytes))
 }
 
 /* getUserDataPermission 获取 [数据权限] 生成相应的sql语句
