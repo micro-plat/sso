@@ -7,7 +7,7 @@ import (
 	"github.com/micro-plat/lib4go/errs"
 	"github.com/micro-plat/sso/mgrserver/mgrapi/modules/logic"
 	"github.com/micro-plat/sso/mgrserver/mgrapi/modules/model"
-	"github.com/micro-plat/sso/sdk/sso"
+	"github.com/micro-plat/sso/sso"
 )
 
 //UserHandler is

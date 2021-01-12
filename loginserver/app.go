@@ -21,10 +21,14 @@ import (
 	"github.com/micro-plat/sso/loginserver/sdkapi/services/permission"
 	apisystem "github.com/micro-plat/sso/loginserver/sdkapi/services/system"
 	"github.com/micro-plat/sso/loginserver/sdkapi/services/user"
+	_ "github.com/micro-plat/sso/sso"
 )
 
 //init 检查应用程序配置文件，并根据配置初始化服务
 func init() {
+
+	//web接口
+	registryAPI()
 
 	//启动时参数配置检查
 	App.OnStarting(func(appConf app.IAPPConf) error {
@@ -59,9 +63,6 @@ func init() {
 		return nil
 	})
 
-	//web接口
-	registryAPI()
-
 }
 
 func checkLoginConf(appConf app.IAPPConf) (err error) {
@@ -84,7 +85,7 @@ func checkLoginConf(appConf app.IAPPConf) (err error) {
 
 func checkVueConf(appConf app.IAPPConf) error {
 	var vueConf cmodel.VueConf
-	if _, err := appConf.GetServerConf().GetSubObject("vueconf", &vueConf); err != nil {
+	if _, err := appConf.GetServerConf().GetSubObject("webconf", &vueConf); err != nil {
 		return err
 	}
 

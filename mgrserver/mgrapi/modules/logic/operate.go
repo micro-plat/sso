@@ -2,7 +2,7 @@ package logic
 
 import (
 	"github.com/micro-plat/sso/mgrserver/mgrapi/modules/access/operate"
-	"github.com/micro-plat/sso/sdk/sso"
+	"github.com/micro-plat/sso/sso"
 )
 
 // IOperateLogic xx

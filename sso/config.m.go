@@ -20,7 +20,7 @@ type ConfigData struct {
 
 //Valid 验证传入参数
 func (c *ConfigData) Valid() error {
-	if b, err := govalidator.ValidateStruct(&c); !b {
+	if b, err := govalidator.ValidateStruct(c); !b {
 		return fmt.Errorf("sso 调用配置有误:%v", err)
 	}
 	return nil

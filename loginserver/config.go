@@ -15,6 +15,7 @@ import (
 	"github.com/micro-plat/hydra/conf"
 )
 
+//Archive 压缩包名称
 var Archive = "login.static.zip"
 var staticOpts = []static.Option{
 	static.WithArchive(Archive),
@@ -23,26 +24,24 @@ var staticOpts = []static.Option{
 
 //bindConf 绑定启动配置， 启动时检查注册中心配置是否存在，不存在则引导用户输入配置参数并自动创建到注册中心
 func init() {
-	hydra.OnReadying(func() error {
-		//配置共有配置
-		hydra.Conf.Vars().Cache().GoCache("gocache")
-		hydra.Conf.Vars().HTTP("http")
-		hydra.Conf.Vars().Custom("loginconf", "app", model.Conf{UserLoginFailCount: 5, UserLockTime: 24 * 60 * 60})
-
+	hydra.OnReadying(func()   { 
 		if hydra.G.IsDebug() {
 			//测试环境配置
 			devConf()
-			return nil
+			return  
 		}
 		//生产环境的配置
 		prodConf()
-		return nil
+		return  
 	})
 }
 
 //测试环境配置
 func devConf() {
-
+	//配置共有配置
+	hydra.Conf.Vars().Cache().GoCache("gocache")
+	hydra.Conf.Vars().HTTP("http")
+	hydra.Conf.Vars().Custom("loginconf", "app", model.Conf{UserLoginFailCount: 5, UserLockTime: 24 * 60 * 60})
 	hydra.Conf.Vars().DB().MySQL("db", "root", "rTo0CesHi2018Qx", "192.168.0.36:3306", "sso_new", db.WithConnect(20, 10, 600))
 	hydra.Conf.Vars().Cache().Redis("redis", `192.168.0.111:6379,192.168.0.112:6379,192.168.0.113:6379,192.168.0.114:6379,192.168.0.115:6379,192.168.0.116:6379`, cacheredis.WithDbIndex(1))
 
@@ -59,7 +58,7 @@ func devConf() {
 			jwt.WithExpireAt(36000),
 			jwt.WithHeader(),
 			jwt.WithExcludes("/config/vue", "/mgrweb/system/config/get", "/mgrweb/member/login", "/mgrweb/member/bind/check", "/mgrweb/member/bind/save", "/mgrweb/member/sendcode", "/dds/dictionary/get")).
-		Sub("vueconf", &cmodel.VueConf{
+		Sub("webconf", &cmodel.VueConf{
 			Wxcallbackhost:   "http://ssov4.100bm0.com",
 			Wxcallbackurl:    "/wxcallback",
 			CodeLabel:        "短信验证码",
@@ -75,6 +74,10 @@ func devConf() {
 
 //生产环境配置
 func prodConf() {
+	//配置共有配置
+	hydra.Conf.Vars().Cache().GoCache("gocache")
+	hydra.Conf.Vars().HTTP("http")
+	hydra.Conf.Vars().Custom("loginconf", "app", model.Conf{UserLoginFailCount: 5, UserLockTime: 24 * 60 * 60})
 	hydra.Conf.Vars().DB().MySQLByConnStr("db", conf.ByInstall, db.WithConnect(20, 10, 600))
 	hydra.Conf.Vars().Cache().Redis("redis", conf.ByInstall, cacheredis.WithDbIndex(1))
 
@@ -90,7 +93,7 @@ func prodConf() {
 			jwt.WithExpireAt(36000),
 			jwt.WithHeader(),
 			jwt.WithExcludes("/config/vue", "/mgrweb/system/config/get", "/mgrweb/member/login", "/mgrweb/member/bind/check", "/mgrweb/member/bind/save", "/mgrweb/member/sendcode", "/dds/dictionary/get")).
-		Sub("vueconf", &cmodel.VueConf{
+		Sub("webconf", &cmodel.VueConf{
 			Wxcallbackhost:   "//web.sso.18jiayou.com",
 			Wxcallbackurl:    "/wxcallback",
 			CodeLabel:        "短信验证码",

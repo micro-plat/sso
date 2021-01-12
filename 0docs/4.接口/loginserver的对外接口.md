@@ -53,7 +53,7 @@ sign := md5. Encrypt(raw + secret)
 
 ``` Go
 //sdk引入方式
-import "github.com/micro-plat/sso/sdk/sso"
+import "github.com/micro-plat/sso/sso"
 
 var App = hydra.NewApp(
 	hydra.WithPlatName("sso_new", "新版sso"),
@@ -93,7 +93,7 @@ func init() {
 请求示例:
 
 ``` Go
-import "github.com/micro-plat/sso/sdk/sso"
+import "github.com/micro-plat/sso/sso"
 
 func main(){
     loginInfo,err:= sso.CheckCodeLogin("code")
@@ -136,7 +136,7 @@ func main(){
 请求示例:
 
 ``` Go
-import "github.com/micro-plat/sso/sdk/sso"
+import "github.com/micro-plat/sso/sso"
 
 func main(){
     userInfo,err:= sso.GetUserInfoByName("admin")
@@ -174,7 +174,7 @@ func main(){
 请求示例:
 
 ``` Go
-import "github.com/micro-plat/sso/sdk/sso"
+import "github.com/micro-plat/sso/sso"
 
 func main(){
     menusArry,err:= sso.GetUserMenu("123456")
@@ -216,7 +216,7 @@ func main(){
 请求示例:
 
 ``` Go
-import "github.com/micro-plat/sso/sdk/sso"
+import "github.com/micro-plat/sso/sso"
 
 func main(){
     sysInfo,err:= sso.GetSystemInfo("ssonew")
@@ -253,7 +253,7 @@ func main(){
 请求示例:
 
 ``` Go
-import "github.com/micro-plat/sso/sdk/sso"
+import "github.com/micro-plat/sso/sso"
 
 func main(){
     sysArry,err:= sso.GetUserOtherSystems("12456")
@@ -291,7 +291,7 @@ func main(){
 请求示例:
 
 ``` Go
-import "github.com/micro-plat/sso/sdk/sso"
+import "github.com/micro-plat/sso/sso"
 
 func main(){
     usersArry,err:= sso.GetAllUser("source","sourceID")
@@ -331,7 +331,7 @@ func main(){
 请求示例:
 
 ``` Go
-import "github.com/micro-plat/sso/sdk/sso"
+import "github.com/micro-plat/sso/sso"
 
 func main(){
     err:= sso.ForgetPwd("source","sourceID","possword")
@@ -361,7 +361,7 @@ func main(){
 请求示例:
 
 ``` Go
-import "github.com/micro-plat/sso/sdk/sso"
+import "github.com/micro-plat/sso/sso"
 
 func main(){
 
@@ -402,7 +402,7 @@ func main(){
 请求示例:
 
 ``` Go
-import "github.com/micro-plat/sso/sdk/sso"
+import "github.com/micro-plat/sso/sso"
 
 func main(){
      err:= sso.AddUser("userName", "mobile", "fullName", "targetIdent", "source", "sourceSecrect" , "sourceID" , 123)
@@ -431,7 +431,7 @@ func main(){
 请求示例:
 
 ``` Go
-import "github.com/micro-plat/sso/sdk/sso"
+import "github.com/micro-plat/sso/sso"
 
 func main(){
      loginInfo,err:= sso.Login("userName", "password")
@@ -475,7 +475,7 @@ func main(){
 请求示例:
 
 ``` Go
-import "github.com/micro-plat/sso/sdk/sso"
+import "github.com/micro-plat/sso/sso"
 
 func main(){
     err:= sso.ChangePwd(123456, "expassword", "newpassword")

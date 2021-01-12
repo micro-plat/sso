@@ -6,7 +6,7 @@ import (
 
 	"github.com/asaskevich/govalidator"
 	"github.com/micro-plat/hydra/components"
-	"github.com/micro-plat/sso/sdk/sso"
+	"github.com/micro-plat/sso/sso"
 )
 
 //Conf 应用程序配置

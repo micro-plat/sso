@@ -7,7 +7,6 @@ import (
 	_ "github.com/micro-plat/hydra/components/caches/cache/redis"
 	_ "github.com/micro-plat/hydra/components/queues/mq/redis"
 	"github.com/micro-plat/hydra/conf/app"
-	"github.com/micro-plat/sso/common/config"
 	_ "github.com/micro-plat/sso/common/dds"
 	_ "github.com/micro-plat/sso/mgrserver/mgrapi/modules/const/sqls/mysql"
 	"github.com/micro-plat/sso/mgrserver/mgrapi/modules/model"
@@ -20,11 +19,14 @@ import (
 	"github.com/micro-plat/sso/mgrserver/mgrapi/services/system"
 	"github.com/micro-plat/sso/mgrserver/mgrapi/services/user"
 
-	ssoSdk "github.com/micro-plat/sso/sdk/sso"
+	ssoSdk "github.com/micro-plat/sso/sso"
 )
 
 //init 检查应用程序配置文件，并根据配置初始化服务
 func init() {
+
+	//注册接口
+	registryAPI()
 
 	//每个请求执行前执行
 	App.OnHandleExecuting(func(ctx hydra.IContext) (rt interface{}) {
@@ -53,13 +55,11 @@ func init() {
 		return nil
 	})
 
-	//注册接口
-	registryAPI()
 }
 
 func checkVueConf(appConf app.IAPPConf) error {
 	var vueConf cmodel.VueConf
-	if _, err := appConf.GetServerConf().GetSubObject("vueconf", &vueConf); err != nil {
+	if _, err := appConf.GetServerConf().GetSubObject("webconf", &vueConf); err != nil {
 		return err
 	}
 
@@ -98,8 +98,5 @@ func registryAPI() {
 	App.Micro("/system/permission", permission.NewDataPermissionHandler) //数据权限功能相关接口
 	App.Micro("/auth/permission", permission.NewAuthPermissionHandler)   //数据权限管理
 	App.Micro("/image/upload", image.NewImageHandler("../image"))        //图片上传
-
-	//vue config
-	App.Micro("/config/vue", config.VueHandler)
 
 }

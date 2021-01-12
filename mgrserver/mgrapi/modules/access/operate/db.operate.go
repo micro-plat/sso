@@ -5,7 +5,7 @@ import (
 
 	"github.com/micro-plat/hydra/components"
 	"github.com/micro-plat/sso/mgrserver/mgrapi/modules/const/sqls"
-	"github.com/micro-plat/sso/sdk/sso"
+	"github.com/micro-plat/sso/sso"
 )
 
 type IDbOperate interface {

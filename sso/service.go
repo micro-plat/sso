@@ -26,8 +26,8 @@ func init() {
 
 			app.Micro("/sso/member/changepwd", changePwd)
 			app.Micro("/sso/member/forgetpwd", forgetPwd)
-
-			app.Micro("/sso/system/config", getSystemConfig)
+			fmt.Println("sso-sdk")
+			app.Micro("/sso/system/config", GetSystemConfig)
 		})
 	})
 
@@ -180,10 +180,10 @@ func changePwd(ctx hydra.IContext) (r interface{}) {
 	return GetSSOClient().ChangePwd(mem.UserID, ctx.Request().GetString("expassword"), ctx.Request().GetString("newpassword"))
 }
 
-//getSystemConfig VueConfig
-func getSystemConfig(ctx hydra.IContext) interface{} {
+//GetSystemConfig VueConfig
+func GetSystemConfig(ctx hydra.IContext) interface{} {
 	configData := map[string]interface{}{}
-	if _, err := ctx.APPConf().GetServerConf().GetSubObject("vueconf", &configData); err != nil {
+	if _, err := ctx.APPConf().GetServerConf().GetSubObject("webconf", &configData); err != nil {
 		return err
 	}
 	jwtConf, err := jwt.GetConf(ctx.APPConf().GetServerConf())

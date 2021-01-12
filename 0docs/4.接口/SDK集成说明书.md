@@ -158,7 +158,7 @@ Vue.prototype.$patch=ssocfg.http.patch;
 1. 引入sdk包
 ```go
 
-import "github.com/micro-plat/sso/sdk/sso"
+import "github.com/micro-plat/sso/sso"
  
 ```
 
@@ -225,7 +225,7 @@ hydra.OnReady(func() error {
 hydra.OnReady(func() error {
 
     hydra.Conf.Web("8181").
-		Sub("vueconf", model.VueConfig{
+		Sub("webconf", model.VueConfig{
 			Ident:        "sas",
 			LoginWebHost: "//ssov4.100bm0.com:6687",
         })
@@ -271,7 +271,7 @@ import (
 //VueHandler VueConfig
 func VueHandler(ctx hydra.IContext) interface{} {
 	configData := map[string]interface{}{}
-	_, err := ctx.APPConf().GetServerConf().GetSubObject("vueconf", &configData)
+	_, err := ctx.APPConf().GetServerConf().GetSubObject("webconf", &configData)
 	if err != nil {
 		return fmt.Errorf("GetSubObject:vueconf:%v", err)
 	}
