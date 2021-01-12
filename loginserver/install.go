@@ -27,13 +27,13 @@ func init() {
 		//配置共有配置
 		hydra.Conf.Vars().Cache().GoCache("gocache")
 		hydra.Conf.Vars().HTTP("http")
-		hydra.Conf.Vars().Custom("loginconf", "app", model.Conf{ UserLoginFailCount: 5, UserLockTime: 24 * 60 * 60 })
-		
+		hydra.Conf.Vars().Custom("loginconf", "app", model.Conf{UserLoginFailCount: 5, UserLockTime: 24 * 60 * 60})
+
 		if hydra.G.IsDebug() {
 			//测试环境配置
 			devConf()
 			return nil
-		} 
+		}
 		//生产环境的配置
 		prodConf()
 		return nil
@@ -45,7 +45,7 @@ func devConf() {
 
 	hydra.Conf.Vars().DB().MySQL("db", "root", "rTo0CesHi2018Qx", "192.168.0.36:3306", "sso_new", db.WithConnect(20, 10, 600))
 	hydra.Conf.Vars().Cache().Redis("redis", `192.168.0.111:6379,192.168.0.112:6379,192.168.0.113:6379,192.168.0.114:6379,192.168.0.115:6379,192.168.0.116:6379`, cacheredis.WithDbIndex(1))
- 
+
 	hydra.Conf.API("6689", api.WithDNS("ssov4.100bm0.com")).Header(header.WithCrossDomain()).
 		APIKEY("ivk:///check_sign", apikey.WithInvoker("ivk:///check_sign"), apikey.WithExcludes("/sso/login/verify", "/image/upload"))
 
@@ -77,7 +77,7 @@ func devConf() {
 func prodConf() {
 	hydra.Conf.Vars().DB().MySQLByConnStr("db", conf.ByInstall, db.WithConnect(20, 10, 600))
 	hydra.Conf.Vars().Cache().Redis("redis", conf.ByInstall, cacheredis.WithDbIndex(1))
- 
+
 	hydra.Conf.API(conf.ByInstall, api.WithDNS("api.sso.18jiayou.com")).Header(header.WithCrossDomain()).
 		APIKEY("ivk:///check_sign", apikey.WithInvoker("ivk:///check_sign"), apikey.WithExcludes("/sso/login/verify", "/image/upload"))
 

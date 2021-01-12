@@ -1,7 +1,6 @@
 package main
 
 import (
- 
 	"github.com/micro-plat/hydra"
 	"github.com/micro-plat/hydra/components"
 	_ "github.com/micro-plat/hydra/components/caches/cache/gocache"
@@ -38,20 +37,19 @@ func init() {
 
 	//启动事检查配置是否正确
 	App.OnStarting(func(appconf app.IAPPConf) error {
-		//
-		if _, err := components.Def.DB().GetDB();		 err != nil {
+		//检查数据库
+		if _, err := components.Def.DB().GetDB(); err != nil {
+			return err
+		}
+		//检查缓存
+		if _, err := components.Def.Cache().GetCache("redis"); err != nil {
+			return err
+		}
+		//检查应用配置
+		if err := checkMgrConf(appconf); err != nil {
 			return err
 		}
 
-		if _, err := components.Def.Cache().GetCache("redis");		 err != nil {
-			return  err
-		}
-
-
-		if err:= checkMgrConf(appconf);err!=nil{
-			return err
-		}
-		
 		return nil
 	})
 
@@ -71,21 +69,21 @@ func checkVueConf(appConf app.IAPPConf) error {
 	return nil
 }
 
-func checkMgrConf(appConf app.IAPPConf)error{
-		//检查配置信息
-		var conf model.Conf
-		if _, err := appConf.GetServerConf().GetSubObject("app", &conf); err != nil {
-			return err
-		}
+func checkMgrConf(appConf app.IAPPConf) error {
+	//检查配置信息
+	var conf model.Conf
+	if _, err := appConf.GetServerConf().GetSubObject("app", &conf); err != nil {
+		return err
+	}
 
-		if err := model.SaveConf(&conf); err != nil {
-			return err 
-		} 
-		//
-		if err := ssoSdk.Config(conf.SsoApiHost, conf.Ident, conf.Secret); err != nil {
-			return   err
-		}
-		return nil 
+	if err := model.SaveConf(&conf); err != nil {
+		return err
+	}
+	//
+	if err := ssoSdk.Config(conf.SsoApiHost, conf.Ident, conf.Secret); err != nil {
+		return err
+	}
+	return nil
 
 }
 
