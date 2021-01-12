@@ -12,10 +12,10 @@ import (
 )
 
 type userLogic struct {
-	cfg *Config
+	cfg *ConfigData
 }
 
-func newUser(cfg *Config) *userLogic {
+func newUser(cfg *ConfigData) *userLogic {
 	return &userLogic{
 		cfg: cfg,
 	}

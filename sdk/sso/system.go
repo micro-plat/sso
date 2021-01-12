@@ -9,11 +9,11 @@ import (
 )
 
 type SystemLogic struct {
-	conf *Config
+	conf *ConfigData
 }
 
 // NewSystem xx
-func NewSystem(conf *Config) *SystemLogic {
+func NewSystem(conf *ConfigData) *SystemLogic {
 	return &SystemLogic{
 		conf: conf,
 	}

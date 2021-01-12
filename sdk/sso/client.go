@@ -8,12 +8,12 @@ import (
 
 //Client sso client
 type Client struct {
-	cfg *Config
+	cfg *ConfigData
 }
 
 //New SSOClient
 func New(apiHost, ident, secret string) (*Client, error) {
-	cfg := &Config{
+	cfg := &ConfigData{
 		host:   apiHost,
 		ident:  ident,
 		secret: secret,

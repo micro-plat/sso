@@ -6,8 +6,8 @@ import (
 	"github.com/asaskevich/govalidator"
 )
 
-//Config 配置信息
-type Config struct {
+//ConfigData 配置信息
+type ConfigData struct {
 	//ApiHost ssoApi地址(不是跳转地址)
 	host string `valid:"required"`
 
@@ -19,7 +19,7 @@ type Config struct {
 }
 
 //Valid 验证传入参数
-func (c Config) Valid() error {
+func (c *ConfigData) Valid() error {
 	if b, err := govalidator.ValidateStruct(&c); !b {
 		return fmt.Errorf("sso 调用配置有误:%v", err)
 	}

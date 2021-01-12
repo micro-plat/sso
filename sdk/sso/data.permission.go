@@ -14,11 +14,11 @@ import (
 
 //DataPermission 数据权限
 type DataPermission struct {
-	conf *Config
+	conf *ConfigData
 }
 
 // NewDataPermissionLogic xx
-func newDataPermission(conf *Config) *DataPermission {
+func newDataPermission(conf *ConfigData) *DataPermission {
 	return &DataPermission{
 		conf: conf,
 	}

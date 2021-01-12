@@ -29,8 +29,8 @@ func init() {
 
 }
 
-//BindConfig 自动生成相关的api接口(登录回调验证、获取菜单、获取系统信息)
-func BindConfig(ssoApiHost, ident, secret string) error {
+//Config 自动生成相关的api接口(登录回调验证、获取菜单、获取系统信息)
+func Config(ssoApiHost, ident, secret string) error {
 	if err := saveSSOClient(ssoApiHost, ident, secret); err != nil {
 		return err
 	}

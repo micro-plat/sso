@@ -67,7 +67,7 @@ func init() {
     sso.Bind(App)
 
     //初始化接口调用配置
-    sso.BindConfig(SsoApiHost, Ident, Secret)
+    sso.Config(SsoApiHost, Ident, Secret)
 
     	//每个请求执行前执行
 	App.OnHandleExecuting(func(ctx hydra.IContext) (rt interface{}) {

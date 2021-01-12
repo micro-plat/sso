@@ -189,7 +189,7 @@ App.OnStarting(func(appConf app.IAPPConf) error {
         
     model.SaveAppConfig(&appcfg);
     //初始化sso必须数据
-    if err := sso.BindConfig(appcfg.SsoApiHost, appcfg.Ident,appcfg.SsoSecret); err != nil {
+    if err := sso.Config(appcfg.SsoApiHost, appcfg.Ident,appcfg.SsoSecret); err != nil {
         return fmt.Errorf("sso-配置失败,err:%v", err)
     }
     return nil

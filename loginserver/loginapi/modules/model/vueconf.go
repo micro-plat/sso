@@ -41,7 +41,7 @@ type VueConf struct {
 //Valid 验证配置参数是否合法
 func (c VueConf) Valid() error {
 	if b, err := govalidator.ValidateStruct(&c); !b {
-		return fmt.Errorf("vueconf 配置文件有误:%v", err)
+		return fmt.Errorf("conf/vueconf配置文件有误:%v", err)
 	}
 	return nil
 }

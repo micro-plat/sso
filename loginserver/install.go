@@ -11,6 +11,8 @@ import (
 	"github.com/micro-plat/hydra/conf/vars/db"
 	"github.com/micro-plat/sso/common/module/model"
 	cmodel "github.com/micro-plat/sso/loginserver/loginapi/modules/model"
+
+	"github.com/micro-plat/hydra/conf"
 )
 
 var Archive = "login.static.zip"
@@ -20,36 +22,35 @@ var staticOpts = []static.Option{
 }
 
 //bindConf 绑定启动配置， 启动时检查注册中心配置是否存在，不存在则引导用户输入配置参数并自动创建到注册中心
-func install() {
+func init() {
 	hydra.OnReadying(func() error {
 		//配置共有配置
-		pubConf()
-
+		hydra.Conf.Vars().Cache().GoCache("gocache")
+		hydra.Conf.Vars().HTTP("http")
+		hydra.Conf.Vars().Custom("loginconf", "app", model.Conf{ UserLoginFailCount: 5, UserLockTime: 24 * 60 * 60 })
+		
 		if hydra.G.IsDebug() {
 			//测试环境配置
 			devConf()
 			return nil
-		}
-
+		} 
 		//生产环境的配置
 		prodConf()
 		return nil
 	})
 }
 
-//公共配置
-func pubConf() {
-	hydra.Conf.Vars().Cache().GoCache("gocache")
-	hydra.Conf.Vars().HTTP("http")
-}
-
 //测试环境配置
 func devConf() {
-	hydra.Conf.API("6689", api.WithDNS("api.sso.taosytest.com")).Header(header.WithCrossDomain()).
+
+	hydra.Conf.Vars().DB().MySQL("db", "root", "rTo0CesHi2018Qx", "192.168.0.36:3306", "sso_new", db.WithConnect(20, 10, 600))
+	hydra.Conf.Vars().Cache().Redis("redis", `192.168.0.111:6379,192.168.0.112:6379,192.168.0.113:6379,192.168.0.114:6379,192.168.0.115:6379,192.168.0.116:6379`, cacheredis.WithDbIndex(1))
+ 
+	hydra.Conf.API("6689", api.WithDNS("ssov4.100bm0.com")).Header(header.WithCrossDomain()).
 		APIKEY("ivk:///check_sign", apikey.WithInvoker("ivk:///check_sign"), apikey.WithExcludes("/sso/login/verify", "/image/upload"))
 
 	//登录的界面配置
-	hydra.Conf.Web("6687", api.WithTimeout(300, 300), api.WithDNS("login.sso.taosytest.com")).
+	hydra.Conf.Web("6687", api.WithTimeout(300, 300), api.WithDNS("ssov4.100bm0.com")).
 		Static(staticOpts...).
 		Header(header.WithCrossDomain(), header.WithAllowHeaders("X-Requested-With", "Content-Type", "__sso_jwt__")).
 		Jwt(jwt.WithName("__sso_jwt__"),
@@ -70,20 +71,17 @@ func devConf() {
 			CompanyRightCode: "蜀ICP备20003360号",
 		})
 
-	hydra.Conf.Vars().Custom("loginconf", "app", model.Conf{
-		UserLoginFailCount: 5,
-		UserLockTime:       24 * 60 * 60,
-	})
-	hydra.Conf.Vars().DB().MySQL("db", "root", "rTo0CesHi2018Qx", "192.168.0.36:3306", "sso_new", db.WithConnect(20, 10, 600))
-	hydra.Conf.Vars().Cache().Redis("redis", `192.168.0.111:6379,192.168.0.112:6379,192.168.0.113:6379,192.168.0.114:6379,192.168.0.115:6379,192.168.0.116:6379`, cacheredis.WithDbIndex(1))
 }
 
 //生产环境配置
 func prodConf() {
-	hydra.Conf.API("###api_port", api.WithDNS("api.sso.18jiayou.com")).Header(header.WithCrossDomain()).
+	hydra.Conf.Vars().DB().MySQLByConnStr("db", conf.ByInstall, db.WithConnect(20, 10, 600))
+	hydra.Conf.Vars().Cache().Redis("redis", conf.ByInstall, cacheredis.WithDbIndex(1))
+ 
+	hydra.Conf.API(conf.ByInstall, api.WithDNS("api.sso.18jiayou.com")).Header(header.WithCrossDomain()).
 		APIKEY("ivk:///check_sign", apikey.WithInvoker("ivk:///check_sign"), apikey.WithExcludes("/sso/login/verify", "/image/upload"))
 
-	hydra.Conf.Web("###web_port", api.WithTimeout(300, 300), api.WithDNS("loginapi.sso.18jiayou.com")).
+	hydra.Conf.Web(conf.ByInstall, api.WithTimeout(300, 300), api.WithDNS("loginapi.sso.18jiayou.com")).
 		Static(staticOpts...).
 		Header(header.WithCrossDomain(), header.WithAllowHeaders("X-Requested-With", "Content-Type", "__sso_jwt__")).
 		Jwt(jwt.WithName("__sso_jwt__"),
@@ -104,10 +102,4 @@ func prodConf() {
 			CompanyRightCode: "蜀ICP备20003360号",
 		})
 
-	hydra.Conf.Vars().Custom("loginconf", "app", model.Conf{
-		UserLoginFailCount: 5,
-		UserLockTime:       24 * 60 * 60,
-	})
-	hydra.Conf.Vars().DB().MySQLByConnStr("db", "###mysql_db_string", db.WithConnect(20, 10, 600))
-	hydra.Conf.Vars().Cache().Redis("redis", "###redis_string", cacheredis.WithDbIndex(1))
 }

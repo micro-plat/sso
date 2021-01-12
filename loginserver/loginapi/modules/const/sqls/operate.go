@@ -1,5 +1,6 @@
 package sqls
 
+
 //AddOperate .
 const AddOperate = `
 insert into 

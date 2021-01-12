@@ -1,15 +1,13 @@
 package main
 
 import (
-	"fmt"
-
+ 
 	"github.com/micro-plat/hydra"
 	"github.com/micro-plat/hydra/components"
 	_ "github.com/micro-plat/hydra/components/caches/cache/gocache"
 	_ "github.com/micro-plat/hydra/components/caches/cache/redis"
 	_ "github.com/micro-plat/hydra/components/queues/mq/redis"
 	"github.com/micro-plat/hydra/conf/app"
-	"github.com/micro-plat/hydra/hydra/servers/http"
 	"github.com/micro-plat/sso/common/config"
 	_ "github.com/micro-plat/sso/common/dds"
 	_ "github.com/micro-plat/sso/mgrserver/mgrapi/modules/const/sqls/mysql"
@@ -26,20 +24,11 @@ import (
 	ssoSdk "github.com/micro-plat/sso/sdk/sso"
 )
 
-var App = hydra.NewApp(
-	hydra.WithPlatName("sso_v4", "sso-v4版"),
-	hydra.WithSystemName("mgrserver", "sso单点登录管理系统"),
-	hydra.WithUsage("单点登录管理系统"),
-	hydra.WithServerTypes(http.Web),
-	hydra.WithClusterName("prod"))
-
 //init 检查应用程序配置文件，并根据配置初始化服务
 func init() {
-	install()
-  
+
 	//每个请求执行前执行
 	App.OnHandleExecuting(func(ctx hydra.IContext) (rt interface{}) {
-		ctx.Log().Info("handling.....")
 		//验证jwt并缓存登录用户信息
 		if err := ssoSdk.CheckAndSetMember(ctx); err != nil {
 			return err
@@ -49,42 +38,58 @@ func init() {
 
 	//启动事检查配置是否正确
 	App.OnStarting(func(appconf app.IAPPConf) error {
-		var vueconf cmodel.VueConf
-		if _, err := appconf.GetServerConf().GetSubObject("vueconf", &vueconf); err != nil {
-			return fmt.Errorf("获取vueconf配置失败,err:%v", err)
+		//
+		if _, err := components.Def.DB().GetDB();		 err != nil {
+			return err
 		}
 
-		if err := vueconf.Valid(); err != nil {
-			return fmt.Errorf("vueconf配置数据错误,err:%v", err)
+		if _, err := components.Def.Cache().GetCache("redis");		 err != nil {
+			return  err
 		}
 
-		//检查配置信息
-		var conf model.Conf
-		_, err := appconf.GetServerConf().GetSubObject("app", &conf)
-		if err != nil {
-			return fmt.Errorf("获取appconf配置失败,err:%v", err)
-		}
 
-		if err := model.SaveConf(&conf); err != nil {
-			return fmt.Errorf("保存appconf配置到本地缓存失败,err:%v", err)
+		if err:= checkMgrConf(appconf);err!=nil{
+			return err
 		}
-
-		_, err = components.Def.DB().GetDB()
-		if err != nil {
-			return fmt.Errorf("db数据库配置错误,err:%v", err)
-		}
-
-		_, err = components.Def.Cache().GetCache("redis")
-		if err != nil {
-			return fmt.Errorf("cache-redis缓存配置错误,err:%v", err)
-		}
-
-		if err := ssoSdk.BindConfig(conf.SsoApiHost, conf.Ident, conf.Secret); err != nil {
-			return fmt.Errorf("ssoSdk-绑定配置失败,err:%v", err)
-		}
+		
 		return nil
 	})
 
+	//注册接口
+	registryAPI()
+}
+
+func checkVueConf(appConf app.IAPPConf) error {
+	var vueConf cmodel.VueConf
+	if _, err := appConf.GetServerConf().GetSubObject("vueconf", &vueConf); err != nil {
+		return err
+	}
+
+	if err := vueConf.Valid(); err != nil {
+		return err
+	}
+	return nil
+}
+
+func checkMgrConf(appConf app.IAPPConf)error{
+		//检查配置信息
+		var conf model.Conf
+		if _, err := appConf.GetServerConf().GetSubObject("app", &conf); err != nil {
+			return err
+		}
+
+		if err := model.SaveConf(&conf); err != nil {
+			return err 
+		} 
+		//
+		if err := ssoSdk.Config(conf.SsoApiHost, conf.Ident, conf.Secret); err != nil {
+			return   err
+		}
+		return nil 
+
+}
+
+func registryAPI() {
 	App.Micro("/base", base.NewBaseUserHandler)                          //基础数据
 	App.Micro("/user", user.NewUserHandler)                              //用户相关接口
 	App.Micro("/auth", role.NewRoleAuthHandler)                          //菜单权限管理
@@ -98,4 +103,5 @@ func init() {
 
 	//vue config
 	App.Micro("/config/vue", config.VueHandler)
+
 }

@@ -2,6 +2,8 @@ package main
 
 import (
 	"github.com/micro-plat/hydra"
+	"github.com/micro-plat/hydra/conf"
+	"github.com/micro-plat/hydra/conf/server/api"
 	"github.com/micro-plat/hydra/conf/server/auth/jwt"
 	"github.com/micro-plat/hydra/conf/server/header"
 	"github.com/micro-plat/hydra/conf/server/static"
@@ -20,7 +22,8 @@ var staticOpts = []static.Option{
 func install() {
 	hydra.OnReadying(func() error {
 		//配置共有配置
-		pubConf()
+		hydra.Conf.Vars().Cache().GoCache("gocache")
+		hydra.Conf.Vars().HTTP("http")
 
 		if hydra.G.IsDebug() {
 			//测试环境配置
@@ -34,15 +37,12 @@ func install() {
 	})
 }
 
-//公共配置
-func pubConf() {
-	hydra.Conf.Vars().Cache().GoCache("gocache")
-	hydra.Conf.Vars().HTTP("http")
-}
-
 //测试环境配置
 func devConf() {
-	hydra.Conf.Web("6677").Static(staticOpts...).
+	hydra.Conf.Vars().DB().MySQL("db", "root", "rTo0CesHi2018Qx", "192.168.0.36:3306", "sso_new", db.WithConnect(20, 10, 600))
+	hydra.Conf.Vars().Cache().Redis("redis", `192.168.0.111:6379,192.168.0.112:6379,192.168.0.113:6379,192.168.0.114:6379,192.168.0.115:6379,192.168.0.116:6379`, cacheredis.WithDbIndex(1))
+
+	hydra.Conf.Web("6677", api.WithDNS("ssov4.100bm0.com")).Static(staticOpts...).
 		Header(header.WithCrossDomain(), header.WithAllowHeaders("__sso_jwt__")).
 		Jwt(jwt.WithName("__sso_jwt__"),
 			jwt.WithMode("HS512"),
@@ -61,13 +61,14 @@ func devConf() {
 			LoginWebHost: "//ssov4.100bm0.com:6687",
 		})
 
-	hydra.Conf.Vars().DB().MySQL("db", "root", "rTo0CesHi2018Qx", "192.168.0.36:3306", "sso_new", db.WithConnect(20, 10, 600))
-	hydra.Conf.Vars().Cache().Redis("redis", `192.168.0.111:6379,192.168.0.112:6379,192.168.0.113:6379,192.168.0.114:6379,192.168.0.115:6379,192.168.0.116:6379`, cacheredis.WithDbIndex(1))
 }
 
 //生产环境配置
 func prodConf() {
-	hydra.Conf.Web("###api_port").Static(staticOpts...).
+	hydra.Conf.Vars().DB().MySQLByConnStr("db", conf.ByInstall, db.WithConnect(20, 10, 600))
+	hydra.Conf.Vars().Cache().Redis("redis", conf.ByInstall, cacheredis.WithDbIndex(1))
+
+	hydra.Conf.Web(conf.ByInstall).Static(staticOpts...).
 		Header(header.WithCrossDomain()).
 		Jwt(jwt.WithName("__sso_jwt__"),
 			jwt.WithMode("HS512"),
@@ -85,6 +86,5 @@ func prodConf() {
 			Ident:        "sso",
 			LoginWebHost: "//login.sso.18jiayou.com",
 		})
-	hydra.Conf.Vars().DB().MySQLByConnStr("db", "###mysql_db_string", db.WithConnect(20, 10, 600))
-	hydra.Conf.Vars().Cache().Redis("redis", "###redis_string", cacheredis.WithDbIndex(1))
+
 }
