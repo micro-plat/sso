@@ -98,5 +98,7 @@ func registryAPI() {
 	App.Micro("/system/permission", permission.NewDataPermissionHandler) //数据权限功能相关接口
 	App.Micro("/auth/permission", permission.NewAuthPermissionHandler)   //数据权限管理
 	App.Micro("/image/upload", image.NewImageHandler("../image"))        //图片上传
+	
+	App.Micro("/system/webconfig", system.WebConfigHandler)    
 
 }

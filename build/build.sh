@@ -22,7 +22,7 @@ sh mgr.web.sh $pkg
 #------------------------------------" 
 echo "1. loginserver 项目编译" 
 cd $rootdir/loginserver
-CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o "$rootdir/out/loginserver"
+CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -mod=mod -o "$rootdir/out/loginserver"
 if [ $? -ne 0 ]; then
 	echo "loginserver 项目编译出错,请检查"
 	exit 1
@@ -31,7 +31,7 @@ fi
 #------------------------------------" 
 echo "2. mgrserver 项目编译"
 cd $rootdir/mgrserver
-CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o "$rootdir/out/mgrserver"
+CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -mod=mod -o "$rootdir/out/mgrserver"
 if [ $? -ne 0 ]; then
 	echo "mgrserver 项目编译出错,请检查"
 	exit 1

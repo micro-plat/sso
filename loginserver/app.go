@@ -15,12 +15,12 @@ import (
 	"github.com/micro-plat/sso/loginserver/loginapi/services/member"
 	"github.com/micro-plat/sso/loginserver/loginapi/services/system"
 
-	apilogin "github.com/micro-plat/sso/loginserver/sdkapi/services/login"
-	apimember "github.com/micro-plat/sso/loginserver/sdkapi/services/member"
-	"github.com/micro-plat/sso/loginserver/sdkapi/services/password"
-	"github.com/micro-plat/sso/loginserver/sdkapi/services/permission"
-	apisystem "github.com/micro-plat/sso/loginserver/sdkapi/services/system"
-	"github.com/micro-plat/sso/loginserver/sdkapi/services/user"
+	apilogin "github.com/micro-plat/sso/loginserver/srvapi/services/login"
+	apimember "github.com/micro-plat/sso/loginserver/srvapi/services/member"
+	"github.com/micro-plat/sso/loginserver/srvapi/services/password"
+	"github.com/micro-plat/sso/loginserver/srvapi/services/permission"
+	apisystem "github.com/micro-plat/sso/loginserver/srvapi/services/system"
+	"github.com/micro-plat/sso/loginserver/srvapi/services/user"
 	_ "github.com/micro-plat/sso/sso"
 )
 
@@ -123,4 +123,6 @@ func registryAPI() {
 	App.Micro("/verifycode/get", apilogin.NewVerifyCodeHandler) //生成图片验证码(这个现在没用,以后可能会用到)
 	App.Micro("/check_sign", apilogin.NewCheckSignHandler)      //检查签名
 	//api 接口
+
+	App.Micro("/system/webconfig", system.WebConfigHandler)    
 }

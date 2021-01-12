@@ -1,14 +1,12 @@
 package sso
 
 import (
-	"encoding/json"
-	"fmt"
+ 	"fmt"
 	"net/http"
 	"sync"
 
 	"github.com/micro-plat/hydra"
-	"github.com/micro-plat/hydra/conf/server/auth/jwt"
-	"github.com/micro-plat/lib4go/errs"
+ 	"github.com/micro-plat/lib4go/errs"
 )
 
 var onceLock sync.Once
@@ -26,9 +24,7 @@ func init() {
 
 			app.Micro("/sso/member/changepwd", changePwd)
 			app.Micro("/sso/member/forgetpwd", forgetPwd)
-			fmt.Println("sso-sdk")
-			app.Micro("/sso/system/config", GetSystemConfig)
-		})
+ 		})
 	})
 
 }
@@ -179,27 +175,7 @@ func changePwd(ctx hydra.IContext) (r interface{}) {
 	mem := GetMember(ctx)
 	return GetSSOClient().ChangePwd(mem.UserID, ctx.Request().GetString("expassword"), ctx.Request().GetString("newpassword"))
 }
-
-//GetSystemConfig VueConfig
-func GetSystemConfig(ctx hydra.IContext) interface{} {
-	configData := map[string]interface{}{}
-	if _, err := ctx.APPConf().GetServerConf().GetSubObject("webconf", &configData); err != nil {
-		return err
-	}
-	jwtConf, err := jwt.GetConf(ctx.APPConf().GetServerConf())
-	if err != nil {
-		return err
-	}
-
-	configData["jwt_name"] = jwtConf.Name
-	configData["jwt_source"] = jwtConf.Source
-	configData["jwt_authurl"] = jwtConf.AuthURL
-
-	ctx.Response().ContentType("text/plain")
-	bytes, _ := json.Marshal(configData)
-	return fmt.Sprintf("window.globalConfig=%s", string(bytes))
-}
-
+ 
 /* getUserDataPermission 获取 [数据权限] 生成相应的sql语句
  *
  */
