@@ -6,8 +6,8 @@ import (
 )
 
 var App = hydra.NewApp(
-	hydra.WithPlatName("sso_v4", "sso-v4版"),
-	hydra.WithSystemName("mgrserver", "sso单点登录管理系统"),
+	hydra.WithPlatName("sso_v4", "sso v4"),
+	hydra.WithSystemName("mgrserver", "SSO管理系统"),
 	hydra.WithUsage("单点登录管理系统"),
 	hydra.WithServerTypes(http.Web),
 	hydra.WithClusterName("prod"))
