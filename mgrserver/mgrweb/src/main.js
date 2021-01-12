@@ -36,7 +36,7 @@ Vue.prototype.$http = ssocfg.http;
 Vue.config.productionTip = false;
 Vue.prototype.EnumUtility = new EnumUtility(); // 枚举字典
 Vue.prototype.DateConvert = DateConvert //日期格式转换
-Vue.prototype.DateFilter = DateFilter
+// Vue.prototype.DateFilter = DateFilter
 Vue.prototype.EnumUtility.defaultCallback(function (type) {
   var result = []
   $.ajax({

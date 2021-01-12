@@ -144,6 +144,7 @@
                     type="text"
                     class="form-control"
                     v-model="permissionData.remark"
+                    maxlength="256"
                     placeholder="备注"
                   ></textarea>
                 </div>
