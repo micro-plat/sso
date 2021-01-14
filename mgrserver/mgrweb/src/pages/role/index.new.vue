@@ -129,7 +129,7 @@
 <script>
 import pager from "vue-simple-pager";
 import PullTo from "vue-pull-to";
-import { trimError } from "@/services/util";
+// import { trimError } from "@/services/util";
 export default {
   components: {
     "bootstrap-modal": require("vue2-bootstrap-modal"),
@@ -393,5 +393,6 @@ export default {
 .page-pagination {
   padding: 10px 15px;
   text-align: right;
+  margin-bottom: 50px;
 }
 </style>
