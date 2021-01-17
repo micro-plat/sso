@@ -14,6 +14,8 @@ import (
 	"github.com/micro-plat/lib4go/types"
 	"github.com/micro-plat/sso/mgrserver/mgrapi/modules/access/user"
 	"github.com/micro-plat/sso/mgrserver/mgrapi/modules/const/enum"
+	"github.com/micro-plat/sso/mgrserver/mgrapi/modules/const/errorcode"
+
 	"github.com/micro-plat/sso/mgrserver/mgrapi/modules/model"
 )
 
@@ -88,7 +90,7 @@ func (u *UserLogic) Save(input *model.UserInputNew) (err error) {
 		return
 	}
 	if info2 != nil && info2.GetInt64("user_id") != input.UserID {
-		return errs.NewError(model.ERR_USER_FULLNAMEEXISTS, "此姓名已被使用")
+		return errs.NewError(errorcode.ERR_USER_FULLNAMEEXISTS, "此姓名已被使用")
 	}
 
 	info, err := u.db.GetUserInfoByName(input.UserName)
@@ -96,7 +98,7 @@ func (u *UserLogic) Save(input *model.UserInputNew) (err error) {
 		return err
 	}
 	if info != nil && info.GetInt64("user_id") != input.UserID {
-		return errs.NewError(model.ERR_USER_NAMEEXISTS, "此登录名已被使用")
+		return errs.NewError(errorcode.ERR_USER_NAMEEXISTS, "此登录名已被使用")
 	}
 	return u.db.Edit(input)
 }
@@ -108,7 +110,7 @@ func (u *UserLogic) Add(input *model.UserInputNew) (err error) {
 		return nil
 	}
 	if info2 != nil {
-		return errs.NewError(model.ERR_USER_FULLNAMEEXISTS, "此姓名已被使用")
+		return errs.NewError(errorcode.ERR_USER_FULLNAMEEXISTS, "此姓名已被使用")
 	}
 
 	info, err := u.db.GetUserInfoByName(input.UserName)
@@ -116,7 +118,7 @@ func (u *UserLogic) Add(input *model.UserInputNew) (err error) {
 		return err
 	}
 	if info != nil {
-		return errs.NewError(model.ERR_USER_NAMEEXISTS, "此登录名已被使用")
+		return errs.NewError(errorcode.ERR_USER_NAMEEXISTS, "此登录名已被使用")
 	}
 	return u.db.Add(input)
 }
@@ -140,10 +142,10 @@ func (u *UserLogic) GenerateQrcodeInfo(userID int) (map[string]interface{}, erro
 	}
 	status := data.GetInt("status")
 	if status == enum.UserLock {
-		return nil, errs.NewError(model.ERR_USER_LOCKED, "用户被锁定")
+		return nil, errs.NewError(errorcode.ERR_USER_LOCKED, "用户被锁定")
 	}
 	if status == enum.UserDisable {
-		return nil, errs.NewError(model.ERR_USER_FORBIDDEN, "用户被禁用")
+		return nil, errs.NewError(errorcode.ERR_USER_FORBIDDEN, "用户被禁用")
 	}
 
 	//生成二维码数据

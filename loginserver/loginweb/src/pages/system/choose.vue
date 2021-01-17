@@ -35,7 +35,7 @@
             window.location.href = GetUrlHosts(url);
         },
         searchSystemInfo() {
-            this.$post("/mgrweb/member/system/get")
+            this.$http.post("/mgrweb/member/system/get")
             .then(res =>{
                 this.systems = res;
             }).catch(err => {

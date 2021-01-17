@@ -14,7 +14,7 @@ export function trimError(err) {
  * 返回登录的地址
  * @param {*子系统标识} ident 
  */
-export function jumpLogin(ident) {
+export function jumpLogin(ident,callback) {
     var pathT = '/'+ ident +'/login';
     if (!ident) {
         pathT = '/login'

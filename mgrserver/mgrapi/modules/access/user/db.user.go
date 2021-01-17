@@ -11,6 +11,8 @@ import (
 	"github.com/micro-plat/lib4go/types"
 	"github.com/micro-plat/sso/mgrserver/mgrapi/modules/const/enum"
 	"github.com/micro-plat/sso/mgrserver/mgrapi/modules/const/sqls"
+	"github.com/micro-plat/sso/mgrserver/mgrapi/modules/const/errorcode"
+	
 	"github.com/micro-plat/sso/mgrserver/mgrapi/modules/model"
 )
 
@@ -149,7 +151,7 @@ func (u *DbUser) Get(userID int) (data db.QueryRow, err error) {
 	}
 
 	if result.IsEmpty() {
-		return nil, errs.NewError(model.ERR_USER_NOTEXISTS, "用户不存在")
+		return nil, errs.NewError(errorcode.ERR_USER_NOTEXISTS, fmt.Sprintf("用户不存在:%d",userID))
 	}
 
 	return result.Get(0), nil

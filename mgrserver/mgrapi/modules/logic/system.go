@@ -5,6 +5,8 @@ import (
 	"github.com/micro-plat/lib4go/errs"
 	"github.com/micro-plat/sso/mgrserver/mgrapi/modules/access/system"
 	"github.com/micro-plat/sso/mgrserver/mgrapi/modules/model"
+	"github.com/micro-plat/sso/mgrserver/mgrapi/modules/const/errorcode"
+
 )
 
 type ISystemLogic interface {
@@ -68,7 +70,7 @@ func (u *SystemLogic) Add(input *model.AddSystemInput) (err error) {
 		return err
 	}
 	if count > 0 {
-		return errs.NewError(model.ERR_SYS_NAMEORIDENTEXISTS, "系统名称和英文名称已存在")
+		return errs.NewError(errorcode.ERR_SYS_NAMEORIDENTEXISTS, "系统名称和英文名称已存在")
 	}
 
 	if err = u.db.Add(input); err != nil {

@@ -8,6 +8,8 @@ import (
 	"github.com/micro-plat/lib4go/types"
 	"github.com/micro-plat/sso/mgrserver/mgrapi/modules/logic"
 	"github.com/micro-plat/sso/mgrserver/mgrapi/modules/model"
+	"github.com/micro-plat/sso/mgrserver/mgrapi/modules/const/errorcode"
+
 	"github.com/micro-plat/sso/sso"
 )
 
@@ -55,7 +57,7 @@ func (u *SystemFuncHandler) AddHandle(ctx hydra.IContext) (r interface{}) {
 
 	/*验证当没有根节点时，不能增加子节点*/
 	if input.Parentid == 0 && input.ParentLevel != 0 {
-		return errs.NewError(model.ERR_SYSFUNC_ROOTNOTEXISTS, "请先保存根节点")
+		return errs.NewError(errorcode.ERR_SYSFUNC_ROOTNOTEXISTS, "请先保存根节点")
 	}
 
 	ctx.Log().Info("2.更新数据库数据--------")

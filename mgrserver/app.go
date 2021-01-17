@@ -7,7 +7,7 @@ import (
 	_ "github.com/micro-plat/hydra/components/caches/cache/redis"
 	_ "github.com/micro-plat/hydra/components/queues/mq/redis"
 	"github.com/micro-plat/hydra/conf/app"
-	_ "github.com/micro-plat/sso/common/dds"
+	_ "github.com/micro-plat/sso/mgrserver/mgrapi/dds"
 	_ "github.com/micro-plat/sso/mgrserver/mgrapi/modules/const/sqls/mysql"
 	"github.com/micro-plat/sso/mgrserver/mgrapi/modules/model"
 	cmodel "github.com/micro-plat/sso/mgrserver/mgrapi/modules/model"

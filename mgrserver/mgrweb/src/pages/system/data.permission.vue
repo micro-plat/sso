@@ -292,7 +292,7 @@ export default {
       ps: 10,
       totalPage: 0,
       compareSymbolDisabled: true,
-      operateActionList: this.EnumUtility.Get("operate_action")
+      operateActionList: this.$enum.Get("operate_action")
     };
   },
   props: ["path"],

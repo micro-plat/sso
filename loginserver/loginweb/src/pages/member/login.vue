@@ -44,8 +44,7 @@
         copyrightcode: window.globalConfig.companyRightCode ,//"蜀ICP备20003360号",
         requireCode: window.globalConfig.requireCode||true,
 
-        callback:"",
-        changePwd:0,
+        returnURL:"",
         ident: "",
 
         loginTitle:"用户登录",
@@ -83,28 +82,26 @@
     },
 
     mounted(){
-      var headerKey = "__sso_jwt__";
-      VueCookies.remove(headerKey);
-      localStorage.removeItem(headerKey);
-      sessionStorage.removeItem(headerKey);
+      //var headerKey = window.globalConfig.jwt_name;
+      // VueCookies.remove(headerKey);
+      // localStorage.removeItem(headerKey);
+      // sessionStorage.removeItem(headerKey);
+      var logoutURL = this.$route.query.logouturl;
 
-      document.title = "登录";
-      var redirectURL = this.$route.query.redirect;
-      if(redirectURL){
-         window.location.href = redirectURL
+      if(logoutURL){
+         window.location.href = logoutURL
          return
       }
-
-      this.callback = this.$route.query.callback;
-      this.changePwd = this.$route.query.changepwd;
-      this.ident = this.$route.params.ident ? this.$route.params.ident : "";
+      document.title = "登录";
+      this.returnURL = this.$route.query.returnurl;
+      this.ident = this.$route.params.ident || "";
 
       this.controlLoginType();
     },
 
     methods:{
       controlLoginType() {
-        this.$post("/mgrweb/system/config/get", {ident: this.ident})
+        this.$http.post("/mgrweb/system/config/get", {ident: this.ident})
         .then(res => {
             this.loginTitle = "登录到【" + res.system_name + "】";
             this.requireCode = res.require_wx_code;
@@ -120,7 +117,7 @@
          e.ident = this.ident;
         //  e.ident = "sso";
          this.$refs.LoginUp.showError("发送验证码中...");
-         this.$post("/mgrweb/member/sendcode", e)
+         this.$http.post("/mgrweb/member/sendcode", e)
           .then(res=>{
             this.$refs.LoginUp.showError(window.globalConfig.showText);
             this.$refs.LoginUp.countDown();
@@ -142,19 +139,13 @@
           username:e.username,
           wxcode:e.wxcode
         }
-        this.$post("/mgrweb/member/login", req)
+        var that = this;
+        this.$http.post("/mgrweb/member/login", req)
           .then(res => {
-            setTimeout(() => {
-              if (this.changePwd == 1) {
-                this.$router.push({ path: '/changepwd'});   
-                return;
-              }
-              if (this.callback) {
-                window.location.href = JoinUrlParams(decodeURIComponent(this.callback),{code:res.code});
-                return;
-              }
-              if (this.ident && res.callback) {
-                var url = JoinUrlParams(decodeURIComponent(res.callback),{code:res.code});
+            setTimeout(() => { 
+              var parmscode={code:res.code,returnurl: that.returnURL} 
+              if (that.ident && res.callback) {
+                var url = JoinUrlParams(decodeURIComponent(res.callback),parmscode);
                 window.location.href = url;
                 return;
               }

@@ -5,20 +5,24 @@ import (
 
 	"github.com/micro-plat/hydra"
 	"github.com/micro-plat/lib4go/errs"
-	"github.com/micro-plat/sso/common/service"
-	m "github.com/micro-plat/sso/loginserver/loginapi/modules/access/member"
+ 	m "github.com/micro-plat/sso/loginserver/loginapi/modules/access/member"
 	"github.com/micro-plat/sso/loginserver/loginapi/modules/logic"
+	"github.com/micro-plat/sso/loginserver/loginapi/modules/login"
+
 )
 
 //ChangePwdHandler 用户对象
 type ChangePwdHandler struct {
 	mem logic.IMemberLogic
-}
+	l *login.LoginLogic 
+ }
 
 //NewChangePwdHandler 用户
 func NewChangePwdHandler() (u *ChangePwdHandler) {
 	return &ChangePwdHandler{
 		mem: logic.NewMemberLogic(),
+		l: login.NewLoginLogic(),
+
 	}
 }
 
@@ -30,7 +34,7 @@ func (u *ChangePwdHandler) Handle(ctx hydra.IContext) (r interface{}) {
 		return errs.NewError(http.StatusNotAcceptable, err)
 	}
 
-	err := service.ChangePwd(int(m.Get(ctx).UserID), ctx.Request().GetString("expassword"),
+	err := u.l.ChangePwd(int(m.Get(ctx).UserID), ctx.Request().GetString("expassword"),
 		ctx.Request().GetString("newpassword"))
 	if err != nil {
 		return err

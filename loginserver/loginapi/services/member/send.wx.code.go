@@ -7,19 +7,23 @@ import (
 
 	"github.com/micro-plat/hydra"
 	"github.com/micro-plat/lib4go/errs"
-	"github.com/micro-plat/sso/common/service"
 	"github.com/micro-plat/sso/loginserver/loginapi/modules/logic"
+	"github.com/micro-plat/sso/loginserver/loginapi/modules/login"
 )
 
 //SendCodeHandler 发送微信验证码
 type SendCodeHandler struct {
 	mem logic.IMemberLogic
+	l *login.LoginLogic
+
 }
 
 //NewSendCodeHandler 发送微信验证码
 func NewSendCodeHandler() (u *SendCodeHandler) {
 	return &SendCodeHandler{
 		mem: logic.NewMemberLogic(),
+		l: login.NewLoginLogic(),
+
 	}
 }
 
@@ -39,7 +43,7 @@ func (u *SendCodeHandler) Handle(ctx hydra.IContext) (r interface{}) {
 	}
 
 	ctx.Log().Info("3: 发送微信验证码")
-	if err := service.SendWxVerifyCode(ctx.Request().GetString("username"), openID, ctx.Request().GetString("ident")); err != nil {
+	if err := u.l.SendWxValidCode(ctx.Request().GetString("username"), openID, ctx.Request().GetString("ident")); err != nil {
 		return err
 	}
 

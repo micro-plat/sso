@@ -7,33 +7,36 @@ import Vue from 'vue'
 import App from './App'
 import router from './router'
 import store from './store'
-
-
-import {
-    post,
-    fetch,
-    patch,
-    put,
-    del
-} from './services/http'
 import VueCookies from 'vue-cookies'
-Vue.use(VueCookies);
-
 import ElementUI from 'element-ui';
 import 'element-ui/lib/theme-chalk/index.css';
-Vue.use(ElementUI);
+
+import env from './services/env'
+import http from './services/http'
+import senum from './services/enum'
 
 
 
-//定义全局变量
-Vue.prototype.$post = post;
-Vue.prototype.$fetch = fetch;
-Vue.prototype.$patch = patch;
-Vue.prototype.$put = put;
-//Vue.prototype.$del = del;
-
+Vue.use(http);
+Vue.use(env);
+Vue.use(senum);
 
 Vue.config.productionTip = false;
+Vue.use(ElementUI);
+Vue.use(VueCookies);
+
+Vue.prototype.$enum.callback(async function(type){
+    var url =  (window.globalConfig.apiURL || "") + "/dds/dictionary/get";
+    var data = await Vue.prototype.$http.get(url,{ dic_type: type });
+    return data;
+})
+
+Vue.prototype.$env.load(async function(){
+    var data = await Vue.prototype.$http.get("/system/webconfig");
+    window.globalConfig = data;
+    return data;
+});
+
 
   /* eslint-disable no-new */
 new Vue({
@@ -43,5 +46,6 @@ new Vue({
     components: {
         App
     },
+
     template: '<App/>'
 });

@@ -5,6 +5,8 @@ import (
 	"github.com/micro-plat/lib4go/errs"
 	"github.com/micro-plat/sso/mgrserver/mgrapi/modules/access/menu"
 	"github.com/micro-plat/sso/mgrserver/mgrapi/modules/model"
+	"github.com/micro-plat/sso/mgrserver/mgrapi/modules/const/errorcode"
+
 )
 
 //ISystemMenuLogic interface
@@ -40,7 +42,7 @@ func (u *SystemMenuLogic) Import(req *model.ImportReq) error {
 		return err
 	}
 	if flag {
-		return errs.NewError(model.ERR_SYSTEM_HASMENUS, "当前系统下面已存在菜单数据,不能导入")
+		return errs.NewError(errorcode.ERR_SYSTEM_HASMENUS, "当前系统下面已存在菜单数据,不能导入")
 	}
 
 	return u.db.Import(req)

@@ -3,7 +3,7 @@ package logic
 import (
 	"github.com/micro-plat/lib4go/errs"
 	"github.com/micro-plat/lib4go/types"
-	commodle "github.com/micro-plat/sso/common/module/model"
+	"github.com/micro-plat/sso/loginserver/loginapi/modules/const/errorcode"
 
 	"github.com/micro-plat/sso/loginserver/srvapi/modules/access/menu"
 	"github.com/micro-plat/sso/loginserver/srvapi/modules/access/system"
@@ -37,7 +37,7 @@ func (m *MenuLogic) Query(uid int64, ident string) ([]map[string]interface{}, er
 		return nil, err
 	}
 	if status == enum.SystemDisable {
-		return nil, errs.NewError(commodle.ERR_SYS_LOCKED, "系统被禁用")
+		return nil, errs.NewError(errorcode.ERR_SYS_LOCKED, "系统被禁用:"+ident)
 	}
 
 	return m.db.Query(uid, ident)

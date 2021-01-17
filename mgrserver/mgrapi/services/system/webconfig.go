@@ -2,7 +2,7 @@ package system
  
 import ( 
   "encoding/json" 
-  "fmt" 
+ // "fmt" 
   
   "github.com/micro-plat/hydra/conf/server/auth/jwt"
   "github.com/micro-plat/hydra" 
@@ -26,5 +26,5 @@ func WebConfigHandler(ctx hydra.IContext) interface{} {
 
   ctx.Response().ContentType("text/plain") 
   bytes, _ := json.Marshal(configData) 
-  return fmt.Sprintf("window.globalConfig=%s", string(bytes)) 
+  return  string(bytes)
 } 

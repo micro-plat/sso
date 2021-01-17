@@ -7,8 +7,9 @@ import (
 	"github.com/micro-plat/hydra/components"
 	"github.com/micro-plat/lib4go/errs"
 	"github.com/micro-plat/lib4go/types"
-	cachekey "github.com/micro-plat/sso/loginserver/loginapi/modules/const/cache"
-	"github.com/micro-plat/sso/loginserver/loginapi/modules/model"
+	"github.com/micro-plat/sso/loginserver/loginapi/modules/const/cachekey"
+ 	"github.com/micro-plat/sso/loginserver/loginapi/modules/const/errorcode"
+
 )
 
 type ICacheMember interface {
@@ -123,7 +124,7 @@ func (l *CacheMember) CheckLoginValidateCode(userName, wxCode string) error {
 		return err
 	}
 	if strings.EqualFold(value, "") {
-		return errs.NewError(model.ERR_VALIDATECODE_TIMEOUT, "验证码过期,重新发送验证码")
+		return errs.NewError(errorcode.ERR_VALIDATECODE_TIMEOUT, "验证码过期,重新发送验证码")
 	}
 
 	cacheCountKey := types.Translate(cachekey.CacheLoginValidateCodeFaildCount, "user_name", userName)
@@ -141,7 +142,7 @@ func (l *CacheMember) CheckLoginValidateCode(userName, wxCode string) error {
 			cache.Delete(validateCodeKey)
 			cache.Delete(cacheCountKey)
 		}
-		return errs.NewError(model.ERR_VALIDATECODE_WRONG, "验证码错误")
+		return errs.NewError(errorcode.ERR_VALIDATECODE_WRONG, "验证码错误")
 	}
 	cache.Delete(validateCodeKey)
 	cache.Delete(cacheCountKey)

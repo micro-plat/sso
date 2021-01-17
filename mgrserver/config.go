@@ -1,7 +1,7 @@
 package main
 
 import (
-	"fmt"
+	
 	"github.com/micro-plat/hydra"
 	"github.com/micro-plat/hydra/conf"
 	"github.com/micro-plat/hydra/conf/server/api"
@@ -37,8 +37,7 @@ func init() {
 
 //测试环境配置
 func devConf() {
-	fmt.Println("devconf mgrserver")
-	//配置共有配置
+ 	//配置共有配置
 	hydra.Conf.Vars().Cache().GoCache("gocache")
 	hydra.Conf.Vars().HTTP("http")
 	hydra.Conf.Vars().DB().MySQL("db", "root", "rTo0CesHi2018Qx", "192.168.0.36:3306", "sso_new", db.WithConnect(20, 10, 600))

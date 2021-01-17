@@ -50,6 +50,8 @@
         this.$sso.changePwd();
       },
       signOutM() {
+        var returnURL = window.location.href;
+        window.location  = "http://ssov4.100bm0.com:6689/sso/login?returnurl="+returnURL
         this.$sso.signOut();
       },
       getMenu(){

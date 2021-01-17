@@ -8,8 +8,8 @@ import (
 	_ "github.com/micro-plat/hydra/components/queues/mq/redis"
 	"github.com/micro-plat/hydra/conf/app"
 	"github.com/micro-plat/hydra/hydra/servers/http"
-	"github.com/micro-plat/sso/common/module/model"
 	cmember "github.com/micro-plat/sso/loginserver/loginapi/modules/access/member"
+	"github.com/micro-plat/sso/loginserver/loginapi/modules/model"
 	cmodel "github.com/micro-plat/sso/loginserver/loginapi/modules/model"
 	"github.com/micro-plat/sso/loginserver/loginapi/services/login"
 	"github.com/micro-plat/sso/loginserver/loginapi/services/member"
@@ -49,12 +49,12 @@ func init() {
 
 	App.OnStarting(func(appConf app.IAPPConf) error {
 		//检查前端配置
-		return checkVueConf(appConf)
+		return checkWebConf(appConf)
 	}, http.Web)
 
 	App.OnHandleExecuting(func(ctx hydra.IContext) interface{} {
 		if ctx.User().Auth().Request() != nil {
-			var out *cmodel.LoginState
+			out := &cmodel.LoginState{}
 			if err := ctx.User().Auth().Bind(out); err != nil {
 				return err
 			}
@@ -83,13 +83,13 @@ func checkLoginConf(appConf app.IAPPConf) (err error) {
 	return
 }
 
-func checkVueConf(appConf app.IAPPConf) error {
-	var vueConf cmodel.VueConf
-	if _, err := appConf.GetServerConf().GetSubObject("webconf", &vueConf); err != nil {
+func checkWebConf(appConf app.IAPPConf) error {
+	var vebConf cmodel.WebConf
+	if _, err := appConf.GetServerConf().GetSubObject("webconf", &vebConf); err != nil {
 		return err
 	}
 
-	if err := vueConf.Valid(); err != nil {
+	if err := vebConf.Valid(); err != nil {
 		return err
 	}
 	return nil
@@ -122,7 +122,7 @@ func registryAPI() {
 	App.Micro("/user", user.NewUserHandler)                     //用户相关接口
 	App.Micro("/verifycode/get", apilogin.NewVerifyCodeHandler) //生成图片验证码(这个现在没用,以后可能会用到)
 	App.Micro("/check_sign", apilogin.NewCheckSignHandler)      //检查签名
-	//api 接口
 
-	App.Micro("/system/webconfig", system.WebConfigHandler)    
+	//api 接口
+	App.Micro("/system/webconfig", system.WebConfigHandler)
 }

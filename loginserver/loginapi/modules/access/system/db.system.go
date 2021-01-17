@@ -5,7 +5,7 @@ import (
 
 	"github.com/micro-plat/hydra/components"
 	"github.com/micro-plat/lib4go/db"
- 	commsqls "github.com/micro-plat/sso/common/module/const/sqls"
+ 	commsqls "github.com/micro-plat/sso/loginserver/loginapi/modules/const/sqls"
 )
 
 type IDbSystem interface {

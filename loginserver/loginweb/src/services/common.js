@@ -14,14 +14,21 @@ function base4UserIndex(obj) {
 
 // 拼接url参数
 export function JoinUrlParams(url,params) {
-  var index = url.indexOf("?");
-  if (index < 0) {
-    url += "?"
-  }
+  
+  var pvs = []
   for (var item in params) {
-    url += item + "=" + params[item] + "&";
+    pvs.push(item + "=" + params[item] );
   }
-  return url;
+  
+  if(pvs.length>0){
+    var char = "?";
+    var index = url.indexOf("?");
+    if (index > 0) {
+      char = "&";
+    }
+    url = url + char + pvs.join("&");
+  }
+  return url ;
 }
 
 //获取url的host

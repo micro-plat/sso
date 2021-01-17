@@ -13,7 +13,7 @@ import (
 	"github.com/micro-plat/hydra"
 	"github.com/micro-plat/hydra/components"
 	"github.com/micro-plat/lib4go/errs"
-	"github.com/micro-plat/sso/common/module/model"
+	"github.com/micro-plat/sso/loginserver/loginapi/modules/model"
 	"github.com/micro-plat/sso/loginserver/loginapi/modules/logic"
 )
 

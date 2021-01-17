@@ -15,13 +15,15 @@ import (
 	"github.com/micro-plat/lib4go/security/md5"
 	"github.com/micro-plat/lib4go/types"
 	"github.com/micro-plat/lib4go/utility"
-	commodel "github.com/micro-plat/sso/common/module/model"
+	commodel "github.com/micro-plat/sso/loginserver/loginapi/modules/model"
 	"github.com/micro-plat/sso/loginserver/loginapi/modules/access/member"
 	"github.com/micro-plat/sso/loginserver/loginapi/modules/access/system"
 	"github.com/micro-plat/sso/loginserver/loginapi/modules/const/enum"
 	"github.com/micro-plat/sso/loginserver/loginapi/modules/const/sqls"
-	commsqls "github.com/micro-plat/sso/common/module/const/sqls"
+	commsqls "github.com/micro-plat/sso/loginserver/loginapi/modules/const/sqls"
 	"github.com/micro-plat/sso/loginserver/loginapi/modules/model"
+	"github.com/micro-plat/sso/loginserver/loginapi/modules/const/errorcode"
+
 )
 
 //IMemberLogic 用户登录
@@ -92,7 +94,7 @@ func (m *MemberLogic) CheckSystemStatus(ident string) error {
 		return err
 	}
 	if data.GetInt("enable") == enum.SystemDisable {
-		return errs.NewError(commodel.ERR_SYS_LOCKED, "系统被禁用,不能登录")
+		return errs.NewError(errorcode.ERR_SYS_LOCKED, "系统被禁用,不能登录")
 	}
 	return nil
 }
@@ -115,10 +117,10 @@ func (m *MemberLogic) CheckHasRoles(userID int64, ident string) error {
 
 	status := user.GetInt("status")
 	if status == enum.UserLock {
-		return errs.NewError(commodel.ERR_USER_LOCKED, "用户被锁定,暂时无法登录")
+		return errs.NewError(errorcode.ERR_USER_LOCKED, "用户被锁定,暂时无法登录")
 	}
 	if status == enum.UserDisable {
-		return errs.NewError(commodel.ERR_USER_FORBIDDEN, "用户被禁用，暂时无法登录")
+		return errs.NewError(errorcode.ERR_USER_FORBIDDEN, "用户被禁用，暂时无法登录")
 	}
 
 	return m.db.CheckUserHasAuth(ident, userID)
@@ -132,11 +134,11 @@ func (m *MemberLogic) CheckUerInfo(userID int64, sign, timestamp string) error {
 	values = values.Sort()
 	raw := values.Join("", "") + model.WxBindSecrect
 	if !strings.EqualFold(sign, md5.Encrypt(raw)) {
-		return errs.NewError(commodel.ERR_BIND_INFOWRONG, "绑定信息错误,请重新去用户系统扫码")
+		return errs.NewError(errorcode.ERR_BIND_INFOWRONG, "绑定信息错误,请重新去用户系统扫码")
 	}
 	sendTime, _ := strconv.ParseInt(timestamp, 10, 64)
 	if time.Now().Unix()-sendTime > int64(commodel.GetConf().BindTimeOut) {
-		return errs.NewError(commodel.ERR_QRCODE_TIMEOUT, "二维码过期,请联系管理员重新生成")
+		return errs.NewError(errorcode.ERR_QRCODE_TIMEOUT, "二维码过期,请联系管理员重新生成")
 	}
 
 	data, err := m.db.QueryByID(userID)
@@ -145,13 +147,13 @@ func (m *MemberLogic) CheckUerInfo(userID int64, sign, timestamp string) error {
 	}
 	status := data.GetInt("status")
 	if status == enum.UserLock {
-		return errs.NewError(commodel.ERR_USER_FORBIDDEN, "用户被禁用")
+		return errs.NewError(errorcode.ERR_USER_FORBIDDEN, "用户被禁用")
 	}
 	if status == enum.UserDisable {
-		return errs.NewError(commodel.ERR_USER_LOCKED, "用户被锁定")
+		return errs.NewError(errorcode.ERR_USER_LOCKED, "用户被锁定")
 	}
 	if data.GetString("wx_openid") != "" {
-		return errs.NewError(commodel.ERR_USER_EXISTSWX, "用户已绑定微信")
+		return errs.NewError(errorcode.ERR_USER_EXISTSWX, "用户已绑定微信")
 	}
 
 	return nil
@@ -173,7 +175,7 @@ func (m *MemberLogic) ValidStateAndGetOpenID(stateCode, wxCode string) (map[stri
 		return nil, err
 	}
 	if userID == "" {
-		return nil, errs.NewError(model.ERR_BIND_TIMEOUT, "绑定超时")
+		return nil, errs.NewError(errorcode.ERR_BIND_TIMEOUT, "绑定超时")
 	}
 
 	config := commodel.GetConf()
@@ -230,10 +232,10 @@ func (m *MemberLogic) ValidUserInfo(userName string) (string, error) {
 		return "", err
 	}
 	if datas.IsEmpty() {
-		return "", errs.NewError(model.ERR_USER_NOTEXISTS, "用户不存在")
+		return "", errs.NewError(errorcode.ERR_USER_NOTEXISTS, "用户不存在")
 	}
 	if datas.Get(0).GetString("wx_openid") == "" {
-		return "", errs.NewError(model.ERR_USER_NOTBINDWX, "用户还未绑定微信账户")
+		return "", errs.NewError(errorcode.ERR_USER_NOTBINDWX, "用户还未绑定微信账户")
 	}
 	return datas.Get(0).GetString("wx_openid"), nil
 }

@@ -3,21 +3,18 @@ import "bootstrap"
 
 import Vue from 'vue'
 import App from './App'
-import router from './router'
+
 
 import VeeValidate, { Validator } from 'vee-validate';
 import store from './store'
 import 'vue-tree-halower/dist/halower-tree.min.css'
 import VTree from 'vue-tree-halower'
-import DateConvert from './services/date'
-import DateFilter from './services/filter';
+
 import uploader from 'vue-simple-uploader'
 Vue.use(uploader);
 import ElementUI from 'element-ui';
 import 'element-ui/lib/theme-chalk/index.css';
 Vue.use(ElementUI);
-import { EnumUtility, EnumFilter } from 'qxnw-enum';
-
 const config = { fieldsBagName: 'vee-fields' }
 
 import VueCookies from 'vue-cookies'
@@ -26,36 +23,47 @@ Vue.use(VTree);
 Vue.use(VeeValidate, config);
 
 
-import { ssoHttpConfig } from 'qxnw-sso';
-var conf = window.globalConfig
-var ssocfg = ssoHttpConfig(conf.apiURL || "", "localStorage", conf.loginWebHost, conf.ident);
+import DateConvert from './services/date'
+import DateFilter from './services/filter';
+import env from './services/env'
+import http from './services/http'
+import senum from './services/enum'
 
-Vue.prototype.$sso = ssocfg.sso;
-Vue.prototype.$http = ssocfg.http;
+Vue.use(http);
+Vue.use(env);
+Vue.use(senum);
 
+window.globalConfig = {companyRight:""}
+
+Vue.prototype.$enum.callback(async function(type){
+  var url =  (window.globalConfig.apiURL || "") + "/dds/dictionary/get";
+  var data = await Vue.prototype.$http.get(url,{ dic_type: type });
+  console.log("dictionary.data:",type,data);
+  return data;
+})
+
+Vue.prototype.$env.load(async function(){
+  var data = await Vue.prototype.$http.get("/system/webconfig");
+  console.log("webconfig.data:",data);
+  window.globalConfig = data;
+  return data;
+});
+
+Vue.prototype.$http.setEnableHeader(true);
+Vue.prototype.$http.addStatusCodeHandle(res=>{
+  console.log("addStatusCodeHandle:403",res)
+  var url = (res.headers||{}).location;
+
+  console.log("redirect:url",url)
+ // window.location = url + encodeURIComponent(document.URL); 
+  
+  //return new Error("请补充注册中心auth/jwt的AuthURL配置");
+},403);
+
+import router from './router'
 Vue.config.productionTip = false;
-Vue.prototype.EnumUtility = new EnumUtility(); // 枚举字典
 Vue.prototype.DateConvert = DateConvert //日期格式转换
 // Vue.prototype.DateFilter = DateFilter
-Vue.prototype.EnumUtility.defaultCallback(function (type) {
-  var result = []
-  $.ajax({
-    url: (window.globalConfig.apiURL || "") + "/dds/dictionary/get",
-    data: { dic_type: type },
-    async: false,
-    // beforeSend: function (request) {
-    //   request.setRequestHeader("__sso_jwt__", GetTocken())
-    //   request.setRequestHeader("Content-Type", "application/x-www-form-urlencoded")
-    // },
-    type: "GET",
-    success: function (data) {
-      console.log("/dds/dictionary/get:", type, data);
-      result = data;
-    }
-  });
-
-  return result;
-});
 /* eslint-disable no-new */
 new Vue({
   el: '#vapp',

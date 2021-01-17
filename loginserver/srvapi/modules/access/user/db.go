@@ -10,7 +10,9 @@ import (
 	"github.com/micro-plat/lib4go/errs"
 	"github.com/micro-plat/lib4go/security/md5"
 	"github.com/micro-plat/lib4go/types"
-	commodel "github.com/micro-plat/sso/common/module/model"
+	commodel "github.com/micro-plat/sso/loginserver/loginapi/modules/model"
+	  "github.com/micro-plat/sso/loginserver/loginapi/modules/const/errorcode"
+
 	"github.com/micro-plat/sso/loginserver/srvapi/modules/access/system"
 	"github.com/micro-plat/sso/loginserver/srvapi/modules/const/enum"
 	"github.com/micro-plat/sso/loginserver/srvapi/modules/const/sqls"
@@ -41,7 +43,7 @@ func (l *DBUser) AddUser(req model.UserInputNew) error {
 		return err
 	}
 	if info != nil {
-		return errs.NewError(commodel.ERR_USER_NAMEEXISTS, "此登录名[user_name]已被使用")
+		return errs.NewError(errorcode.ERR_USER_NAMEEXISTS, "此登录名[user_name]已被使用")
 	}
 
 	params, err := types.Struct2Map(req)

@@ -393,6 +393,7 @@ export default {
     },
 
     queryData: function() {
+      console.log("---------------------",window.globalConfig)
       if (this.paging.pi == 0) {
         this.paging.pi = 1;
       }

@@ -34,7 +34,7 @@
 
     methods:{
         getUserInfo() {
-          this.$post("/mgrweb/member/bind/info",{user_id:this.userId})
+          this.$http.post("/mgrweb/member/bind/info",{user_id:this.userId})
           .then(res => {
             if (res.wx_openid) {
               this.disabled = true;
@@ -46,7 +46,7 @@
           })
         },
         checkUserInfo() {
-            this.$post("/mgrweb/member/bind/check",{user_id:this.userId, sign:this.sign, timestamp:this.timestamp})
+            this.$http.post("/mgrweb/member/bind/check",{user_id:this.userId, sign:this.sign, timestamp:this.timestamp})
             .then(res =>{
                 var url = res.wxlogin_url + "?" + "appid=" + res.appid + "&state=" + res.state + "&redirect_uri=" +
                         encodeURIComponent(window.globalConfig.wxcallbackhost + window.globalConfig.wxcallbackurl + "/bind") +

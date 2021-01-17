@@ -39,13 +39,19 @@ func (l *Menu) Query(uid int64, ident string) ([]map[string]interface{}, error) 
 					children2 := make([]map[string]interface{}, 0, 8)
 					for _, row3 := range data {
 						if row3.GetInt("parent") == row2.GetInt("id") && row3.GetInt("level_id") == 3 {
+							delete(row3,"level_id")
+							delete(row3,"parent")
 							children2 = append(children2, row3)
 						}
 					}
+					delete(row2,"level_id")
+					delete(row2,"parent")
 					children1 = append(children1, row2)
 					row2["children"] = children2
 				}
 			}
+			delete(row1,"level_id")
+			delete(row1,"parent")
 			row1["children"] = children1
 			result = append(result, row1)
 		}

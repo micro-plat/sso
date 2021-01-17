@@ -37,22 +37,22 @@ func (u *CheckSignHandler) Handle(ctx hydra.IContext) (r interface{}) {
 	}
 
 	secret := data.GetString("secret")
-	if err := checkSign(ctx, secret); err != nil {
+	if err :=u.checkSign(ctx, secret); err != nil {
 		return errs.NewError(http.StatusPaymentRequired, err)
 	}
 	return nil
 }
 
-// getSecret 获取系统的secrect
-func getSecret(ident string) (string, error) {
-	data, err := logic.NewSystemLogic().Get(ident)
-	if err != nil {
-		return "", err
-	}
-	return data.GetString("secret"), nil
-}
+// // getSecret 获取系统的secrect
+// func getSecret(ident string) (string, error) {
+// 	data, err := logic.NewSystemLogic().Get(ident)
+// 	if err != nil {
+// 		return "", err
+// 	}
+// 	return data.GetString("secret"), nil
+// }
 
-func checkSign(ctx hydra.IContext, secret string) error {
+func (u *CheckSignHandler)  checkSign(ctx hydra.IContext, secret string) error {
 	keys := ctx.Request().Keys()
 	values := net.NewValues()
 	var sign string
@@ -70,5 +70,5 @@ func checkSign(ctx hydra.IContext, secret string) error {
 	if strings.EqualFold(expect, sign) {
 		return nil
 	}
-	return fmt.Errorf("签名验证失败,expect:", expect, ",sign:", sign)
+	return fmt.Errorf("签名验证失败,expect:%s,sign:%s", expect, sign)
 }

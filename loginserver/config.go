@@ -9,9 +9,8 @@ import (
 	"github.com/micro-plat/hydra/conf/server/static"
 	"github.com/micro-plat/hydra/conf/vars/cache/cacheredis"
 	"github.com/micro-plat/hydra/conf/vars/db"
-	"github.com/micro-plat/sso/common/module/model"
-	cmodel "github.com/micro-plat/sso/loginserver/loginapi/modules/model"
-
+ 	"github.com/micro-plat/sso/loginserver/loginapi/modules/model"
+ 
 	"github.com/micro-plat/hydra/conf"
 )
 
@@ -46,7 +45,7 @@ func devConf() {
 	hydra.Conf.Vars().Cache().Redis("redis", `192.168.0.111:6379,192.168.0.112:6379,192.168.0.113:6379,192.168.0.114:6379,192.168.0.115:6379,192.168.0.116:6379`, cacheredis.WithDbIndex(1))
 
 	hydra.Conf.API("6689", api.WithDNS("ssov4.100bm0.com")).Header(header.WithCrossDomain()).
-		APIKEY("ivk:///check_sign", apikey.WithInvoker("ivk:///check_sign"), apikey.WithExcludes("/sso/login/verify", "/image/upload"))
+		APIKEY("ivk:///check_sign", apikey.WithInvoker("ivk:///check_sign"), apikey.WithExcludes("/login/auth"))
 
 	//登录的界面配置
 	hydra.Conf.Web("6687", api.WithTimeout(300, 300), api.WithDNS("ssov4.100bm0.com")).
@@ -58,7 +57,7 @@ func devConf() {
 			jwt.WithExpireAt(36000),
 			jwt.WithHeader(),
 			jwt.WithExcludes("/system/webconfig", "/mgrweb/system/config/get", "/mgrweb/member/login", "/mgrweb/member/bind/check", "/mgrweb/member/bind/save", "/mgrweb/member/sendcode", "/dds/dictionary/get")).
-		Sub("webconf", &cmodel.VueConf{
+		Sub("webconf", &model.WebConf{
 			Wxcallbackhost:   "http://ssov4.100bm0.com",
 			Wxcallbackurl:    "/wxcallback",
 			CodeLabel:        "短信验证码",
@@ -93,7 +92,7 @@ func prodConf() {
 			jwt.WithExpireAt(36000),
 			jwt.WithHeader(),
 			jwt.WithExcludes("/system/webconfig", "/mgrweb/system/config/get", "/mgrweb/member/login", "/mgrweb/member/bind/check", "/mgrweb/member/bind/save", "/mgrweb/member/sendcode", "/dds/dictionary/get")).
-		Sub("webconf", &cmodel.VueConf{
+		Sub("webconf", &model.WebConf{
 			Wxcallbackhost:   "//web.sso.18jiayou.com",
 			Wxcallbackurl:    "/wxcallback",
 			CodeLabel:        "短信验证码",

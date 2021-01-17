@@ -10,7 +10,9 @@ import (
 	"github.com/micro-plat/lib4go/errs"
 	"github.com/micro-plat/lib4go/security/md5"
 	"github.com/micro-plat/lib4go/types"
-	commsqls "github.com/micro-plat/sso/common/module/const/sqls"
+	commsqls "github.com/micro-plat/sso/loginserver/loginapi/modules/const/sqls"
+	"github.com/micro-plat/sso/loginserver/loginapi/modules/const/errorcode"
+
 	"github.com/micro-plat/sso/loginserver/loginapi/modules/model"
 )
 
@@ -52,7 +54,7 @@ func (l *DBMember) Query(u, p, ident string) (s *model.MemberState, err error) {
 		return nil, errs.NewError(http.StatusServiceUnavailable, "暂时无法登录系统")
 	}
 	if data.IsEmpty() {
-		return nil, errs.NewError(model.ERR_USER_PWDWRONG, "用户名或密码错误")
+		return nil, errs.NewError(errorcode.ERR_USER_PWDWRONG, "用户名或密码错误")
 	}
 
 	row := data.Get(0)
@@ -70,7 +72,7 @@ func (l *DBMember) Query(u, p, ident string) (s *model.MemberState, err error) {
 	})
 
 	if erro != nil || roles.IsEmpty() {
-		return nil, errs.NewError(model.ERR_USER_HASNOROLES, "用户没有相关系统权限,请联系管理员")
+		return nil, errs.NewError(errorcode.ERR_USER_HASNOROLES, "用户没有相关系统权限,请联系管理员")
 	}
 
 	s.SysIdent = ident
@@ -94,7 +96,7 @@ func (l *DBMember) ChangePwd(userID int, expassword string, newpassword string) 
 	}
 
 	if strings.ToLower(md5.Encrypt(expassword)) != strings.ToLower(data.Get(0).GetString("password")) {
-		return errs.NewError(model.ERR_USER_OLDPWDWRONG, "原密码错误")
+		return errs.NewError(errorcode.ERR_USER_OLDPWDWRONG, "原密码错误")
 	}
 	_, err = db.Execute(commsqls.SetNewPwd, map[string]interface{}{
 		"user_id":  userID,
@@ -117,7 +119,7 @@ func (l *DBMember) CheckUserHasAuth(ident string, userID int64) error {
 		return errs.NewError(http.StatusInternalServerError, fmt.Sprintf("出现错误，等会在登录: %s", err))
 	}
 	if types.GetInt(count, 0) <= 0 {
-		return errs.NewError(model.ERR_USER_HASNOROLES, "没有相应权限，请联系管理员")
+		return errs.NewError(errorcode.ERR_USER_HASNOROLES, "没有相应权限，请联系管理员")
 	}
 	return nil
 }
@@ -141,7 +143,7 @@ func (l *DBMember) QueryByID(uid int64) (db.QueryRow, error) {
 		return nil, err
 	}
 	if data.IsEmpty() {
-		return nil, errs.NewError(model.ERR_USER_NOTEXISTS, "用户不存在")
+		return nil, errs.NewError(errorcode.ERR_USER_NOTEXISTS, "用户不存在")
 	}
 	return data.Get(0), nil
 }
@@ -166,7 +168,7 @@ func (l *DBMember) UpdateUserOpenID(data map[string]string) error {
 		return err1
 	}
 	if types.GetInt(exists, 0) == 1 {
-		return errs.NewError(model.ERR_OPENID_ONLY_BIND_Once, "一个微信只能绑定一个账户")
+		return errs.NewError(errorcode.ERR_OPENID_ONLY_BIND_Once, "一个微信只能绑定一个账户")
 	}
 	_, err := db.Execute(commsqls.AddUserOpenID, map[string]interface{}{
 		"user_id": data["userid"],

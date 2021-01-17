@@ -6,21 +6,26 @@ import (
 
 	"github.com/micro-plat/hydra"
 	"github.com/micro-plat/lib4go/errs"
-	commodel "github.com/micro-plat/sso/common/module/model"
-	"github.com/micro-plat/sso/common/service"
-	"github.com/micro-plat/sso/loginserver/srvapi/modules/logic"
-	"github.com/micro-plat/sso/loginserver/srvapi/modules/model"
+	commodel "github.com/micro-plat/sso/loginserver/loginapi/modules/model"
+ 	"github.com/micro-plat/sso/loginserver/srvapi/modules/logic"
+	 logapilogin	 "github.com/micro-plat/sso/loginserver/loginapi/modules/login"
+    "github.com/micro-plat/sso/loginserver/srvapi/modules/model"
+
 )
 
 //UserHandler 用户信息
 type UserHandler struct {
 	user logic.IUserLogic
+	l *logapilogin.LoginLogic
+
 }
 
 //NewUserHandler new
 func NewUserHandler() (u *UserHandler) {
 	return &UserHandler{
 		user: logic.NewUserLogic(),
+		l: logapilogin.NewLoginLogic(),
+
 	}
 }
 
@@ -49,7 +54,7 @@ func (u *UserHandler) LoginHandle(ctx hydra.IContext) (r interface{}) {
 	}
 
 	ctx.Log().Info("登录及相关验证")
-	mem, err := service.Login(ctx.Log(),
+	mem, err := u.l.SLogin( 
 		commodel.LoginReq{
 			UserName: ctx.Request().GetString("user_name"),
 			Password: ctx.Request().GetString("password"),
@@ -75,7 +80,7 @@ func (u *UserHandler) ChangePwdHandle(ctx hydra.IContext) (r interface{}) {
 	}
 
 	ctx.Log().Info("修改密码")
-	err := service.ChangePwd(ctx.Request().GetInt("user_id"),
+	err := u.l.ChangePwd(ctx.Request().GetInt("user_id"),
 		ctx.Request().GetString("expassword"),
 		ctx.Request().GetString("newpassword"))
 	if err != nil {

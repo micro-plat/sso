@@ -5,6 +5,8 @@ import (
 	"github.com/micro-plat/lib4go/errs"
 	"github.com/micro-plat/sso/mgrserver/mgrapi/modules/access/role"
 	"github.com/micro-plat/sso/mgrserver/mgrapi/modules/model"
+	"github.com/micro-plat/sso/mgrserver/mgrapi/modules/const/errorcode"
+
 )
 
 type IRoleLogic interface {
@@ -68,12 +70,12 @@ func (r *RoleLogic) Save(input *model.RoleEditInput) (err error) {
 	}
 	if input.IsAdd == 1 {
 		if data != nil {
-			return errs.NewError(model.ERR_ROLE_NAMEEXISTS, "角色名称已被使用")
+			return errs.NewError(errorcode.ERR_ROLE_NAMEEXISTS, "角色名称已被使用")
 		}
 		err = r.db.Add(input)
 	} else {
 		if data != nil && data.GetInt64("role_id") != input.RoleID {
-			return errs.NewError(model.ERR_ROLE_NAMEEXISTS, "角色名称已被使用")
+			return errs.NewError(errorcode.ERR_ROLE_NAMEEXISTS, "角色名称已被使用")
 		}
 		err = r.db.Edit(input)
 	}

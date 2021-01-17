@@ -4,7 +4,7 @@ import (
 	"strings"
 
 	"github.com/micro-plat/lib4go/db"
-	commodel "github.com/micro-plat/sso/common/module/model"
+	commodel "github.com/micro-plat/sso/loginserver/loginapi/modules/model"
 	"github.com/micro-plat/sso/loginserver/loginapi/modules/access/system"
 )
 
