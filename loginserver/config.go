@@ -9,8 +9,8 @@ import (
 	"github.com/micro-plat/hydra/conf/server/static"
 	"github.com/micro-plat/hydra/conf/vars/cache/cacheredis"
 	"github.com/micro-plat/hydra/conf/vars/db"
- 	"github.com/micro-plat/sso/loginserver/loginapi/modules/model"
- 
+	"github.com/micro-plat/sso/loginserver/loginapi/modules/model"
+
 	"github.com/micro-plat/hydra/conf"
 )
 
@@ -23,15 +23,15 @@ var staticOpts = []static.Option{
 
 //bindConf 绑定启动配置， 启动时检查注册中心配置是否存在，不存在则引导用户输入配置参数并自动创建到注册中心
 func init() {
-	hydra.OnReadying(func()   { 
+	hydra.OnReadying(func() {
 		if hydra.G.IsDebug() {
 			//测试环境配置
 			devConf()
-			return  
+			return
 		}
 		//生产环境的配置
 		prodConf()
-		return  
+		return
 	})
 }
 
@@ -45,7 +45,7 @@ func devConf() {
 	hydra.Conf.Vars().Cache().Redis("redis", `192.168.0.111:6379,192.168.0.112:6379,192.168.0.113:6379,192.168.0.114:6379,192.168.0.115:6379,192.168.0.116:6379`, cacheredis.WithDbIndex(1))
 
 	hydra.Conf.API("6689", api.WithDNS("ssov4.100bm0.com")).Header(header.WithCrossDomain()).
-		APIKEY("ivk:///check_sign", apikey.WithInvoker("ivk:///check_sign"), apikey.WithExcludes("/login/auth"))
+		APIKEY("ivk:///check_sign", apikey.WithInvoker("ivk:///check_sign"), apikey.WithExcludes("/api/login/auth"))
 
 	//登录的界面配置
 	hydra.Conf.Web("6687", api.WithTimeout(300, 300), api.WithDNS("ssov4.100bm0.com")).
@@ -56,7 +56,7 @@ func devConf() {
 			jwt.WithSecret("bf8f3171946d8d5a13cca23aa6080c8e"),
 			jwt.WithExpireAt(36000),
 			jwt.WithHeader(),
-			jwt.WithExcludes("/system/webconfig", "/mgrweb/system/config/get", "/mgrweb/member/login", "/mgrweb/member/bind/check", "/mgrweb/member/bind/save", "/mgrweb/member/sendcode", "/dds/dictionary/get")).
+			jwt.WithExcludes("/system/webconfig", "/dds/dictionary/get", "/loginweb/system/config/get", "/loginweb/member/login", "/loginweb/member/bind/check", "/loginweb/member/bind/save", "/loginweb/member/sendcode")).
 		Sub("webconf", &model.WebConf{
 			Wxcallbackhost:   "http://ssov4.100bm0.com",
 			Wxcallbackurl:    "/wxcallback",
@@ -81,7 +81,7 @@ func prodConf() {
 	hydra.Conf.Vars().Cache().Redis("redis", conf.ByInstall, cacheredis.WithDbIndex(1))
 
 	hydra.Conf.API(conf.ByInstall, api.WithDNS("api.sso.18jiayou.com")).Header(header.WithCrossDomain()).
-		APIKEY("ivk:///check_sign", apikey.WithInvoker("ivk:///check_sign"), apikey.WithExcludes("/sso/login/verify", "/image/upload"))
+		APIKEY("ivk:///check_sign", apikey.WithInvoker("ivk:///check_sign"), apikey.WithExcludes("/api/login/auth"))
 
 	hydra.Conf.Web(conf.ByInstall, api.WithTimeout(300, 300), api.WithDNS("loginapi.sso.18jiayou.com")).
 		Static(staticOpts...).
@@ -91,7 +91,7 @@ func prodConf() {
 			jwt.WithSecret("f0abd74b09bcc61449d66ae5d8128c18"),
 			jwt.WithExpireAt(36000),
 			jwt.WithHeader(),
-			jwt.WithExcludes("/system/webconfig", "/mgrweb/system/config/get", "/mgrweb/member/login", "/mgrweb/member/bind/check", "/mgrweb/member/bind/save", "/mgrweb/member/sendcode", "/dds/dictionary/get")).
+			jwt.WithExcludes("/system/webconfig", "/dds/dictionary/get", "/loginweb/system/config/get", "/loginweb/member/login", "/loginweb/member/bind/check", "/loginweb/member/bind/save", "/loginweb/member/sendcode")).
 		Sub("webconf", &model.WebConf{
 			Wxcallbackhost:   "//web.sso.18jiayou.com",
 			Wxcallbackurl:    "/wxcallback",

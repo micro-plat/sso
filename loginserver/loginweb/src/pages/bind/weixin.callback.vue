@@ -22,7 +22,7 @@
     methods:{
         bind() {
             this.notice = "绑定中...";
-            this.$http.post("/mgrweb/member/bind/save",{code:this.code, state: this.state})
+            this.$http.post("/loginweb/member/bind/save",{code:this.code, state: this.state})
             .then(res =>{
                 this.$router.push({path:"/bindnotice", query :{ type: 1, errorcode:0 }});
             }).catch(err => {

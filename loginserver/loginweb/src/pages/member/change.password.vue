@@ -34,9 +34,8 @@
 </template>
 
 <script>
-  import {trimError} from "@/services/utils"
   import VueCookies from 'vue-cookies'
-  import {jumpLogin} from '@/services/utils'
+  import {jumpLogin} from '@/services/common'
   export default {
     name: 'changePassword',
     data () {
@@ -88,7 +87,7 @@
                 return;
             }
             this.errorMsg = '';
-            this.$http.post("/mgrweb/member/changepwd", {expassword:this.expassword.trim(), newpassword:this.password1.trim()})
+            this.$http.post("/loginweb/member/changepwd", {expassword:this.expassword.trim(), newpassword:this.password1.trim()})
                 .then(res => {
                     this.errorMsg = "密码修改成功";
                      setTimeout(() => {

@@ -32,7 +32,6 @@
 
   import "@/services/qrcode.min.js"
   import "@/services/md5.js"
-  import {trimError} from "@/services/utils"
 
   export default {
     name: 'app',
@@ -101,7 +100,7 @@
 
     methods:{
       controlLoginType() {
-        this.$http.post("/mgrweb/system/config/get", {ident: this.ident})
+        this.$http.post("/loginweb/system/config/get", {ident: this.ident})
         .then(res => {
             this.loginTitle = "登录到【" + res.system_name + "】";
             this.requireCode = res.require_wx_code;
@@ -117,7 +116,7 @@
          e.ident = this.ident;
         //  e.ident = "sso";
          this.$refs.LoginUp.showError("发送验证码中...");
-         this.$http.post("/mgrweb/member/sendcode", e)
+         this.$http.post("/loginweb/member/sendcode", e)
           .then(res=>{
             this.$refs.LoginUp.showError(window.globalConfig.showText);
             this.$refs.LoginUp.countDown();
@@ -140,7 +139,7 @@
           wxcode:e.wxcode
         }
         var that = this;
-        this.$http.post("/mgrweb/member/login", req)
+        this.$http.post("/loginweb/member/login", req)
           .then(res => {
             setTimeout(() => { 
               var parmscode={code:res.code,returnurl: that.returnURL} 

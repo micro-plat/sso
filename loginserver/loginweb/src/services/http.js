@@ -1,3 +1,4 @@
+import Vue from "vue"
 import axios from 'axios';
 
 axios.defaults.timeout = 5000;
@@ -19,14 +20,13 @@ var headerExcludeParams = [
     "Access-Control-Allow-Methods",
     "Access-Control-Allow-Origin",
     "Access-Control-Expose-Headers",
-    "Content-Length",
     "Content-Type",
-    "Location",
-    "Content-Encoding",
-    "ETag",
-    "Server",
-    "Cache-Control",
-    "Date"
+    "access-control-allow-credentials",
+    "access-control-allow-headers",
+    "access-control-allow-methods",
+    "access-control-allow-origin",
+    "access-control-expose-headers",
+    "content-type"
 ]
 
 //提示成功模板信息
@@ -38,25 +38,18 @@ var tmplFailed = { title: "错误", message: "网络错误,请稍后再试", typ
 //根据状态码回调
 var statusCodeHandles = { "403":function(response){} } 
 
-//注入初始化
-export default {
-    install: function(Vue){
-        __vue__ = Vue.prototype
-        Vue.prototype.$http = new Http();
-    }
-}
-
 /*
 * http对象使用时须通过引用并进行初始化
 * import http from './http'
 * Vue.use(http);
 */
-function Http() {
+export function Http() {
+    __vue__ = Vue.prototype
 }
 
 //http request 拦截器
 axios.interceptors.request.use(
-    config => {     
+    config => {              
         config.headers = getHeader(config.headers);
         return config;
     },
@@ -386,7 +379,7 @@ function saveHeader(header) {
     if (!enableHeader){
         return
     }
-   
+
     //去除请求头中排除配置参数
     headerExcludeParams.forEach((item)=>{ //去除配置参数
         if(header.hasOwnProperty(item)){

@@ -97,32 +97,31 @@ func checkWebConf(appConf app.IAPPConf) error {
 
 func registryAPI() {
 	//web接口
-	App.Web("/mgrweb/login/check", login.NewLoginCheckHandler)       //验证用户是否已登录
-	App.Web("/mgrweb/member/login", login.NewLoginHandler)           //用户登录相关
-	App.Web("/mgrweb/member/bind", member.NewBindWxHandler)          //绑定微信
-	App.Web("/mgrweb/member/changepwd", member.NewChangePwdHandler)  //修改密码
-	App.Web("/mgrweb/member/refresh", member.NewRefleshTokenHandler) //刷新用户token
-	App.Web("/mgrweb/member/sendcode", member.NewSendCodeHandler)    //发送验证码
-	App.Web("/mgrweb/member/system/get", member.NewUserSysHandler)   //获取用户可进的系统信息
-	App.Web("/mgrweb/system/config/get", system.NewSystemHandler)    //获取系统的一些配置信息
+	App.Web("/loginweb/login/check", login.NewLoginCheckHandler)       //验证用户是否已登录
+	App.Web("/loginweb/member/login", login.NewLoginHandler)           //用户登录相关
+	App.Web("/loginweb/member/bind", member.NewBindWxHandler)          //绑定微信
+	App.Web("/loginweb/member/changepwd", member.NewChangePwdHandler)  //修改密码
+	App.Web("/loginweb/member/refresh", member.NewRefleshTokenHandler) //刷新用户token
+	App.Web("/loginweb/member/sendcode", member.NewSendCodeHandler)    //发送验证码
+	App.Web("/loginweb/member/system/get", member.NewUserSysHandler)   //获取用户可进的系统信息
+	App.Web("/loginweb/system/config/get", system.NewSystemHandler)    //获取系统的一些配置信息
+	App.Web("/system/webconfig", system.WebConfigHandler)
 
 	//api 接口
-	App.Micro("/member/menu/get", apimember.NewMenuHandler)            //获取用户菜单数据
-	App.Micro("/member/tags/get", apimember.NewTagHandler)             //获取用户有权限的tag数据
-	App.Micro("/member/info/get", apimember.NewMemberHandler)          //获取用户信息
-	App.Micro("/member/forget/password", password.NewPasswordHandler)  // 忘记密码再修改密码
-	App.Micro("/member/system/get", apimember.NewMemberSysHandler)     //获取用户可用的子系统
-	App.Micro("/member/all/get", apimember.NewMemberGetAllHandler)     //获取所有用户信息
-	App.Micro("/role/user/get", apimember.NewRoleHandler)              //获取角色下的所有用户
-	App.Micro("/system/info/get", apisystem.NewInfoHandler)            //获取子系统信息
-	App.Micro("/login/auth", apilogin.NewAuthorizeHandler)             //用户跳转登录后的认证(不是用户名密码登录)
-	App.Micro("/permission/config", permission.NewDataPerssionHandler) //【数据权限】相关接口
+	App.Micro("/api/menu/get", apimember.NewMenuHandler)                   //获取用户菜单数据
+	App.Micro("/api/tags/get", apimember.NewTagHandler)                    //获取用户有权限的tag数据
+	App.Micro("/api/user/info/get", apimember.NewMemberHandler)            //获取用户信息
+	App.Micro("/api/forget/password", password.NewPasswordHandler)         // 忘记密码再修改密码
+	App.Micro("/api/user/system/list", apimember.NewMemberSysHandler)      //获取用户可用的子系统
+	App.Micro("/api/user/all/get", apimember.NewMemberGetAllHandler)       //获取所有用户信息
+	App.Micro("/api/role/get", apimember.NewRoleHandler)                   //获取角色下的所有用户
+	App.Micro("/api/system/info/get", apisystem.NewInfoHandler)            //获取子系统信息
+	App.Micro("/api/login/auth", apilogin.NewAuthorizeHandler)             //用户跳转登录后的认证(不是用户名密码登录)
+	App.Micro("/api/permission/config", permission.NewDataPerssionHandler) //【数据权限】相关接口
 
 	//以下接口是为sass系统使用
-	App.Micro("/user", user.NewUserHandler)                     //用户相关接口
-	App.Micro("/verifycode/get", apilogin.NewVerifyCodeHandler) //生成图片验证码(这个现在没用,以后可能会用到)
-	App.Micro("/check_sign", apilogin.NewCheckSignHandler)      //检查签名
+	App.Micro("/api/user", user.NewUserHandler)                     //用户相关接口
+	App.Micro("/api/verifycode/get", apilogin.NewVerifyCodeHandler) //生成图片验证码(这个现在没用,以后可能会用到)
+	App.Micro("/check_sign", apilogin.NewCheckSignHandler)          //检查签名
 
-	//api 接口
-	App.Micro("/system/webconfig", system.WebConfigHandler)
 }

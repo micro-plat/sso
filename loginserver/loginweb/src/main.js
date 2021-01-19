@@ -11,31 +11,21 @@ import VueCookies from 'vue-cookies'
 import ElementUI from 'element-ui';
 import 'element-ui/lib/theme-chalk/index.css';
 
-import env from './services/env'
-import http from './services/http'
-import senum from './services/enum'
-
-
-
-Vue.use(http);
-Vue.use(env);
-Vue.use(senum);
+import utility from './services';
+ 
+Vue.use(utility, "../static/env.conf.json");
 
 Vue.config.productionTip = false;
 Vue.use(ElementUI);
 Vue.use(VueCookies);
 
+Vue.prototype.$http.setBaseURL(Vue.prototype.$env.Conf.apiURL);
+ 
 Vue.prototype.$enum.callback(async function(type){
-    var url =  (window.globalConfig.apiURL || "") + "/dds/dictionary/get";
+    var url =  "/dds/dictionary/get";
     var data = await Vue.prototype.$http.get(url,{ dic_type: type });
     return data;
 })
-
-Vue.prototype.$env.load(async function(){
-    var data = await Vue.prototype.$http.get("/system/webconfig");
-    window.globalConfig = data;
-    return data;
-});
 
 
   /* eslint-disable no-new */

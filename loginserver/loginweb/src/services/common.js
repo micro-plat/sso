@@ -35,3 +35,16 @@ export function JoinUrlParams(url,params) {
 export function GetUrlHosts(url) {
   return url.substr(0, url.lastIndexOf("/"));
 }
+
+
+/**
+ * 返回登录的地址
+ * @param {*子系统标识} ident 
+ */
+export function jumpLogin(ident,callback) {
+  var pathT = '/'+ ident +'/login';
+  if (!ident) {
+      pathT = '/login'
+  }
+  return pathT;
+}

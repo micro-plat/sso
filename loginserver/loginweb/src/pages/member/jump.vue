@@ -5,8 +5,7 @@
 </template>
 
 <script>
-   import {JoinUrlParams} from '@/services/common'
-   import {jumpLogin} from '@/services/utils'
+   import {JoinUrlParams,jumpLogin} from '@/services/common'
   export default {
     name: 'jump',
     data () {
@@ -26,7 +25,7 @@
 
     methods:{
         checkAndJumpLogin() {
-            this.$http.post("/mgrweb/login/check",{ident:this.ident})
+            this.$http.post("/loginweb/login/check",{ident:this.ident})
             .then(res =>{
               debugger
                 this.notice = "已登录,跳转中..."; 
