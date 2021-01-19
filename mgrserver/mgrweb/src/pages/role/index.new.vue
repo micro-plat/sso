@@ -129,7 +129,6 @@
 <script>
 import pager from "vue-simple-pager";
 import PullTo from "vue-pull-to";
-// import { trimError } from "@/services/util";
 export default {
   components: {
     "bootstrap-modal": require("vue2-bootstrap-modal"),

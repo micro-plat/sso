@@ -22,11 +22,20 @@
                 class="form-control visible-md visible-lg"
               >
                 <option value selected="selected">---请选择角色---</option>
-                <option v-for="(r, index) in roleList" :key="index" :value="r.role_id">{{r.name}}</option>
+                <option
+                  v-for="(r, index) in roleList"
+                  :key="index"
+                  :value="r.role_id"
+                >
+                  {{ r.name }}
+                </option>
               </select>
             </div>
             <div class="form-group">
-              <select v-model="paging.status" class="form-control visible-md visible-lg">
+              <select
+                v-model="paging.status"
+                class="form-control visible-md visible-lg"
+              >
                 <option selected="selected" value="-1">---请选择状态---</option>
                 <option value="0">启用</option>
                 <option value="1">锁定</option>
@@ -34,11 +43,16 @@
               </select>
             </div>
             <a class="btn btn-success" @click="searchClick">查询</a>
-            <a class="btn btn-primary" @click="showModal(1,{})">添加用户</a>
+            <a class="btn btn-primary" @click="showModal(1, {})">添加用户</a>
           </form>
         </div>
       </div>
-      <bootstrap-modal id="qrCodeModal" ref="qrCodeModal" :need-header="true" size="small">
+      <bootstrap-modal
+        id="qrCodeModal"
+        ref="qrCodeModal"
+        :need-header="true"
+        size="small"
+      >
         <div slot="title">绑定微信账号</div>
         <div slot="body">
           <div>
@@ -55,11 +69,14 @@
         :closed="resetSys"
         no-close-on-backdrop="true"
       >
-        <div slot="title">{{isAdd == 1 ? "添加用户" : "编辑用户信息"}}</div>
+        <div slot="title">{{ isAdd == 1 ? "添加用户" : "编辑用户信息" }}</div>
         <div slot="body">
           <div class="panel panel-default">
             <div class="panel-body">
-              <form role="form" class="ng-pristine ng-valid ng-submitted height-min">
+              <form
+                role="form"
+                class="ng-pristine ng-valid ng-submitted height-min"
+              >
                 <div class="form-group">
                   <label>姓名</label>
                   <input
@@ -73,7 +90,9 @@
                     maxlength="20"
                   />
                   <div class="form-heigit">
-                    <span v-show="errors.first('fullname')" class="text-danger">姓名不能为空！</span>
+                    <span v-show="errors.first('fullname')" class="text-danger"
+                      >姓名不能为空！</span
+                    >
                   </div>
                 </div>
                 <div class="form-group">
@@ -87,10 +106,12 @@
                     placeholder="请输入登录名"
                     required
                     maxlength="32"
-                    :disabled="isAdd==1"
+                    :disabled="isAdd == 1"
                   />
                   <div class="form-heigit">
-                    <span v-show="errors.first('username1')" class="text-danger">登录名不能为空！</span>
+                    <span v-show="errors.first('username1')" class="text-danger"
+                      >登录名不能为空！</span
+                    >
                   </div>
                 </div>
                 <div class="form-group">
@@ -106,7 +127,9 @@
                     required
                   />
                   <div class="form-heigit">
-                    <span v-show="errors.first('mobile1')" class="text-danger">请输入正确的11位手机号！</span>
+                    <span v-show="errors.first('mobile1')" class="text-danger"
+                      >请输入正确的11位手机号！</span
+                    >
                   </div>
                 </div>
                 <div class="form-group">
@@ -123,7 +146,9 @@
                     required
                   />
                   <select class="email-select" v-model="userInfo.email_suffix">
-                    <option selected="selected" value="@100bm.cn">@100bm.cn</option>
+                    <option selected="selected" value="@100bm.cn">
+                      @100bm.cn
+                    </option>
                     <option value="@hztx18.com">@hztx18.com</option>
                   </select>
                   <!-- <div class="form-heigit">
@@ -135,7 +160,7 @@
                   <textarea
                     maxlength="1000"
                     name="ext_params"
-                    style="resize:none"
+                    style="resize: none"
                     rows="5"
                     type="text"
                     class="form-control"
@@ -154,26 +179,30 @@
                   </div>
                   <form
                     class="form-inline pull-in clearfix"
-                    v-for="(list,index) in userInfo.lists"
+                    v-for="(list, index) in userInfo.lists"
                     v-bind:key="list.id"
                   >
-                    <div class="form-group col-sm-5" style="margin-right:30px">
+                    <div class="form-group col-sm-5" style="margin-right: 30px">
                       <select
                         name="select1"
                         class="form-control"
                         v-validate="'required'"
                         v-model="list.sys_id"
-                        @change="sysStatus(list.sys_id,index)"
+                        @change="sysStatus(list.sys_id, index)"
                         required
-                        style="width:200px"
+                        style="width: 200px"
                       >
-                        <option value selected="selected">---请选择系统---</option>
+                        <option value selected="selected">
+                          ---请选择系统---
+                        </option>
                         <option
                           v-for="(r, index) in sysList"
                           :key="index"
                           :value="r.id"
                           :disabled="r.disabled"
-                        >{{r.name}}</option>
+                        >
+                          {{ r.name }}
+                        </option>
                       </select>
                     </div>
                     <div class="form-group col-sm-5">
@@ -184,30 +213,41 @@
                         v-model="list.role_id"
                         required
                       >
-                        <option value selected="selected">---请选择角色---</option>
+                        <option value selected="selected">
+                          ---请选择角色---
+                        </option>
                         <option
                           v-for="(r, index) in roleList"
                           :key="index"
                           :value="r.role_id"
-                        >{{r.name}}</option>
+                        >
+                          {{ r.name }}
+                        </option>
                       </select>
                     </div>
                     <div
                       class="form-group del-btn col-sm-1"
                       v-if="userInfo.lists.length > 1"
-                      style="margin:4px"
+                      style="margin: 4px"
                     >
-                      <a class="btn m-b-xs btn-xs btn-danger" @click="del(index)">
+                      <a
+                        class="btn m-b-xs btn-xs btn-danger"
+                        @click="del(index)"
+                      >
                         <i class="fa fa-minus"></i>
                       </a>
                     </div>
                   </form>
                   <div class>
                     <div class="form-group form-heigit col-sm-5">
-                      <span v-show="errors.has('select1')" class="text-danger">必须选择系统！</span>
+                      <span v-show="errors.has('select1')" class="text-danger"
+                        >必须选择系统！</span
+                      >
                     </div>
                     <div class="form-group form-heigit col-sm-5">
-                      <span v-show="errors.has('select2')" class="text-danger">必须选择用户角色！</span>
+                      <span v-show="errors.has('select2')" class="text-danger"
+                        >必须选择用户角色！</span
+                      >
                     </div>
                   </div>
                 </div>
@@ -222,25 +262,57 @@
         </div>
         <div slot="footer">
           <el-button size="small" @click="onClose">取消</el-button>
-          <el-button type="success" size="small" @click="submitUser">提交</el-button>
+          <el-button type="success" size="small" @click="submitUser"
+            >提交</el-button
+          >
         </div>
       </bootstrap-modal>
 
-      <el-scrollbar style="height:100%">
+      <el-scrollbar style="height: 100%">
         <el-table :data="datalist.items" stripe style="width: 100%">
-          <el-table-column align="center" width="100" prop="user_name" label="登录名"></el-table-column>
-          <el-table-column align="center" width="100" prop="full_name" label="姓名"></el-table-column>
-          <el-table-column align="center" width="350" prop="rolestr" label="系统/角色"></el-table-column>
-          <el-table-column align="center" width="130" prop="mobile" label="联系电话"></el-table-column>
-          <el-table-column align="center" width="170" prop="email" label="邮箱"></el-table-column>
+          <el-table-column
+            align="center"
+            width="100"
+            prop="user_name"
+            label="登录名"
+          ></el-table-column>
+          <el-table-column
+            align="center"
+            width="100"
+            prop="full_name"
+            label="姓名"
+          ></el-table-column>
+          <el-table-column
+            align="center"
+            width="350"
+            prop="rolestr"
+            label="系统/角色"
+          ></el-table-column>
+          <el-table-column
+            align="center"
+            width="130"
+            prop="mobile"
+            label="联系电话"
+          ></el-table-column>
+          <el-table-column
+            align="center"
+            width="170"
+            prop="email"
+            label="邮箱"
+          ></el-table-column>
           <el-table-column align="center" width="80" prop="status" label="状态">
             <template slot-scope="scope">
-              <el-tag
-                :type="scope.row.status == '0' ? 'success' : 'info'"
-              >{{scope.row.status_label}}</el-tag>
+              <el-tag :type="scope.row.status == '0' ? 'success' : 'info'">{{
+                scope.row.status_label
+              }}</el-tag>
             </template>
           </el-table-column>
-          <el-table-column align="center" width="180" prop="create_time" label="创建时间">
+          <el-table-column
+            align="center"
+            width="180"
+            prop="create_time"
+            label="创建时间"
+          >
             <template slot-scope="scope">
               <i class="el-icon-time"></i>
               <span style="margin-left: 10px">{{ scope.row.create_time }}</span>
@@ -248,42 +320,59 @@
           </el-table-column>
           <el-table-column align="center" label="操作">
             <template slot-scope="scope">
-              <el-button plain type="primary" size="mini" @click="showModal(2,scope.row)">编辑</el-button>
+              <el-button
+                plain
+                type="primary"
+                size="mini"
+                @click="showModal(2, scope.row)"
+                >编辑</el-button
+              >
               <el-button
                 plain
                 type="success"
                 size="mini"
-                @click="userChange(0,scope.row.user_id, scope.row.user_name)"
+                @click="userChange(0, scope.row.user_id, scope.row.user_name)"
                 v-if="scope.row.status == 2"
-              >启用</el-button>
+                >启用</el-button
+              >
               <el-button
                 plain
                 type="info"
                 size="mini"
-                @click="userChange(2,scope.row.user_id,scope.row.user_name)"
+                @click="userChange(2, scope.row.user_id, scope.row.user_name)"
                 v-if="scope.row.status == 0"
-              >禁用</el-button>
+                >禁用</el-button
+              >
               <el-button
                 plain
                 type="success"
                 size="mini"
-                @click="userChange(0,scope.row.user_id,scope.row.user_name)"
+                @click="userChange(0, scope.row.user_id, scope.row.user_name)"
                 v-if="scope.row.status == 1"
-              >解锁</el-button>
-              <el-button plain type="danger" size="mini" @click="userDel(scope.row.user_id)">删除</el-button>
+                >解锁</el-button
+              >
+              <el-button
+                plain
+                type="danger"
+                size="mini"
+                @click="userDel(scope.row.user_id)"
+                >删除</el-button
+              >
               <el-button
                 plain
                 type="danger"
                 size="mini"
                 v-if="!scope.row.wx_openid && scope.row.status == 0"
                 @click="bindWx(scope.row.user_id, scope.row.user_name)"
-              >绑定微信</el-button>
+                >绑定微信</el-button
+              >
               <el-button
                 plain
                 type="danger"
                 size="mini"
                 @click="setDefaultPwd(scope.row.user_id)"
-              >重置密码</el-button>
+                >重置密码</el-button
+              >
             </template>
           </el-table-column>
         </el-table>
@@ -307,14 +396,13 @@
 <script>
 import pager from "vue-simple-pager";
 import PullTo from "vue-pull-to";
-import { trimError } from "@/services/util";
 import "@/services/qrcode.min.js";
 
 export default {
   components: {
     "bootstrap-modal": require("vue2-bootstrap-modal"),
     pager: pager,
-    PullTo
+    PullTo,
   },
   data() {
     return {
@@ -323,20 +411,20 @@ export default {
         903: "用户被禁用",
         905: "用户不存在",
         909: "此登录名已被使用",
-        918: "此姓名名已被使用"
+        918: "此姓名名已被使用",
       },
       paging: {
         ps: 10,
         pi: 1,
         username: "",
         role_id: "",
-        status: -1
+        status: -1,
       },
       pageSizes: [5, 10, 20, 50], //可选显示数据条数
 
       datalist: {
         count: 0,
-        items: []
+        items: [],
       },
       userInfo: {
         full_name: "",
@@ -349,14 +437,14 @@ export default {
         email_suffix: "@100bm.cn",
         status: 0,
         is_add: 2,
-        ext_params: ""
+        ext_params: "",
       },
 
       totalpage: 0,
       sysList: [],
       roleList: [], //角色列表
       selectSys: [],
-      isAdd: 1
+      isAdd: 1,
     };
   },
   watch: {
@@ -370,13 +458,13 @@ export default {
         if (newValue && newValue.length >= 2) {
           this.$http
             .post("/user/generateusername", { full_name: newValue })
-            .then(res => {
+            .then((res) => {
               this.userInfo.user_name = res;
               this.userInfo.email_pre = res;
             });
         }
-      }
-    }
+      },
+    },
   },
   created() {},
   mounted() {
@@ -384,33 +472,33 @@ export default {
     this.queryData();
   },
   methods: {
-    loadmore: function(loaded) {
-      return new Promise(function(resolve, reject) {
-        setTimeout(function() {
+    loadmore: function (loaded) {
+      return new Promise(function (resolve, reject) {
+        setTimeout(function () {
           loaded("done");
         }, 1000);
       });
     },
 
-    queryData: function() {
-      console.log("---------------------",window.globalConfig)
+    queryData: function () {
+      console.log("---------------------", window.globalConfig);
       if (this.paging.pi == 0) {
         this.paging.pi = 1;
       }
       this.$http
         .post("/user/getall", this.paging)
-        .then(res => {
+        .then((res) => {
           this.datalist.items = res.list;
           this.datalist.count = new Number(res.count);
           this.totalpage = res.count;
         })
-        .catch(err => {
+        .catch((err) => {
           this.$notify({
             title: "错误",
             message: "网络错误,请稍后再试",
             type: "error",
             offset: 50,
-            duration: 2000
+            duration: 2000,
           });
         });
     },
@@ -423,7 +511,7 @@ export default {
       this.queryData();
     },
 
-    searchClick: function() {
+    searchClick: function () {
       this.paging.pi = 1;
       this.paging.ps = 10;
       this.queryData();
@@ -433,7 +521,7 @@ export default {
       this.paging.pi = pi + 1;
       this.$http
         .post("/user/getall", this.paging)
-        .then(res => {
+        .then((res) => {
           if (res.list.length <= 0) {
             this.paging.pi = pi;
             return false;
@@ -442,27 +530,27 @@ export default {
           this.datalist.count = new Number(res.count);
           this.totalpage = Math.ceil(this.datalist.count / this.paging.ps);
         })
-        .catch(err => {
+        .catch((err) => {
           this.$notify({
             title: "错误",
             message: "网络错误,请稍后再试",
             type: "error",
             offset: 50,
-            duration: 2000
+            duration: 2000,
           });
         });
     },
     stateChange(e) {
       console.log(e);
     },
-    showModal: function(i, j) {
+    showModal: function (i, j) {
       if (j.status == 1) {
         this.$notify({
           title: "警告",
           message: "请先进行解锁操作",
           type: "warning",
           offset: 50,
-          duration: 2000
+          duration: 2000,
         });
         return false;
       }
@@ -497,7 +585,7 @@ export default {
         this.userInfo.email_pre = j.email ? j.email.split("@")[0] : "";
         this.userInfo.email_suffix = j.email ? "@" + j.email.split("@")[1] : "";
         this.userInfo.ext_params = j.ext_params;
-        (j.roles || []).forEach(item => {
+        (j.roles || []).forEach((item) => {
           this.selectSys.push(item.sys_id);
         });
         this.setSys();
@@ -509,31 +597,31 @@ export default {
       this.$confirm("确认执行该操作吗?", "提示", {
         confirmButtonText: "确定",
         cancelButtonText: "取消",
-        type: "warning"
+        type: "warning",
       }).then(() => {
         this.$http
           .post("/user/changestatus", {
             user_id: userid,
             status: status,
-            user_name: user_name
+            user_name: user_name,
           })
-          .then(res => {
+          .then((res) => {
             this.queryData();
             this.$notify({
               title: "成功",
               message: "修改状态成功",
               type: "success",
               offset: 50,
-              duration: 2000
+              duration: 2000,
             });
           })
-          .catch(err => {
+          .catch((err) => {
             this.$notify({
               title: "错误",
               message: "网络错误,请稍后再试",
               type: "error",
               offset: 50,
-              duration: 2000
+              duration: 2000,
             });
           });
       });
@@ -544,36 +632,23 @@ export default {
 
       this.$http
         .post("/user/generateqrcode", { user_id: userid })
-        .then(res => {
-          console.log(
-            window.globalConfig.loginWebHost +
-              "/bindwx?userid=" +
-              res.user_id +
-              "&sign=" +
-              res.sign +
-              "&timestamp=" +
-              res.timestamp +
-              "&name=" +
-              userName
-          );
-          jQuery("#qrcodeTable").qrcode(
-            window.globalConfig.loginWebHost +
-              "/bindwx?userid=" +
-              res.user_id +
-              "&sign=" +
-              res.sign +
-              "&timestamp=" +
-              res.timestamp +
-              "&name=" +
-              userName
-          );
-
-          // console.log("http://192.168.5.78:8091" + "/bindwx?userid=" + res.user_id + "&sign=" + res.sign + "&timestamp=" + res.timestamp + "&name=" + userName);
-          // jQuery('#qrcodeTable').qrcode("http://192.168.5.78:8091" + "/bindwx?userid=" + res.user_id + "&sign=" + res.sign + "&timestamp=" + res.timestamp + "&name=" + userName);
+        .then((res) => {
+          var url =
+            this.$env.Conf.loginWebHost +
+            "/bindwx?userid=" +
+            res.user_id +
+            "&sign=" +
+            res.sign +
+            "&timestamp=" +
+            res.timestamp +
+            "&name=" +
+            userName;
+          console.log(url);
+          jQuery("#qrcodeTable").qrcode(url);
 
           this.$refs.qrCodeModal.open();
         })
-        .catch(err => {
+        .catch((err) => {
           if (err.response) {
             var msg =
               this.errorTemplate[err.response.status] || "出现错误,请稍后再试";
@@ -582,7 +657,7 @@ export default {
               message: msg,
               type: "error",
               offset: 50,
-              duration: 2000
+              duration: 2000,
             });
           }
           console.log(err);
@@ -593,27 +668,27 @@ export default {
       this.$confirm("此操作将永久删除该数据, 是否继续?", "提示", {
         confirmButtonText: "确定",
         cancelButtonText: "取消",
-        type: "warning"
+        type: "warning",
       }).then(() => {
         this.$http
           .post("/user/del", { user_id: userid })
-          .then(res => {
+          .then((res) => {
             this.queryData();
             this.$notify({
               title: "成功",
               message: "成功删除用户",
               type: "success",
               offset: 50,
-              duration: 2000
+              duration: 2000,
             });
           })
-          .catch(err => {
+          .catch((err) => {
             this.$notify({
               title: "错误",
               message: "网络错误,请稍后再试",
               type: "error",
               offset: 50,
-              duration: 2000
+              duration: 2000,
             });
           });
       });
@@ -623,26 +698,26 @@ export default {
       this.$confirm("是否要重置用户密码?", "提示", {
         confirmButtonText: "确定",
         cancelButtonText: "取消",
-        type: "warning"
+        type: "warning",
       }).then(() => {
         this.$http
           .post("/user/setpwd", { user_id: userid })
-          .then(res => {
+          .then((res) => {
             this.$notify({
               title: "成功",
               message: "重置成功",
               type: "success",
               offset: 50,
-              duration: 2000
+              duration: 2000,
             });
           })
-          .catch(err => {
+          .catch((err) => {
             this.$notify({
               title: "错误",
               message: "网络错误,请稍后再试",
               type: "error",
               offset: 50,
-              duration: 2000
+              duration: 2000,
             });
           });
       });
@@ -650,7 +725,7 @@ export default {
     add() {
       this.userInfo.lists.push({
         sys_id: "",
-        role_id: ""
+        role_id: "",
       });
       this.selectSys.push("");
     },
@@ -706,7 +781,7 @@ export default {
           title: "警告",
           message: "至少需要添加一个系统角色！",
           type: "warning",
-          offset: 50
+          offset: 50,
         });
         return false;
       }
@@ -716,7 +791,7 @@ export default {
           title: "警告",
           message: "请输入正确的电话号码",
           type: "warning",
-          offset: 50
+          offset: 50,
         });
         return false;
       }
@@ -726,7 +801,7 @@ export default {
           title: "警告",
           message: "姓名只能为中文或者中文加一个数字",
           type: "warning",
-          offset: 50
+          offset: 50,
         });
         return false;
       }
@@ -740,7 +815,7 @@ export default {
           title: "警告",
           message: "请输入正确的邮箱地址",
           type: "warning",
-          offset: 50
+          offset: 50,
         });
         return false;
       }
@@ -767,7 +842,7 @@ export default {
       this.userInfo.auth = s;
       this.userInfo.email =
         this.userInfo.email_pre + this.userInfo.email_suffix;
-      this.$validator.validate().then(result => {
+      this.$validator.validate().then((result) => {
         if (!result) {
           return false;
         } else {
@@ -783,18 +858,18 @@ export default {
             }
             this.$http
               .post("/user/add", this.userInfo)
-              .then(res => {
+              .then((res) => {
                 this.queryData();
                 this.$notify({
                   title: "成功",
                   message: "添加成功",
                   type: "success",
                   offset: 50,
-                  duration: 2000
+                  duration: 2000,
                 });
                 this.onClose();
               })
-              .catch(err => {
+              .catch((err) => {
                 if (err.response) {
                   var msg =
                     this.errorTemplate[err.response.status] ||
@@ -804,25 +879,25 @@ export default {
                     message: msg,
                     type: "error",
                     offset: 50,
-                    duration: 2000
+                    duration: 2000,
                   });
                 }
               });
           } else if (this.isAdd == 2) {
             this.$http
               .post("/user/edit", this.userInfo)
-              .then(res => {
+              .then((res) => {
                 this.queryData();
                 this.$notify({
                   title: "成功",
                   message: "编辑成功",
                   type: "success",
                   offset: 50,
-                  duration: 2000
+                  duration: 2000,
                 });
                 this.onClose();
               })
-              .catch(err => {
+              .catch((err) => {
                 if (err.response) {
                   var msg =
                     this.errorTemplate[err.response.status] ||
@@ -832,7 +907,7 @@ export default {
                     message: msg,
                     type: "error",
                     offset: 50,
-                    duration: 2000
+                    duration: 2000,
                   });
                 }
               });
@@ -843,21 +918,21 @@ export default {
     querySys() {
       this.$http
         .get("/base/getroles", {})
-        .then(res => {
+        .then((res) => {
           this.roleList = res;
         })
-        .catch(err => {});
+        .catch((err) => {});
 
       this.$http
         .post("/base/getsystems", {})
-        .then(res => {
+        .then((res) => {
           this.sysList = res;
           for (s in this.sysList) {
             s.disabled = false;
           }
         })
-        .catch(err => {});
-    }
+        .catch((err) => {});
+    },
   },
   filters: {
     RemarkFilter(value) {
@@ -866,8 +941,8 @@ export default {
       } else {
         return "-";
       }
-    }
-  }
+    },
+  },
 };
 </script>
 

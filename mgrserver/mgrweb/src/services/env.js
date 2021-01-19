@@ -1,36 +1,35 @@
-//注入初始化
-export default {
-    install: function(Vue){
-        Vue.prototype.$env = new Env()
-    }
-}
+import $ from 'jquery';
 
 /*
 * Env对象使用时须通过引用并进行初始化
-* import env from './env'
-* Vue.use(env);
+* import evn from './evn'
+* Vue.use(evn);
+* 或 可配置加载文件地址(需json格式的文件)
+* Vue.use(evn,"../static/env.conf.json")
 */
-function Env() {
-    // require("./env.conf.js") 获取到需要加载的配置文件 './env.conf.js'配置文件路径
-
-    const staticDir = require.context('../../static', true, /env\.conf\.js/);
-    //const publicDir = require.context('../../public', true, /env\.conf\.js/);
-
-    let conf = {};
-    if (staticDir.keys().length){
-        conf = require("../../static/env.conf.js");
-    }
-    // if (publicDir.keys().length){
-    //     conf = require("../../public/env.conf.js");
-    // }
-    Env.prototype.Conf = conf;
+export function Env(path = "../public/env.conf.json") {
+    Env.prototype.Conf = {}
+    $.ajaxSettings.async = false; //同步
+    $.getJSON (path, function (data){        
+        if(!data){
+            return
+        }
+        Object.assign(Env.prototype.Conf, data)
+    });  
 }
 
-//配置数据加载
-Env.prototype.load = function (f) {
+/*
+*配置数据加载
+*await this.$env.load(async function(){
+*   var ress = await that.$http.xpost("/dds/dictionary/get", { dic_type: "operate_action" }, "", false, "") || {}
+*   return ress[0]
+*})
+*/
+Env.prototype.load = async function (f) {
     if (typeof f !== "function"){
         return
     }
-    let conf = f() || {}
+    let conf = await f() || {}
+    
     return Object.assign(Env.prototype.Conf, conf)   
 }

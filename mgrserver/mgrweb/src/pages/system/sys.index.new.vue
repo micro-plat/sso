@@ -856,7 +856,6 @@
 
 <script>
 import XLSX from "xlsx";
-import DateConvert from "@/services/date.js";
 import pager from "vue-simple-pager";
 import PullTo from "vue-pull-to";
 import AddModal from "./addModal.vue";
@@ -1250,7 +1249,7 @@ export default {
             ]);
           });
           var sheet = XLSX.utils.aoa_to_sheet(data);
-          var name = "菜单" + DateConvert("yyyyMMddhhmm", new Date()) + ".xlsx";
+          var name = "菜单" + this.$utility.dateFormat(new Date(),"yyyyMMddhhmm") + ".xlsx";
           this.openDownloadDialog(this.sheet2blob(sheet), name);
         })
         .catch(err => {

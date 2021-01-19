@@ -23,47 +23,37 @@ Vue.use(VTree);
 Vue.use(VeeValidate, config);
 
 
-import DateConvert from './services/date'
-import DateFilter from './services/filter';
-import env from './services/env'
-import http from './services/http'
-import senum from './services/enum'
+import utility from './services'
+Vue.use(utility, "../static/env.conf.json");
 
-Vue.use(http);
-Vue.use(env);
-Vue.use(senum);
-
-window.globalConfig = {companyRight:""}
 
 Vue.prototype.$enum.callback(async function(type){
-  var url =  (window.globalConfig.apiURL || "") + "/dds/dictionary/get";
-  var data = await Vue.prototype.$http.get(url,{ dic_type: type });
-  console.log("dictionary.data:",type,data);
-  return data;
-})
-
-Vue.prototype.$env.load(async function(){
-  var data = await Vue.prototype.$http.get("/system/webconfig");
-  console.log("webconfig.data:",data);
-  window.globalConfig = data;
+  var url = "/dds/dictionary/get";
+  var data = await Vue.prototype.$http.get(url, { dic_type: type });
+  console.log("dictionary.data:", type, data);
   return data;
 });
 
-Vue.prototype.$http.setEnableHeader(true);
-Vue.prototype.$http.addStatusCodeHandle(res=>{
-  console.log("addStatusCodeHandle:403",res)
-  var url = (res.headers||{}).location;
+Vue.prototype.$http.setBaseURL(Vue.prototype.$env.Conf.apiURL);
 
-  console.log("redirect:url",url)
- // window.location = url + encodeURIComponent(document.URL); 
-  
+//Vue.prototype.$http.setEnableHeader(true);
+
+Vue.prototype.$http.addStatusCodeHandle(res => {
+  console.log("addStatusCodeHandle:403", res);
+  var url = (res.headers || {}).location ||""; 
+  if(!url){
+    url = this.$env.Conf.loginWebURL;
+  }
+
+  url =url + encodeURIComponent(document.URL);
+  console.log("redirect:url", url);
+  window.location = url ;
+
   //return new Error("请补充注册中心auth/jwt的AuthURL配置");
-},403);
+}, 403);
 
 import router from './router'
 Vue.config.productionTip = false;
-Vue.prototype.DateConvert = DateConvert //日期格式转换
-// Vue.prototype.DateFilter = DateFilter
 /* eslint-disable no-new */
 new Vue({
   el: '#vapp',
@@ -74,3 +64,5 @@ new Vue({
   },
   template: '<App/>'
 });
+
+ 

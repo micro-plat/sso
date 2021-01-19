@@ -24,8 +24,8 @@
     data () {
       return {
         logo: "",
-        copyright: (window.globalConfig.companyRight||"") + "Copyright©" + new Date().getFullYear() +"版权所有",//"北京卓易豪斯科技有限公司Copyright©" + new Date().getFullYear() +"版权所有" ,
-        copyrightcode: window.globalConfig.companyRightCode ,//"蜀ICP备20003360号",
+        copyright: (this.$env.Conf.companyRight||"") + "Copyright©" + new Date().getFullYear() +"版权所有",//"北京卓易豪斯科技有限公司Copyright©" + new Date().getFullYear() +"版权所有" ,
+        copyrightcode: this.$env.Conf.companyRightCode ,//"蜀ICP备20003360号",
         themes: "", //顶部左侧背景颜色,顶部右侧背景颜色,右边菜单背景颜色
         menus: [{}],  //菜单数据
         systemName: "用户权限系统",  //系统名称
@@ -43,7 +43,10 @@
     },
     mounted(){
       this.setDocmentTitle();
-      this.userinfo = JSON.parse(localStorage.getItem("userinfo"));
+      var userinfo = localStorage.getItem("userinfo")
+      if(userinfo){
+        this.userinfo = JSON.parse(userinfo);
+      }
     },
     methods:{
       pwd(){

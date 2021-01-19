@@ -7,19 +7,12 @@ window._EnumCallbackFunc_ = {
   "*" : function(tp){return [];}
 }
 
-//初始化注入
-export default {
-  install: function(Vue){
-      Vue.prototype.$enum = new Enum();
-  }
-}
-
 /*
 * 枚举对象使用时须通过引用并进行初始化
 * import enums from './enums'
 * Vue.use(enums);
 */
-function Enum() {}
+export function Enum() {}
 
 
 //当参数为function时回调

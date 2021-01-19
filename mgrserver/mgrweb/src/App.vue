@@ -1,22 +1,30 @@
 <template>
   <div id="vapp">
-    <router-view/>
+    <router-view v-if="hasLoaded"/>
   </div>
 </template>
 
 <script>
 export default {
-  name: 'App'
+  name: 'App',
+  data(){
+    return{
+      hasLoaded: false
+    }
+  },
+  created(){ 
+    this.getWebconfig()
+  },
+  methods:{
+    async getWebconfig(){
+      var that = this;
+      await this.$env.load(async function(){
+        var data = await that.$http.get("/system/webconfig");
+        that.hasLoaded = true
+        return data;
+      });
+    }
+  }
 }
 </script>
 
-<style>
-/* #app {
-  font-family: 'Avenir', Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-  margin-top: 60px;
-} */
-</style>
