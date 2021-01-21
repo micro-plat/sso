@@ -50,12 +50,16 @@
     },
     methods:{
       pwd(){
-        this.$sso.changePwd();
+        this.$http.clearAuthorization();
+        if(this.$env.Conf.cookieName){
+          VueCookies.remove(this.$env.Conf.cookieName);
+        }
+        window.location.href = this.$env.Conf.loginWebHost + "/" + this.$env.Conf.ident + "/changepwd";
       },
       signOutM() {
+        this.$http.clearAuthorization();
         var returnURL = window.location.href;
-        window.location  = "http://ssov4.100bm0.com:6689/sso/login?returnurl="+returnURL
-        this.$sso.signOut();
+        window.location  = this.$env.Conf.loginWebHost+"/"+this.$env.Conf.ident+"/login?returnurl="+returnURL
       },
       getMenu(){
         this.$http.get("/sso/member/menus/get")
@@ -85,7 +89,20 @@
       getUserOtherSys() {
         this.$http.get("/sso/member/systems/get")
         .then(res => {
-         this.items = this.$sso.transformSysInfo(res);
+            this.items = (function (systems) {
+              if (!systems || !systems.length) {
+                  return []
+              }
+              var items = [];
+              systems.forEach(element => {
+                  items.push({
+                    name: element.name,
+                    path: element.index_url.substr(0, element.index_url.lastIndexOf("/")),
+                    type: "blank"
+                  })
+              });
+              return items;
+          })(res);
         })
         .catch(err => {
           console.log(err);

@@ -15,15 +15,12 @@ import (
 	"github.com/micro-plat/lib4go/security/md5"
 	"github.com/micro-plat/lib4go/types"
 	"github.com/micro-plat/lib4go/utility"
-	commodel "github.com/micro-plat/sso/loginserver/loginapi/modules/model"
 	"github.com/micro-plat/sso/loginserver/loginapi/modules/access/member"
 	"github.com/micro-plat/sso/loginserver/loginapi/modules/access/system"
 	"github.com/micro-plat/sso/loginserver/loginapi/modules/const/enum"
-	"github.com/micro-plat/sso/loginserver/loginapi/modules/const/sqls"
-	commsqls "github.com/micro-plat/sso/loginserver/loginapi/modules/const/sqls"
-	"github.com/micro-plat/sso/loginserver/loginapi/modules/model"
 	"github.com/micro-plat/sso/loginserver/loginapi/modules/const/errorcode"
-
+	"github.com/micro-plat/sso/loginserver/loginapi/modules/model"
+	commodel "github.com/micro-plat/sso/loginserver/loginapi/modules/model"
 )
 
 //IMemberLogic 用户登录
@@ -39,9 +36,8 @@ type IMemberLogic interface {
 	GenerateWxStateCode(userID int64) (string, error)
 	ValidStateAndGetOpenID(stateCode, wxCode string) (map[string]string, error)
 	UpdateUserOpenID(data map[string]string) error
-	ValidUserInfo(userName string) (string, error)
 	QueryUserInfoByID(uid int64) (db.QueryRow, error)
-	ValidUserAndGetUserInfo(userName string) (db.QueryRow, error)
+	GetUserInfo(userName string) (db.QueryRow, error)
 }
 
 //MemberLogic 用户登录管理
@@ -137,7 +133,7 @@ func (m *MemberLogic) CheckUerInfo(userID int64, sign, timestamp string) error {
 		return errs.NewError(errorcode.ERR_BIND_INFOWRONG, "绑定信息错误,请重新去用户系统扫码")
 	}
 	sendTime, _ := strconv.ParseInt(timestamp, 10, 64)
-	if time.Now().Unix()-sendTime > int64(commodel.GetConf().BindTimeOut) {
+	if time.Now().Unix()-sendTime > int64(commodel.GetLoginConf().QRCodeTimeOut) {
 		return errs.NewError(errorcode.ERR_QRCODE_TIMEOUT, "二维码过期,请联系管理员重新生成")
 	}
 
@@ -178,8 +174,8 @@ func (m *MemberLogic) ValidStateAndGetOpenID(stateCode, wxCode string) (map[stri
 		return nil, errs.NewError(errorcode.ERR_BIND_TIMEOUT, "绑定超时")
 	}
 
-	config := commodel.GetConf()
-	url := config.WxTokenURL + "?appid=" + config.WxAppID + "&secret=" + config.WxSecret + "&code=" + wxCode + "&grant_type=authorization_code"
+	config := commodel.GetLoginConf()
+	url := fmt.Sprintf("%s?appid=%s&secret=%s&code=%s&grant_type=authorization_code", config.WechatTokenURL, config.WechatAppID, config.WechatSecret, wxCode)
 	openID, err := m.GetWxUserOpID(url)
 	if err != nil {
 		return nil, err
@@ -225,46 +221,7 @@ func (m *MemberLogic) GetWxUserOpID(url string) (string, error) {
 	return types.GetString(data["openid"]), nil
 }
 
-//ValidUserInfo 验证用户信息openid
-func (m *MemberLogic) ValidUserInfo(userName string) (string, error) {
-	datas, err := m.db.GetUserInfo(userName)
-	if err != nil {
-		return "", err
-	}
-	if datas.IsEmpty() {
-		return "", errs.NewError(errorcode.ERR_USER_NOTEXISTS, "用户不存在")
-	}
-	if datas.Get(0).GetString("wx_openid") == "" {
-		return "", errs.NewError(errorcode.ERR_USER_NOTBINDWX, "用户还未绑定微信账户")
-	}
-	return datas.Get(0).GetString("wx_openid"), nil
-}
-
-//ValidUserAndGetUserInfo 验证用户是否存在并获取用户信息
-func (m *MemberLogic) ValidUserAndGetUserInfo(userName string) (db.QueryRow, error) {
-	db := components.Def.DB().GetRegularDB()
-	count, err := db.Scalar(sqls.ValidUserNameExist, map[string]interface{}{
-		"user_name": userName,
-	})
-	if err != nil {
-		return nil, fmt.Errorf("验证用户是否存在失败(err:%v)", err)
-	}
-
-	if types.GetInt(count) <= 0 {
-		return nil, fmt.Errorf("用户不存在:%s", userName)
-	}
-
-	userInfo, err := db.Query(commsqls.QueryUserByUserName, map[string]interface{}{
-		"user_name": userName,
-	})
-
-	if err != nil {
-		return nil, fmt.Errorf("根据用户名获取用户信息失败(err:%v)", err)
-	}
-
-	if len(userInfo.Get(0).GetString("mobile")) == 0 {
-		return nil, fmt.Errorf("用户没有绑定手机号")
-	}
-
-	return userInfo.Get(0), nil
+//GetUserInfo 验证用户是否存在并获取用户信息
+func (m *MemberLogic) GetUserInfo(userName string) (db.QueryRow, error) {
+	return m.db.GetUserInfo(userName)
 }

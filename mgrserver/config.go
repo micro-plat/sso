@@ -44,8 +44,7 @@ func devConf() {
 
 	hydra.Conf.Web("6677", api.WithDNS("ssov4.100bm0.com")).Static(staticOpts...).
 		Header(header.WithCrossDomain(), header.WithAllowHeaders("__sso_jwt__")).
-		Jwt(jwt.WithName("__sso_jwt__"),
-			jwt.WithMode("HS512"),
+		Jwt(jwt.WithMode("HS512"),
 			jwt.WithSecret("bf8f3171946d8d5a13cca23aa6080c8e"),
 			jwt.WithExpireAt(36000),
 			jwt.WithHeader(),
@@ -70,8 +69,7 @@ func prodConf() {
 
 	hydra.Conf.Web(conf.ByInstall, api.WithDNS("http://web.sso.18jiayou.com")).Static(staticOpts...).
 		Header(header.WithCrossDomain()).
-		Jwt(jwt.WithName("__sso_jwt__"),
-			jwt.WithMode("HS512"),
+		Jwt(jwt.WithMode("HS512"),
 			jwt.WithSecret("bf8f3171946d8d5a13cca23aa6080c8e"),
 			jwt.WithExpireAt(36000),
 			jwt.WithHeader(),

@@ -10,8 +10,8 @@ import (
 	"github.com/micro-plat/lib4go/errs"
 	"github.com/micro-plat/lib4go/security/md5"
 	"github.com/micro-plat/lib4go/types"
-	commsqls "github.com/micro-plat/sso/loginserver/loginapi/modules/const/sqls"
 	"github.com/micro-plat/sso/loginserver/loginapi/modules/const/errorcode"
+	commsqls "github.com/micro-plat/sso/loginserver/loginapi/modules/const/sqls"
 
 	"github.com/micro-plat/sso/loginserver/loginapi/modules/model"
 )
@@ -21,7 +21,7 @@ type IDBMember interface {
 	ChangePwd(userID int, expassword string, newpassword string) (err error)
 	QueryByID(uid int64) (db.QueryRow, error)
 	CheckUserHasAuth(ident string, userID int64) error
-	GetUserInfo(u string) (db.QueryRows, error)
+	GetUserInfo(userName string) (db.QueryRow, error)
 	UpdateUserStatus(userID int64, status int) error
 	UnLock(userName string) error
 
@@ -125,12 +125,21 @@ func (l *DBMember) CheckUserHasAuth(ident string, userID int64) error {
 }
 
 //GetUserInfo 根据用户名获取用户信息
-func (l *DBMember) GetUserInfo(u string) (db.QueryRows, error) {
+func (l *DBMember) GetUserInfo(userName string) (db.QueryRow, error) {
 	db := components.Def.DB().GetRegularDB()
-	data, err := db.Query(commsqls.QueryUserByUserName, map[string]interface{}{
-		"user_name": u,
+
+	userInfo, err := db.Query(commsqls.QueryUserByUserName, map[string]interface{}{
+		"user_name": userName,
 	})
-	return data, err
+
+	if err != nil {
+		return nil, fmt.Errorf("根据用户名获取用户信息失败(err:%v)", err)
+	}
+	if userInfo.Len() <= 0 {
+		return nil, fmt.Errorf("用户不存在:%s", userName)
+	}
+
+	return userInfo.Get(0), nil
 }
 
 //QueryByID 根据用户编号获取用户信息

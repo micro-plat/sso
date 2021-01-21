@@ -1,8 +1,9 @@
 package model
 
 import (
-	"github.com/micro-plat/hydra/components"
 	"encoding/json"
+
+	"github.com/micro-plat/hydra/components"
 )
 
 //MemberState 用户信息
@@ -44,12 +45,10 @@ func (m *MemberState) ReflushCode() string {
 	return m.Code
 }
 
- 
-
 //LoginReq　登录用到的数据
 type LoginReq struct {
-	UserName string //用户名
-	Password string //密码
-	Ident    string //系统标识
-	Wxcode   string //微信验证码
+	UserName  string //用户名
+	Password  string //密码
+	Ident     string //系统标识
+	ValidCode string //验证码
 }

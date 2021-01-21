@@ -42,7 +42,7 @@ Vue.prototype.$http.addStatusCodeHandle(res => {
   console.log("addStatusCodeHandle:403", res);
   var url = (res.headers || {}).location ||""; 
   if(!url){
-    url = this.$env.Conf.loginWebURL;
+    url = this.$env.Conf.loginWebHost + "/sso/jump?returnurl=";
   }
 
   url =url + encodeURIComponent(document.URL);
@@ -52,7 +52,7 @@ Vue.prototype.$http.addStatusCodeHandle(res => {
   //return new Error("请补充注册中心auth/jwt的AuthURL配置");
 }, 403);
 
-import router from './router'
+import router from './router';
 Vue.config.productionTip = false;
 /* eslint-disable no-new */
 new Vue({

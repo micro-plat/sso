@@ -14,12 +14,10 @@ export default {
       this.$http
         .post("/sso/login/verify", { code: this.$route.query.code })
         .then(res => {
-          console.log("a.xxxxxxxxxxxx")
           localStorage.setItem(
             "userinfo",
             JSON.stringify({ name: res.user_name, role: res.role_name })
           );
-
           if (returnURL) {
             window.location = returnURL; 
             return;

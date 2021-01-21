@@ -2,12 +2,13 @@ package login
 
 import (
 	"strconv"
+
 	"github.com/micro-plat/hydra/components"
 	"github.com/micro-plat/lib4go/db"
 	"github.com/micro-plat/lib4go/errs"
 	"github.com/micro-plat/lib4go/types"
-	"github.com/micro-plat/sso/loginserver/loginapi/modules/const/sqls"
 	"github.com/micro-plat/sso/loginserver/loginapi/modules/const/errorcode"
+	"github.com/micro-plat/sso/loginserver/loginapi/modules/const/sqls"
 	"github.com/micro-plat/sso/loginserver/loginapi/modules/model"
 )
 
@@ -17,7 +18,6 @@ type IDBMember interface {
 	ChangePwd(userID int, newpassword string) (err error)
 	QueryByID(uid int) (db.QueryRow, error)
 	CheckUserHasAuth(ident string, userID int64) error
-	GetUserInfo(u string) (db.QueryRows, error)
 	UpdateUserStatus(userID int, status int) error
 	UnLock(userName string) error
 	UpdateUserLoginTime(userID int64) error
@@ -41,6 +41,7 @@ func (l *DBMember) UnLock(userName string) error {
 
 //Query 用户登录时从数据库获取信息 (这个要改)
 func (l *DBMember) Query(u, p, ident string) (s *model.MemberState, err error) {
+	
 	db := components.Def.DB().GetRegularDB()
 	data, err := db.Query(sqls.QueryUserByUserName, map[string]interface{}{
 		"user_name": u,
@@ -71,7 +72,7 @@ func (l *DBMember) Query(u, p, ident string) (s *model.MemberState, err error) {
 	})
 
 	if err != nil {
-		return nil,  errs.NewError(errorcode.ERR_SYS_ERROR, err)
+		return nil, errs.NewError(errorcode.ERR_SYS_ERROR, err)
 	}
 
 	if types.GetInt(count) <= 0 {
@@ -84,7 +85,7 @@ func (l *DBMember) Query(u, p, ident string) (s *model.MemberState, err error) {
 	})
 
 	if err != nil {
-		return nil,  errs.NewError(errorcode.ERR_SYS_ERROR, err)
+		return nil, errs.NewError(errorcode.ERR_SYS_ERROR, err)
 	}
 
 	s.SysIdent = ident
@@ -92,7 +93,7 @@ func (l *DBMember) Query(u, p, ident string) (s *model.MemberState, err error) {
 	s.RoleName = roles.Get(0).GetString("role_name")
 	s.IndexURL = roles.Get(0).GetString("index_url")
 
-	return s, nil 
+	return s, nil
 }
 
 //QueryUserOldPwd 查询原密码
@@ -102,7 +103,7 @@ func (l *DBMember) QueryUserOldPwd(userID int) (db.QueryRows, error) {
 		"user_id": userID,
 	})
 	if err != nil {
-		return nil,  errs.NewError(errorcode.ERR_SYS_ERROR, err)
+		return nil, errs.NewError(errorcode.ERR_SYS_ERROR, err)
 	}
 	return data, nil
 }
@@ -115,7 +116,7 @@ func (l *DBMember) ChangePwd(userID int, newpassword string) (err error) {
 		"password": newpassword,
 	})
 	if err != nil {
-		return  errs.NewError(errorcode.ERR_SYS_ERROR, err)
+		return errs.NewError(errorcode.ERR_SYS_ERROR, err)
 	}
 	return nil
 }
@@ -127,7 +128,7 @@ func (l *DBMember) UpdateUserLoginTime(userID int64) error {
 		"user_id": userID,
 	})
 	if err != nil {
-		return  errs.NewError(errorcode.ERR_SYS_ERROR, err)
+		return errs.NewError(errorcode.ERR_SYS_ERROR, err)
 	}
 	return nil
 }
@@ -140,21 +141,12 @@ func (l *DBMember) CheckUserHasAuth(ident string, userID int64) error {
 		"ident":   ident,
 	})
 	if err != nil {
-		return  errs.NewError(errorcode.ERR_SYS_ERROR, err)
+		return errs.NewError(errorcode.ERR_SYS_ERROR, err)
 	}
 	if types.GetInt(count, 0) <= 0 {
 		return errs.NewError(errorcode.ERR_USER_HASNOROLES, "没有相应权限，请联系管理员")
 	}
 	return nil
-}
-
-//GetUserInfo 根据用户名获取用户信息
-func (l *DBMember) GetUserInfo(u string) (db.QueryRows, error) {
-	db := components.Def.DB().GetRegularDB()
-	data, err := db.Query(sqls.QueryUserByUserName, map[string]interface{}{
-		"user_name": u,
-	})
-	return data,  errs.NewError(errorcode.ERR_SYS_ERROR, err)
 }
 
 //QueryByID 根据用户编号获取用户信息
@@ -164,10 +156,10 @@ func (l *DBMember) QueryByID(uid int) (db.QueryRow, error) {
 		"user_id": uid,
 	})
 	if err != nil {
-		return nil,  errs.NewError(errorcode.ERR_SYS_ERROR, err)
+		return nil, errs.NewError(errorcode.ERR_SYS_ERROR, err)
 	}
 	if data.IsEmpty() {
-		return nil, errs.NewError(errorcode.ERR_USER_NOTEXISTS, "用户不存在:"+ strconv.Itoa(uid))
+		return nil, errs.NewError(errorcode.ERR_USER_NOTEXISTS, "用户不存在:"+strconv.Itoa(uid))
 	}
 	return data.Get(0), nil
 }

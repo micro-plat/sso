@@ -52,7 +52,11 @@ const (
 	//一个微信只能绑定一个账户
 	ERR_OPENID_ONLY_BIND_Once = 917
 
-//-------------------------------------------------
+	ERR_USER_NOTBIND_PHONE = 918
+
+	ERR_VALID_CODE_TYPE_ERROR = 919
+
+	//-------------------------------------------------
 
 	//此用户名已被使用
 	ERR_USER_NAMEEXISTS = 909
@@ -65,7 +69,6 @@ const (
 
 	//请先保存系统根节点
 	ERR_SYSFUNC_ROOTNOTEXISTS = 912
-
 
 	//用户姓名已存在
 	ERR_USER_FULLNAMEEXISTS = 918
@@ -93,8 +96,6 @@ const (
 
 	//用户密码错误,还要1次机会
 	ERR_USER_PWDWRONG_1 = 926
- 
-	
-	ERR_SYS_ERROR = 999
 
+	ERR_SYS_ERROR = 999
 )

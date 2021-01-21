@@ -5,8 +5,8 @@ import (
 
 	"github.com/micro-plat/hydra"
 	"github.com/micro-plat/lib4go/errs"
-	"github.com/micro-plat/sso/loginserver/loginapi/modules/model"
 	"github.com/micro-plat/sso/loginserver/loginapi/modules/logic"
+	"github.com/micro-plat/sso/loginserver/loginapi/modules/model"
 )
 
 //BindWxHandler 绑定微信
@@ -56,10 +56,10 @@ func (u *BindWxHandler) CheckHandle(ctx hydra.IContext) (r interface{}) {
 	}
 
 	ctx.Log().Info("4: 返回数据")
-	config := model.GetConf()
+	config := model.GetLoginConf()
 	return map[string]interface{}{
-		"wxlogin_url": config.WxPhoneLoginURL,
-		"appid":       config.WxAppID,
+		"wxlogin_url": config.WechatPhoneLoginURL,
+		"appid":       config.WechatAppID,
 		"state":       stateCode,
 	}
 }

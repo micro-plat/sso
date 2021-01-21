@@ -1,6 +1,7 @@
 package main
 
 import (
+	"github.com/lib4dev/vcs"
 	"github.com/micro-plat/hydra"
 	"github.com/micro-plat/hydra/components"
 	_ "github.com/micro-plat/hydra/components/caches/cache/gocache"
@@ -44,13 +45,9 @@ func init() {
 		if err := checkLoginConf(appConf); err != nil {
 			return err
 		}
+
 		return nil
 	}, http.API)
-
-	App.OnStarting(func(appConf app.IAPPConf) error {
-		//检查前端配置
-		return checkWebConf(appConf)
-	}, http.Web)
 
 	App.OnHandleExecuting(func(ctx hydra.IContext) interface{} {
 		if ctx.User().Auth().Request() != nil {
@@ -66,33 +63,24 @@ func init() {
 }
 
 func checkLoginConf(appConf app.IAPPConf) (err error) {
-	var conf model.Conf
+	var loginCfg model.LoginConf
 	varConf := appConf.GetVarConf()
-	_, err = varConf.GetObject("loginconf", "app", &conf)
+	_, err = varConf.GetObject("loginconf", "app", &loginCfg)
 	if err != nil {
 		return err
 	}
 
-	if err := conf.Valid(); err != nil {
+	if err := loginCfg.Valid(); err != nil {
 		return err
 	}
 
-	if err := model.SaveConf(&conf); err != nil {
+	if err := model.SaveLoginConf(&loginCfg); err != nil {
 		return err
 	}
+
+	vcs.SetConfig(vcs.WithCacheConfig("redis", "http"), vcs.WithSmsSendUrl(loginCfg.SmsSendURL))
+
 	return
-}
-
-func checkWebConf(appConf app.IAPPConf) error {
-	var vebConf cmodel.WebConf
-	if _, err := appConf.GetServerConf().GetSubObject("webconf", &vebConf); err != nil {
-		return err
-	}
-
-	if err := vebConf.Valid(); err != nil {
-		return err
-	}
-	return nil
 }
 
 func registryAPI() {

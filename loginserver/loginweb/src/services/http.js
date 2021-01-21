@@ -8,7 +8,8 @@ axios.defaults.baseURL = process.env.VUE_APP_API_URL || "";
 //获取vue实例
 var __vue__ = {}
 //header请求头key
-var headerKey = "__http_response_header__"
+var headerKey = "__http_response_header__";
+var authorizationKey = "authorization";
 
 // 是否使用请求头
 var enableHeader = false
@@ -43,14 +44,25 @@ var statusCodeHandles = { "403":function(response){} }
 * import http from './http'
 * Vue.use(http);
 */
-export function Http() {
+export function Http() { 
     __vue__ = Vue.prototype
 }
 
 //http request 拦截器
 axios.interceptors.request.use(
     config => {              
-        config.headers = getHeader(config.headers);
+        var headers = {};  
+        var defaults = {};
+        Object.assign(defaults,Http.prototype.defaults.headers);
+        for(var k in defaults){
+            headers[k.toLowerCase()] = defaults[k];
+        }
+        headers[authorizationKey] = localStorage.getItem(authorizationKey);
+        for(var k in config.headers||{}){
+            headers[k.toLowerCase()] = config.headers[k];
+        }
+
+        config.headers = headers;
         return config;
     },
     error => {
@@ -61,37 +73,42 @@ axios.interceptors.request.use(
 //http response 拦截器
 axios.interceptors.response.use(
     response => {
-        saveHeader(response.headers); //保存header头        
+        console.log("response.headers:",response.headers);
+        if(response.headers && response.headers[authorizationKey]){
+            if (!Http.prototype.defaults.headers){
+                Http.prototype.defaults.headers={};
+            }
+            Http.prototype.setAuthorization(response.headers[authorizationKey]);
+        }        
         return response;
     },
     error => {
         if (error.response) {
-            let handle = statusCodeHandles[error.response.status]
+            let handle = statusCodeHandles[error.response.status];
             if (handle){
-                handle(error.response)
+                handle(error.response);
             }
         }
-        return Promise.reject(error)
+        return Promise.reject(error);
     }
 )
 
+Http.prototype.defaults = {
+    headers:{"content-type": "application/json; charset=UTF-8"}
+};
+
 //设置http请求地址
 Http.prototype.setBaseURL = function (apiBaseUrl) {
-    axios.defaults.baseURL = apiBaseUrl
-}
-
-//设置是否使用header
-Http.prototype.setEnableHeader = function (v) {
-    enableHeader = v === true
+    axios.defaults.baseURL = apiBaseUrl;
 }
 
 //设置根据状态码回调
 Http.prototype.addStatusCodeHandle = function (f, code = "*") {
-    let vcode = code || "*"
+    let vcode = code || "*";
     if(typeof f != "function"){
-        return
+        return;
     }
-    statusCodeHandles[vcode] = f
+    statusCodeHandles[vcode] = f;
 }
 
 /**
@@ -307,6 +324,14 @@ Http.prototype.clear = function (){
     localStorage.removeItem(headerKey);
     return
 }
+Http.prototype.clearAuthorization =function(){
+    window.localStorage.removeItem(authorizationKey);    
+}
+Http.prototype.setAuthorization = function(token){
+    if(token){
+       window.localStorage.setItem(authorizationKey,token);
+    }
+}
 
 //显示成功提示
 function showSuccessNotify(msg){
@@ -372,40 +397,4 @@ function setTmplt(tmpl, data){
     if (data.hasOwnProperty("duration")){
         tmpl.duration = data.duration
     }
-}
-//保存header头
-function saveHeader(header) { 
-    //是否保存请求头
-    if (!enableHeader){
-        return
-    }
-
-    //去除请求头中排除配置参数
-    headerExcludeParams.forEach((item)=>{ //去除配置参数
-        if(header.hasOwnProperty(item)){
-            delete header.item
-        }
-    })
-    window.localStorage.setItem(headerKey, JSON.stringify(header));
-}
-
-//获取response返回的header  
-function getHeader(cheader){ 
-    var header = {}    
-    //是否使用保存的header头
-    if (enableHeader) {
-        header = window.localStorage.getItem(headerKey) ? JSON.parse(window.localStorage.getItem(headerKey)) : {}
-    }   
-
-    //配置自定义header头，会覆盖已有的数据
-    var cfgHeaders = cheader || {};
-    for (var k in cfgHeaders) {
-        header[k] = cfgHeaders[k];
-    }
-
-    //判断是否设置‘Content-Type’，未设置时添加‘Content-Type’
-    if (!header["Content-Type"]){
-        header["Content-Type"] = 'application/json; charset=UTF-8'
-    }
-    return header
 }

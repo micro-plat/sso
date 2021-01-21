@@ -10,8 +10,8 @@ import (
 	"github.com/micro-plat/lib4go/errs"
 	"github.com/micro-plat/lib4go/security/md5"
 	"github.com/micro-plat/lib4go/types"
+	"github.com/micro-plat/sso/loginserver/loginapi/modules/const/errorcode"
 	commodel "github.com/micro-plat/sso/loginserver/loginapi/modules/model"
-	  "github.com/micro-plat/sso/loginserver/loginapi/modules/const/errorcode"
 
 	"github.com/micro-plat/sso/loginserver/srvapi/modules/access/system"
 	"github.com/micro-plat/sso/loginserver/srvapi/modules/const/enum"
@@ -90,7 +90,7 @@ func (l *DBUser) adapterRoleID(req model.UserInputNew) {
 	if req.RoleID != 0 {
 		return
 	}
-	conf := commodel.GetConf() //取默认配置的角色
+	conf := commodel.GetLoginConf() //取默认配置的角色
 	if strings.EqualFold(conf.AddUserUseDefaultRole, "") {
 		return
 	}

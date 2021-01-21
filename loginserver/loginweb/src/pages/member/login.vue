@@ -38,10 +38,10 @@
     data () {
       return {
         systemName: "",
-        bgImageUrl: window.globalConfig.staticImageUrl ,//"http://images.yxtx888.net/sso/background.jpg",
-        copyright: (window.globalConfig.companyRight||"") + "Copyright©" + new Date().getFullYear() +"版权所有",//"北京卓易豪斯科技有限公司Copyright©" + new Date().getFullYear() +"版权所有" ,
-        copyrightcode: window.globalConfig.companyRightCode ,//"蜀ICP备20003360号",
-        requireCode: window.globalConfig.requireCode||true,
+        bgImageUrl: this.$env.Conf.staticImageUrl ,//"http://images.yxtx888.net/sso/background.jpg",
+        copyright: (this.$env.Conf.companyRight||"") + "Copyright©" + new Date().getFullYear() +"版权所有",//"北京卓易豪斯科技有限公司Copyright©" + new Date().getFullYear() +"版权所有" ,
+        copyrightcode: this.$env.Conf.companyRightCode ,//"蜀ICP备20003360号",
+        requireCode: this.$env.Conf.requireCode||true,
 
         returnURL:"",
         ident: "",
@@ -52,9 +52,9 @@
         loginPwdLabel:"密码",
         loginPwdHolder:"请输入用户密码",
 
-        codeLabel:window.globalConfig.codeLabel,
-        codeHolder:window.globalConfig.codeHolder,
-        sendBtnLabel:window.globalConfig.sendBtnLabel,
+        codeLabel:this.$env.Conf.codeLabel,
+        codeHolder:this.$env.Conf.codeHolder,
+        sendBtnLabel:this.$env.Conf.sendBtnLabel,
 
 
         errorTemplate:{
@@ -81,12 +81,9 @@
     },
 
     mounted(){
-      //var headerKey = window.globalConfig.jwt_name;
-      // VueCookies.remove(headerKey);
-      // localStorage.removeItem(headerKey);
-      // sessionStorage.removeItem(headerKey);
+      this.$http.clearAuthorization();
+      VueCookies.remove(this.$env.Conf.cookieName);
       var logoutURL = this.$route.query.logouturl;
-
       if(logoutURL){
          window.location.href = logoutURL
          return
@@ -102,8 +99,9 @@
       controlLoginType() {
         this.$http.post("/loginweb/system/config/get", {ident: this.ident})
         .then(res => {
+            console.log("---:",res)
             this.loginTitle = "登录到【" + res.system_name + "】";
-            this.requireCode = res.require_wx_code;
+            this.requireCode = res.require_valid_code;
         })
         .catch(err => {
             this.$refs.LoginUp.showError("获取系统信息失败");
@@ -112,13 +110,10 @@
 
       //发送微信验证码
       getCodeCall(e){
-        console.log(window.globalConfig,"window.globalConfig")
-         e.ident = this.ident;
-        //  e.ident = "sso";
          this.$refs.LoginUp.showError("发送验证码中...");
-         this.$http.post("/loginweb/member/sendcode", e)
+         this.$http.post("/loginweb/member/sendcode", {ident: this.ident, username: e.username})
           .then(res=>{
-            this.$refs.LoginUp.showError(window.globalConfig.showText);
+            this.$refs.LoginUp.showError(this.$env.Conf.showText);
             this.$refs.LoginUp.countDown();
           })
           .catch(err=>{
@@ -136,7 +131,7 @@
           ident: this.ident,
           password: $.md5(e.password),
           username:e.username,
-          wxcode:e.wxcode
+          validcode:e.wxcode
         }
         var that = this;
         this.$http.post("/loginweb/member/login", req)

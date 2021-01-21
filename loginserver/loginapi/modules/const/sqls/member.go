@@ -8,6 +8,7 @@ select
 	full_name,
 	password,
 	status,
+	mobile,
 	wx_openid,
 	ext_params,
 	source,

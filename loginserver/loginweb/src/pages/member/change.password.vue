@@ -45,7 +45,7 @@
         password1: "",
         password2: "",
         errorMsg: "",
-        copyRight: (window.globalConfig.companyRight||"") + "Copyright©" + new Date().getFullYear() +"版权所有",
+        copyRight: (this.$env.Conf.companyRight||"") + "Copyright©" + new Date().getFullYear() +"版权所有",
          
       }
     },

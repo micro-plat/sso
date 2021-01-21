@@ -1,26 +1,25 @@
 package login
 
 import (
-	"encoding/json"
 	"fmt"
-	"math/rand"
-	"net/http"
 	"strings"
 	"time"
 
-	"github.com/micro-plat/hydra/components"
+	"github.com/lib4dev/vcs"
+	"github.com/micro-plat/hydra"
 	"github.com/micro-plat/lib4go/errs"
-	"github.com/micro-plat/lib4go/types"
+	"github.com/micro-plat/sso/loginserver/loginapi/modules/access/member"
+	"github.com/micro-plat/sso/loginserver/loginapi/modules/access/system"
 	"github.com/micro-plat/sso/loginserver/loginapi/modules/const/enum"
 	"github.com/micro-plat/sso/loginserver/loginapi/modules/const/errorcode"
 	"github.com/micro-plat/sso/loginserver/loginapi/modules/model"
-	"github.com/micro-plat/sso/loginserver/loginapi/modules/access/system"
 )
 
 //LoginLogic 用户登录相关
 type LoginLogic struct {
 	cache ICacheMember
 	db    IDBMember
+	memdb    member.IDBMember
 	sysDB system.IDbSystem
 }
 
@@ -29,29 +28,40 @@ func NewLoginLogic() *LoginLogic {
 	return &LoginLogic{
 		cache: NewCacheMember(),
 		db:    NewDBMember(),
+		memdb: member.NewDBMember(),
 		sysDB: system.NewDbSystem(),
 	}
 }
 
-//CheckWxValidCode 验证微信验证码是否正确
-func (m *LoginLogic) CheckWxValidCode(userName, wxCode string) error {
-	conf := model.GetConf()
-	if !conf.RequireWxCode {
+//CheckValidCode 验证微信验证码是否正确
+func (m *LoginLogic) CheckValidCode(userName, ident, validCode string) error {
+	conf := model.GetLoginConf()
+	if !conf.RequireValidCode {
 		return nil
 	}
-	if strings.EqualFold(wxCode, "") {
-		errs.NewError(errorcode.ERR_USER_EMPTY_VALIDATECODE, "验证码不能为空")
+	if strings.EqualFold(validCode, "") {
+		return errs.NewError(errorcode.ERR_USER_EMPTY_VALIDATECODE, "验证码不能为空")
 	}
-	if err := m.cache.CheckLoginValidateCode(userName, wxCode); err != nil {
-		return err
+	userInfo,err:=m.memdb.GetUserInfo(userName)
+	if err!=nil{
+		return errs.NewError(errorcode.ERR_SYS_ERROR,err)
 	}
-	return nil
+	userAccount := ""
+	switch conf.ValidCodeType {
+	case enum.ValidCodeTypeSMS:
+		userAccount = userInfo.GetString("mobile")
+	case enum.ValidCodeTypeWechat:
+		userAccount = userInfo.GetString("wx_openid")
+	default:
+		return errs.NewError(errorcode.ERR_VALID_CODE_TYPE_ERROR, fmt.Errorf("无效的ValidCodeType:%s", conf.ValidCodeType))
+	}
+	return vcs.VerifySmsCode(ident, userAccount, validCode, hydra.G.GetPlatName())
 }
 
 //CheckUserIsLocked 检查用户是否被锁定
 func (m *LoginLogic) CheckUserIsLocked(userName string) error {
-	conf := model.GetConf()
-	failCount := conf.UserLoginFailCount
+	conf := model.GetLoginConf()
+	failCount := conf.UserLoginFailLimit
 	count, err := m.cache.GetLoginFailCnt(userName)
 	if err != nil {
 		return err
@@ -89,12 +99,12 @@ func (m *LoginLogic) ChangePwd(userID int, expassword string, newpassword string
 		return m.db.ChangePwd(userID, newpassword)
 	}
 
-	conf := model.GetConf()
+	conf := model.GetLoginConf()
 	count, err := m.cache.SetLoginFail(userInfo.GetString("user_name"))
 	if err != nil {
 		return err
 	}
-	if count <= conf.UserLoginFailCount {
+	if count <= conf.UserLoginFailLimit {
 		errorCode := m.generateWrongPwdErrorCode(count)
 		err = errs.NewError(errorCode, "原密码错误，通过errorcode区分次数")
 		return err
@@ -158,8 +168,8 @@ func (m *LoginLogic) checkUserInfo(userName, password string, state *model.Membe
 	if err != nil {
 		return err
 	}
-	conf := model.GetConf()
-	if count <= conf.UserLoginFailCount {
+	conf := model.GetLoginConf()
+	if count <= conf.UserLoginFailLimit {
 		errorCode := m.generateWrongPwdErrorCode(count)
 		err = errs.NewError(errorCode, "用户名或密码错误，通过errorcode区分次数")
 		return err
@@ -186,83 +196,6 @@ func (m *LoginLogic) unLockUser(userName string) error {
 //UpdateUserLoginTime 记录用户成功登录时间
 func (m *LoginLogic) UpdateUserLoginTime(userID int64) error {
 	return m.db.UpdateUserLoginTime(userID)
-}
-
-//SendWxValidCode 发送微信验证码
-func (m *LoginLogic) SendWxValidCode(userName, openID, ident string) error {
-	//1: 发送微信验证码
-	token, err := m.GetFreshToken()
-	if err != nil {
-		return err
-	}
-	randd := rand.New(rand.NewSource(time.Now().UnixNano()))
-	validcode := fmt.Sprintf("%06v", randd.Int31n(1000000))
-	m.sendCode(openID, token, validcode, ident)
-
-	//2:保存到redis中
-	if err := m.cache.SetLoginValidateCode(validcode, userName); err != nil {
-		return err
-	}
-	return nil
-}
-
-//GetFreshToken 动态获取token
-func (m *LoginLogic) GetFreshToken() (string, error) {
-	conf := model.GetConf()
-	url := fmt.Sprintf("%s/%s/wechat/token/get", conf.RefreshWxTokenHost, conf.WxAppID)
-	client := components.Def.HTTP().GetRegularClient()
-	body, statusCode, err := client.Get(url)
-	if err != nil {
-		return "", err
-	}
-	if statusCode != 200 {
-		return "", errs.NewErrorf(statusCode, "获取token信息失败,HttpStatus:%d, body:%s", statusCode, body)
-	}
-
-	data := make(map[string]interface{})
-	err = json.Unmarshal([]byte(body), &data)
-	if err != nil {
-		return "", fmt.Errorf("字符串转json发生错误，err：%v", err)
-	}
-
-	if errcode, ok := data["errcode"]; ok && types.GetInt(errcode) != 0 {
-		return "", errs.NewError(http.StatusNotExtended, fmt.Errorf("获取token失败: %s", types.GetString(data["errmsg"])))
-	}
-
-	return types.GetString(data["access_token"]), nil
-}
-
-//SendCode 调用微信接口发验证码
-func (m *LoginLogic) sendCode(openID, accessToken, validCode, ident string) error {
-	conf := model.GetConf()
-	data := m.constructSendData(openID, validCode, ident, conf.LoginValidCodeTemplateID)
-	dataJSON, err := json.Marshal(data)
-	if err != nil {
-		return err
-	}
-
-	url := fmt.Sprintf("%s?access_token=%s", conf.WxSendTemplateMsgURL, accessToken)
-	client := components.Def.HTTP().GetRegularClient()
-	content, statusCode, err := client.Post(url, string(dataJSON))
-
-	if err != nil {
-		return err
-	}
-	if statusCode != 200 {
-		return errs.NewErrorf(statusCode, "发送验证码信息失败,HttpStatus:%d, body:%s", statusCode, content)
-	}
-
-	sendResult := make(map[string]interface{})
-	err = json.Unmarshal([]byte(content), &sendResult)
-	if err != nil {
-		return fmt.Errorf("字符串转json发生错误，err：%v", err)
-	}
-
-	if errcode, ok := sendResult["errcode"]; ok && errcode != 0 {
-		return errs.NewError(http.StatusNotExtended, fmt.Errorf("发送验证码信息失败: %s", types.GetString(sendResult["errmsg"])))
-	}
-
-	return nil
 }
 
 //构造发送验证码的实体数据
@@ -322,34 +255,32 @@ func (m *LoginLogic) generateWrongPwdErrorCode(currentCount int) int {
 	return errorcode.ERR_USER_LOCKED
 }
 
-
-
 //Login 用户名密码登录
-func  (m *LoginLogic) SLogin(req model.LoginReq) (*model.LoginState, error) {
- 
+func (m *LoginLogic) SLogin(req model.LoginReq) (*model.LoginState, error) {
+
 	ident := req.Ident
 	if err := m.CheckSystemStatus(ident); err != nil {
-		err = errs.NewError(errorcode.ERR_SYS_LOCKED ,fmt.Errorf("判断系统是否被禁用:%v",err) )
+		err = errs.NewError(errorcode.ERR_SYS_LOCKED, fmt.Errorf("判断系统是否被禁用:%v", err))
 		return nil, err
 	}
 
 	userName := req.UserName
 	if err := m.CheckUserIsLocked(userName); err != nil {
- 		err = errs.NewError(errorcode.ERR_USER_LOCKED ,fmt.Errorf("判断用户是否被锁定, 锁定时间过期后要解锁:%v",err) )
+		err = errs.NewError(errorcode.ERR_USER_LOCKED, fmt.Errorf("判断用户是否被锁定, 锁定时间过期后要解锁:%v", err))
 		return nil, err
 	}
 
- 	if err := m.CheckWxValidCode(userName, req.Wxcode); err != nil {
- 		 err = errs.NewError(errorcode.ERR_VALIDATECODE_WRONG ,fmt.Errorf("判断用户输入的验证码:%v",err) )
+	if err := m.CheckValidCode(userName, req.Ident, req.ValidCode); err != nil {
+		err = errs.NewError(errorcode.ERR_VALIDATECODE_WRONG, fmt.Errorf("判断用户输入的验证码:%v", err))
 		return nil, err
 	}
 
 	member, err := m.Login(userName, req.Password, ident)
 	if err != nil {
- 		return nil, err
+		return nil, err
 	}
 
- 	 m.UpdateUserLoginTime(member.UserID);  
+	m.UpdateUserLoginTime(member.UserID)
 
 	return member, nil
 }

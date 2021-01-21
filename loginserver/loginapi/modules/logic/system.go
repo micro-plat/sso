@@ -4,8 +4,8 @@ import (
 	"strings"
 
 	"github.com/micro-plat/lib4go/db"
-	commodel "github.com/micro-plat/sso/loginserver/loginapi/modules/model"
 	"github.com/micro-plat/sso/loginserver/loginapi/modules/access/system"
+	commodel "github.com/micro-plat/sso/loginserver/loginapi/modules/model"
 )
 
 // ISystemLogic xx
@@ -29,7 +29,7 @@ func NewSystemLogic() *SystemLogic {
 
 //GetSystemConfig 获取系统配置信息
 func (s *SystemLogic) GetSystemConfig(ident string) (map[string]interface{}, error) {
-	result := map[string]interface{}{"system_name": "用户登录", "require_wx_code": commodel.GetConf().RequireWxCode}
+	result := map[string]interface{}{"system_name": "用户登录", "require_valid_code": commodel.GetLoginConf().RequireValidCode}
 	if strings.EqualFold(ident, "") {
 		return result, nil
 	}
