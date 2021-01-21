@@ -34,7 +34,7 @@ cd dist/static
 rm -f $filename
 zip -r $filename  * > /dev/null
 if [ $? -ne 0 ]; then
-	echo "tar -zcvf $filename dist/static/* 出错"
+	echo "zip -r $filename * 出错"
 	exit 1
 fi
 
