@@ -27,16 +27,14 @@
         checkAndJumpLogin() {
             this.$http.post("/loginweb/login/check",{ident:this.ident})
             .then(res =>{
-              debugger
                 this.notice = "已登录,跳转中..."; 
                 if (this.ident && res.callback) {
                   console.log("login/check:",this.ident,res)
-                    //window.location.href = JoinUrlParams(decodeURIComponent(res.callback),{code:res.code,returnurl:returnurl})
-                    return;
+                  window.location.href = JoinUrlParams(decodeURIComponent(res.callback),{code:res.code,returnurl:this.returnurl})
+                  return;
                 }
                 this.$router.push({ path: '/choose'});   
             }).catch(err => {
-              debugger
                 if (err.response) {
                   if (err.response.status == 403){
                     console.log("login/check.catch:",this.ident,err)

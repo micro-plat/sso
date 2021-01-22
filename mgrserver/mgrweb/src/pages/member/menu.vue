@@ -24,11 +24,11 @@
     data () {
       return {
         logo: "",
-        copyright: (this.$env.Conf.companyRight||"") + "Copyright©" + new Date().getFullYear() +"版权所有",//"北京卓易豪斯科技有限公司Copyright©" + new Date().getFullYear() +"版权所有" ,
-        copyrightcode: this.$env.Conf.companyRightCode ,//"蜀ICP备20003360号",
+        copyright: (this.$env.Conf.companyRight||"") + "Copyright©" + new Date().getFullYear() +"版权所有",
+        copyrightcode: this.$env.Conf.companyRightCode ,
         themes: "", //顶部左侧背景颜色,顶部右侧背景颜色,右边菜单背景颜色
         menus: [{}],  //菜单数据
-        systemName: "用户权限系统",  //系统名称
+        systemName: "",  //系统名称
         userinfo: {name:'',role:"管理员"},
         indexUrl: "/user/index",
         items:[]
@@ -58,8 +58,13 @@
       },
       signOutM() {
         this.$http.clearAuthorization();
+        var logouturl="";//如果想退出后跳转的地址，请设置值
         var returnURL = window.location.href;
-        window.location  = this.$env.Conf.loginWebHost+"/"+this.$env.Conf.ident+"/login?returnurl="+returnURL
+        var redirectURL = "?returnurl="+returnURL;
+        if (logouturl){
+          redirectURL = "?logouturl="+logouturl;
+        }
+        window.location  = this.$env.Conf.loginWebHost+"/"+this.$env.Conf.ident+"/login"+redirectURL;
       },
       getMenu(){
         this.$http.get("/sso/member/menus/get")

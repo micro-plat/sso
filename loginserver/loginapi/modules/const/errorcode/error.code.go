@@ -56,6 +56,8 @@ const (
 
 	ERR_VALID_CODE_TYPE_ERROR = 919
 
+	ERR_WECHAT_TOKEN_GET_ERROR = 920
+
 	//-------------------------------------------------
 
 	//此用户名已被使用

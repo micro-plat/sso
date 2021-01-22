@@ -28,7 +28,7 @@
 <script>
   import VueCookies from 'vue-cookies'
   import loginWithUp from 'login-with-up';
-  import {JoinUrlParams} from '@/services/common.js'
+  import {JoinUrlParams,guid} from '@/services/common.js'
 
   import "@/services/qrcode.min.js"
   import "@/services/md5.js"
@@ -111,7 +111,7 @@
       //发送微信验证码
       getCodeCall(e){
          this.$refs.LoginUp.showError("发送验证码中...");
-         this.$http.post("/loginweb/member/sendcode", {ident: this.ident, username: e.username})
+         this.$http.post("/loginweb/member/sendcode", {ident: this.ident, username: e.username,guid:guid()})
           .then(res=>{
             this.$refs.LoginUp.showError(this.$env.Conf.showText);
             this.$refs.LoginUp.countDown();
