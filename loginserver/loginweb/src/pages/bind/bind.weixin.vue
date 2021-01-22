@@ -49,7 +49,7 @@
             this.$http.post("/loginweb/member/bind/check",{user_id:this.userId, sign:this.sign, timestamp:this.timestamp})
             .then(res =>{
                 var url = res.wxlogin_url + "?appid=" + res.appid + "&state=" + res.state + "&redirect_uri=" +
-                        encodeURIComponent(this.$env.Conf.wxcallbackhost + this.$env.Conf.wxcallbackurl + "/bind") +
+                        encodeURIComponent(this.$env.conf.system.wxcallbackhost + this.$env.conf.system.wxcallbackurl + "/bind") +
                         "&response_type=code&scope=snsapi_base#wechat_redirect"; 
                 console.log(url);
                 window.location.href = url;  

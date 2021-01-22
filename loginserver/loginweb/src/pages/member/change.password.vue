@@ -45,18 +45,15 @@
         password1: "",
         password2: "",
         errorMsg: "",
-        copyRight: (this.$env.Conf.companyRight||"") + "Copyright©" + new Date().getFullYear() +"版权所有",
+        copyRight: (this.$env.conf.system.companyRight||"") + "Copyright©" + new Date().getFullYear() +"版权所有",
          
       }
     },
     created() {
-        this.ident = this.$route.params.ident ? this.$route.params.ident : "";
-        if (!window.localStorage.getItem("__sso_jwt__")) {
-            this.$router.push({path:jumpLogin(this.ident), query :{ changepwd: 1 }});
-        }
+        this.ident = this.$route.params.ident ? this.$route.params.ident : "";  
     },
     mounted(){
-      document.title = "修改密码-能源业务中心运营管理系统";
+      document.title = "修改密码";
     },
     methods:{
       signOut() {
@@ -87,7 +84,10 @@
                 return;
             }
             this.errorMsg = '';
-            this.$http.post("/loginweb/member/changepwd", {expassword:this.expassword.trim(), newpassword:this.password1.trim()})
+            this.$http.post("/loginweb/member/changepwd", {
+                    expassword:this.expassword.trim(),
+                    newpassword:this.password1.trim()
+                 })
                 .then(res => {
                     this.errorMsg = "密码修改成功";
                      setTimeout(() => {

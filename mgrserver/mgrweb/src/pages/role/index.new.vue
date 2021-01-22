@@ -33,8 +33,9 @@
 
           <el-table-column align="center" width="180" prop="status" label="状态">
             <template slot-scope="scope">
-              <el-tag type="success" v-if="scope.row.status == 0">{{scope.row.status_label}}</el-tag>
-              <el-tag type="info" v-if="scope.row.status == 2">{{scope.row.status_label}}</el-tag>
+              <!-- <el-tag type="success" v-if="scope.row.status == 0">{{scope.row.status_label}}</el-tag>
+              <el-tag type="info" v-if="scope.row.status == 2">{{scope.row.status_label}}</el-tag> -->
+              <el-tag type="scope.row.status == 2?'success':'info'">{{scope.row.status | fltrEnum("role_status")}}</el-tag>
             </template>
           </el-table-column>
 

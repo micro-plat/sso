@@ -24,12 +24,12 @@
     data () {
       return {
         logo: "",
-        copyright: (this.$env.Conf.companyRight||"") + "Copyright©" + new Date().getFullYear() +"版权所有",
-        copyrightcode: this.$env.Conf.companyRightCode ,
+        copyright: (this.$env.conf.system.copyrightCompany||"") + "Copyright©" + new Date().getFullYear() +"版权所有",
+        copyrightcode: this.$env.conf.system.companyRightCode ,
         themes: "", //顶部左侧背景颜色,顶部右侧背景颜色,右边菜单背景颜色
         menus: [{}],  //菜单数据
         systemName: "",  //系统名称
-        userinfo: {name:'',role:"管理员"},
+        userinfo:{},
         indexUrl: "/user/index",
         items:[]
       }
@@ -38,89 +38,55 @@
       navMenu
     },
     created(){
-      this.getMenu();
-      this.getSystemInfo();
+     
     },
     mounted(){
+      console.log("----------",this.$route.query)
+      this.$auth.checkAuthCode(this)
+      this.getMenu();
+      this.getSystemInfo();
+
       this.setDocmentTitle();
-      var userinfo = localStorage.getItem("userinfo")
-      if(userinfo){
-        this.userinfo = JSON.parse(userinfo);
-      }
+      this.userinfo = this.$auth.getUserInfo()
     },
     methods:{
       pwd(){
         this.$http.clearAuthorization();
-        if(this.$env.Conf.cookieName){
-          VueCookies.remove(this.$env.Conf.cookieName);
-        }
-        window.location.href = this.$env.Conf.loginWebHost + "/" + this.$env.Conf.ident + "/changepwd";
+
+        var keys = this.$cookies.keys();
+        for(var i in keys){
+            this.$cookies.remove(keys[i]);
+        }  
+        var url = this.$env.conf.sso.host + "/"+ this.$env.conf.sso.ident + "/changepwd"
+        window.location.href = url;
       },
       signOutM() {
-        this.$http.clearAuthorization();
-        var logouturl="";//如果想退出后跳转的地址，请设置值
-        var returnURL = window.location.href;
-        var redirectURL = "?returnurl="+returnURL;
-        if (logouturl){
-          redirectURL = "?logouturl="+logouturl;
-        }
-        window.location  = this.$env.Conf.loginWebHost+"/"+this.$env.Conf.ident+"/login"+redirectURL;
+        this.$auth.loginout();
       },
       getMenu(){
-        this.$http.get("/sso/member/menus/get")
-          .then(res => {
-            this.menus = res;
-            this.$refs.NewTap.open("用户管理", this.indexUrl);
+          this.$auth.getMenus(this).then(res=>{
+            this.menus =res ;
             this.getUserOtherSys();
-          })
-          .catch(err => {
-            console.log(err)
           });
       },
       //获取系统的相关数据
-      getSystemInfo() {
-        this.$http.get("/sso/system/info/get")
-        .then(res => {
-          this.themes = res.theme;
-          this.systemName = res.name;
-          this.logo = res.logo;
-          this.setDocmentTitle();
-          
-        }).catch(err => {
-          console.log(err);
-        })
+      getSystemInfo() { 
+         this.$auth.getSystemInfo().then(res=>{
+            this.themes = res.theme;
+            this.systemName = res.name;
+            this.logo = res.logo;
+         })
       },
       //用户可用的其他系统
       getUserOtherSys() {
-        this.$http.get("/sso/member/systems/get")
-        .then(res => {
-            this.items = (function (systems) {
-              if (!systems || !systems.length) {
-                  return []
-              }
-              var items = [];
-              systems.forEach(element => {
-                  items.push({
-                    name: element.name,
-                    path: element.index_url.substr(0, element.index_url.lastIndexOf("/")),
-                    type: "blank"
-                  })
-              });
-              return items;
-          })(res);
-        })
-        .catch(err => {
-          console.log(err);
-        })
+        this.$auth.getSystemList().then(res=>{
+          this.items = res;
+        }) 
       },
       setDocmentTitle() {
-        document.title = this.systemName;
+        document.title = this.$env.conf.system.name;
       }
     
     }
   }
 </script>
-
-<style scoped>
-
-</style>

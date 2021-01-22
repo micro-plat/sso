@@ -6,6 +6,8 @@ select
 	t.id,
 	t.name,
 	t.index_url,
+	t.index_url path,
+	'blank' type,
 	t.logo,
 	t.theme,
 	t.layout,

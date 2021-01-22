@@ -109,18 +109,18 @@ Vue.filter('fltrDate', (value, format = "yyyy-MM-dd") => {
 //完整日期格式转换
 Vue.filter('fltrDateTime', (value, format = "yyyy-MM-dd hh:mm") => {
     if (value === '') {
-        return '-';
+        return '-'
     } 
-    return new Utility().dateFormat(value, format);
+    return new Utility().dateFormat(value, format)
 })
   
 //空值时默认显示'---'
-Vue.filter('fltrEmpty', function(value) {
+Vue.filter('fltrEmpty', value => {
     if (value === '') {
-        return '---';
+        return '---'
     }
-    return value;
-});
+    return value
+})
   
 // 字符串截取number个字符，超出加'...'
 Vue.filter('fltrSubstr', (value, number = 16) => {

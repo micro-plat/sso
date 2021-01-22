@@ -9,14 +9,14 @@ from
 where 
 	user_name=@user_name`
 
-
-
 //QueryUserSystem 查询用户可用的子系统
 const QueryUserSystem = `
 select
 	sys.id,
 	sys.name,
 	sys.index_url,
+	sys.index_url path,
+	'blank' type,
 	sys.logo
 from sso_system_info sys
 inner join sso_user_role ur on ur.sys_id = sys.id
@@ -29,8 +29,6 @@ where role.status = 0 AND
   sys.enable=1 and
   ur.user_id = @user_id; 
 `
-
- 
 
 //QuerySysAuth .
 const QuerySysAuth = `

@@ -30,7 +30,7 @@
                 this.notice = "已登录,跳转中..."; 
                 if (this.ident && res.callback) {
                   console.log("login/check:",this.ident,res)
-                  window.location.href = JoinUrlParams(decodeURIComponent(res.callback),{code:res.code,returnurl:this.returnurl})
+                  window.location.href = JoinUrlParams(decodeURIComponent(this.returnurl),{code:res.code})
                   return;
                 }
                 this.$router.push({ path: '/choose'});   

@@ -38,10 +38,10 @@
     data () {
       return {
         systemName: "",
-        bgImageUrl: this.$env.Conf.staticImageUrl ,//"http://images.yxtx888.net/sso/background.jpg",
-        copyright: (this.$env.Conf.companyRight||"") + "Copyright©" + new Date().getFullYear() +"版权所有",//"北京卓易豪斯科技有限公司Copyright©" + new Date().getFullYear() +"版权所有" ,
-        copyrightcode: this.$env.Conf.companyRightCode ,//"蜀ICP备20003360号",
-        requireCode: this.$env.Conf.requireCode||true,
+        bgImageUrl: this.$env.conf.system.staticImageUrl ,//"http://images.yxtx888.net/sso/background.jpg",
+        copyright: (this.$env.conf.system.companyRight||"") + "Copyright©" + new Date().getFullYear() +"版权所有",//"北京卓易豪斯科技有限公司Copyright©" + new Date().getFullYear() +"版权所有" ,
+        copyrightcode: this.$env.conf.system.companyRightCode ,//"蜀ICP备20003360号",
+        requireCode: this.$env.conf.system.requireCode||true,
 
         returnURL:"",
         ident: "",
@@ -52,9 +52,9 @@
         loginPwdLabel:"密码",
         loginPwdHolder:"请输入用户密码",
 
-        codeLabel:this.$env.Conf.codeLabel,
-        codeHolder:this.$env.Conf.codeHolder,
-        sendBtnLabel:this.$env.Conf.sendBtnLabel,
+        codeLabel:this.$env.conf.system.codeLabel,
+        codeHolder:this.$env.conf.system.codeHolder,
+        sendBtnLabel:this.$env.conf.system.sendBtnLabel,
 
 
         errorTemplate:{
@@ -82,7 +82,11 @@
 
     mounted(){
       this.$http.clearAuthorization();
-      VueCookies.remove(this.$env.Conf.cookieName);
+      var keys = this.$cookies.keys();
+      for(var i in keys){
+          this.$cookies.remove(keys[i]);
+      }
+            
       var logoutURL = this.$route.query.logouturl;
       if(logoutURL){
          window.location.href = logoutURL
@@ -113,7 +117,7 @@
          this.$refs.LoginUp.showError("发送验证码中...");
          this.$http.post("/loginweb/member/sendcode", {ident: this.ident, username: e.username,guid:guid()})
           .then(res=>{
-            this.$refs.LoginUp.showError(this.$env.Conf.showText);
+            this.$refs.LoginUp.showError(this.$env.conf.system.showText);
             this.$refs.LoginUp.countDown();
           })
           .catch(err=>{
@@ -137,12 +141,16 @@
         this.$http.post("/loginweb/member/login", req)
           .then(res => {
             setTimeout(() => { 
-              var parmscode={code:res.code,returnurl: that.returnURL} 
-              if (that.ident && res.callback) {
-                var url = JoinUrlParams(decodeURIComponent(res.callback),parmscode);
-                window.location.href = url;
-                return;
+              var parmscode={code:res.code} 
+              if(that.returnURL){
+                window.location.href =   JoinUrlParams(decodeURIComponent(that.returnURL),parmscode);
+                return 
               }
+              // if (that.ident && res.callback) {
+              //   var url = JoinUrlParams(decodeURIComponent(res.callback),parmscode);
+              //   window.location.href = url;
+              //   return;
+              // }
               this.$router.push({ path: '/choose'});
             }, 300);
           })

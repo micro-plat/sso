@@ -60,8 +60,8 @@ func loginVerify(ctx hydra.IContext) (r interface{}) {
 	return map[string]interface{}{
 		"user_id":   data.UserID,
 		"user_name": data.UserName,
-		"full_name": data.FullName,
-		"role_name": data.RoleName,
+		"name":      data.FullName,
+		"role":      data.RoleName,
 	}
 }
 

@@ -13,20 +13,11 @@ import 'element-ui/lib/theme-chalk/index.css';
 
 import utility from './services';
  
-Vue.use(utility, "../static/env.conf.json");
+Vue.use(utility);
 
 Vue.config.productionTip = false;
 Vue.use(ElementUI);
 Vue.use(VueCookies);
-
-Vue.prototype.$http.setBaseURL(Vue.prototype.$env.Conf.apiURL);
- 
-Vue.prototype.$enum.callback(async function(type){
-    var url =  "/dds/dictionary/get";
-    var data = await Vue.prototype.$http.get(url,{ dic_type: type });
-    return data;
-})
-
 
   /* eslint-disable no-new */
 new Vue({

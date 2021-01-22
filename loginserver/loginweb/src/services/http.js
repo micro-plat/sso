@@ -1,34 +1,14 @@
-import Vue from "vue"
 import axios from 'axios';
+import Vue from "vue";
+import $ from 'jquery';
 
 axios.defaults.timeout = 5000;
 axios.defaults.withCredentials = true;
 axios.defaults.baseURL = process.env.VUE_APP_API_URL || "";
 
-//获取vue实例
 var __vue__ = {}
 //header请求头key
-var headerKey = "__http_response_header__";
 var authorizationKey = "authorization";
-
-// 是否使用请求头
-var enableHeader = false
-
-//header头需排除参数
-var headerExcludeParams = [
-    "Access-Control-Allow-Credentials",
-    "Access-Control-Allow-Headers",
-    "Access-Control-Allow-Methods",
-    "Access-Control-Allow-Origin",
-    "Access-Control-Expose-Headers",
-    "Content-Type",
-    "access-control-allow-credentials",
-    "access-control-allow-headers",
-    "access-control-allow-methods",
-    "access-control-allow-origin",
-    "access-control-expose-headers",
-    "content-type"
-]
 
 //提示成功模板信息
 var tmplSuccess = { title: "成功", message: "操作成功", type: "success", offset: 50, duration: 2000 }
@@ -37,32 +17,44 @@ var tmplSuccess = { title: "成功", message: "操作成功", type: "success", o
 var tmplFailed = { title: "错误", message: "网络错误,请稍后再试", type: "error", offset: 50, duration: 2000 }
 
 //根据状态码回调
-var statusCodeHandles = { "403":function(response){} } 
+var statusCodeHandles = { "403":function(){} } 
 
 /*
 * http对象使用时须通过引用并进行初始化
-* import http from './http'
-* Vue.use(http);
+* import { Http } from 'qxnw-http';
+* Vue.prototype.$http = new Http(); // http初始化
+* 或者 
+* import { InitHttp } from 'qxnw-http';
+* InitHttp(Vue.prototype)
+*
+*使用方法
+*async queryAsix(){    通过await同步获取接口数据
+*    var data = await this.$http.post("/dds/dictionary/get", {}, {}, true)
+*    console.log("daaa", data);
+*},
+*
+*query(){ 通过回调获取数据
+*   this.$http.post("/dds/dictionary/get", {}, {}, true)
+*   .then(res=>{ 
+*       //成功回调
+*   }).catch(error=>{
+*       //失败回调
+*   })
+*},
+*
+*getConf(){   其中xget,xpost,xput,xdel都是同步请求，直接获取返回数据
+*    var data = this.$http.xpost("/dds/dictionary/get", { dic_type: "operate_action" }, "", false) || {}
+*},
+*
 */
-export function Http() { 
+export function Http() {
     __vue__ = Vue.prototype
 }
 
 //http request 拦截器
 axios.interceptors.request.use(
     config => {              
-        var headers = {};  
-        var defaults = {};
-        Object.assign(defaults,Http.prototype.defaults.headers);
-        for(var k in defaults){
-            headers[k.toLowerCase()] = defaults[k];
-        }
-        headers[authorizationKey] = localStorage.getItem(authorizationKey);
-        for(var k in config.headers||{}){
-            headers[k.toLowerCase()] = config.headers[k];
-        }
-
-        config.headers = headers;
+        config.headers = getHeaders(config);
         return config;
     },
     error => {
@@ -73,11 +65,7 @@ axios.interceptors.request.use(
 //http response 拦截器
 axios.interceptors.response.use(
     response => {
-        console.log("response.headers:",response.headers);
         if(response.headers && response.headers[authorizationKey]){
-            if (!Http.prototype.defaults.headers){
-                Http.prototype.defaults.headers={};
-            }
             Http.prototype.setAuthorization(response.headers[authorizationKey]);
         }        
         return response;
@@ -93,22 +81,23 @@ axios.interceptors.response.use(
     }
 )
 
+//默认 content-type
 Http.prototype.defaults = {
-    headers:{"content-type": "application/json; charset=UTF-8"}
+    headers: {"content-type": "application/json; charset=UTF-8"}
 };
 
 //设置http请求地址
 Http.prototype.setBaseURL = function (apiBaseUrl) {
-    axios.defaults.baseURL = apiBaseUrl;
+    axios.defaults.baseURL = apiBaseUrl
 }
 
 //设置根据状态码回调
 Http.prototype.addStatusCodeHandle = function (f, code = "*") {
-    let vcode = code || "*";
+    let vcode = code || "*"
     if(typeof f != "function"){
-        return;
+        return
     }
-    statusCodeHandles[vcode] = f;
+    statusCodeHandles[vcode] = f
 }
 
 /**
@@ -117,15 +106,17 @@ Http.prototype.addStatusCodeHandle = function (f, code = "*") {
  * @param data
  * @returns {Promise}
  */
-Http.prototype.get = function (url, params = {}, config = {}) {
+Http.prototype.get = function (url, params = {}, config = {}, success = "", fail = "") {
     return new Promise((resolve, reject) => {
         axios.get(url, { params: params }, config)
             .then(response => {
                 if (response.status == 200) {
+                    showSuccessNotify(success)                    
                     resolve(response.data);
                 }
             })
             .catch(err => {
+                showFailedNotify(fail, err)
                 reject(err)
             })
     })
@@ -137,37 +128,21 @@ Http.prototype.get = function (url, params = {}, config = {}) {
  * @param data
  * @returns {Promise}
  */
-Http.prototype.post = function (url, data = {}, config = {}) {
+Http.prototype.post = function (url, data = {}, config = {}, success = "", fail = "") {
     return new Promise((resolve, reject) => {
         axios.post(url, data, config)
             .then(response => {
                 if (response.status == 200) {
+                    showSuccessNotify(success)
                     resolve(response.data);
                 }
             }, err => {
+                showFailedNotify(fail, err)
                 reject(err)
             })
     })
 }
 
-/**
- * 封装patch请求
- * @param url
- * @param data
- * @returns {Promise}
- */
-Http.prototype.patch = function (url, data = {}, config = {}) {
-    return new Promise((resolve, reject) => {
-        axios.patch(url, data, config)
-            .then(response => {
-                if (response.status == 200) {
-                    resolve(response.data);
-                }
-            }, err => {
-                reject(err)
-            })
-    })
-}
 
 /**
  * 封装put请求
@@ -175,14 +150,16 @@ Http.prototype.patch = function (url, data = {}, config = {}) {
  * @param data
  * @returns {Promise}
  */
-Http.prototype.put = function (url, data = {}, config = {}) {
+Http.prototype.put = function (url, data = {}, config = {}, success = "", fail = "") {
     return new Promise((resolve, reject) => {
         axios.put(url, data, config)
             .then(response => {
                 if (response.status == 200) {
+                    showSuccessNotify(success)
                     resolve(response.data);
                 }
             }, err => {
+                showFailedNotify(fail, err)
                 reject(err);
             });
     });
@@ -196,117 +173,92 @@ Http.prototype.put = function (url, data = {}, config = {}) {
  * @returns {Promise}
  */
 
-Http.prototype.del = function (url, data = {}, config = {}) {
+Http.prototype.del = function (url, data = {}, config = {}, success = "", fail = "") {
     return new Promise((resolve, reject) => {
         axios.delete(url, { data: data }, config)
             .then(response => {
                 if (response.status == 200) {
+                    showSuccessNotify(success)
                     resolve(response.data);
                 }
             }, err => {
+                showFailedNotify(fail, err)
                 reject(err)
             })
     })
 }
 
 /**
- * 二次封装get方法
+ * ajax同步封装get方法
  * @param url
  * @param data
  * @returns {Promise}
  */
-
 Http.prototype.xget = function (url, params = {}, config = {}, success = "", fail = "") {
-    return new Promise((resolve, reject) => {
-        Http.prototype.get(url, params, config)
-        .then((res)=>{
-            showSuccessNotify(success)
-            resolve(res)
-        }).catch(err => {
-            showFailedNotify(fail, err)
-            reject(err)
-        })
-    }).catch(err=>{})
+    return Http.prototype.ajax("GET", url, params, config, success, fail)
 }
 
 /**
- * 二次封装post方法
+ * ajax同步封装post方法
  * @param url
  * @param data
  * @returns {Promise}
  */
-
 Http.prototype.xpost = function (url, params = {}, config = {}, success = "", fail = "") {
-    return new Promise((resolve, reject) => {
-        Http.prototype.post(url, params, config)
-        .then((res)=>{
-            showSuccessNotify(success)
-            resolve(res)
-        }).catch(err => {
-            showFailedNotify(fail, err)
-            reject(err)
-        })
-    }).catch(err=>{})
+    return Http.prototype.ajax("POST", url, params, config, success, fail)
 }
 
 /**
- * 二次封装patch方法
+ * ajax同步封装put方法
  * @param url
  * @param data
  * @returns {Promise}
  */
-
-Http.prototype.xpatch = function (url, params = {}, config = {}, success = "", fail = "") {
-    return new Promise((resolve, reject) => {
-        Http.prototype.patch(url, params, config)
-        .then((res)=>{
-            showSuccessNotify(success)
-            resolve(res)
-        }).catch(err => {
-            showFailedNotify(fail, err)
-            reject(err)
-        })
-    }).catch(err=>{})
-}
-
-/**
- * 二次封装put方法
- * @param url
- * @param data
- * @returns {Promise}
- */
-
 Http.prototype.xput = function (url, params = {}, config = {}, success = "", fail = "") {
-    return new Promise((resolve, reject) => {
-        Http.prototype.put(url, params, config)
-        .then((res)=>{
-            showSuccessNotify(success)
-            resolve(res)
-        }).catch(err => {
-            showFailedNotify(fail, err)
-            reject(err)
-        })
-    }).catch(err=>{})
+    return Http.prototype.ajax("PUT", url, params, config, success, fail)
 }
 
 /**
- * 二次封装del方法
+ * ajax同步封装del方法
  * @param url
  * @param data
  * @returns {Promise}
  */
-
 Http.prototype.xdel = function (url, params = {}, config = {}, success = "", fail = "") {
-    return new Promise((resolve, reject) => {
-        Http.prototype.del(url, params, config)
-        .then((res)=>{
-            showSuccessNotify(success)
-            resolve(res)
-        }).catch(err => {
-            showFailedNotify(fail, err)
-            reject(err)
-        })
-    }).catch(err=>{})
+    return Http.prototype.ajax("DELETE", url, params, config, success, fail)
+}
+
+Http.prototype.ajax = function (method, url, params, config, success, fail){
+    
+    var result = {}
+    $.ajax({
+        type: method, //请求方式
+        async: false, // fasle表示同步请求，true表示异步请求
+        xhrFields: { withCredentials: true },        
+        headers: getHeaders(config||{}), 
+        beforeSend:function(jqXHR,settings){
+            settings.contentType = settings.headers["content-type"]
+            if((settings.contentType||"").indexOf("/json")>0){
+                settings.data = JSON.stringify(params);
+            }
+        },  
+        url: getURL(url),//请求地址
+        data: params, //请求参数
+        success: function(res) { //请求成功   
+            showSuccessNotify(success)   
+            result = res
+        },
+        error : function(err){  //请求失败，包含具体的错误信息  
+            showFailedNotify(fail, err)       
+        },
+        complete(xhr){
+            var token = xhr.getResponseHeader(authorizationKey);
+            if(token){
+                Http.prototype.setAuthorization(token)
+            }
+        }
+    })
+    return result
 }
 
 //初始化成功模板
@@ -319,14 +271,12 @@ Http.prototype.setFailedTmplt = function (data){
     setTmplt(tmplFailed,data)
 }
 
-//清空header
-Http.prototype.clear = function (){
-    localStorage.removeItem(headerKey);
-    return
-}
+//消除header
 Http.prototype.clearAuthorization =function(){
-    window.localStorage.removeItem(authorizationKey);    
+    window.localStorage.removeItem(authorizationKey); 
 }
+
+//设置需要的header
 Http.prototype.setAuthorization = function(token){
     if(token){
        window.localStorage.setItem(authorizationKey,token);
@@ -334,40 +284,37 @@ Http.prototype.setAuthorization = function(token){
 }
 
 //显示成功提示
-function showSuccessNotify(msg){
-    let tmpl = tmplSuccess
-    if (msg) {
-        if (typeof msg == "string"){
-            tmpl.message = msg
-        }
-    }
-    if(typeof msg == "boolean" && !msg){
+function showSuccessNotify(msg){   
+    if (!msg) {
         return
     }
 
+    let tmpl = tmplSuccess
+    if (typeof msg == "string"){
+        tmpl.message = msg
+    }  
     if(typeof __vue__.$notify != "function"){
-        console.error("未找到提示组件'this.$notify'方法，可能未安装element-ui组件，请先安装相关组件");
+        console.info("还未安装element-ui组件，请先安装相关组件");
         return
     }
     __vue__.$notify(tmpl);
 }
 
 //显示失败提示
-function showFailedNotify(msg, err){
-    let tmpl = tmplFailed
-    if (msg) {
-        if (typeof msg == "string"){
-            tmpl.message = msg + err
-        }
-        if (typeof msg == "boolean"){
-            tmpl.message = tmpl.message + err
-        }       
-    }
-    if(typeof msg == "boolean" && !msg){
+function showFailedNotify(msg, err){   
+    if (!msg) {    
         return
     }
+
+    let tmpl = tmplFailed
+    if (typeof msg == "string"){
+        tmpl.message = msg + err
+    }  
+    if(typeof msg == "boolean"){
+        tmpl.message = tmpl.message + err
+    }
     if(typeof __vue__.$notify != "function"){
-        console.info("未找到提示组件'this.$notify'方法，可能未安装element-ui组件，请先安装相关组件");
+        console.info("还未安装element-ui组件，请先安装相关组件");
         return
     }
     __vue__.$notify(tmpl);
@@ -385,16 +332,42 @@ function setTmplt(tmpl, data){
     if(typeof data != "object"){
         return
     }
-    if (data.hasOwnProperty("title")){
+    if (Object.prototype.hasOwnProperty.call(data, "title")){
         tmpl.title = data.title
     }
-    if (data.hasOwnProperty("message")){
+    if (Object.prototype.hasOwnProperty.call(data, "message")){
         tmpl.message = data.message
     }
-    if (data.hasOwnProperty("offset")){
+    if (Object.prototype.hasOwnProperty.call(data, "offset")){
         tmpl.offset = data.offset
     }
-    if (data.hasOwnProperty("duration")){
+    if (Object.prototype.hasOwnProperty.call(data, "duration")){
         tmpl.duration = data.duration
     }
+} 
+
+//获取response返回的header  
+function getHeaders(config){ 
+    
+    var headers = {};  
+    var defaults = {};
+    Object.assign(defaults,Http.prototype.defaults.headers);
+    for(var k in defaults){
+        headers[k.toLowerCase()] = defaults[k];
+    }
+    var token = localStorage.getItem(authorizationKey);
+    if(token){
+        headers[authorizationKey] = token;
+    }
+    for(var k in config.headers||{}){
+        headers[k.toLowerCase()] = config.headers[k];
+    }
+    return headers
+}
+
+function getURL(url){
+    if(url.indexOf(".") == 0) {
+        return url
+    }
+    return axios.defaults.baseURL + url  //请求地址
 }
