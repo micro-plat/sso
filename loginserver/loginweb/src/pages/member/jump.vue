@@ -24,7 +24,7 @@
     },
 
     methods:{
-        checkAndJumpLogin() {
+        checkAndJumpLogin() { 
             this.$http.post("/loginweb/login/check",{ident:this.ident})
             .then(res =>{
                 this.notice = "已登录,跳转中..."; 
@@ -35,6 +35,7 @@
                 }
                 this.$router.push({ path: '/choose'});   
             }).catch(err => {
+              console.log('xxxx',err )
                 if (err.response) {
                   if (err.response.status == 403){
                     console.log("login/check.catch:",this.ident,err)

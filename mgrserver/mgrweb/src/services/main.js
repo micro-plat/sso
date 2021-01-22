@@ -41,8 +41,8 @@ export default {
             if (!conf.sso || !conf.sso.host || !conf.sso.ident){
                 throw new Error("sso.host或sso.ident未配置");
             }
-            window.location = conf.sso.host+"/" + conf.sso.ident+"/login?returnurl=" + encodeURIComponent(document.URL);
-            return
+            window.location = conf.sso.host+"/" + conf.sso.ident+"/jump?returnurl=" + encodeURIComponent(document.URL);
+            return;
             
         }, 403);
 

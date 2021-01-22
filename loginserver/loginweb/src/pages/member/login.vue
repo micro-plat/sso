@@ -143,14 +143,14 @@
             setTimeout(() => { 
               var parmscode={code:res.code} 
               if(that.returnURL){
-                window.location.href =   JoinUrlParams(decodeURIComponent(that.returnURL),parmscode);
+                window.location.href = JoinUrlParams(decodeURIComponent(that.returnURL),parmscode);
                 return 
               }
-              // if (that.ident && res.callback) {
-              //   var url = JoinUrlParams(decodeURIComponent(res.callback),parmscode);
-              //   window.location.href = url;
-              //   return;
-              // }
+              if (that.ident && res.callback) {
+                var url = JoinUrlParams(decodeURIComponent(res.callback),parmscode);
+                window.location.href = url;
+                return;
+              }
               this.$router.push({ path: '/choose'});
             }, 300);
           })

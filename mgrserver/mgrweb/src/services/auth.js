@@ -45,9 +45,12 @@ Auth.prototype.loginout = function(url){
     if ((!that.$env.conf.sso||!that.$env.conf.sso.host) && !url){
         return;
     }
-
+    var redirctURL= "?returnurl="+ encodeURIComponent( window.location.href);
+    if(url){
+        redirctURL = "?logouturl="+encodeURIComponent(url);
+    }
     //检查loginOutURL是否配置
-    window.location = url || that.$env.conf.sso.host + "/" + that.$env.conf.sso.ident + "/login";    
+    window.location = url || that.$env.conf.sso.host + "/" + that.$env.conf.sso.ident + "/login"+redirctURL;    
 }
 
 //getUserInfo 获取用户信息
@@ -61,10 +64,6 @@ Auth.prototype.getUserInfo = function(){
 
 //getMenus获取菜单数据
 Auth.prototype.getMenus = function(_that, url){
-    // let systemMenus = window.localStorage.getItem(__system_menus__)  
-    // if (systemMenus){
-    //     return JSON.parse(systemMenus)||{}
-    // }
 
     let that = Auth.prototype.Vue.prototype  
     let menuURL = url || "/sso/member/menus/get"
@@ -72,10 +71,10 @@ Auth.prototype.getMenus = function(_that, url){
         that.$http.get(menuURL)
         .then(res => {
              window.localStorage.setItem(__system_menus__, JSON.stringify(res))  
+             loadPath(_that, res)
             //根据路径查找名称    
-            var cur = getMenuItem(res, window.location.pathname);
-
-            _that.$refs.NewTap.open(cur.name, cur.path); //this用menu的this
+            // var cur = getMenuItem(res, window.location.pathname);
+            // _that.$refs.NewTap.open(cur.name, cur.path); //this用menu的this
             resolve(res);
         })
         .catch(err => {
@@ -83,6 +82,15 @@ Auth.prototype.getMenus = function(_that, url){
         })
     });
 }
+ 
+//初始化加载路由
+function loadPath(_that, menus){
+    //根据路径查找名称    
+    var cur = getMenuItem(menus, window.location.pathname);
+
+    _that.$refs.NewTap.open(cur.name, cur.path); //this用menu的this
+}
+
 
 //getSystemInfo获取系统信息
 Auth.prototype.getSystemInfo = function(url ){   
