@@ -1,12 +1,12 @@
 package sso
 
 import (
- 	"fmt"
+	"fmt"
 	"net/http"
 	"sync"
 
 	"github.com/micro-plat/hydra"
- 	"github.com/micro-plat/lib4go/errs"
+	"github.com/micro-plat/lib4go/errs"
 )
 
 var onceLock sync.Once
@@ -24,7 +24,7 @@ func init() {
 
 			app.Micro("/sso/member/changepwd", changePwd)
 			app.Micro("/sso/member/forgetpwd", forgetPwd)
- 		})
+		})
 	})
 
 }
@@ -58,7 +58,9 @@ func loginVerify(ctx hydra.IContext) (r interface{}) {
 
 	ctx.Log().Info("3: 返回用户数据")
 	return map[string]interface{}{
+		"user_id":   data.UserID,
 		"user_name": data.UserName,
+		"full_name": data.FullName,
 		"role_name": data.RoleName,
 	}
 }
@@ -175,7 +177,7 @@ func changePwd(ctx hydra.IContext) (r interface{}) {
 	mem := GetMember(ctx)
 	return GetSSOClient().ChangePwd(mem.UserID, ctx.Request().GetString("expassword"), ctx.Request().GetString("newpassword"))
 }
- 
+
 /* getUserDataPermission 获取 [数据权限] 生成相应的sql语句
  *
  */

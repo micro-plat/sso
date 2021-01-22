@@ -5,11 +5,11 @@ type User struct {
 	UserID    string `json:"user_id"`
 	UserName  string `json:"user_name"`
 	FullNme   string `json:"full_name"`
-	WxOpID    string `json:"wx_openid"`
-	Mobile    string `json:"mobile"`
-	Email     string `json:"email"`
-	ExtParams string `json:"ext_params"`
-	Status    string `json:"status"`
+	WxOpID    string `json:"wx_openid,omitempty"`
+	Mobile    string `json:"mobile,omitempty"`
+	Email     string `json:"email,omitempty"`
+	ExtParams string `json:"ext_params,omitempty"`
+	Status    string `json:"status,omitempty"`
 }
 
 //LoginState 用户信息
