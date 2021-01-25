@@ -74,15 +74,11 @@ func logout(ctx hydra.IContext) (r interface{}) {
 	ctx.Log().Info("1. 获取配置")
 	srvConf := ctx.APPConf().GetServerConf()
 	jwtConf, err := jwt.GetConf(srvConf)
-	if err != nil {
+	if err != nil || jwtConf.Disable {
 		return err
 	}
-	ctx.Log().Info("2.构造 token")
-	k, v := jwtConf.GetJWTForRspns("expired", true)
-
-	ctx.Response().Header(k, v)
-	ctx.Log().Info("3: 完成")
-	return nil
+	ctx.User().Auth().Request(nil)
+	return "success"
 }
 
 //userMenus 用户菜单信息
