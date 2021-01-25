@@ -6,6 +6,8 @@ import (
 	"sync"
 
 	"github.com/micro-plat/hydra"
+	"github.com/micro-plat/hydra/conf/server/auth/jwt"
+
 	"github.com/micro-plat/lib4go/errs"
 )
 
@@ -16,6 +18,8 @@ func init() {
 		hydra.OnReady(func() {
 			app := hydra.S
 			app.Micro("/sso/login/verify", loginVerify)
+			app.Micro("/sso/logout", logout)
+
 			app.Micro("/sso/member/menus/get", userMenus)
 			app.Micro("/sso/member/systems/get", userSystems)
 			app.Micro("/sso/member/all/get", getAllUser)
@@ -63,6 +67,22 @@ func loginVerify(ctx hydra.IContext) (r interface{}) {
 		"name":      data.FullName,
 		"role":      data.RoleName,
 	}
+}
+
+func logout(ctx hydra.IContext) (r interface{}) {
+	ctx.Log().Info("-------sso退出用户登录---------")
+	ctx.Log().Info("1. 获取配置")
+	srvConf := ctx.APPConf().GetServerConf()
+	jwtConf, err := jwt.GetConf(srvConf)
+	if err != nil {
+		return err
+	}
+	ctx.Log().Info("2.构造 token")
+	k, v := jwtConf.GetJWTForRspns("expired", true)
+
+	ctx.Response().Header(k, v)
+	ctx.Log().Info("3: 完成")
+	return nil
 }
 
 //userMenus 用户菜单信息

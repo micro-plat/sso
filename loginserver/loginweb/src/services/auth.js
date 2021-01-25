@@ -1,5 +1,4 @@
 var __user_info__="__user_info__"
-var __system_menus__="__system_menus__"
 export function Auth(Vue) {
     Auth.prototype.Vue = Vue
 }
@@ -7,28 +6,27 @@ export function Auth(Vue) {
 //checkAuthCode 向服务器发送请求，验证auth code
 Auth.prototype.checkAuthCode = function (that ,url){
     //检查请求参数中是否有code
-    //let that = Auth.prototype.Vue.prototype;
     if (!that.$route.query.code){
-        return;
+       return;
     }
 
     //检查verify地址
     var verifyURL = url || that.$env.conf.system.verifyURL;
     if(!verifyURL){
-        return;
+        throw new Error("system.verifyURL未配置")
     }
 
     //从服务器拉取数据
     var userInfo = that.$http.xget(verifyURL,{ code: that.$route.query.code});
     if (!userInfo){
-        return;
+        throw new Error("userInfo数据为空");
     }
     //保存用户信息
     window.localStorage.setItem(__user_info__, JSON.stringify(userInfo)) ;
 }
 
 //lognout 退出登录
-Auth.prototype.loginout = function(url){
+Auth.prototype.loginout = function(url, logoutURL){
 
     //清除用户认证信息
     let that = Auth.prototype.Vue.prototype;
@@ -37,17 +35,20 @@ Auth.prototype.loginout = function(url){
     that.$http.clearAuthorization();
    
     //清除cookie 
-    var keys = that.$cookies.keys();
-    for(var i in keys){
-        that.$cookies.remove(keys[i]);
-    } 
-
-    if ((!that.$env.conf.sso||!that.$env.conf.sso.host) && !url){
-        return;
+    logoutURL = logoutURL || that.$env.conf.system.logoutURL;
+    if (logoutURL){
+        that.$http.xget(logoutURL);
     }
-
+    
+    if ((!that.$env.conf.sso || !that.$env.conf.sso.host) && !url){
+        throw new Error("sso节点或sso.host未配置且退出跳转url为空");
+    }
+    var redirctURL= "?returnurl=" + encodeURIComponent(window.location.href);
+    if(url){
+        redirctURL = "?logouturl=" + encodeURIComponent(url);
+    }
     //检查loginOutURL是否配置
-    window.location = url || that.$env.conf.sso.host + "/" + that.$env.conf.sso.ident + "/login";    
+    window.location = url || that.$env.conf.sso.host + "/" + that.$env.conf.sso.ident + "/login" + redirctURL;    
 }
 
 //getUserInfo 获取用户信息
@@ -61,20 +62,13 @@ Auth.prototype.getUserInfo = function(){
 
 //getMenus获取菜单数据
 Auth.prototype.getMenus = function(_that, url){
-    // let systemMenus = window.localStorage.getItem(__system_menus__)  
-    // if (systemMenus){
-    //     return JSON.parse(systemMenus)||{}
-    // }
-
     let that = Auth.prototype.Vue.prototype  
     let menuURL = url || "/sso/member/menus/get"
     return new Promise((resolve, reject) => {
         that.$http.get(menuURL)
-        .then(res => {
-             window.localStorage.setItem(__system_menus__, JSON.stringify(res))  
+        .then(res => { 
             //根据路径查找名称    
             var cur = getMenuItem(res, window.location.pathname);
-
             _that.$refs.NewTap.open(cur.name, cur.path); //this用menu的this
             resolve(res);
         })
@@ -114,7 +108,7 @@ Auth.prototype.getSystemList = function(url ){
     });
 }
 
-
+//获取路由name
 function getMenuItem(menus, path){    
     for (var i in menus){
         var cur = menus[i];
@@ -133,4 +127,3 @@ function getMenuItem(menus, path){
     }
     return null;
 }
-

@@ -14,7 +14,7 @@ import packageData from '../../package.json'
 * Vue.use(utility, "../static/env.conf.json");
 */
 export default {
-    install: function(Vue, path){
+    install: function(Vue, inject403Code = true, path){
         Vue.prototype.$enum = new Enum();
         Vue.prototype.$http = new Http();
         Vue.prototype.$utility = new Utility();
@@ -22,29 +22,30 @@ export default {
         Vue.prototype.$env = new Env(getConf(Vue, path))    
         Vue.prototype.$auth = new Auth(Vue);
 
-        let that =　Vue.prototype
+        let that = Vue.prototype
 
         //设置http请求的服务器地址
         if (that.$env.conf.system.apiHost){
             that.$http.setBaseURL(that.$env.conf.system.apiHost);
         }
 
-        //处理接口返回４０３时自动跳转到指定的地址
-        that.$http.addStatusCodeHandle(res => {
-            var url = (res.headers || {}).location || ""; 
-            if(url){
-                window.location = url + encodeURIComponent(document.URL);
-                return
-            }
-            
-            let conf = that.$env.conf
-            if (!conf.sso || !conf.sso.host || !conf.sso.ident){
-                throw new Error("sso.host或sso.ident未配置");
-            }
-            window.location = conf.sso.host+"/" + conf.sso.ident+"/login?returnurl=" + encodeURIComponent(document.URL);
-            return
-            
-        }, 403);
+        //处理接口返回403时自动跳转到指定的地址
+        if(inject403Code){ //注入时可配置是否默认处理403
+            that.$http.addStatusCodeHandle(res => {
+                var url = (res.headers || {}).location || ""; 
+                if(url){
+                    window.location = url + encodeURIComponent(document.URL);
+                    return
+                }
+                
+                let conf = that.$env.conf
+                if (!conf.sso || !conf.sso.host || !conf.sso.ident){
+                    throw new Error("sso.host或sso.ident未配置");
+                }
+                window.location = conf.sso.host + "/" + conf.sso.ident + "/jump?returnurl=" + encodeURIComponent(document.URL);
+                return;
+            }, 403);
+        }
 
         //拉到服务器配置信息
         if (that.$env.conf.system.confURL){
@@ -62,6 +63,7 @@ export default {
     }
 }
 
+//获取配置数据
 function getConf(Vue, path){
     if(path)
         return Vue.prototype.$http.xget(path) || {};
@@ -70,7 +72,7 @@ function getConf(Vue, path){
         return
     
     var vueVersion =  (packageData.dependencies.vue).charAt(1)
-    path = vueVersion > 3 ?"../../public/env.conf.json" : "../../static/env.conf.json"   
+    path = vueVersion > 3 ? "../../public/env.conf.json" : "../../static/env.conf.json"   
     return Vue.prototype.$http.xget(path) || {}
 }
 

@@ -82,10 +82,8 @@
 
     mounted(){
       this.$http.clearAuthorization();
-      var keys = this.$cookies.keys();
-      for(var i in keys){
-          this.$cookies.remove(keys[i]);
-      }
+      //清除cookie 
+      this.$http.xget("/loginweb/logout");
             
       var logoutURL = this.$route.query.logouturl;
       if(logoutURL){

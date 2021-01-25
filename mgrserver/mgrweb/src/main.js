@@ -27,7 +27,6 @@ import utility from './services';
 Vue.use(utility);
 
 
-
 Vue.config.productionTip = false;
 /* eslint-disable no-new */
 new Vue({

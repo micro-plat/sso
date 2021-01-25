@@ -86,6 +86,7 @@ func checkLoginConf(appConf app.IAPPConf) (err error) {
 func registryAPI() {
 	//web接口
 	App.Web("/loginweb/login/check", login.NewLoginCheckHandler)       //验证用户是否已登录
+	App.Web("/loginweb/logout", login.NewLogoutHandler)                //验证用户退出登录
 	App.Web("/loginweb/member/login", login.NewLoginHandler)           //用户登录相关
 	App.Web("/loginweb/member/bind", member.NewBindWxHandler)          //绑定微信
 	App.Web("/loginweb/member/changepwd", member.NewChangePwdHandler)  //修改密码
