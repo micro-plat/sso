@@ -10,8 +10,8 @@ type LogoutHandler struct {
 }
 
 //NewLogoutHandler 创建用户退出
-func NewLogoutHandler() (u *LoginHandler) {
-	return &LoginHandler{}
+func NewLogoutHandler() (u *LogoutHandler) {
+	return &LogoutHandler{}
 }
 
 //Handle 账号登录
@@ -23,6 +23,6 @@ func (u *LogoutHandler) Handle(ctx hydra.IContext) (r interface{}) {
 	if err != nil || jwtConf.Disable {
 		return err
 	}
-	ctx.User().Auth().Request(nil)
+	ctx.User().Auth().Clear()
 	return "success"
 }

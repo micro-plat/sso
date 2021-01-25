@@ -24,13 +24,12 @@
     data () {
       return {
         logo: "",
-        copyright: (this.$env.conf.system.copyrightCompany||"") + "Copyright©" + new Date().getFullYear() +"版权所有",
-        copyrightcode: this.$env.conf.system.companyRightCode ,
+        copyright: (this.$env.conf.copyright.company||"") + "Copyright©" + new Date().getFullYear() +"版权所有",
+        copyrightcode: this.$env.conf.copyright.code ,
         themes: "", //顶部左侧背景颜色,顶部右侧背景颜色,右边菜单背景颜色
         menus: [{}],  //菜单数据
         systemName: "",  //系统名称
         userinfo:{},
-        indexUrl: "/user/index",
         items:[]
       }
     },
@@ -84,7 +83,7 @@
         }) 
       },
       setDocmentTitle() {
-        document.title = this.$env.conf.system.name;
+        document.title = this.$env.conf.name;
       }
     
     }

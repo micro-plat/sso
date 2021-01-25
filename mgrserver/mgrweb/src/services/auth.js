@@ -4,20 +4,20 @@ export function Auth(Vue) {
 }
 
 //checkAuthCode 向服务器发送请求，验证auth code
-Auth.prototype.checkAuthCode = function (that ,url){
+Auth.prototype.checkAuthCode = function (that, url){
     //检查请求参数中是否有code
     if (!that.$route.query.code){
-       return;
+        return
     }
 
     //检查verify地址
-    var verifyURL = url || that.$env.conf.system.verifyURL;
+    var verifyURL = url || that.$env.conf.api.verifyURL;
     if(!verifyURL){
-        throw new Error("system.verifyURL未配置")
+        throw new Error("api.verifyURL未配置")
     }
 
     //从服务器拉取数据
-    var userInfo = that.$http.xget(verifyURL,{ code: that.$route.query.code});
+    var userInfo = that.$http.xget(verifyURL, {code: that.$route.query.code});
     if (!userInfo){
         throw new Error("userInfo数据为空");
     }
@@ -35,7 +35,7 @@ Auth.prototype.loginout = function(url, logoutURL){
     that.$http.clearAuthorization();
    
     //清除cookie 
-    logoutURL = logoutURL || that.$env.conf.system.logoutURL;
+    logoutURL = logoutURL || that.$env.conf.api.logoutURL;
     if (logoutURL){
         that.$http.xget(logoutURL);
     }
@@ -61,10 +61,19 @@ Auth.prototype.getUserInfo = function(){
 }
 
 //getMenus获取菜单数据
-Auth.prototype.getMenus = function(_that, url){
-    let that = Auth.prototype.Vue.prototype  
-    let menuURL = url || "/sso/member/menus/get";
+Auth.prototype.getMenus = function(_that, url){  
     return new Promise((resolve, reject) => {
+
+        let that = Auth.prototype.Vue.prototype  
+        
+        //获取本地配置的菜单
+        if (that.$env.conf.menus){
+            resolve(that.$env.conf.menus)
+            return
+        }       
+
+        //远程获取菜单
+        let menuURL = url || "/sso/member/menus/get"
         that.$http.get(menuURL)
         .then(res => { 
             //根据路径查找名称    
@@ -80,9 +89,18 @@ Auth.prototype.getMenus = function(_that, url){
 
 //getSystemInfo获取系统信息
 Auth.prototype.getSystemInfo = function(url ){   
-    let that = Auth.prototype.Vue.prototype 
-    let systemInfoURL = url || "/sso/system/info/get"
-    return new Promise((resolve, reject) => {       
+   
+    return new Promise((resolve, reject) => {   
+        let that = Auth.prototype.Vue.prototype 
+       
+        //获取本地配置的菜单
+        if (that.$env.conf.system){
+            resolve(that.$env.conf.system)
+            return
+        }  
+
+        //获取无程配置
+        let systemInfoURL = url || "/sso/system/info/get"
         that.$http.get(systemInfoURL)
         .then(res => {
             resolve(res);
@@ -94,10 +112,19 @@ Auth.prototype.getSystemInfo = function(url ){
 }
 
 //getSystemList获取用户系统列表
-Auth.prototype.getSystemList = function(url ){    
-    let that = Auth.prototype.Vue.prototype  
-    let systemsListURL = url || "/sso/member/systems/get"
+Auth.prototype.getSystemList = function(url ){      
     return new Promise((resolve, reject) => {
+
+        let that = Auth.prototype.Vue.prototype  
+       
+        //获取本地配置的菜单
+        if (that.$env.conf.sysList){
+            resolve(that.$env.conf.sysList)
+            return
+        }  
+
+        //远程获取其它系统
+        let systemsListURL = url || "/sso/member/systems/get"
         that.$http.get(systemsListURL)
         .then(res => {
             resolve(res);

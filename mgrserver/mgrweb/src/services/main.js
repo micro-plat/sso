@@ -25,8 +25,8 @@ export default {
         let that = Vue.prototype
 
         //设置http请求的服务器地址
-        if (that.$env.conf.system.apiHost){
-            that.$http.setBaseURL(that.$env.conf.system.apiHost);
+        if (that.$env.conf.api && that.$env.conf.api.host){
+            that.$http.setBaseURL(that.$env.conf.api.host);
         }
 
         //处理接口返回403时自动跳转到指定的地址
@@ -48,16 +48,16 @@ export default {
         }
 
         //拉到服务器配置信息
-        if (that.$env.conf.system.confURL){
+        if (that.$env.conf.api.confURL){
             that.$env.load(function(){
-                return that.$http.xget(that.$env.conf.system.confURL);  
+                return that.$http.xget(that.$env.conf.api.confURL);  
             });
         }
 
         //拉取enum数据
-        if (that.$env.conf.system.enumURL){
+        if (that.$env.conf.api.enumURL){
             that.$enum.callback(function(type){
-                return that.$http.xget(that.$env.conf.system.enumURL, { dic_type: type || "" }, "") 
+                return that.$http.xget(that.$env.conf.api.enumURL, { dic_type: type || "" }, "") 
             })
         }
     }
@@ -72,7 +72,7 @@ function getConf(Vue, path){
         return
     
     var vueVersion =  (packageData.dependencies.vue).charAt(1)
-    path = vueVersion > 3 ? "../../public/env.conf.json" : "../../static/env.conf.json"   
+    path = vueVersion >= 3 ? "./env.conf.json" : "../../static/env.conf.json"   
     return Vue.prototype.$http.xget(path) || {}
 }
 

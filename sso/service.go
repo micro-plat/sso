@@ -77,7 +77,7 @@ func logout(ctx hydra.IContext) (r interface{}) {
 	if err != nil || jwtConf.Disable {
 		return err
 	}
-	ctx.User().Auth().Request(nil)
+	ctx.User().Auth().Clear()
 	return "success"
 }
 

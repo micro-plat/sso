@@ -39,9 +39,9 @@
       return {
         systemName: "",
         bgImageUrl: this.$env.conf.system.staticImageUrl ,//"http://images.yxtx888.net/sso/background.jpg",
-        copyright: (this.$env.conf.system.companyRight||"") + "Copyright©" + new Date().getFullYear() +"版权所有",//"北京卓易豪斯科技有限公司Copyright©" + new Date().getFullYear() +"版权所有" ,
-        copyrightcode: this.$env.conf.system.companyRightCode ,//"蜀ICP备20003360号",
-        requireCode: this.$env.conf.system.requireCode||true,
+        copyright: (this.$env.conf.copyright.company||"") + "Copyright©" + new Date().getFullYear() +"版权所有",//"北京卓易豪斯科技有限公司Copyright©" + new Date().getFullYear() +"版权所有" ,
+        copyrightcode: this.$env.conf.copyright.code ,//"蜀ICP备20003360号",
+        requireCode: this.$env.conf.system.requireCode ||true,
 
         returnURL:"",
         ident: "",

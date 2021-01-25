@@ -634,7 +634,7 @@ export default {
         .post("/user/generateqrcode", { user_id: userid })
         .then((res) => {
           var url =
-            this.$env.conf.loginWebHost +
+            this.$env.conf.sso.host +
             "/bindwx?userid=" +
             res.user_id +
             "&sign=" +
