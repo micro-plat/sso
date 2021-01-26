@@ -1,10 +1,9 @@
 package sso
 
 import (
-	"fmt"
 	"github.com/micro-plat/hydra"
 	"github.com/micro-plat/lib4go/errs"
-	"github.com/micro-plat/sso/sso/errorcode"
+	//"github.com/micro-plat/sso/sso/errorcode"
 	"net/http"
 )
 
@@ -76,11 +75,10 @@ func VerifyAuthority(ctx hydra.IContext, pageURL string, funcTag string) (hasRig
 		err = errs.NewErrorf(http.StatusUnauthorized, "获取缓存失败：%d,ident:%s,role:%d", state.UserID, state.SysIdent, state.RoleID, err)
 		return
 	}
-	fmt.Println("pageURL:", pageURL, funcTag)
 	//页面权限
 	item, ok := authorityData[pageURL]
 	if !ok {
-		err = errs.NewErrorf(errorcode.ERR_USER_HASNOPAGEAUTHORITY, "用户没有相应的页面权限")
+		err = errs.NewErrorf(http.StatusMethodNotAllowed, "用户没有相应的页面权限")
 		return
 	}
 
@@ -89,9 +87,8 @@ func VerifyAuthority(ctx hydra.IContext, pageURL string, funcTag string) (hasRig
 		hasRight = true
 		return
 	}
-	fmt.Println("item.FuncTags:", item.FuncTags, funcTag)
 	if _, ok := item.FuncTags[funcTag]; !ok {
-		err = errs.NewErrorf(errorcode.ERR_USER_HASNOFUNCAUTHORITY, "用户没有相应的按钮权限")
+		err = errs.NewErrorf(http.StatusMethodNotAllowed, "用户没有相应的按钮权限")
 	}
 
 	hasRight = true

@@ -3,6 +3,7 @@ package main
 import (
 	"github.com/micro-plat/hydra"
 	"github.com/micro-plat/hydra/conf/server/api"
+	"github.com/micro-plat/hydra/conf/server/auth/apikey"
 	"github.com/micro-plat/hydra/conf/server/auth/jwt"
 	"github.com/micro-plat/hydra/conf/server/header"
 	"github.com/micro-plat/hydra/conf/server/static"
@@ -52,19 +53,19 @@ func devConf() {
 		SmsSendURL:         "http://smsv1.100bm0.com:8081/sms/msg/apply",
 	})
 
+	hydra.Conf.API("6689", api.WithDNS("ssov4.100bm0.com")).
+		APIKEY("ivk:///check_sign", apikey.WithInvoker("ivk:///check_sign"))
+
 	//登录的界面配置
 	hydra.Conf.Web("6687", api.WithTimeout(300, 300), api.WithDNS("ssov4.100bm0.com")).
 		Static(staticOpts...).
-		Header(header.WithCrossDomain(), header.WithAllowHeaders("X-Requested-With", "Content-Type", "__sso_jwt__")).
+		Header(header.WithCrossDomain(), header.WithAllowHeaders("X-Requested-With", "Content-Type")).
 		Jwt(jwt.WithMode("HS512"),
 			jwt.WithSecret("bf8f3171946d8d5a13cca23aa6080c8e"),
 			jwt.WithExpireAt(36000),
 			jwt.WithHeader(),
-			jwt.WithExcludes("/system/webconfig", "/dds/dictionary/get", "/loginweb/system/config/get", "/loginweb/member/login", "/loginweb/member/bind/check", "/loginweb/member/bind/save", "/loginweb/member/sendcode")).
-		Sub("webconf", &model.WebConf{
-			Wxcallbackhost: "http://ssov4.100bm0.com",
-			Wxcallbackurl:  "/wxcallback",
-		})
+			jwt.WithExcludes("/system/webconfig", "/dds/dictionary/get", "/loginweb/system/config/get", "/loginweb/member/login", "/loginweb/member/bind/check", "/loginweb/member/bind/save", "/loginweb/member/sendcode"),
+		)
 
 }
 
@@ -76,7 +77,7 @@ func prodConf() {
 	hydra.Conf.Vars().DB().MySQLByConnStr("db", conf.ByInstall, db.WithConnect(20, 10, 600))
 	hydra.Conf.Vars().Cache().Redis("redis", conf.ByInstall, cacheredis.WithDbIndex(1))
 
-	hydra.Conf.Vars().Custom("loginconf", "app", model.LoginConf{
+	hydra.Conf.Vars().Custom("loginconf", "app", &model.LoginConf{
 		RequireValidCode:   true,
 		UserLoginFailLimit: 5,
 		UserLockTime:       24 * 60 * 60,
@@ -85,24 +86,16 @@ func prodConf() {
 		SmsSendURL:         conf.ByInstall,
 	})
 
-	hydra.Conf.Web(conf.ByInstall, api.WithTimeout(300, 300), api.WithDNS("loginapi.sso.18jiayou.com")).
+	hydra.Conf.API(conf.ByInstall, api.WithDNS("login.sso.18jiayou.com")).
+		APIKEY("ivk:///check_sign", apikey.WithInvoker("ivk:///check_sign"))
+
+	hydra.Conf.Web(conf.ByInstall, api.WithTimeout(300, 300), api.WithDNS("login.sso.18jiayou.com")).
 		Static(staticOpts...).
-		Header(header.WithCrossDomain(), header.WithAllowHeaders("X-Requested-With", "Content-Type", "__sso_jwt__")).
 		Jwt(jwt.WithMode("HS512"),
 			jwt.WithSecret("f0abd74b09bcc61449d66ae5d8128c18"),
 			jwt.WithExpireAt(36000),
 			jwt.WithHeader(),
-			jwt.WithExcludes("/system/webconfig", "/dds/dictionary/get", "/loginweb/system/config/get", "/loginweb/member/login", "/loginweb/member/bind/check", "/loginweb/member/bind/save", "/loginweb/member/sendcode")).
-		Sub("webconf", &model.WebConf{
-			Wxcallbackhost:   "//web.sso.18jiayou.com",
-			Wxcallbackurl:    "/wxcallback",
-			CodeLabel:        "短信验证码",
-			CodeHolder:       "请输入短信验证码",
-			SendBtnLable:     "获取短信验证码",
-			ShowText:         "短信验证码发送成功",
-			StaticImageUrl:   "",
-			CompanyRight:     "四川千行你我科技有限公司",
-			CompanyRightCode: "蜀ICP备20003360号",
-		})
+			jwt.WithExcludes("/system/webconfig", "/dds/dictionary/get", "/loginweb/system/config/get", "/loginweb/member/login", "/loginweb/member/bind/check", "/loginweb/member/bind/save", "/loginweb/member/sendcode"),
+		)
 
 }
