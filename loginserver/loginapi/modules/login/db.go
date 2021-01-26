@@ -7,9 +7,9 @@ import (
 	"github.com/micro-plat/lib4go/db"
 	"github.com/micro-plat/lib4go/errs"
 	"github.com/micro-plat/lib4go/types"
-	"github.com/micro-plat/sso/loginserver/loginapi/modules/const/errorcode"
 	"github.com/micro-plat/sso/loginserver/loginapi/modules/const/sqls"
 	"github.com/micro-plat/sso/loginserver/loginapi/modules/model"
+	"github.com/micro-plat/sso/sso/errorcode"
 )
 
 type IDBMember interface {
@@ -41,7 +41,7 @@ func (l *DBMember) UnLock(userName string) error {
 
 //Query 用户登录时从数据库获取信息 (这个要改)
 func (l *DBMember) Query(u, p, ident string) (s *model.MemberState, err error) {
-	
+
 	db := components.Def.DB().GetRegularDB()
 	data, err := db.Query(sqls.QueryUserByUserName, map[string]interface{}{
 		"user_name": u,

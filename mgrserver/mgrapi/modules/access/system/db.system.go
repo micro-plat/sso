@@ -180,7 +180,7 @@ func (u *DbSystem) Sort(sysID, sortRank, levelID, id, parentId int, isUp bool) (
 	}
 
 	if len(data) <= 0 {
-		return fmt.Errorf("没有可以调换的菜单")
+		return nil
 	}
 	changeRow := data[0]
 

@@ -125,69 +125,13 @@ export default {
     };
   },
   mounted() {
-    this.role_id = this.$route.params.id;
+    this.role_id = this.$route.query.id;
     this.querySys();
   },
   methods: {
     back: function() {
-      this.$router.push({path: '/user/role'})
-    },
-    // handleSizeChange(val){
-    //   this.ps =val;
-    //   this.query()
-    // },
-    // goPage(val) {
-    //   this.pi = val;
-    //   this.query()
-    // },
-    // onClose() {
-    //   this.$refs.editModal.close();
-    // },
-
-    // add() {
-    //   this.isAdd = true;
-    //   this.rolePermission = {id:0};
-    //   this.currentPermissions = [];
-    //   this.allPermissionConfig.forEach(item => {
-    //     this.currentPermissions.push({
-    //       checked: false,
-    //       id: item.id,
-    //       name: item.name
-    //     })
-    //   });
-    //   this.$refs.editModal.open();
-    // },
-
-    // edit(id) {
-    //   for (var index = 0; index < this.datalist.length; index++) {
-    //     if (this.datalist[index].id == id) {
-    //       var temp = this.datalist[index];
-    //       this.rolePermission = temp;
-    //       this.currentPermissions = temp.editData;
-    //       break;
-    //     }
-    //   }
-    //   this.isAdd = false;
-    //   this.$refs.editModal.open();
-    // },
-
-    // getSysPermissionConfig() {
-    //   this.$http.post("/system/permission/getall", {sys_id: this.sysid, pi:1, ps:1000})
-    //   .then(res => {
-    //       this.allPermissionConfig = res.list;
-    //       this.query();
-    //     })
-    //     .catch(err => {
-    //         this.$notify({
-    //           title: '错误',
-    //           message: '网络错误,请稍后再试',
-    //           type: 'error',
-    //           offset: 50,
-    //           duration:2000,
-    //         });
-    //     });
-    // },
-
+      this.$router.push({path: '/pages/user/role'})
+    }, 
     //保存数据权限
     saveAuth: function() {
       var selectAuth = [];
@@ -196,7 +140,7 @@ export default {
           selectAuth.push(item.id)
         }
       });
-      this.$http.post("/auth/permission/save", {
+      this.$http.post("/role/index/permissionsave", {
         //id: this.rolePermission.id,
         role_id: this.role_id,
         sys_id: this.sysid,
@@ -247,7 +191,7 @@ export default {
 
     //查询角色与数据的关联信息
     query() {
-      this.$http.post("/auth/permission/query", {
+      this.$http.post("/role/index/permissionquery", {
         sys_id: this.sysid,
         role_id: this.role_id,
         //pi: this.pi,
@@ -271,83 +215,7 @@ export default {
           this.datalist = temp;
       })
     },
-    
-    // enable(id) {
-    //   this.$http.post("/auth/permission/enable", {
-    //     id: id
-    //   })
-    //   .then(res => {
-    //       this.query();
-    //   })
-    // },
-
-    // disable(id) {
-    //   this.$http.post("/auth/permission/disable", {
-    //     id: id
-    //   })
-    //   .then(res => {
-    //       this.query();
-    //   })
-    // },
-
-    // del(id) {
-    //   this.$http.post("/auth/permission/del", {
-    //     id: id
-    //   })
-    //   .then(res => {
-    //       this.query();
-    //   })
-    // },
-
-    // generateRuleConfig(permissionStr) {
-    //   var resultConfig = [];
-    //   var editDataConfig = [];
-    //   var idArray =  permissionStr.split(",")
-    //   var checked = false;
-    //   for (var all =0; all < this.allPermissionConfig.length; all++) {
-    //     checked = false;
-    //     var tempAll = this.allPermissionConfig[all]; 
-    //     var showArray = idArray.filter((item)=>{return item == tempAll.id});
-    //     if (showArray && showArray.length > 0) {
-    //       checked = true;
-    //       resultConfig.push(tempAll.name);
-    //     }
-    //     editDataConfig.push({
-    //           checked: checked,
-    //           id: tempAll.id,
-    //           name: tempAll.name
-    //     });
-    //   }
-    //   return {
-    //     showStr : resultConfig.join(";"),
-    //     editData: editDataConfig.sort(function(a,b){return b.checked-a.checked})
-    //     }
-    // },
-    // checkBeforeSave() {
-    //   if (!this.rolePermission.name || !this.rolePermission.table_name) {
-    //     this.$notify({
-    //           title: '提示',
-    //           message: '必填字段不能为空',
-    //           type: 'error',
-    //           offset: 50,
-    //           duration:2000,
-    //         });
-    //     return false;
-    //   }
-    //   for (var i=0; i < this.currentPermissions.length; i++) {
-    //     if (this.currentPermissions[i].checked){
-    //       return true;
-    //     }
-    //   }
-    //   this.$notify({
-    //       title: '提示',
-    //       message: '规则必须选择一个',
-    //       type: 'error',
-    //       offset: 50,
-    //       duration:2000,
-    //     });
-    //   return false;
-    // }
+     
   }
 };
 </script>

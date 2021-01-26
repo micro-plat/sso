@@ -10,8 +10,8 @@ import (
 	"github.com/micro-plat/lib4go/errs"
 	"github.com/micro-plat/lib4go/security/md5"
 	"github.com/micro-plat/lib4go/types"
-	"github.com/micro-plat/sso/loginserver/loginapi/modules/const/errorcode"
 	commsqls "github.com/micro-plat/sso/loginserver/loginapi/modules/const/sqls"
+	"github.com/micro-plat/sso/sso/errorcode"
 
 	"github.com/micro-plat/sso/loginserver/loginapi/modules/model"
 )

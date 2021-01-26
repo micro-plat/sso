@@ -24,7 +24,7 @@ func NewAuthPermissionHandler() (u *AuthPermissionHandler) {
 }
 
 //QueryHandle 数据权限关联查询
-func (u *AuthPermissionHandler) QueryHandle(ctx hydra.IContext) (r interface{}) {
+func (u *AuthPermissionHandler) PermissionQueryHandle(ctx hydra.IContext) (r interface{}) {
 	ctx.Log().Info("--------查询角色与数据权限的关联数据--------")
 
 	ctx.Log().Info("1.参数校验")
@@ -46,7 +46,7 @@ func (u *AuthPermissionHandler) QueryHandle(ctx hydra.IContext) (r interface{}) 
 }
 
 //SaveHandle 保存角色与数据权限的关联关系
-func (u *AuthPermissionHandler) SaveHandle(ctx hydra.IContext) (r interface{}) {
+func (u *AuthPermissionHandler) PermissionSaveHandle(ctx hydra.IContext) (r interface{}) {
 	ctx.Log().Info("--------保存角色与数据权限的关联关系--------")
 
 	ctx.Log().Info("1.参数校验")
@@ -66,7 +66,7 @@ func (u *AuthPermissionHandler) SaveHandle(ctx hydra.IContext) (r interface{}) {
 }
 
 //EnableHandle 启用角色与数据权限的关联关系
-func (u *AuthPermissionHandler) EnableHandle(ctx hydra.IContext) (r interface{}) {
+func (u *AuthPermissionHandler) PermissionEnableHandle(ctx hydra.IContext) (r interface{}) {
 	ctx.Log().Info("--------启用角色与数据权限的关联关系--------")
 
 	ctx.Log().Info("1.参数校验")
@@ -85,7 +85,7 @@ func (u *AuthPermissionHandler) EnableHandle(ctx hydra.IContext) (r interface{})
 }
 
 //DisableHandle 禁用角色与数据权限的关联关系
-func (u *AuthPermissionHandler) DisableHandle(ctx hydra.IContext) (r interface{}) {
+func (u *AuthPermissionHandler) PermissionDisableHandle(ctx hydra.IContext) (r interface{}) {
 	ctx.Log().Info("--------禁用角色与数据权限的关联关系--------")
 
 	ctx.Log().Info("1.参数校验")
@@ -104,7 +104,7 @@ func (u *AuthPermissionHandler) DisableHandle(ctx hydra.IContext) (r interface{}
 }
 
 //DelHandle 删除角色与数据权限的关联关系
-func (u *AuthPermissionHandler) DelHandle(ctx hydra.IContext) (r interface{}) {
+func (u *AuthPermissionHandler) PermissionDelHandle(ctx hydra.IContext) (r interface{}) {
 	ctx.Log().Info("--------删除角色与数据权限的关联关系--------")
 
 	ctx.Log().Info("1.参数校验")

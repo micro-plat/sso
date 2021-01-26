@@ -22,7 +22,7 @@ func NewRoleAuthHandler() (u *RoleAuthHandler) {
 }
 
 //SaveHandle 角色授权
-func (u *RoleAuthHandler) SaveHandle(ctx hydra.IContext) (r interface{}) {
+func (u *RoleAuthHandler) AuthSaveHandle(ctx hydra.IContext) (r interface{}) {
 	ctx.Log().Info("--------角色授权--------")
 
 	ctx.Log().Info("1.参数校验")
@@ -45,7 +45,7 @@ func (u *RoleAuthHandler) SaveHandle(ctx hydra.IContext) (r interface{}) {
 }
 
 //QueryHandle 角色授权菜单数据
-func (u *RoleAuthHandler) QueryHandle(ctx hydra.IContext) (r interface{}) {
+func (u *RoleAuthHandler) AuthQueryHandle(ctx hydra.IContext) (r interface{}) {
 	ctx.Log().Info("--------角色授权菜单--------")
 
 	ctx.Log().Info("1.参数校验")

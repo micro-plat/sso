@@ -1,9 +1,12 @@
 package sso
 
 import (
+	"net/http"
 	"strings"
 
+	"github.com/micro-plat/lib4go/errs"
 	"github.com/micro-plat/lib4go/types"
+	"github.com/micro-plat/sso/sso/errorcode"
 )
 
 //Client sso client
@@ -66,25 +69,31 @@ func (client *Client) ForgetPwd(source, sourceID, possword string) error {
 	return s.ForgetPwd(source, sourceID, possword)
 }
 
-//GetUserDisplayTags 获取用户有权限的Tags
-func (client *Client) GetUserDisplayTags(UserID int, tags string) (result []types.XMap, err error) {
+//GetRolePageTags 获取有权限的Tags
+func (client *Client) GetRolePageTags(roleID int, pageURL, tags string) (result types.XMap, err error) {
 	tagInput := strings.Split(tags, ",")
 
-	s := newUser(client.cfg)
-	userHasTags, err := s.GetUserTags(UserID)
+	authorityData, err := getRoleTagFromLocal(roleID)
 	if err != nil {
-		return nil, err
+		err = errs.NewErrorf(http.StatusForbidden, "获取缓存失败：%d,ident:%s,role:%d", client.cfg.ident, roleID)
+		return
 	}
 
+	//页面权限
+	item, ok := authorityData[pageURL]
+	if !ok {
+		err = errs.NewErrorf(errorcode.ERR_USER_HASNOPAGEAUTHORITY, "用户没有相应的页面权限")
+		return
+	}
+	pageTags := item.FuncTags
+	result = types.XMap{}
 	for _, tag := range tagInput {
-		detail := types.XMap{"tag": tag, "display": false}
-		for _, temp := range userHasTags {
-			if strings.EqualFold(strings.TrimSpace(tag), strings.TrimSpace(temp.Path)) {
-				detail["display"] = true
-				break
-			}
+
+		if len(pageTags) == 0 {
+			result[tag] = true
+			continue
 		}
-		result = append(result, detail)
+		result[tag] = pageTags[tag]
 	}
 	return
 }

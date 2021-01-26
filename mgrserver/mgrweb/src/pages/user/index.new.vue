@@ -457,7 +457,7 @@ export default {
 
         if (newValue && newValue.length >= 2) {
           this.$http
-            .post("/user/generateusername", { full_name: newValue })
+            .post("/user/index/generateusername", { full_name: newValue })
             .then((res) => {
               this.userInfo.user_name = res;
               this.userInfo.email_pre = res;
@@ -486,7 +486,7 @@ export default {
         this.paging.pi = 1;
       }
       this.$http
-        .post("/user/getall", this.paging)
+        .post("/user/index/getall", this.paging)
         .then((res) => {
           this.datalist.items = res.list;
           this.datalist.count = new Number(res.count);
@@ -520,7 +520,7 @@ export default {
       let pi = this.paging.pi;
       this.paging.pi = pi + 1;
       this.$http
-        .post("/user/getall", this.paging)
+        .post("/user/index/getall", this.paging)
         .then((res) => {
           if (res.list.length <= 0) {
             this.paging.pi = pi;
@@ -600,7 +600,7 @@ export default {
         type: "warning",
       }).then(() => {
         this.$http
-          .post("/user/changestatus", {
+          .post("/user/index/changestatus", {
             user_id: userid,
             status: status,
             user_name: user_name,
@@ -631,7 +631,7 @@ export default {
       jQuery("#qrcodeTable canvas").remove();
 
       this.$http
-        .post("/user/generateqrcode", { user_id: userid })
+        .post("/user/index/generateqrcode", { user_id: userid })
         .then((res) => {
           var url =
             this.$env.conf.sso.host +
@@ -671,7 +671,7 @@ export default {
         type: "warning",
       }).then(() => {
         this.$http
-          .post("/user/del", { user_id: userid })
+          .post("/user/index/del", { user_id: userid })
           .then((res) => {
             this.queryData();
             this.$notify({
@@ -701,7 +701,7 @@ export default {
         type: "warning",
       }).then(() => {
         this.$http
-          .post("/user/setpwd", { user_id: userid })
+          .post("/user/index/setpwd", { user_id: userid })
           .then((res) => {
             this.$notify({
               title: "成功",
@@ -857,7 +857,7 @@ export default {
               this.userInfo.status = 2;
             }
             this.$http
-              .post("/user/add", this.userInfo)
+              .post("/user/index/add", this.userInfo)
               .then((res) => {
                 this.queryData();
                 this.$notify({
@@ -885,7 +885,7 @@ export default {
               });
           } else if (this.isAdd == 2) {
             this.$http
-              .post("/user/edit", this.userInfo)
+              .post("/user/index/edit", this.userInfo)
               .then((res) => {
                 this.queryData();
                 this.$notify({

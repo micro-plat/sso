@@ -72,7 +72,7 @@ function getConf(Vue, path){
         return
     
     var vueVersion =  (packageData.dependencies.vue).charAt(1)
-    path = vueVersion >= 3 ? "./env.conf.json" : "../../static/env.conf.json"   
+    path = vueVersion >= 3 ? "/env.conf.json" : "/static/env.conf.json";
     return Vue.prototype.$http.xget(path) || {}
 }
 

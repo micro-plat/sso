@@ -1,15 +1,15 @@
 package login
 
 import (
+	"fmt"
 	"strings"
 	"time"
-	"fmt"
+
 	"github.com/micro-plat/hydra/components"
 	"github.com/micro-plat/lib4go/errs"
 	"github.com/micro-plat/lib4go/types"
 	"github.com/micro-plat/sso/loginserver/loginapi/modules/const/cachekey"
-	"github.com/micro-plat/sso/loginserver/loginapi/modules/const/errorcode"
-
+	"github.com/micro-plat/sso/sso/errorcode"
 )
 
 type ICacheMember interface {
@@ -62,7 +62,7 @@ func (l *CacheMember) GetLoginFailCnt(userName string) (int, error) {
 	s, err := cache.Get(key)
 	if err != nil {
 		return 0, errs.NewError(errorcode.ERR_SYS_ERROR, fmt.Errorf("获取登录失败次数:%v", err))
- 	}
+	}
 	if s == "" {
 		return 0, nil
 	}

@@ -6,6 +6,7 @@ import (
 	"sync"
 
 	"github.com/micro-plat/hydra"
+	"github.com/micro-plat/hydra/conf"
 	"github.com/micro-plat/hydra/conf/server/auth/jwt"
 
 	"github.com/micro-plat/lib4go/errs"
@@ -24,7 +25,7 @@ func init() {
 			app.Micro("/sso/member/systems/get", userSystems)
 			app.Micro("/sso/member/all/get", getAllUser)
 			app.Micro("/sso/system/info/get", systemInfo)
-			app.Micro("/sso/member/tag/display", getTags)
+			app.Micro("/sso/member/tags/authority", getPageTags)
 
 			app.Micro("/sso/member/changepwd", changePwd)
 			app.Micro("/sso/member/forgetpwd", forgetPwd)
@@ -33,11 +34,17 @@ func init() {
 
 }
 
+var authorityMatch *conf.PathMatch
+
 //Config 自动生成相关的api接口(登录回调验证、获取菜单、获取系统信息)
-func Config(ssoApiHost, ident, secret string) error {
-	if err := saveSSOClient(ssoApiHost, ident, secret); err != nil {
+func Config(ssoAPIHost, ident, secret string, opts ...Option) error {
+	if err := saveSSOClient(ssoAPIHost, ident, secret); err != nil {
 		return err
 	}
+	for i := range opts {
+		opts[i]()
+	}
+	authorityMatch = conf.NewPathMatch(authorityIgnoreURLs...)
 	return nil
 }
 
@@ -148,21 +155,26 @@ func getAllUser(ctx hydra.IContext) (r interface{}) {
 }
 
 //getTags 按钮是否显示
-func getTags(ctx hydra.IContext) (r interface{}) {
+func getPageTags(ctx hydra.IContext) (r interface{}) {
 	ctx.Log().Info("--------获取页面的按钮是否显示----------")
 
 	ctx.Log().Info("1: 验证参数")
 	if err := ctx.Request().Check("tags"); err != nil {
 		return errs.NewError(http.StatusNotAcceptable, fmt.Errorf("tags不能为空,如:user_new,user_delete"))
 	}
-	mem := GetMember(ctx)
+	tags := ctx.Request().GetString("tags")
+	state := GetMember(ctx)
 
-	ctx.Log().Info("2. 执行操作")
-	data, err := GetSSOClient().GetUserDisplayTags(int(mem.UserID), ctx.Request().GetString("tags"))
-	if err != nil {
+	pageURL, _, ok := ctx.Request().Path().GetPageAndTag()
+	if !ok {
+		err := errs.NewErrorf(http.StatusUnauthorized, "请求地址不可用：%s", pageURL)
 		return err
 	}
-
+	data, err := GetSSOClient().GetRolePageTags(state.RoleID, pageURL, tags)
+	if err != nil {
+		err = errs.NewErrorf(http.StatusUnauthorized, "获取页面Tags失败：%s", err)
+		return err
+	}
 	ctx.Log().Info("2. 返回数据")
 	return data
 }

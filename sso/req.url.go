@@ -5,6 +5,7 @@ const userMenuUrl = "/api/menu/get"
 const userSysUrl = "/api/user/system/list"
 const userAllUrl = "/api/all/get"
 const userAllTag = "/api/tags/get"
+const getRoleTags = "/api/role/tags"
 
 const codeLoginUrl = "/api/login/auth"
 const systemInfoUrl = "/api/system/info/get"

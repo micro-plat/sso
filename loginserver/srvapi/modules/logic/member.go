@@ -7,7 +7,7 @@ import (
 	"github.com/micro-plat/lib4go/db"
 	"github.com/micro-plat/lib4go/errs"
 	"github.com/micro-plat/lib4go/types"
-	"github.com/micro-plat/sso/loginserver/loginapi/modules/const/errorcode"
+	"github.com/micro-plat/sso/sso/errorcode"
 
 	"github.com/micro-plat/sso/loginserver/srvapi/modules/access/member"
 	"github.com/micro-plat/sso/loginserver/srvapi/modules/const/config"
@@ -22,7 +22,7 @@ type IMemberLogic interface {
 	QueryUserSystem(userID int, ident string) (s db.QueryRows, err error)
 	QueryAllUserInfo(source string, sourceID string) (s db.QueryRows, err error)
 	GetAllUserInfoByUserRole(userID int, ident string) (string, error)
-
+	GetRoleMenus(roleID int, ident string) (types.XMaps, error)
 	GenerateVerifyCode(userName string) (string, error)
 }
 
@@ -99,6 +99,11 @@ func (m *MemberLogic) GetUserInfoByCode(code, ident string) (res *model.LoginSta
 //GetAllUserInfoByUserRole 获取和当前用户同一个角色的用户ids
 func (m *MemberLogic) GetAllUserInfoByUserRole(userID int, ident string) (string, error) {
 	return m.db.GetAllUserInfoByUserRole(userID, ident)
+}
+
+//GetRoleMenus 获取同一个角色的菜单列表
+func (m *MemberLogic) GetRoleMenus(roleID int, ident string) (types.XMaps, error) {
+	return m.db.GetRoleMenus(roleID, ident)
 }
 
 //GenerateVerifyCode 生成验证码,此处userName可能为电话号码

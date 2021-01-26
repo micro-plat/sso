@@ -8,8 +8,7 @@ import (
 	"github.com/micro-plat/lib4go/errs"
 	"github.com/micro-plat/lib4go/types"
 	"github.com/micro-plat/sso/loginserver/loginapi/modules/const/cachekey"
- 	"github.com/micro-plat/sso/loginserver/loginapi/modules/const/errorcode"
-
+	"github.com/micro-plat/sso/sso/errorcode"
 )
 
 type ICacheMember interface {

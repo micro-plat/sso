@@ -11,15 +11,15 @@ import (
 	"github.com/micro-plat/sso/loginserver/loginapi/modules/access/member"
 	"github.com/micro-plat/sso/loginserver/loginapi/modules/access/system"
 	"github.com/micro-plat/sso/loginserver/loginapi/modules/const/enum"
-	"github.com/micro-plat/sso/loginserver/loginapi/modules/const/errorcode"
 	"github.com/micro-plat/sso/loginserver/loginapi/modules/model"
+	"github.com/micro-plat/sso/sso/errorcode"
 )
 
 //LoginLogic 用户登录相关
 type LoginLogic struct {
 	cache ICacheMember
 	db    IDBMember
-	memdb    member.IDBMember
+	memdb member.IDBMember
 	sysDB system.IDbSystem
 }
 
@@ -42,9 +42,9 @@ func (m *LoginLogic) CheckValidCode(userName, ident, validCode string) error {
 	if strings.EqualFold(validCode, "") {
 		return errs.NewError(errorcode.ERR_USER_EMPTY_VALIDATECODE, "验证码不能为空")
 	}
-	userInfo,err:=m.memdb.GetUserInfo(userName)
-	if err!=nil{
-		return errs.NewError(errorcode.ERR_SYS_ERROR,err)
+	userInfo, err := m.memdb.GetUserInfo(userName)
+	if err != nil {
+		return errs.NewError(errorcode.ERR_SYS_ERROR, err)
 	}
 	userAccount := ""
 	switch conf.ValidCodeType {

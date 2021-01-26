@@ -80,7 +80,7 @@ func checkMgrConf(appConf app.IAPPConf) error {
 		return err
 	}
 	//
-	if err := ssoSdk.Config(conf.SsoApiHost, conf.Ident, conf.Secret); err != nil {
+	if err := ssoSdk.Config(conf.SsoApiHost, conf.Ident, conf.Secret, ssoSdk.WithAuthorityIgnore("/dds/*", "/base/**")); err != nil {
 		return err
 	}
 	return nil
@@ -88,17 +88,17 @@ func checkMgrConf(appConf app.IAPPConf) error {
 }
 
 func registryAPI() {
-	App.Micro("/base", base.NewBaseUserHandler)                          //基础数据
-	App.Micro("/user", user.NewUserHandler)                              //用户相关接口
-	App.Micro("/auth", role.NewRoleAuthHandler)                          //菜单权限管理
-	App.Micro("/role", role.NewRoleHandler)                              //角色管理相关接口
-	App.Micro("/system/info", system.NewSystemHandler)                   //系统管理相关接口
-	App.Micro("/system/menu", system.NewSystemMenuHandler)               //系统菜单管理相关接口
-	App.Micro("/system/func", function.NewSystemFuncHandler)             //系统功能相关接口
-	App.Micro("/system/permission", permission.NewDataPermissionHandler) //数据权限功能相关接口
-	App.Micro("/auth/permission", permission.NewAuthPermissionHandler)   //数据权限管理
-	App.Micro("/image/upload", image.NewImageHandler("../image"))        //图片上传
-	
-	App.Micro("/system/webconfig", system.WebConfigHandler)    
+	App.Micro("/base", base.NewBaseUserHandler)   //基础数据
+	App.Micro("/user/index", user.NewUserHandler) //用户相关接口
+	//App.Micro("/auth", role.NewRoleAuthHandler)                          //菜单权限管理
+	App.Micro("/role/index", role.NewRoleAuthHandler)             //菜单权限管理
+	App.Micro("/role/index", role.NewRoleHandler)                 //角色管理相关接口
+	App.Micro("/role/index", permission.NewAuthPermissionHandler) //数据权限管理
+	App.Micro("/sys/index", system.NewSystemHandler)              //系统管理相关接口
+	App.Micro("/sys/index", system.NewSystemMenuHandler)          //系统菜单管理相关接口
+	App.Micro("/sys/index", function.NewSystemFuncHandler)        //系统功能相关接口
+	App.Micro("/sys/index", permission.NewDataPermissionHandler)  //数据权限功能相关接口
+	App.Micro("/image/upload", image.NewImageHandler("../image")) //图片上传
+	App.Micro("/system/webconfig", system.WebConfigHandler)
 
 }

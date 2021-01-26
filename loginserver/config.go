@@ -3,7 +3,6 @@ package main
 import (
 	"github.com/micro-plat/hydra"
 	"github.com/micro-plat/hydra/conf/server/api"
-	"github.com/micro-plat/hydra/conf/server/auth/apikey"
 	"github.com/micro-plat/hydra/conf/server/auth/jwt"
 	"github.com/micro-plat/hydra/conf/server/header"
 	"github.com/micro-plat/hydra/conf/server/static"
@@ -53,9 +52,6 @@ func devConf() {
 		SmsSendURL:         "http://smsv1.100bm0.com:8081/sms/msg/apply",
 	})
 
-	hydra.Conf.API("6689", api.WithDNS("ssov4.100bm0.com")).Header(header.WithCrossDomain()).
-		APIKEY("ivk:///check_sign", apikey.WithInvoker("ivk:///check_sign"), apikey.WithExcludes("/api/login/auth"))
-
 	//登录的界面配置
 	hydra.Conf.Web("6687", api.WithTimeout(300, 300), api.WithDNS("ssov4.100bm0.com")).
 		Static(staticOpts...).
@@ -66,8 +62,8 @@ func devConf() {
 			jwt.WithHeader(),
 			jwt.WithExcludes("/system/webconfig", "/dds/dictionary/get", "/loginweb/system/config/get", "/loginweb/member/login", "/loginweb/member/bind/check", "/loginweb/member/bind/save", "/loginweb/member/sendcode")).
 		Sub("webconf", &model.WebConf{
-			Wxcallbackhost:   "http://ssov4.100bm0.com",
-			Wxcallbackurl:    "/wxcallback", 
+			Wxcallbackhost: "http://ssov4.100bm0.com",
+			Wxcallbackurl:  "/wxcallback",
 		})
 
 }
@@ -88,9 +84,6 @@ func prodConf() {
 		SMSTemplateID:      conf.ByInstall,
 		SmsSendURL:         conf.ByInstall,
 	})
-
-	hydra.Conf.API(conf.ByInstall, api.WithDNS("api.sso.18jiayou.com")).Header(header.WithCrossDomain()).
-		APIKEY("ivk:///check_sign", apikey.WithInvoker("ivk:///check_sign"), apikey.WithExcludes("/api/login/auth"))
 
 	hydra.Conf.Web(conf.ByInstall, api.WithTimeout(300, 300), api.WithDNS("loginapi.sso.18jiayou.com")).
 		Static(staticOpts...).

@@ -39,12 +39,12 @@ export default {
     };
   },
   mounted() {
-    this.role_id = this.$route.params.id;
+    this.role_id = this.$route.query.id;
     this.querySys();
   },
   methods: {
     back: function() {
-      this.$router.push({ path: "/user/role" });
+      this.$router.push({ path: "/pages/user/role" });
     },
     saveAuth: function() {
       this.selectAuth = [];
@@ -76,7 +76,7 @@ export default {
       }
 
       this.$http
-        .post("/auth/save", {
+        .post("/role/index/authsave", {
           role_id: this.role_id,
           sys_id: this.sysid,
           selectauth: tempStr
@@ -122,7 +122,7 @@ export default {
         return false;
       }
       this.$http
-        .post("/auth/query", {
+        .post("/role/index/authquery", {
           sys_id: this.sysid,
           role_id: this.role_id
         })

@@ -18,9 +18,9 @@ import (
 	"github.com/micro-plat/sso/loginserver/loginapi/modules/access/member"
 	"github.com/micro-plat/sso/loginserver/loginapi/modules/access/system"
 	"github.com/micro-plat/sso/loginserver/loginapi/modules/const/enum"
-	"github.com/micro-plat/sso/loginserver/loginapi/modules/const/errorcode"
 	"github.com/micro-plat/sso/loginserver/loginapi/modules/model"
 	commodel "github.com/micro-plat/sso/loginserver/loginapi/modules/model"
+	"github.com/micro-plat/sso/sso/errorcode"
 )
 
 //IMemberLogic 用户登录

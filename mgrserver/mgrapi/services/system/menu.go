@@ -26,7 +26,7 @@ func NewSystemMenuHandler() (u *SystemMenuHandler) {
 }
 
 //ExportHandle 导出菜单数据
-func (u *SystemMenuHandler) ExportHandle(ctx hydra.IContext) (r interface{}) {
+func (u *SystemMenuHandler) MenuExportHandle(ctx hydra.IContext) (r interface{}) {
 	ctx.Log().Info("------导出系统菜单数据------")
 
 	ctx.Log().Info("1. 参数检查")
@@ -49,7 +49,7 @@ func (u *SystemMenuHandler) ExportHandle(ctx hydra.IContext) (r interface{}) {
 }
 
 //ImportHandle 导入菜单数据
-func (u *SystemMenuHandler) ImportHandle(ctx hydra.IContext) (r interface{}) {
+func (u *SystemMenuHandler) MenuImportHandle(ctx hydra.IContext) (r interface{}) {
 	ctx.Log().Info("------导出系统菜单数据------")
 
 	ctx.Log().Info("1. 反序列化json对象")

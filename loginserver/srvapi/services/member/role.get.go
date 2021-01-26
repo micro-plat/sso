@@ -38,3 +38,4 @@ func (u *RoleHandler) GetHandle(ctx hydra.IContext) (r interface{}) {
 	ctx.Log().Info("------返回结果------")
 	return result
 }
+ 

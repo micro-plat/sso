@@ -25,7 +25,7 @@ func NewDataPermissionHandler() (u *DataPermissionHandler) {
 }
 
 //GetAllHandle 查询数据权限数据
-func (u *DataPermissionHandler) GetAllHandle(ctx hydra.IContext) (r interface{}) {
+func (u *DataPermissionHandler) DataPermissionGetAllHandle(ctx hydra.IContext) (r interface{}) {
 	ctx.Log().Info("------查询数据权限数据------")
 
 	ctx.Log().Info("1.参数检查")
@@ -49,7 +49,7 @@ func (u *DataPermissionHandler) GetAllHandle(ctx hydra.IContext) (r interface{})
 }
 
 //AddHandle 添加系统功能
-func (u *DataPermissionHandler) AddHandle(ctx hydra.IContext) (r interface{}) {
+func (u *DataPermissionHandler) DataPermissionAddHandle(ctx hydra.IContext) (r interface{}) {
 	ctx.Log().Info("------添加数据权限数据------")
 
 	ctx.Log().Info("1. 参数检查")
@@ -69,7 +69,7 @@ func (u *DataPermissionHandler) AddHandle(ctx hydra.IContext) (r interface{}) {
 }
 
 //EditHandle 编辑系统功能
-func (u *DataPermissionHandler) EditHandle(ctx hydra.IContext) (r interface{}) {
+func (u *DataPermissionHandler) DataPermissionEditHandle(ctx hydra.IContext) (r interface{}) {
 	ctx.Log().Info("------编辑系统功能------")
 
 	ctx.Log().Info("1. 参数检查")
@@ -89,7 +89,7 @@ func (u *DataPermissionHandler) EditHandle(ctx hydra.IContext) (r interface{}) {
 }
 
 //DelHandle 删除系统功能
-func (u *DataPermissionHandler) DelHandle(ctx hydra.IContext) (r interface{}) {
+func (u *DataPermissionHandler) DataPermissionDelHandle(ctx hydra.IContext) (r interface{}) {
 	ctx.Log().Info("------删除系统功能------")
 
 	ctx.Log().Info("1. 参数检查")
@@ -113,7 +113,7 @@ func (u *DataPermissionHandler) DelHandle(ctx hydra.IContext) (r interface{}) {
 }
 
 //EnableHandle 启用数据权限配置信息
-func (u *DataPermissionHandler) EnableHandle(ctx hydra.IContext) (r interface{}) {
+func (u *DataPermissionHandler) DataPermissionEnableHandle(ctx hydra.IContext) (r interface{}) {
 	ctx.Log().Info("--------启用数据权限配置信息--------")
 
 	ctx.Log().Info("1.参数校验")
@@ -132,7 +132,7 @@ func (u *DataPermissionHandler) EnableHandle(ctx hydra.IContext) (r interface{})
 }
 
 //DisableHandle 禁用数据权限配置信息
-func (u *DataPermissionHandler) DisableHandle(ctx hydra.IContext) (r interface{}) {
+func (u *DataPermissionHandler) DataPermissionDisableHandle(ctx hydra.IContext) (r interface{}) {
 	ctx.Log().Info("--------禁用数据权限配置信息--------")
 
 	ctx.Log().Info("1.参数校验")

@@ -3,15 +3,16 @@ package logic
 import (
 	"encoding/json"
 	"fmt"
+	"strings"
+
 	"github.com/lib4dev/vcs"
 	"github.com/micro-plat/hydra"
 	"github.com/micro-plat/hydra/components/uuid"
 	"github.com/micro-plat/lib4go/errs"
 	"github.com/micro-plat/lib4go/types"
 	"github.com/micro-plat/sso/loginserver/loginapi/modules/access/system"
-	"github.com/micro-plat/sso/loginserver/loginapi/modules/const/errorcode"
 	"github.com/micro-plat/sso/loginserver/loginapi/modules/model"
-	"strings"
+	"github.com/micro-plat/sso/sso/errorcode"
 
 	"net/http"
 )

@@ -292,12 +292,12 @@ export default {
       ps: 10,
       totalPage: 0,
       compareSymbolDisabled: true,
-      operateActionList: this.$enum.Get("operate_action")
+      operateActionList: this.$enum.get("operate_action")
     };
   },
   props: ["path"],
   mounted() {
-    this.sysId = this.$route.params.id;
+    this.sysId = this.$route.query.id;
     this.$refs.main.style.height = document.documentElement.clientHeight + "px";
     //this.getDictionInfo("operate_action");
     this.query();
@@ -329,7 +329,7 @@ export default {
 
     query() {
       this.$http
-        .post("/system/permission/getall", {
+        .post("/sys/index/datapermissiongetall", {
           pi: this.pi,
           ps: this.ps,
           sys_id: this.sysId,
@@ -371,7 +371,7 @@ export default {
       this.permissionData.rules = JSON.stringify(reallyRules);
       if (this.isAdd) {
         this.$http
-          .post("/system/permission/add", this.permissionData)
+          .post("/sys/index/datapermissionadd", this.permissionData)
           .then(res => {
             this.query();
             this.$notify({
@@ -397,7 +397,7 @@ export default {
           });
       } else {
         this.$http
-          .post("/system/permission/edit", this.permissionData)
+          .post("/sys/index/datapermissionedit", this.permissionData)
           .then(res => {
             this.query();
             this.$notify({
@@ -502,7 +502,7 @@ export default {
         type: "warning"
       }).then(() => {
         this.$http
-          .post("/system/permission/del", { id: id })
+          .post("/sys/index/datapermissiondel", { id: id })
           .then(res => {
             this.goPage(this.pi);
             this.$notify({
@@ -595,7 +595,7 @@ export default {
 
     enable(id) {
       this.$http
-        .post("/system/permission/enable", {
+        .post("/sys/index/datapermissionenable", {
           id: id
         })
         .then(res => {
@@ -605,7 +605,7 @@ export default {
 
     disable(id) {
       this.$http
-        .post("/system/permission/disable", {
+        .post("/sys/index/datapermissiondisable", {
           id: id
         })
         .then(res => {

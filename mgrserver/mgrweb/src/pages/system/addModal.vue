@@ -798,7 +798,7 @@ export default {
       }
 
       this.$http
-        .post("/system/info/add", {
+        .post("/sys/index/add", {
           name: this.addData.name,
           callbackurl: this.addData.callbackurl,
           logo: this.addData.logo,

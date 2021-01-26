@@ -6,9 +6,9 @@ import (
 	"github.com/micro-plat/hydra"
 	"github.com/micro-plat/lib4go/errs"
 	"github.com/micro-plat/lib4go/types"
+	"github.com/micro-plat/sso/mgrserver/mgrapi/modules/const/errorcode"
 	"github.com/micro-plat/sso/mgrserver/mgrapi/modules/logic"
 	"github.com/micro-plat/sso/mgrserver/mgrapi/modules/model"
-	"github.com/micro-plat/sso/mgrserver/mgrapi/modules/const/errorcode"
 
 	"github.com/micro-plat/sso/sso"
 )
@@ -28,7 +28,7 @@ func NewSystemFuncHandler() (u *SystemFuncHandler) {
 }
 
 //GetHandle 查询系统模块数据
-func (u *SystemFuncHandler) GetHandle(ctx hydra.IContext) (r interface{}) {
+func (u *SystemFuncHandler) FuncGetHandle(ctx hydra.IContext) (r interface{}) {
 	ctx.Log().Info("------查询系统模块数据------")
 
 	ctx.Log().Info("1.参数检查")
@@ -46,7 +46,7 @@ func (u *SystemFuncHandler) GetHandle(ctx hydra.IContext) (r interface{}) {
 }
 
 //AddHandle 添加系统功能
-func (u *SystemFuncHandler) AddHandle(ctx hydra.IContext) (r interface{}) {
+func (u *SystemFuncHandler) FuncAddHandle(ctx hydra.IContext) (r interface{}) {
 	ctx.Log().Info("------添加系统功能------")
 
 	ctx.Log().Info("1. 参数检查")
@@ -77,7 +77,7 @@ func (u *SystemFuncHandler) AddHandle(ctx hydra.IContext) (r interface{}) {
 }
 
 //EditHandle 编辑系统功能
-func (u *SystemFuncHandler) EditHandle(ctx hydra.IContext) (r interface{}) {
+func (u *SystemFuncHandler) FuncEditHandle(ctx hydra.IContext) (r interface{}) {
 	ctx.Log().Info("------编辑系统功能------")
 
 	ctx.Log().Info("1. 参数检查")
@@ -103,7 +103,7 @@ func (u *SystemFuncHandler) EditHandle(ctx hydra.IContext) (r interface{}) {
 }
 
 //DelHandle 删除系统功能
-func (u *SystemFuncHandler) DelHandle(ctx hydra.IContext) (r interface{}) {
+func (u *SystemFuncHandler) FuncDelHandle(ctx hydra.IContext) (r interface{}) {
 	ctx.Log().Info("------删除系统功能------")
 
 	ctx.Log().Info("1. 参数检查")
@@ -127,7 +127,7 @@ func (u *SystemFuncHandler) DelHandle(ctx hydra.IContext) (r interface{}) {
 }
 
 //ChangeStatusHandle 修改系统功能状态
-func (u *SystemFuncHandler) ChangeStatusHandle(ctx hydra.IContext) (r interface{}) {
+func (u *SystemFuncHandler) FuncChangeStatusHandle(ctx hydra.IContext) (r interface{}) {
 	ctx.Log().Info("------修改系统功能状态------")
 
 	ctx.Log().Info("1. 参数检查")

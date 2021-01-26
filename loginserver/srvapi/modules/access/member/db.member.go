@@ -7,11 +7,13 @@ import (
 
 	"github.com/micro-plat/hydra/components"
 	"github.com/micro-plat/lib4go/db"
+	"github.com/micro-plat/lib4go/types"
+
 	"github.com/micro-plat/lib4go/errs"
 	commsqls "github.com/micro-plat/sso/loginserver/loginapi/modules/const/sqls"
-    "github.com/micro-plat/sso/loginserver/loginapi/modules/const/errorcode"
 	"github.com/micro-plat/sso/loginserver/srvapi/modules/const/sqls"
 	"github.com/micro-plat/sso/loginserver/srvapi/modules/model"
+	"github.com/micro-plat/sso/sso/errorcode"
 )
 
 type IDBMember interface {
@@ -20,6 +22,7 @@ type IDBMember interface {
 	QueryUserSystem(userID int, ident string) (s db.QueryRows, err error)
 	QueryAllUserInfo(source string, sourceID string) (s db.QueryRows, err error)
 	GetAllUserInfoByUserRole(userID int, ident string) (string, error)
+	GetRoleMenus(roleID int, ident string) (types.XMaps, error)
 }
 
 //DBMember 控制用户登录
@@ -146,4 +149,18 @@ func (l *DBMember) GetAllUserInfoByUserRole(userID int, ident string) (string, e
 		userIDArray = append(userIDArray, item.GetString("user_id"))
 	}
 	return strings.Join(userIDArray, ","), nil
+}
+
+//GetRoleMenus 获取同一个角色的菜单列表
+func (l *DBMember) GetRoleMenus(roleID int, ident string) (types.XMaps, error) {
+	db := components.Def.DB().GetRegularDB()
+	menus, err := db.Query(sqls.GetRoleMenus, map[string]interface{}{
+		"role_id": roleID,
+		"ident":   ident,
+	})
+	if err != nil {
+		return nil, fmt.Errorf("GetRoleMenus: err:%+v", err)
+	}
+
+	return menus, nil
 }

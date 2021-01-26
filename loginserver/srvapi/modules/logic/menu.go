@@ -3,7 +3,7 @@ package logic
 import (
 	"github.com/micro-plat/lib4go/errs"
 	"github.com/micro-plat/lib4go/types"
-	"github.com/micro-plat/sso/loginserver/loginapi/modules/const/errorcode"
+	"github.com/micro-plat/sso/sso/errorcode"
 
 	"github.com/micro-plat/sso/loginserver/srvapi/modules/access/menu"
 	"github.com/micro-plat/sso/loginserver/srvapi/modules/access/system"

@@ -828,10 +828,10 @@ export default {
   },
   methods: {
     initData() {
-      this.id = this.$route.params.id;
+      this.id = this.$route.query.id;
 
       this.$http
-        .get("/system/func", { id: this.id })
+        .get("/sys/index/funcget", { id: this.id })
         .then(res => {
           if (res.length != 0) {
             this.ztreeDataSource = res;
@@ -875,7 +875,7 @@ export default {
       console.log("icon", icon);
 
       this.$http
-        .post("/system/func/edit", {
+        .post("/sys/index/funcedit", {
           id: data.id,
           name: data.name,
           sortrank: data.sortrank,
@@ -899,7 +899,7 @@ export default {
     },
     addFunc() {
       this.$http
-        .post("/system/func/add", {
+        .post("/sys/index/funcadd", {
           parentid: this.currentData.parentId,
           parentlevel: this.currentData.parentLevel,
           sysid: this.id,

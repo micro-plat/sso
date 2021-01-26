@@ -18,7 +18,6 @@
 </template>
 
 <script>
-   import {JoinUrlParams, GetUrlHosts} from '@/services/common'
   export default {
     name: 'choose',
     data () {
@@ -32,7 +31,7 @@
     },
     methods:{
         goto(url) {
-            window.location.href = GetUrlHosts(url);
+            window.location.href = url;
         },
         searchSystemInfo() {
             this.$http.post("/loginweb/member/system/get")

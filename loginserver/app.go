@@ -99,11 +99,12 @@ func registryAPI() {
 	//api 接口
 	App.Micro("/api/menu/get", apimember.NewMenuHandler)                   //获取用户菜单数据
 	App.Micro("/api/tags/get", apimember.NewTagHandler)                    //获取用户有权限的tag数据
+	App.Micro("/api/role/tags", apimember.NewRoleTagsHandler)              //获取用户有权限的tag数据
+	App.Micro("/api/role/get", apimember.NewRoleHandler)                   //获取角色下的所有用户
 	App.Micro("/api/user/info/get", apimember.NewMemberHandler)            //获取用户信息
 	App.Micro("/api/forget/password", password.NewPasswordHandler)         // 忘记密码再修改密码
 	App.Micro("/api/user/system/list", apimember.NewMemberSysHandler)      //获取用户可用的子系统
 	App.Micro("/api/user/all/get", apimember.NewMemberGetAllHandler)       //获取所有用户信息
-	App.Micro("/api/role/get", apimember.NewRoleHandler)                   //获取角色下的所有用户
 	App.Micro("/api/system/info/get", apisystem.NewInfoHandler)            //获取子系统信息
 	App.Micro("/api/login/auth", apilogin.NewAuthorizeHandler)             //用户跳转登录后的认证(不是用户名密码登录)
 	App.Micro("/api/permission/config", permission.NewDataPerssionHandler) //【数据权限】相关接口

@@ -141,11 +141,7 @@ func (u *userLogic) ForgetPwd(source, sourceID, password string) error {
 	}
 	return nil
 }
-
-//GetUserTags 获取用户有权限的tags
-func (u *userLogic) GetUserTags(userID int) ([]Menu, error) {
-	return getUserTagFromLocal(userID)
-}
+ 
 
 //getRoleUsers 获取与某个角色关联的所有用户
 func (u *userLogic) getRoleUsers(userID int64) (userIds string, err error) {

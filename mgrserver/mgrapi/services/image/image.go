@@ -61,6 +61,9 @@ func (ch *ImageHandler) saveImg(extName string, ctx hydra.IContext) (picURL stri
 
 	name := fmt.Sprintf("%s%s", components.Def.UUID().ToString(), extName)
 	localPath := filepath.Join(ch.localDir, name)
+	
+	
+
 	nf, err := os.Create(localPath)
 	if err != nil {
 		return "", fmt.Errorf("保存文件失败:%s(err:%v)", localPath, err)

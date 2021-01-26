@@ -966,7 +966,7 @@ export default {
 
     query() {
       this.$http
-        .post("/system/info/getall", {
+        .post("/sys/index/getall", {
           pi: this.pi,
           ps: this.ps,
           name: this.sysname,
@@ -997,7 +997,7 @@ export default {
         type: "warning"
       }).then(() => {
         this.$http
-          .post("/system/info/del", { id: id })
+          .post("/sys/index/del", { id: id })
           .then(res => {
             this.goPage(this.pi);
             this.$notify({
@@ -1036,7 +1036,7 @@ export default {
         type: "warning"
       }).then(() => {
         this.$http
-          .post("/system/info/changestatus", {
+          .post("/sys/index/changestatus", {
             id: this.enableData.id,
             status: this.enableData.status
           })
@@ -1085,7 +1085,7 @@ export default {
         return;
       }
       this.$http
-        .post("/system/info/changesecret", secretInfo)
+        .post("/sys/index/changesecret", secretInfo)
         .then(res => {
           this.$refs.secretModal.close();
           this.$notify({
@@ -1139,7 +1139,7 @@ export default {
         return;
       }
       this.$http
-        .post("/system/info/edit", edit)
+        .post("/sys/index/edit", edit)
         .then(res => {
           this.$refs.editModal.close();
           this.goPage({ page: this.pi });
@@ -1162,20 +1162,14 @@ export default {
         });
     },
     manage(id, ident) {
-      this.$emit("addTab", "菜单配置(" + ident + ")", "/sys/func/" + id);
-      // this.$router.push({
-      //   name: "sysfunc",
-      //   query: {
-      //     id: id
-      //   }
-      // });
+      this.$emit("addTab", "菜单配置(" + ident + ")", "/pages/sys/func?id=" + id);
     },
     //管理数据权限数据
     managePermission(id, ident) {
       this.$emit(
         "addTab",
         "数据规则配置(" + ident + ")",
-        "/sys/data/permission/" + id
+        "/pages/sys/data/permission?id=" + id
       );
 
       // this.$router.push({
@@ -1220,7 +1214,7 @@ export default {
     //导出菜单
     exportMenu(id) {
       this.$http
-        .post("/system/menu/export", { id: id })
+        .post("/sys/index/menuexport", { id: id })
         .then(res => {
           var data = [
             [
@@ -1306,7 +1300,7 @@ export default {
       }
 
       this.$http
-        .post("/system/menu/import", { data: JSON.stringify(this.importData) })
+        .post("/sys/index/menuimport", { data: JSON.stringify(this.importData) })
         .then(res => {
           this.$notify({
             title: "成功",

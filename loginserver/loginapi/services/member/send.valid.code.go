@@ -9,9 +9,9 @@ import (
 	"github.com/micro-plat/hydra"
 	"github.com/micro-plat/lib4go/errs"
 	"github.com/micro-plat/sso/loginserver/loginapi/modules/const/enum"
-	"github.com/micro-plat/sso/loginserver/loginapi/modules/const/errorcode"
 	"github.com/micro-plat/sso/loginserver/loginapi/modules/logic"
 	"github.com/micro-plat/sso/loginserver/loginapi/modules/model"
+	"github.com/micro-plat/sso/sso/errorcode"
 )
 
 //SendValidCodeHandler 发送验证码

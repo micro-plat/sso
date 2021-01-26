@@ -13,3 +13,19 @@ type Menu struct {
 	//Sortrank string `json:"sortrank"`
 	Children []Menu `json:"children,omitempty"`
 }
+
+const (
+	MenuLevelMenu = "3"
+	MenuLevelFunc = "4"
+)
+
+//SystemRoleAuthority SystemRoleAuthority
+type SystemRoleAuthority struct {
+	MenuID   string `json:"id"`
+	MenuName string `json:"name"`
+	Parent   string `json:"parent"`
+	SystemID string `json:"sys_id"`
+	Level    string `json:"level_id"`
+	Path     string `json:"path"`
+	FuncTags map[string]bool
+}

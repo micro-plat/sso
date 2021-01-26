@@ -35,7 +35,7 @@
             <template slot-scope="scope">
               <!-- <el-tag type="success" v-if="scope.row.status == 0">{{scope.row.status_label}}</el-tag>
               <el-tag type="info" v-if="scope.row.status == 2">{{scope.row.status_label}}</el-tag> -->
-              <el-tag type="scope.row.status == 2?'success':'info'">{{scope.row.status | fltrEnum("role_status")}}</el-tag>
+              <el-tag :type="scope.row.status == '0' ?'success':'info'">{{scope.row.status | fltrEnum("role_status")}}</el-tag>
             </template>
           </el-table-column>
 
@@ -182,35 +182,13 @@ export default {
         }, 1000);
       });
     },
-    // next() {
-    //     let pi = this.paging.pi
-    //     this.paging.pi = pi + 1;
-    //     this.$http.post("/role", this.paging)
-    //         .then(res => {
-    //             if (res.list.length <= 0) {
-    //                 this.paging.pi = pi
-    //                 return false
-    //             }
-    //             this.datalist.items = this.datalist.items.concat(res.list);
-    //             this.datalist.count = new Number(res.count);
-    //             this.totalpage = Math.ceil(this.datalist.count / this.paging.ps);
-    //         })
-    //         .catch(err => {
-    //             this.$notify({
-    //                 title: '错误',
-    //                 message: '网络错误,请稍后再试',
-    //                 type: 'error',
-    //                 offset: 50,
-    //                 duration: 2000,
-    //             });
-    //         });
-    // },
+  
     queryData: function() {
       if (this.paging.pi == 0) {
         this.paging.pi = 1;
       }
       this.$http
-        .get("/role/getall", this.paging)
+        .get("/role/index/getall", this.paging)
         .then(res => {
           this.datalist.items = res.list;
           this.datalist.count = new Number(res.count);
@@ -268,7 +246,7 @@ export default {
         type: "warning"
       }).then(() => {
         this.$http
-          .post("/role/changestatus", role)
+          .post("/role/index/changestatus", role)
           .then(res => {
             this.queryData();
             this.$notify({
@@ -297,7 +275,7 @@ export default {
         type: "warning"
       }).then(() => {
         this.$http
-          .post("/role/del", { role_id: roleid })
+          .post("/role/index/del", { role_id: roleid })
           .then(res => {
             this.queryData();
             this.$notify({
@@ -332,7 +310,7 @@ export default {
             }
           }
           this.$http
-            .post("/role/save", this.roleInfo)
+            .post("/role/index/save", this.roleInfo)
             .then(res => {
               this.dialogFormVisible = false;
               this.queryData();
@@ -364,27 +342,15 @@ export default {
       });
     },
     menuAuth(id, role_name) {
-      this.$emit("addTab", "菜单授权(" + role_name + ")", "/role/auth/" + id);
-      // this.$router.push({
-      //     name: "roleauth",
-      //     query: {
-      //         role_id: id
-      //     }
-      // });
+      this.$emit("addTab", "菜单授权(" + role_name + ")", "/pages/role/auth?id=" + id);
     },
     dataAuth(id, role_name) {
       this.$emit(
         "addTab",
         "数据授权(" + role_name + ")",
-        "/role/dataauth/" + id
+        "/pages/role/dataauth?id=" + id
       );
-      // this.$router.push({
-      //     name: "dataauth",
-      //     query: {
-      //         role_id: id
-      //     }
-      // });
-    }
+     }
   }
 };
 </script>
