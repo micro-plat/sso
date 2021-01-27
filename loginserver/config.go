@@ -19,7 +19,7 @@ import (
 var Archive = "login.static.zip"
 var staticOpts = []static.Option{
 	static.WithArchive(Archive),
-	static.WithRewriters("/", "/index.htm", "/default.html", "/default.htm", "/choose", "/refresh", "/errpage", "/bindnotice", "/wxcallback/*", "/bindwx", "/*/changepwd", "/*/jump", "/*/login"),
+	static.WithRewriters("/", "/index.htm", "/default.html", "/default.htm", "/choose", "/refresh", "/errpage", "/bindnotice", "/wxcallback", "/bindwx", "/*/changepwd", "/*/jump", "/*/login"),
 }
 
 //bindConf 绑定启动配置， 启动时检查注册中心配置是否存在，不存在则引导用户输入配置参数并自动创建到注册中心
@@ -64,7 +64,7 @@ func devConf() {
 			jwt.WithSecret("bf8f3171946d8d5a13cca23aa6080c8e"),
 			jwt.WithExpireAt(36000),
 			jwt.WithHeader(),
-			jwt.WithExcludes("/system/webconfig", "/dds/dictionary/get", "/loginweb/system/config/get", "/loginweb/member/login", "/loginweb/member/bind/check", "/loginweb/member/bind/save", "/loginweb/member/sendcode"),
+			jwt.WithExcludes("/dds/dictionary/get", "/loginweb/system/config/get", "/loginweb/member/login", "/loginweb/member/bind/*", "/loginweb/member/sendcode"),
 		)
 
 }
@@ -95,7 +95,7 @@ func prodConf() {
 			jwt.WithSecret("f0abd74b09bcc61449d66ae5d8128c18"),
 			jwt.WithExpireAt(36000),
 			jwt.WithHeader(),
-			jwt.WithExcludes("/system/webconfig", "/dds/dictionary/get", "/loginweb/system/config/get", "/loginweb/member/login", "/loginweb/member/bind/check", "/loginweb/member/bind/save", "/loginweb/member/sendcode"),
+			jwt.WithExcludes("/dds/dictionary/get", "/loginweb/system/config/get", "/loginweb/member/login", "/loginweb/member/bind/*", "/loginweb/member/sendcode"),
 		)
 
 }

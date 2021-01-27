@@ -49,7 +49,7 @@ func devConf() {
 			jwt.WithSecret("bf8f3171946d8d5a13cca23aa6080c8e"),
 			jwt.WithExpireAt(36000),
 			jwt.WithHeader(),
-			jwt.WithExcludes("/sso/login/verify", "/system/webconfig", "/image/upload", "/dds/dictionary/get")).
+			jwt.WithExcludes("/sso/login/verify", "/image/upload", "/dds/dictionary/get")).
 		Sub("app", model.Conf{
 			PicHost:    "https://static.100bm.cn",
 			Secret:     "B128F779D5741E701923346F7FA9F95C",
@@ -72,7 +72,7 @@ func prodConf() {
 			jwt.WithSecret("bf8f3171946d8d5a13cca23aa6080c8e"),
 			jwt.WithExpireAt(36000),
 			jwt.WithHeader(),
-			jwt.WithExcludes("/sso/login/verify", "/system/webconfig", "/image/upload", "/dds/dictionary/get")).
+			jwt.WithExcludes("/sso/login/verify", "/image/upload", "/dds/dictionary/get")).
 		Sub("app", model.Conf{
 			PicHost:    "http://bj.images.18jiayou.com",
 			Secret:     "B128F779D5741E701923346F7FA9F95C",

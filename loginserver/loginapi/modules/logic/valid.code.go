@@ -94,15 +94,15 @@ func (l *ValidCodeLogic) SendWechatCode(userInfo types.XMap, ident, validCode st
 //GetAccessToken 动态获取token
 func (l *ValidCodeLogic) GetAccessToken() (string, error) {
 	conf := model.GetLoginConf()
-	url := fmt.Sprintf("%s/%s/wechat/token/get", conf.WechatTokenHost, conf.WechatAppID)
+	url := fmt.Sprintf("%s/wx/%s/token/get", conf.WechatTokenHost, conf.WechatAppID)
 	client := hydra.C.HTTP().GetRegularClient()
 	body, statusCode, err := client.Get(url)
 	if err != nil {
-		err = errs.NewErrorf(errorcode.ERR_WECHAT_TOKEN_GET_ERROR, "获取wechat/token失败：%v", err)
+		err = errs.NewErrorf(errorcode.ERR_WECHAT_TOKEN_GET_ERROR, "获取wechat/token失败：%v", url, err)
 		return "", err
 	}
 	if statusCode != 200 {
-		return "", errs.NewErrorf(statusCode, "获取token信息失败,HttpStatus:%d, body:%s", statusCode, body)
+		return "", errs.NewErrorf(statusCode, "获取token信息失败,HttpStatus:%d, body:%s", url, statusCode, body)
 	}
 
 	data := make(map[string]interface{})

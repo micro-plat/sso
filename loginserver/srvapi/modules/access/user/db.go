@@ -1,16 +1,13 @@
 package user
 
 import (
-	"encoding/json"
 	"fmt"
-	"strings"
 
 	"github.com/micro-plat/hydra/components"
 	"github.com/micro-plat/lib4go/db"
 	"github.com/micro-plat/lib4go/errs"
 	"github.com/micro-plat/lib4go/security/md5"
 	"github.com/micro-plat/lib4go/types"
-	commodel "github.com/micro-plat/sso/loginserver/loginapi/modules/model"
 	"github.com/micro-plat/sso/sso/errorcode"
 
 	"github.com/micro-plat/sso/loginserver/srvapi/modules/access/system"
@@ -62,7 +59,6 @@ func (l *DBUser) AddUser(req model.UserInputNew) error {
 		return fmt.Errorf("添加用户发生错误(err:%v)", err)
 	}
 
-	l.adapterRoleID(req)
 	if req.RoleID != 0 {
 
 		params["user_id"] = userID
@@ -84,26 +80,6 @@ func (l *DBUser) AddUser(req model.UserInputNew) error {
 
 	dbTrans.Commit()
 	return nil
-}
-
-func (l *DBUser) adapterRoleID(req model.UserInputNew) {
-	if req.RoleID != 0 {
-		return
-	}
-	conf := commodel.GetLoginConf() //取默认配置的角色
-	if strings.EqualFold(conf.AddUserUseDefaultRole, "") {
-		return
-	}
-	var roleConfig map[string]int
-	err := json.Unmarshal([]byte(conf.AddUserUseDefaultRole), &roleConfig)
-	if err != nil {
-		return
-	}
-	roleID, ok := roleConfig[req.TargetIdent]
-	if !ok {
-		return
-	}
-	req.RoleID = roleID
 }
 
 //GetUserInfoByName 根据用户名查询用户信息

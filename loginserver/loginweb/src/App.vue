@@ -9,7 +9,7 @@ export default {
   name: 'App',
   data(){
     return{
-      hasLoaded: false
+      hasLoaded: true
     }
   },
   created(){ 
@@ -17,12 +17,7 @@ export default {
   },
   methods:{
     async getWebconfig(){
-      var that = this;
-      await this.$env.load(async function(){
-        var data = await that.$http.get("/system/webconfig");
-        that.hasLoaded = true
-        return data;
-      });
+     
     }
   }
 }

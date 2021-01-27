@@ -48,8 +48,8 @@
         checkUserInfo() {
             this.$http.post("/loginweb/member/bind/check",{user_id:this.userId, sign:this.sign, timestamp:this.timestamp})
             .then(res =>{
-                var url = res.wxlogin_url + "?appid=" + res.appid + "&state=" + res.state + "&redirect_uri=" +
-                        encodeURIComponent(this.$env.conf.system.wxcallbackhost + this.$env.conf.system.wxcallbackurl + "/bind") +
+                var url = "https://open.weixin.qq.com/connect/oauth2/authorize?appid=" + res.appid + "&state=" + res.state + "&redirect_uri=" +
+                        encodeURIComponent(this.$env.conf.system.wxcallbackhost + "/wxcallback") +
                         "&response_type=code&scope=snsapi_base#wechat_redirect"; 
                 console.log(url);
                 window.location.href = url;  

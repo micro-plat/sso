@@ -48,7 +48,7 @@ export default new Router({
       component: bindwx
     },
     {
-      path: '/wxcallback/:type',
+      path: '/wxcallback',
       name: 'wxcallback',
       component: wxcallback
     }, 

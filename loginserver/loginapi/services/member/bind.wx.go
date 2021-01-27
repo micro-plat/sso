@@ -58,9 +58,8 @@ func (u *BindWxHandler) CheckHandle(ctx hydra.IContext) (r interface{}) {
 	ctx.Log().Info("4: 返回数据")
 	config := model.GetLoginConf()
 	return map[string]interface{}{
-		"wxlogin_url": config.WechatPhoneLoginURL,
-		"appid":       config.WechatAppID,
-		"state":       stateCode,
+		"appid": config.WechatAppID,
+		"state": stateCode,
 	}
 }
 

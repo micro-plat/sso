@@ -8,8 +8,8 @@
             <div :class="type==1? 'info-notice': 'info-notice color-black'">{{msg}}</div>
         </div>
     </div>
-    <div v-if="type==1"  class="cloud-manager">
-      <img src="../../img/cloud_manager.jpg" />
+    <div v-if="type==1 && wechatOfficalAccoutImage!=''"  class="cloud-manager">
+      <img :src="wechatOfficalAccoutImage" />
     </div>
 </div>
 </template>
@@ -21,6 +21,7 @@
           type:1, //1表示成功, 0表示失败
           errorCode: 0, //错误码 
           msg: "",
+          wechatOfficalAccoutImage:"",
           errorTemplate:{
             902: "用户被锁定",
             903: "用户被禁用",
@@ -40,6 +41,7 @@
     },
     methods:{
         showMsg(){
+            this.wechatOfficalAccoutImage = this.$env.conf.system.wechatOfficalAccoutImage
             if (this.type == 1) {
                 this.msg = "已绑定微信账户,请关注【运维云管家】";
                 return

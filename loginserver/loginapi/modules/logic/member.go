@@ -175,7 +175,8 @@ func (m *MemberLogic) ValidStateAndGetOpenID(stateCode, wxCode string) (map[stri
 	}
 
 	config := commodel.GetLoginConf()
-	url := fmt.Sprintf("%s?appid=%s&secret=%s&code=%s&grant_type=authorization_code", config.WechatTokenURL, config.WechatAppID, config.WechatSecret, wxCode)
+	getOpenIDURL := "https://api.weixin.qq.com/sns/oauth2/access_token"
+	url := fmt.Sprintf("%s?appid=%s&secret=%s&code=%s&grant_type=authorization_code", getOpenIDURL, config.WechatAppID, config.WechatSecret, wxCode)
 	openID, err := m.GetWxUserOpID(url)
 	if err != nil {
 		return nil, err
