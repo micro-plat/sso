@@ -17,8 +17,8 @@ CREATE TABLE  sso_user_info (
 	changepwd_times bigint(20) default 0 not null  comment '密码修改次数' ,
 	ext_params varchar(1024)    comment '扩展参数' ,
 	last_login_time datetime    comment '最后登录时间' ,
-	source_id varchar(128) default '0' not null  comment '来源id' ,
-	source varchar(36) default '''' not null  comment '来源' ,
+	source_id varchar(128) default '' not null  comment '来源id' ,
+	source varchar(36) default '' not null  comment '来源' ,
 	PRIMARY KEY (user_id),
 	UNIQUE KEY unq_sso_user_info_user_name (user_name),
 	
