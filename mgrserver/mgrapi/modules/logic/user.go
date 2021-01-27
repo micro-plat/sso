@@ -14,7 +14,7 @@ import (
 	"github.com/micro-plat/lib4go/types"
 	"github.com/micro-plat/sso/mgrserver/mgrapi/modules/access/user"
 	"github.com/micro-plat/sso/mgrserver/mgrapi/modules/const/enum"
-	"github.com/micro-plat/sso/mgrserver/mgrapi/modules/const/errorcode"
+	"github.com/micro-plat/sso/sso/errorcode"
 
 	"github.com/micro-plat/sso/mgrserver/mgrapi/modules/model"
 )

@@ -94,7 +94,6 @@ func registryAPI() {
 	App.Web("/loginweb/member/sendcode", member.NewSendCodeHandler)    //发送验证码
 	App.Web("/loginweb/member/system/get", member.NewUserSysHandler)   //获取用户可进的系统信息
 	App.Web("/loginweb/system/config/get", system.NewSystemHandler)    //获取系统的一些配置信息
-	App.Web("/system/webconfig", system.WebConfigHandler)
 
 	//api 接口
 	App.Micro("/api/menu/get", apimember.NewMenuHandler)                   //获取用户菜单数据

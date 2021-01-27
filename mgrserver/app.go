@@ -87,6 +87,5 @@ func registryAPI() {
 	App.Micro("/sys/index", function.NewSystemFuncHandler)        //系统功能相关接口
 	App.Micro("/sys/index", permission.NewDataPermissionHandler)  //数据权限功能相关接口
 	App.Micro("/image/upload", image.NewImageHandler("../image")) //图片上传
-	App.Micro("/system/webconfig", system.WebConfigHandler)
 
 }

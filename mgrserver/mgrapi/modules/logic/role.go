@@ -5,8 +5,7 @@ import (
 	"github.com/micro-plat/lib4go/errs"
 	"github.com/micro-plat/sso/mgrserver/mgrapi/modules/access/role"
 	"github.com/micro-plat/sso/mgrserver/mgrapi/modules/model"
-	"github.com/micro-plat/sso/mgrserver/mgrapi/modules/const/errorcode"
-
+	"github.com/micro-plat/sso/sso/errorcode"
 )
 
 type IRoleLogic interface {
