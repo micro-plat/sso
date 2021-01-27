@@ -44,7 +44,7 @@ export default {
   },
   methods: {
     back: function() {
-      this.$router.push({ path: "/pages/user/role" });
+      this.$router.push({ path: "/pages/role/index" });
     },
     saveAuth: function() {
       this.selectAuth = [];
