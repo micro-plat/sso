@@ -28,50 +28,35 @@ SSO系统集成分"前端项目"集成和"后端服务"接口集成以及部分�
 
 // 增加文件内配置项
 {
-    "ident":"sso",    // 项目的IDENT
-    "apiURL":"http://ssov4.100bm0.com:6677",       //服务请求地址，为空为与项目相同地址
-    "loginWebHost":"http://ssov4.100bm0.com:6687", //sso 登录系统地址
-    "cookieName":"Authorization",                  //如果使用cookie保存token时填写
-    "companyRight":"四川千行你我科技股份有限公司",      //根据实际业务填写
-    "companyRightCode":"蜀ICP备20003360号"          //根据实际业务填写
+    "name": "用户系统",
+    "copyright": { //版权信息      
+        "company": "四川千行你我科技股份有限公司",
+        "code": "蜀ICP备20003360号"
+    },
+    "api": { //接口相关调用
+        "host": "http://ssov4.100bm0.com:6677", //后端api接口地址
+        "verifyURL": "/sso/login/verify", //sso code验证相关（固定）
+        "confURL": "",                    //服务端配置接口
+        "enumURL": "/dds/dictionary/get", //枚举获取地址
+        "logoutURL": "/sso/logout"        //退出地址
+    },
+    "sso": {
+        "ident": "sso",                    //系统标识
+        "host": "http://ssov4.100bm0.com:6687"//sso登录戏台的地址
+    }
 }
 
 ```
 #### 1.2 修改main.js 
 
 ```javascript
-//1. 添加引用
+//1. 添加引用（ services 是js包存放的位置）
 import utility from './services'
-Vue.use(utility, "../static/env.conf.json");
-
-//2. 增加枚举的回调函数
-Vue.prototype.$enum.callback(async function(type){
-  var url = "/dds/dictionary/get";
-  var data = await Vue.prototype.$http.get(url, { dic_type: type });
-  console.log("dictionary.data:", type, data);
-  return data;
-});
-
-//3. 设置默认的http服务请求地址
-Vue.prototype.$http.setBaseURL(Vue.prototype.$env.Conf.apiURL);
-
-//4. 增加对403 状态码的拦截处理
-Vue.prototype.$http.addStatusCodeHandle(res => {
-  var url = (res.headers || {}).location ||""; 
-  if(!url){
-    url = this.$env.Conf.loginWebHost + "/sso/jump?returnurl=";
-  }
-
-  url =url + encodeURIComponent(document.URL);
-  console.log("redirect:url", url);
-  window.location = url ;
-  //return new Error("请补充注册中心auth/jwt的AuthURL配置");
-}, 403);
-
+Vue.use(utility);
 
 ```
 
-#### 1.3  src/App.vue 文件调整（存在需读取服务端配置才调整）
+#### 1.3  src/App.vue 文件调整（需读取服务端配置才调整）
 
 1.  直接复制下面内容到App.vue文件
 
@@ -130,7 +115,6 @@ func WebConfigHandler(ctx hydra.IContext) interface{} {
 1. 直接将下面内容复制到项目内(src/pages/member/menu.vue)
 
 ```vue
-
 <template>
   <div id="app">
     <nav-menu
@@ -157,13 +141,12 @@ func WebConfigHandler(ctx hydra.IContext) interface{} {
     data () {
       return {
         logo: "",
-        copyright: (this.$env.Conf.companyRight||"") + "Copyright©" + new Date().getFullYear() +"版权所有",
-        copyrightcode: this.$env.Conf.companyRightCode ,
+        copyright: (this.$env.conf.copyright.company||"") + "Copyright©" + new Date().getFullYear() +"版权所有",
+        copyrightcode: this.$env.conf.copyright.code ,
         themes: "", //顶部左侧背景颜色,顶部右侧背景颜色,右边菜单背景颜色
         menus: [{}],  //菜单数据
         systemName: "",  //系统名称
-        userinfo: {name:'',role:"管理员"},
-        indexUrl: "/user/index",
+        userinfo:{},
         items:[]
       }
     },
@@ -171,145 +154,70 @@ func WebConfigHandler(ctx hydra.IContext) interface{} {
       navMenu
     },
     created(){
-      this.getMenu();
-      this.getSystemInfo();
+     
     },
     mounted(){
+      console.log("----------",this.$route.query)
+      this.$auth.checkAuthCode(this)
+      this.getMenu();
+      this.getSystemInfo();
+
       this.setDocmentTitle();
-      var userinfo = localStorage.getItem("userinfo")
-      if(userinfo){
-        this.userinfo = JSON.parse(userinfo);
-      }
+      this.userinfo = this.$auth.getUserInfo()
     },
     methods:{
       pwd(){
         this.$http.clearAuthorization();
-        if(this.$env.Conf.cookieName){
-          VueCookies.remove(this.$env.Conf.cookieName);
+
+      //清除cookie 
+       var logoutURL = this.$env.conf.api.logoutURL;
+        if (logoutURL){
+            that.$http.xget(logoutURL);
         }
-        window.location.href = this.$env.Conf.loginWebHost + "/" + this.$env.Conf.ident + "/changepwd";
+        var url = this.$env.conf.sso.host + "/"+ this.$env.conf.sso.ident + "/changepwd"
+        window.location.href = url;
       },
       signOutM() {
-        this.$http.clearAuthorization();
-        var logouturl="";//如果想退出后跳转的地址，请设置值
-        var returnURL = window.location.href;
-        var redirectURL = "?returnurl="+returnURL;
-        if (logouturl){
-          redirectURL = "?logouturl="+logouturl;
-        }
-        window.location  = this.$env.Conf.loginWebHost+"/"+this.$env.Conf.ident+"/login"+redirectURL;
+        this.$auth.logout();
       },
       getMenu(){
-        this.$http.get("/sso/member/menus/get")
-          .then(res => {
-            this.menus = res;
-            this.$refs.NewTap.open("用户管理", this.indexUrl); //修改此处的菜单名与地址
+          this.$auth.getMenus(this).then(res=>{
+            this.menus =res ;
             this.getUserOtherSys();
-          })
-          .catch(err => {
-            console.log(err)
           });
       },
       //获取系统的相关数据
-      getSystemInfo() {
-        this.$http.get("/sso/system/info/get")
-        .then(res => {
-          this.themes = res.theme;
-          this.systemName = res.name;
-          this.logo = res.logo;
-          this.setDocmentTitle();
-          
-        }).catch(err => {
-          console.log(err);
-        })
+      getSystemInfo() { 
+         this.$auth.getSystemInfo().then(res=>{
+            this.themes = res.theme;
+            this.systemName = res.name;
+            this.logo = res.logo;
+         })
       },
       //用户可用的其他系统
       getUserOtherSys() {
-        this.$http.get("/sso/member/systems/get")
-        .then(res => {
-            this.items = (function (systems) {
-              if (!systems || !systems.length) {
-                  return []
-              }
-              var items = [];
-              systems.forEach(element => {
-                  items.push({
-                    name: element.name,
-                    path: element.index_url.substr(0, element.index_url.lastIndexOf("/")),
-                    type: "blank"
-                  })
-              });
-              return items;
-          })(res);
-        })
-        .catch(err => {
-          console.log(err);
-        })
+        this.$auth.getSystemList().then(res=>{
+          this.items = res;
+        }) 
       },
       setDocmentTitle() {
-        document.title = this.systemName;
+        document.title = this.$env.conf.name;
       }
     
     }
   }
 </script>
 
-```
-
-2. 修改内容
-
-```javascript
-//1. indexUrl值
-//2. 修改默认地址
-
-``` 
-#### 1.5 ssocallback路由处理 
-
-1. 创建  src/pages/member/sso.callback.vue 文件，复制添加如下内容。
-```vue
-<template></template>
-
-<script>
-export default {
-  data() {
-    return {};
-  },
-  mounted() {
-    this.validSsoLogin();
-  },
-  methods: {
-    validSsoLogin() {
-      var returnURL = this.$route.query.returnurl;
-      this.$http
-        .post("/sso/login/verify", { code: this.$route.query.code })
-        .then(res => {
-          localStorage.setItem(
-            "userinfo",
-            JSON.stringify({ name: res.user_name, role: res.role_name })
-          );
-          if (returnURL) {
-            window.location = returnURL; 
-            return;
-          }
-          this.$router.push("/");
-        })
-        .catch(err => {
-            console.log(err);
-        });
-    }
-  }
-};
-</script>
 
 ```
+ 
 
 #### 1.6 添加路由地址
 
 ```javascript
 
 import menu from '@/pages/member/menu';
-import ssocallback from '@/pages/member/sso.callback.vue';
-
+ 
 export default new Router({
   mode: "history",
   routes: [
@@ -323,19 +231,11 @@ export default new Router({
     children: [
       //此处添加业务处理路由地址
     ]
-  },
-    {
-      path: '/ssocallback',
-      name: 'ssocallback',
-      component: ssocallback
-    }
+  }
   ]
 })
 
-
-
 ```
-
 
 ### 2. 后端项目集成
 
@@ -406,7 +306,7 @@ hydra.OnReady(func() error {
 
 hydra.OnReady(func() error {
     hydra.Conf.Web("8181"). //端口根据业务自定定义
-    Static(static.WithRewriters("/", "/index.htm", "/ssocallback"))
+    Static(static.WithPrefix("/pages"),static.WithRewriters("/", "/index.htm", "/pages/**"))
 })
 ```
 
