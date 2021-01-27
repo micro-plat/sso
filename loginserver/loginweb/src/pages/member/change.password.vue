@@ -85,8 +85,8 @@
             }
             this.errorMsg = '';
             this.$http.post("/loginweb/member/changepwd", {
-                    expassword:this.expassword.trim(),
-                    newpassword:this.password1.trim()
+                    expassword: $.md5(this.expassword.trim()),
+                    newpassword:$.md5(this.password1.trim())
                  })
                 .then(res => {
                     this.errorMsg = "密码修改成功";

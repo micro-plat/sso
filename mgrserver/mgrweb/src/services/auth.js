@@ -26,7 +26,7 @@ Auth.prototype.checkAuthCode = function (that, url){
 }
 
 //lognout 退出登录
-Auth.prototype.loginout = function(url, logoutURL){
+Auth.prototype.logout = function(url, logoutURL){
 
     //清除用户认证信息
     let that = Auth.prototype.Vue.prototype;
