@@ -27,8 +27,8 @@ func Asset(name string) ([]byte, error) {
 }
 
 var _bindata = map[string]string{
-	"dds_area_info.sql":           dds_area_info,
-	"dds_dictionary_info.sql":     dds_dictionary_info,
+	//"dds_area_info.sql":           dds_area_info,
+	//"dds_dictionary_info.sql":     dds_dictionary_info,
 	"sso_data_permission.sql":     sso_data_permission,
 	"sso_operate_log.sql":         sso_operate_log,
 	"sso_role_datapermission.sql": sso_role_datapermission,
