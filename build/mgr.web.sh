@@ -32,6 +32,10 @@ mkdir -p ${rootdir}/out
 mv $filename ${rootdir}/out/
 
 sleep 0.1
+
+rm -f ${rootdir}/mgrserver/static.go
+rm -f ${rootdir}/mgrserver/web.go
+
 echo "3. 生成资源文件:loginserver/loginapi/web/static.go" 
 if [ "$pkg" != "none" ] ; then 
 	echo "3.1. 整合$filename文件"
