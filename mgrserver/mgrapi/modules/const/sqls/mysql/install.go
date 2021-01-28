@@ -7,15 +7,19 @@ import (
 )
 
 func init() {
+	hydra.OnReadying(func() {
+		schemeNames := scheme.AssetNames()
+		for i := range schemeNames {
+			bytes, _ := scheme.Asset(schemeNames[i])
+			hydra.Installer.DB.AddSQL(string(bytes))
+		}
+	})
 
-	schemeNames := scheme.AssetNames()
-	for i := range schemeNames {
-		bytes, _ := scheme.Asset(schemeNames[i])
-		hydra.Installer.DB.AddSQL(string(bytes))
-	}
-	dataNames := data.AssetNames()
-	for i := range dataNames {
-		bytes, _ := data.Asset(dataNames[i])
-		hydra.Installer.DB.AddSQL(string(bytes))
-	}
+	hydra.OnReady(func() {
+		dataNames := data.AssetNames()
+		for i := range dataNames {
+			bytes, _ := data.Asset(dataNames[i])
+			hydra.Installer.DB.AddSQL(string(bytes))
+		}
+	})
 }

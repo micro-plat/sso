@@ -2,11 +2,11 @@ module github.com/micro-plat/sso
 
 go 1.15
 
-// replace github.com/micro-plat/hydra => ../../../github.com/micro-plat/hydra
+replace github.com/micro-plat/hydra => ../../../github.com/micro-plat/hydra
 
-// replace github.com/micro-plat/lib4go => ../../../github.com/micro-plat/lib4go
+replace github.com/micro-plat/lib4go => ../../../github.com/micro-plat/lib4go
 
-// replace github.com/lib4dev/vcs => ../../../github.com/lib4dev/vcs
+replace github.com/lib4dev/vcs => ../../../github.com/lib4dev/vcs
 
 require (
 	github.com/Owen-Zhang/base64Captcha v0.0.0-20200225080800-fd8d3d1462c2

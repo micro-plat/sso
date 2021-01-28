@@ -18,7 +18,7 @@ import (
 	"github.com/micro-plat/sso/mgrserver/mgrapi/services/role"
 	"github.com/micro-plat/sso/mgrserver/mgrapi/services/system"
 	"github.com/micro-plat/sso/mgrserver/mgrapi/services/user"
-
+	"github.com/micro-plat/sso/mgrserver/mgrapi/dds"
 	ssoSdk "github.com/micro-plat/sso/sso"
 )
 
@@ -71,6 +71,8 @@ func checkMgrConf(appConf app.IAPPConf) error {
 	if err := ssoSdk.Config(conf.SsoApiHost, conf.Ident, conf.Secret, ssoSdk.WithAuthorityIgnore("/dds/*", "/base/**")); err != nil {
 		return err
 	}
+	dds.Config( )
+
 	return nil
 
 }
