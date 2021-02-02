@@ -2,10 +2,12 @@ package function
 
 import (
 	"fmt"
-
 	"github.com/micro-plat/hydra/components"
+	"github.com/micro-plat/lib4go/types"
 	"github.com/micro-plat/sso/mgrserver/mgrapi/modules/const/sqls"
 	"github.com/micro-plat/sso/mgrserver/mgrapi/modules/model"
+	"strconv"
+	"strings"
 )
 
 type IDbSystemFunc interface {
@@ -76,13 +78,38 @@ func (u *DbSystemFunc) ChangeStatus(id int, status int) (err error) {
 }
 
 func (u *DbSystemFunc) Delete(id int) (err error) {
-	db := components.Def.DB().GetRegularDB()
-	_, err = db.Execute(sqls.DeleteSysFunc, map[string]interface{}{
-		"id": id,
+	dbObj := components.Def.DB().GetRegularDB()
+	dbTrans, _ := dbObj.Begin()
+	totalRows := []types.XMap{}
+	rows, err := dbTrans.Query(sqls.GetChildren, map[string]interface{}{
+		"menu_id": id,
+	})
+	totalRows = append(totalRows, rows...)
+
+	for _, row := range rows {
+		grows, err := dbTrans.Query(sqls.GetChildren, map[string]interface{}{
+			"menu_id": row.GetString("id"),
+		})
+		if err != nil {
+			dbTrans.Rollback()
+			return fmt.Errorf("获取儿子功能发生错误(err:%v)", err)
+		}
+		totalRows = append(totalRows, grows...)
+	}
+
+	idlist := make([]string, len(totalRows))
+	for i, row := range totalRows {
+		idlist[i] = row.GetString("id")
+	}
+	idlist = append(idlist, strconv.Itoa(id))
+	_, err = dbTrans.Execute(sqls.DeleteSysFunc, map[string]interface{}{
+		"menu_id": strings.Join(idlist, ","),
 	})
 	if err != nil {
+		dbTrans.Rollback()
 		return fmt.Errorf("删除系统功能发生错误(err:%v)", err)
 	}
+	dbTrans.Commit()
 	return nil
 }
 

@@ -21,12 +21,18 @@ where
 	t.id=@id
 `
 
+//GetChildren .
+const GetChildren = `
+ 
+select t.id from sso_system_menu t
+where t.parent = @menu_id
+
+`
+
 //DeleteSysFunc .
 const DeleteSysFunc = `
-delete from 
-	sso_system_menu 
-where 
-	id = @id
+delete from sso_system_menu 
+where id in(#menu_id)
 `
 
 //EditSysFunc .
