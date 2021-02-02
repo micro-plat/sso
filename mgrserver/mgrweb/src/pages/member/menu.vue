@@ -41,40 +41,32 @@ export default {
     //注册插件
     navMenu,
   },
-  created() {},
+  created() {
+  },
   mounted() {
     console.log("----------", this.$route.query);
-    this.$auth.checkAuthCode(this);
     this.getMenu();
     this.getSystemInfo();
-
-    this.setDocmentTitle();
-    this.userinfo = this.$auth.getUserInfo();
+    this.userinfo = this.$sys.getUserInfo();
   },
   methods: {
     pwd() {
-      this.$http.clearAuthorization();
-
-      //清除cookie
-      var logoutURL = this.$env.conf.api.logoutURL;
-      if (logoutURL) {
-        this.$http.xget(logoutURL);
-      }
-      var url = this.$env.conf.sso.host + "/" + this.$env.conf.sso.ident + "/changepwd";
-      window.location.href = url;
+        this.$sys.changePwd();
     },
     signOutM() {
-      this.$auth.logout();
+      this.$sys.logout();
     },
     getMenu() {
-      this.$auth.getMenus(this).then((res) => {
+      this.$sys.getMenus().then((res) => {
         this.menus = res;
         this.getUserOtherSys();
+        var cur = this.$sys.findMenuItem(res)
+        this.$refs.NewTap.open(cur.name, cur.path);
       });
     },
     //获取系统的相关数据
     getSystemInfo() {
-      this.$auth.getSystemInfo().then((res) => {
+      this.$sys.getSystemInfo().then((res) => {
         this.themes = res.theme;
         this.systemName = res.name;
         this.logo = res.logo;
@@ -82,13 +74,10 @@ export default {
     },
     //用户可用的其他系统
     getUserOtherSys() {
-      this.$auth.getSystemList().then((res) => {
+      this.$sys.getSystemList().then((res) => {
         this.items = res;
       });
-    },
-    setDocmentTitle() {
-      document.title = this.$env.conf.name;
-    },
+    }
   },
 };
 </script>

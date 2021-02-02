@@ -705,7 +705,7 @@ export default {
   data() {
     return {
       options: {
-        target: "/image/upload", //上传地址
+        target: this.$env.conf.api.host + "/image/upload", //上传地址
         testChunks: false,
         withCredentials: true, //携带jwt
         singleFile: true //单文件上传
@@ -759,7 +759,7 @@ export default {
       this.close();
     },
     fileSuccess(rootFile, file, message, chunk) {
-      consloe.log(message);
+      console.log(message);
       let data = JSON.parse(message);
       this.addData.logo = data.data;
       this.$notify({

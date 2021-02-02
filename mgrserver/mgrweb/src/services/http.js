@@ -1,5 +1,4 @@
 import axios from 'axios';
-import Vue from "vue";
 import $ from 'jquery';
 
 axios.defaults.timeout = 5000;
@@ -9,12 +8,6 @@ axios.defaults.baseURL = process.env.VUE_APP_API_URL || "";
 var __vue__ = {}
 //header请求头key
 var authorizationKey = "authorization";
-
-//提示成功模板信息
-var tmplSuccess = { title: "成功", message: "操作成功", type: "success", offset: 50, duration: 2000 }
-
-//提示失败模板信息
-var tmplFailed = { title: "错误", message: "网络错误,请稍后再试", type: "error", offset: 50, duration: 2000 }
 
 //根据状态码回调
 var statusCodeHandles = { "403":function(){} } 
@@ -47,7 +40,7 @@ var statusCodeHandles = { "403":function(){} }
 *},
 *
 */
-export function Http() {
+export function Http(Vue) {
     __vue__ = Vue.prototype
 }
 
@@ -143,7 +136,6 @@ Http.prototype.post = function (url, data = {}, config = {}, success = "", fail 
     })
 }
 
-
 /**
  * 封装put请求
  * @param url
@@ -165,14 +157,12 @@ Http.prototype.put = function (url, data = {}, config = {}, success = "", fail =
     });
 }
 
-
 /**
  * 封装delete请求
  * @param url
  * @param data
  * @returns {Promise}
  */
-
 Http.prototype.del = function (url, data = {}, config = {}, success = "", fail = "") {
     return new Promise((resolve, reject) => {
         axios.delete(url, { data: data }, config)
@@ -235,14 +225,14 @@ Http.prototype.ajax = function (method, url, params, config, success, fail){
         async: false, // fasle表示同步请求，true表示异步请求
         xhrFields: { withCredentials: true },        
         headers: getHeaders(config||{}), 
-        beforeSend:function(jqXHR,settings){
+        url: getURL(url),//请求地址
+        data: params, //请求参数
+        beforeSend:function(httpRequest, settings){
             settings.contentType = settings.headers["content-type"]
-            if((settings.contentType||"").indexOf("/json")>0){
+            if((settings.contentType || "").indexOf("/json") > 0){
                 settings.data = JSON.stringify(params);
             }
         },  
-        url: getURL(url),//请求地址
-        data: params, //请求参数
         success: function(res) { //请求成功   
             showSuccessNotify(success)   
             result = res
@@ -260,16 +250,6 @@ Http.prototype.ajax = function (method, url, params, config, success, fail){
     return result
 }
 
-//初始化成功模板
-Http.prototype.setSuccessTmplt = function (data){
-    setTmplt(tmplSuccess,data)
-}
-
-//初始化失败模板
-Http.prototype.setFailedTmplt = function (data){
-    setTmplt(tmplFailed,data)
-}
-
 //消除header
 Http.prototype.clearAuthorization =function(){
     window.localStorage.removeItem(authorizationKey); 
@@ -278,72 +258,9 @@ Http.prototype.clearAuthorization =function(){
 //设置需要的header
 Http.prototype.setAuthorization = function(token){
     if(token){
-       window.localStorage.setItem(authorizationKey,token);
+       window.localStorage.setItem(authorizationKey, token);
     }
 }
-
-//显示成功提示
-function showSuccessNotify(msg){   
-    if (!msg) {
-        return
-    }
-
-    let tmpl = tmplSuccess
-    if (typeof msg == "string"){
-        tmpl.message = msg
-    }  
-    if(typeof __vue__.$notify != "function"){
-        console.info("还未安装element-ui组件，请先安装相关组件");
-        return
-    }
-    __vue__.$notify(tmpl);
-}
-
-//显示失败提示
-function showFailedNotify(msg, err){   
-    if (!msg) {    
-        return
-    }
-
-    let tmpl = tmplFailed
-    if (typeof msg == "string"){
-        tmpl.message = msg + err
-    }  
-    if(typeof msg == "boolean"){
-        tmpl.message = tmpl.message + err
-    }
-    if(typeof __vue__.$notify != "function"){
-        console.info("还未安装element-ui组件，请先安装相关组件");
-        return
-    }
-    __vue__.$notify(tmpl);
-}
-
-//初始化模板数据
-function setTmplt(tmpl, data){
-    if(!data){
-        return
-    }
-    if (typeof data == "string"){ 
-        tmpl.message = data
-        return
-    }
-    if(typeof data != "object"){
-        return
-    }
-    if (Object.prototype.hasOwnProperty.call(data, "title")){
-        tmpl.title = data.title
-    }
-    if (Object.prototype.hasOwnProperty.call(data, "message")){
-        tmpl.message = data.message
-    }
-    if (Object.prototype.hasOwnProperty.call(data, "offset")){
-        tmpl.offset = data.offset
-    }
-    if (Object.prototype.hasOwnProperty.call(data, "duration")){
-        tmpl.duration = data.duration
-    }
-} 
 
 //获取response返回的header  
 function getHeaders(config){ 
@@ -368,4 +285,28 @@ function getURL(url){
         return url
     }
     return axios.defaults.baseURL + url  //请求地址
+}
+
+//显示成功提示
+function showSuccessNotify(msg){   
+    if (!msg) {
+        return
+    }
+
+    __vue__.$msg.success(msg);
+}
+
+//显示失败提示
+function showFailedNotify(msg, err){   
+    if (!msg) {    
+        return
+    }
+
+    if (typeof msg == "string"){
+        msg = msg + err
+    }  
+    if(typeof msg == "boolean"){
+        msg = err + ""
+    }
+    __vue__.$msg.fail(msg);
 }

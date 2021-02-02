@@ -61,23 +61,23 @@ Enum.prototype.set = function (data, type) {
 };
 
 //数据获取
-Enum.prototype.get = function (type, pid) {
+Enum.prototype.get = function (type, pid, group) {
   if (!type) return [];
 
-  var result = getEnumList(type, pid) //根据存储查询
+  var result = getEnumList(type, pid, group) //根据存储查询
   if (result.length == 0){
-    result = getEnumListByCallback(type, pid)//根据回调获取
+    result = getEnumListByCallback(type, pid, group)//根据回调获取
   }
   return result
 };
 
 //根据value值获取name
-Enum.prototype.getName = function (type, value) {
+Enum.prototype.getName = function (type, value, group) {
   if (value == "") {
     return "-"
   }
 
-  var enumMap = Enum.prototype.get(type)
+  var enumMap = Enum.prototype.get(type, null, group)
   for (var i = 0; i < enumMap.length; i++){
     if (enumMap[i].value == value) {
       return enumMap[i].name
@@ -93,7 +93,7 @@ Enum.prototype.clear = function (type) {
 
 //filter
 vue.filter('fltrEnum', (value, enumType) => {
-  return Enum.prototype.getName(enumType, value)
+  return Enum.prototype.getName(enumType, value, "fltr")
 })
 
 //数据格式检查
@@ -107,25 +107,22 @@ function checkData(data){
 }
 
 //根据回调函数获取数据
-function getEnumListByCallback(type, pid){
+function getEnumListByCallback(type, pid, group){
   var handle = window._EnumCallbackFunc_[type] || window._EnumCallbackFunc_["*"]
   
   var data = handle.apply(this, [type])
   Enum.prototype.set(data, type)
-  return getEnumList(type, pid)
+  return getEnumList(type, pid, group)
 }
 
 //根据type从window._EnumList_中获取相应的数据
-function getEnumList(type, pid){
-  var result = window._EnumList_[type] || []
-  if (!pid){
-    return result
-  }
+function getEnumList(type, pid, group){
   var list = []
+  var result = window._EnumList_[type] || []
   result.forEach((item)=>{
-    if (item.pid == pid){
+    if ((!item.group || item.group == group) && (!pid ||item.pid == pid)) {
       list.push(item)
     }
-  })
+  }) 
   return list
 }

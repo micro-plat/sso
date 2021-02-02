@@ -2,7 +2,8 @@ import { Enum } from './enum'
 import { Http } from './http'
 import { Env } from './env'
 import { Utility } from './utility'
-import { Auth } from './auth'
+import { Sys } from './sys'
+import { Message } from './message'
 
 import packageData from '../../package.json'
 
@@ -15,12 +16,12 @@ import packageData from '../../package.json'
 */
 export default {
     install: function(Vue, inject403Code = true, path){
+        Vue.prototype.$msg = new Message(Vue);
         Vue.prototype.$enum = new Enum();
-        Vue.prototype.$http = new Http();
-        Vue.prototype.$utility = new Utility();
-
+        Vue.prototype.$http = new Http(Vue);
         Vue.prototype.$env = new Env(getConf(Vue, path))    
-        Vue.prototype.$auth = new Auth(Vue);
+        Vue.prototype.$sys = new Sys(Vue);
+        Vue.prototype.$utility = new Utility();
 
         let that = Vue.prototype
 
@@ -45,6 +46,8 @@ export default {
                 window.location = conf.sso.host + "/" + conf.sso.ident + "/jump?returnurl=" + encodeURIComponent(document.URL);
                 return;
             }, 403);
+
+            inject405CodeHandle(that) //405权限处理
         }
 
         //拉到服务器配置信息
@@ -60,6 +63,11 @@ export default {
                 return that.$http.xget(that.$env.conf.api.enumURL, { dic_type: type || "" }, "") 
             })
         }
+
+        //保存初始数据
+        if (that.$env.conf.enums){
+            that.$enum.set(that.$env.conf.enums)
+        }
     }
 }
 
@@ -71,8 +79,13 @@ function getConf(Vue, path){
     if(!packageData)
         return
     
-    var vueVersion =  (packageData.dependencies.vue).charAt(1)
-    path = vueVersion >= 3 ? "/env.conf.json" : "/static/env.conf.json";
+    path = packageData.scripts.serve ? "/env.conf.json" : "/static/env.conf.json"   
     return Vue.prototype.$http.xget(path) || {}
 }
 
+function inject405CodeHandle(that){
+    that.$http.addStatusCodeHandle(res => {
+        that.$msg.fail("请求的接口与页面不匹配或未配置权限")
+        return
+    }, 405);
+}

@@ -21,6 +21,10 @@ type ImageHandler struct {
 //NewImageHandler  创建处理组件
 func NewImageHandler(dir string) func() (c *ImageHandler) {
 	return func() (c *ImageHandler) {
+		_, err := os.Stat(dir)
+		if os.IsNotExist(err) {
+			os.MkdirAll(dir, os.ModePerm)
+		}
 		return &ImageHandler{
 			localDir: dir,
 		}
@@ -60,9 +64,8 @@ func (ch *ImageHandler) saveImg(extName string, ctx hydra.IContext) (picURL stri
 	defer uf.Close()
 
 	name := fmt.Sprintf("%s%s", components.Def.UUID().ToString(), extName)
+
 	localPath := filepath.Join(ch.localDir, name)
-	
-	
 
 	nf, err := os.Create(localPath)
 	if err != nil {

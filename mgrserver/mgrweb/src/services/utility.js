@@ -1,14 +1,41 @@
 import Vue from "vue"
 
+//相关状态text的颜色样式
+var textColor = {
+    0: "text-success",
+    1: "text-warning",
+    10: "text-muted",
+    90: "text-danger"
+}
+
+//相关状态背景的颜色样式
+var bgColor = {
+    0: "bg-success",
+    1: "bg-warning",
+    10: "bg-primary",
+    90: "bg-danger"
+}
+
 /*
 * 枚举对象使用时须通过引用并进行初始化
 * import utility from './filter'
 * Vue.use(utility);
 */
- export function Utility() {}
+export function Utility() {
+    var that = Vue.prototype
+
+    let defColor = textColor
+    Object.assign(defColor, that.$env.conf.textColor || {})
+    that.$env.conf.textColor = defColor
+
+
+    let defBGColor = bgColor
+    Object.assign(defBGColor, that.$env.conf.bgColor || {})
+    that.$env.conf.bgColor = defBGColor
+}
 
 //字符串去空格
-Utility.prototype.trim =  function(str) {
+Utility.prototype.trim = function(str) {
     if (!str)
         return "";
     return str.toString().replace(/[ |-]/g, "");
@@ -80,22 +107,22 @@ Utility.prototype.numberFormat = function (number, decimals = 2) {
 
 //字符串去空格
 Vue.filter('fltrTrim', value => {
-    return new Utility().trim(value)
+    return Utility.prototype.trim(value)
 })
 
 //格式化卡号(卡号4位一空格)
 Vue.filter('fltrCardNumberFormat', value => {
-    return new Utility().cardNumberFormat(value)
+    return Utility.prototype.cardNumberFormat(value)
 })
 
 //手机号(手机号中间4位显示*)
 Vue.filter('fltrPhoneNumberFormat', value => {
-    return new Utility().phoneFormat(value)
+    return Utility.prototype.phoneFormat(value)
 })
 
 //要格式化的数字
 Vue.filter('fltrNumberFormat', (value, decimals = 2) => {
-    return new Utility().numberFormat(value, decimals)
+    return Utility.prototype.numberFormat(value, decimals)
 })
 
 //日期格式转换
@@ -103,7 +130,7 @@ Vue.filter('fltrDate', (value, format = "yyyy-MM-dd") => {
     if (value === '') {
         return '-'
     } 
-    return new Utility().dateFormat(value, format)
+    return Utility.prototype.dateFormat(value, format)
 })
 
 //完整日期格式转换
@@ -111,7 +138,7 @@ Vue.filter('fltrDateTime', (value, format = "yyyy-MM-dd hh:mm") => {
     if (value === '') {
         return '-'
     } 
-    return new Utility().dateFormat(value, format)
+    return Utility.prototype.dateFormat(value, format)
 })
   
 //空值时默认显示'---'
@@ -131,6 +158,16 @@ Vue.filter('fltrSubstr', (value, number = 16) => {
         return value
     }
     return value.slice(0, number - 1) + '...'
+})
+
+// 根据value获取text不同颜色的class
+Vue.filter('fltrTextColor', value => {
+    return Vue.prototype.$env.conf.textColor[value] || "text-info"
+})
+
+// 根据value获取背景不同颜色的class
+Vue.filter('fltrBgColor', value => {
+    return Vue.prototype.$env.conf.bgColor[value] || "bg-info"
 })
 
 //日期格式转换

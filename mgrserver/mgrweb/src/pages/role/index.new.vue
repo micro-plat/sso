@@ -342,13 +342,13 @@ export default {
       });
     },
     menuAuth(id, role_name) {
-      this.$emit("addTab", "菜单授权(" + role_name + ")", "/pages/role/auth?id=" + id);
+      this.$emit("addTab", "菜单授权(" + role_name + ")", "/pages/role/index/auth?id=" + id);
     },
     dataAuth(id, role_name) {
       this.$emit(
         "addTab",
         "数据授权(" + role_name + ")",
-        "/pages/role/dataauth?id=" + id
+        "/pages/role/index/dataauth?id=" + id
       );
      }
   }

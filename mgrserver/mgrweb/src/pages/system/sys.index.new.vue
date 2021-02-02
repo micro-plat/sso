@@ -867,9 +867,11 @@ export default {
     PullTo
   },
   data() {
+    console.log("this.$env.api.host:",this.$env.conf.api.host)
+
     return {
-      options: {
-        target: "/image/upload", //上传地址
+       options: {
+        target: this.$env.conf.api.host + "/image/upload", //上传地址
         testChunks: false,
         withCredentials: true, //携带jwt
         singleFile: true //单文件上传
@@ -931,7 +933,7 @@ export default {
   },
   methods: {
     fileEditSuccess(rootFile, file, message, chunk) {
-      consloe.log("fileEditSuccess:", message);
+      console.log("fileEditSuccess:", message);
       let data = JSON.parse(message);
       this.editData.logo = data.data;
     },
@@ -1162,14 +1164,14 @@ export default {
         });
     },
     manage(id, ident) {
-      this.$emit("addTab", "菜单配置(" + ident + ")", "/pages/sys/func?id=" + id);
+      this.$emit("addTab", "菜单配置(" + ident + ")", "/pages/sys/index/func?id=" + id);
     },
     //管理数据权限数据
     managePermission(id, ident) {
       this.$emit(
         "addTab",
         "数据规则配置(" + ident + ")",
-        "/pages/sys/data/permission?id=" + id
+        "/pages/sys/index/datapermission?id=" + id
       );
 
       // this.$router.push({

@@ -1,7 +1,7 @@
 {
   "name": "utility",
   "version": "1.0.0",
-  "description": "前端js",
+  "description": "前端js工具集",
   "main": "main.js",
-  "author": ""
+  "author": "tjm"
 }

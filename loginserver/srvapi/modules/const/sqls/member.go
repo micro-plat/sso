@@ -41,12 +41,15 @@ where
 	and t.user_id=@user_id`
 
 const QueryAllUserInfo = `
-select 
+sso_user_infoselect 
 	user_id,
 	user_name,
 	full_name,
-	status
+	status,
+    user_id value,
+    full_name name,
+    'userinfo' type
 from sso_user_info
-where (@source = '' or @source = source) and
-	  (@source_id = 0 or @source_id = source_id)
+where (@source = '' or source =  @source) and
+	  ((@source_id = '' or @source_id=0) or source_id = @source_id)
 `

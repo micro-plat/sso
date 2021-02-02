@@ -36,12 +36,12 @@ export default new Router({
       name: "sysindex",
       component: sysindex
     }, {
-      path: "pages/sys/func",
+      path: "pages/sys/index/func",
       name: "sysfunc",
       component: sysfunc
     },
     {
-      path: "pages/sys/data/permission",
+      path: "pages/sys/index/datapermission",
       name: "datapermission",
       component: datapermission
     },
@@ -50,12 +50,12 @@ export default new Router({
       name: 'userrole',
       component: roleindex
     }, {
-      path: 'pages/role/auth',
+      path: 'pages/role/index/auth',
       name: 'roleauth',
       component: roleauth
     },
     {
-      path: 'pages/role/dataauth',
+      path: 'pages/role/index/dataauth',
       name: 'dataauth',
       component: dataauth
     }

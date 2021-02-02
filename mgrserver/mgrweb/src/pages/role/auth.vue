@@ -8,16 +8,40 @@
       </div>
       <div class="panel-body">
         <form class="form-inline">
-          <select name="roleid" class="form-control not-100" v-model="sysid">
-            <option value selected="selected">---请选择系统---</option>
-            <option v-for="(s, index) in datalist" :key="index" :value="s.id">{{s.name}}</option>
+          <select
+            name="roleid"
+            class="form-control not-100"
+            v-model="sysid"
+            @change="sysChange"
+          >
+            <option v-for="(s, index) in datalist" :key="index" :value="s.id">
+              {{ s.name }}
+            </option>
           </select>
-          <a class="btn btn-success" @click="queryTree">切换</a>
+          <a class="btn btn-success" @click="queryTree">重置</a>
           <a class="btn btn-default head-right" @click="back">返回</a>
           <a class="btn btn-success head-right" @click="saveAuth">保存</a>
         </form>
         <div class="line line-dashed b-b line-lg"></div>
-        <v-tree ref="tree" :data="ztreeDataSource" :multiple="true" :halfcheck="true" />
+        <v-tree
+          ref="tree"
+          :data="ztreeDataSource"
+          :multiple="true"
+          :halfcheck="true"
+          
+          
+          
+          
+          :nodeTrigger="false"
+          :checkBox="true"
+          :beforeClick="treeNodeClick"
+          :checkBoxType="false"
+          :clickNode="treeNodeClick"
+           @checkBoxCall="treeNodeClick"
+          @call='treeNodeClick'
+          :async="true"
+          :asyncCall="treeNodeClick" 
+        />
       </div>
       <footer class="panel-footer text-right bg-light lter">
         <a class="btn btn-success" @click="saveAuth">保存</a>
@@ -32,10 +56,12 @@ export default {
     return {
       datalist: null,
       sysid: null,
+      lastsysid:null,
       currentData: {},
       role_id: null,
       ztreeDataSource: [],
-      selectAuth: []
+      selectAuth: [],
+      orglist :[]
     };
   },
   mounted() {
@@ -43,10 +69,55 @@ export default {
     this.querySys();
   },
   methods: {
-    back: function() {
+    treeNodeClick(a,b,c){
+      console.log(a,b,c)
+
+    },
+    hasChange(){
+      var current = this.$refs.tree.getCheckedNodes();
+      if (current.length!=this.orglist.length){
+        return true
+      }
+      var curlist=[]
+      for(var i=0,cnt=current.length;i<cnt;i++){
+        curlist.push(current[i].id)
+      }
+
+      var st1=curlist.sort();
+      var st2=this.orglist.sort()
+      console.log(st1,st2)
+      for(var i=0,cnt=curlist.length;i<cnt;i++){
+          if(st1[i]!=st2[i]){
+              return true;
+          }
+      }
+
+      return false;
+    },
+    sysChange() {
+      if(!this.hasChange()){
+        this.queryTree();
+        return 
+      }
+
+      this.$confirm("授权数据已变动，是否放弃数据变动?", "提示", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        type: "warning",
+      }).then((a,b) => {
+          console.log(a,b);
+          this.lastsysid=this.sysid;
+          this.queryTree();          
+      }).catch(e=>{
+          this.sysid =this.lastsysid;
+          console.log(e);
+      });
+
+    },
+    back: function () {
       this.$router.push({ path: "/pages/role/index" });
     },
-    saveAuth: function() {
+    saveAuth: function () {
       this.selectAuth = [];
       var array = this.$refs.tree.getCheckedNodes();
       for (var i = 0; i < array.length; i++) {
@@ -59,7 +130,7 @@ export default {
           message: "请选择菜单",
           type: "error",
           offset: 50,
-          duration: 2000
+          duration: 2000,
         });
         return false;
       }
@@ -70,7 +141,7 @@ export default {
           message: "请选择系统",
           type: "error",
           offset: 50,
-          duration: 2000
+          duration: 2000,
         });
         return false;
       }
@@ -79,24 +150,24 @@ export default {
         .post("/role/index/authsave", {
           role_id: this.role_id,
           sys_id: this.sysid,
-          selectauth: tempStr
+          selectauth: tempStr,
         })
-        .then(res => {
+        .then((res) => {
           this.selectAuth = [];
           this.$notify({
             title: "成功",
             message: "授权成功",
             type: "success",
             offset: 50,
-            duration: 2000
+            duration: 2000,
           });
         })
-        .catch(err => {
+        .catch((err) => {
           console.log("err", err.response);
           if (err.response.status == 655) {
             this.$message({
               type: "error",
-              message: "角色权限修改未成功，请重试"
+              message: "角色权限修改未成功，请重试",
             });
           } else {
             this.$notify({
@@ -104,31 +175,33 @@ export default {
               message: "网络错误,请稍后再试",
               type: "error",
               offset: 50,
-              duration: 2000
+              duration: 2000,
             });
           }
           this.selectAuth = [];
         });
     },
-    queryTree: function() {
+    queryTree: function () {
       if (this.sysid == "") {
         this.$notify({
           title: "错误",
           message: "请选择系统",
           type: "error",
           offset: 50,
-          duration: 2000
+          duration: 2000,
         });
         return false;
       }
       this.$http
         .post("/role/index/authquery", {
           sys_id: this.sysid,
-          role_id: this.role_id
+          role_id: this.role_id,
         })
-        .then(res => {
+        .then((res) => {
+          this.lastsysid=this.sysid;
           if (res.length > 0) {
             this.ztreeDataSource = res;
+            this.getOrgList(res)
             return;
           }
           this.ztreeDataSource = [
@@ -139,32 +212,46 @@ export default {
               icon: "",
               isNew: true,
               parentId: 0,
-              parentLevel: 0
-            }
+              parentLevel: 0,
+            },
           ];
         });
     },
-    querySys: function() {
+    getOrgList(res){
+      var filtercheck=function(list,result){
+        for(var i=0,cnt=list.length;i<cnt;i++){
+          if(list[i].checked){result.push(list[i].id)}
+          if(list[i].children && list[i].children.length){
+            filtercheck(list[i].children,result)
+          }
+        }
+      }
+      var result = []
+      filtercheck(res,result)
+      console.log(result)
+      this.orglist = result;
+    },
+    querySys: function () {
       this.$http
         .post("/base/getsystems", {})
-        .then(res => {
+        .then((res) => {
           this.datalist = res;
           if (this.datalist.length > 0) {
             this.sysid = this.datalist[0].id;
             this.queryTree();
           }
         })
-        .catch(err => {
+        .catch((err) => {
           this.$notify({
             title: "错误",
             message: "网络错误,请稍后再试",
             type: "error",
             offset: 50,
-            duration: 2000
+            duration: 2000,
           });
         });
-    }
-  }
+    },
+  },
 };
 </script>
 <style scoped>
