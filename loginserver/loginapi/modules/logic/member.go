@@ -15,6 +15,7 @@ import (
 	"github.com/micro-plat/lib4go/security/md5"
 	"github.com/micro-plat/lib4go/types"
 	"github.com/micro-plat/lib4go/utility"
+	"github.com/micro-plat/sso/loginserver/loginapi/modules/access/cache"
 	"github.com/micro-plat/sso/loginserver/loginapi/modules/access/member"
 	"github.com/micro-plat/sso/loginserver/loginapi/modules/access/system"
 	"github.com/micro-plat/sso/loginserver/loginapi/modules/const/enum"
@@ -42,7 +43,7 @@ type IMemberLogic interface {
 
 //MemberLogic 用户登录管理
 type MemberLogic struct {
-	cache member.ICacheMember
+	cache cache.ICacheMember
 	db    member.IDBMember
 	sysDB system.IDbSystem
 }
@@ -50,7 +51,7 @@ type MemberLogic struct {
 //NewMemberLogic 创建登录对象
 func NewMemberLogic() *MemberLogic {
 	return &MemberLogic{
-		cache: member.NewCacheMember(),
+		cache: cache.NewCacheMember(),
 		db:    member.NewDBMember(),
 		sysDB: system.NewDbSystem(),
 	}
@@ -106,7 +107,7 @@ func (m *MemberLogic) CreateLoginUserCode(userID int64) (code string, err error)
 
 //CheckHasRoles 检查用户是否有相应的角色
 func (m *MemberLogic) CheckHasRoles(userID int64, ident string) error {
-	user, err := m.db.QueryByID(userID)
+	user, err := m.db.QueryByID(int(userID))
 	if err != nil {
 		return err
 	}
@@ -137,7 +138,7 @@ func (m *MemberLogic) CheckUerInfo(userID int64, sign, timestamp string) error {
 		return errs.NewError(errorcode.ERR_QRCODE_TIMEOUT, "二维码过期,请联系管理员重新生成")
 	}
 
-	data, err := m.db.QueryByID(userID)
+	data, err := m.db.QueryByID(int(userID))
 	if err != nil {
 		return err
 	}
@@ -194,7 +195,7 @@ func (m *MemberLogic) UpdateUserOpenID(data map[string]string) error {
 
 //QueryUserInfoByID 通过user_id获取用户信息
 func (m *MemberLogic) QueryUserInfoByID(uid int64) (db.QueryRow, error) {
-	return m.db.QueryByID(uid)
+	return m.db.QueryByID(int(uid))
 }
 
 // GetWxUserOpID xx

@@ -2,7 +2,7 @@ package cachekey
 
 const (
 	//CacheLoginUser 给登录用户生成code
-	CacheLoginUser = "{sso}:login:state-user:{@key}"
+	CacheLoginUser = "{sso}:login:state-user:{@code}"
 
 	//CacheLoginFailCount 记录登录失败次数
 	CacheLoginFailCount = "{sso}:login:failcount-user:{@user_name}"
@@ -18,4 +18,13 @@ const (
 
 	//CacheLoginValidateCodeFaildCount 记录验证码错误次数
 	CacheLoginValidateCodeFaildCount = "{sso}:login:validate-code-faild-count:{@user_name}"
+)
+
+const (
+	//CacheLoginUser      = "{sso}:login:state-user:{@code}"
+	//CacheLoginFailCount = "{sso}:login:failcount-user:{@user_name}"
+	//CacheLoginFailUnLockTime 自动解锁时间
+	//CacheLoginFailUnLockTime = "{sso}:login:failunlocktime-user:{@user_name}"
+
+	CacheLoginVerifyCode = "{sso}:login:verify-code:{@user_name}"
 )

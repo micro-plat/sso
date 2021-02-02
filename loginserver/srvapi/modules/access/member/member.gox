@@ -6,7 +6,7 @@ import (
 )
 
 //Get 获取member信息
-func Get(ctx hydra.IContext) *model.LoginState {
+func xGet(ctx hydra.IContext) *model.LoginState {
 	var s = model.LoginState{}
 	if err := ctx.User().Auth().Bind(&s); err != nil {
 		return nil

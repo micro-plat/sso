@@ -8,6 +8,7 @@ import (
 	"github.com/lib4dev/vcs"
 	"github.com/micro-plat/hydra"
 	"github.com/micro-plat/lib4go/errs"
+	"github.com/micro-plat/sso/loginserver/loginapi/modules/access/cache"
 	"github.com/micro-plat/sso/loginserver/loginapi/modules/access/member"
 	"github.com/micro-plat/sso/loginserver/loginapi/modules/access/system"
 	"github.com/micro-plat/sso/loginserver/loginapi/modules/const/enum"
@@ -17,8 +18,7 @@ import (
 
 //LoginLogic 用户登录相关
 type LoginLogic struct {
-	cache ICacheMember
-	db    IDBMember
+	cache cache.ICacheMember
 	memdb member.IDBMember
 	sysDB system.IDbSystem
 }
@@ -26,8 +26,7 @@ type LoginLogic struct {
 //NewLoginLogic 创建登录对象
 func NewLoginLogic() *LoginLogic {
 	return &LoginLogic{
-		cache: NewCacheMember(),
-		db:    NewDBMember(),
+		cache: cache.NewCacheMember(),
 		memdb: member.NewDBMember(),
 		sysDB: system.NewDbSystem(),
 	}
@@ -64,19 +63,25 @@ func (m *LoginLogic) CheckUserIsLocked(userName string) error {
 	failCount := conf.UserLoginFailLimit
 	count, err := m.cache.GetLoginFailCnt(userName)
 	if err != nil {
+		fmt.Println("1")
 		return err
 	}
 
 	//用户是否被锁定
 	if count <= failCount {
+		fmt.Println("2", count, failCount)
 		return nil
 	}
 
 	//解锁时间是否过期
 	if exists := m.cache.ExistsUnLockTime(userName); exists {
+		fmt.Println("3")
+
 		return errs.NewError(errorcode.ERR_USER_LOCKED, "用户被锁定,请联系管理员")
 	} else {
+		fmt.Println("4")
 		if err := m.unLockUser(userName); err != nil {
+			fmt.Println("5")
 			return err
 		}
 	}
@@ -85,18 +90,18 @@ func (m *LoginLogic) CheckUserIsLocked(userName string) error {
 
 // ChangePwd 修改密码
 func (m *LoginLogic) ChangePwd(userID int, expassword string, newpassword string) (err error) {
-	data, err := m.db.QueryUserOldPwd(userID)
+	data, err := m.memdb.QueryUserOldPwd(userID)
 	if err != nil {
 		return err
 	}
-	userInfo, err := m.db.QueryByID(userID)
+	userInfo, err := m.memdb.QueryByID(userID)
 	if err != nil {
 		return err
 	}
 
 	if strings.EqualFold(strings.ToLower(expassword), strings.ToLower(data.Get(0).GetString("password"))) {
 		m.cache.SetLoginSuccess(userInfo.GetString("user_name"))
-		return m.db.ChangePwd(userID, newpassword)
+		return m.memdb.ChangePwd(userID, newpassword)
 	}
 
 	conf := model.GetLoginConf()
@@ -111,7 +116,7 @@ func (m *LoginLogic) ChangePwd(userID int, expassword string, newpassword string
 	}
 
 	//更新用户状态
-	if err := m.db.UpdateUserStatus(userID, enum.UserLock); err != nil {
+	if err := m.memdb.UpdateUserStatus(userID, enum.UserLock); err != nil {
 		return err
 	}
 	//设置解锁过期时间
@@ -124,7 +129,7 @@ func (m *LoginLogic) ChangePwd(userID int, expassword string, newpassword string
 //Login 登录系统
 func (m *LoginLogic) Login(userName, password, ident string) (s *model.LoginState, err error) {
 	var ls *model.MemberState
-	if ls, err = m.db.Query(userName, password, ident); err != nil {
+	if ls, err = m.memdb.Query(userName, password, ident); err != nil {
 		return nil, err
 	}
 
@@ -176,11 +181,13 @@ func (m *LoginLogic) checkUserInfo(userName, password string, state *model.Membe
 	}
 
 	//更新用户状态
-	if err := m.db.UpdateUserStatus(int(state.UserID), enum.UserLock); err != nil {
+	if err := m.memdb.UpdateUserStatus(int(state.UserID), enum.UserLock); err != nil {
+		fmt.Println("u", err)
 		return err
 	}
 	//设置解锁过期时间
 	if err := m.cache.SetUnLockTime(userName, conf.UserLockTime); err != nil {
+		fmt.Println("s", err)
 		return err
 	}
 
@@ -190,12 +197,12 @@ func (m *LoginLogic) checkUserInfo(userName, password string, state *model.Membe
 //unLockUser 解锁用户
 func (m *LoginLogic) unLockUser(userName string) error {
 	m.cache.SetLoginSuccess(userName)
-	return m.db.UnLock(userName)
+	return m.memdb.UnLock(userName)
 }
 
 //UpdateUserLoginTime 记录用户成功登录时间
 func (m *LoginLogic) UpdateUserLoginTime(userID int64) error {
-	return m.db.UpdateUserLoginTime(userID)
+	return m.memdb.UpdateUserLoginTime(userID)
 }
 
 //构造发送验证码的实体数据
@@ -277,6 +284,7 @@ func (m *LoginLogic) SLogin(req model.LoginReq) (*model.LoginState, error) {
 
 	member, err := m.Login(userName, req.Password, ident)
 	if err != nil {
+		fmt.Println("login:", err)
 		return nil, err
 	}
 

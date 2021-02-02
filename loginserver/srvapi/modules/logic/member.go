@@ -9,7 +9,10 @@ import (
 	"github.com/micro-plat/lib4go/types"
 	"github.com/micro-plat/sso/sso/errorcode"
 
+	"github.com/micro-plat/sso/loginserver/loginapi/modules/access/cache"
+
 	"github.com/micro-plat/sso/loginserver/srvapi/modules/access/member"
+
 	"github.com/micro-plat/sso/loginserver/srvapi/modules/const/config"
 	"github.com/micro-plat/sso/loginserver/srvapi/modules/const/enum"
 	"github.com/micro-plat/sso/loginserver/srvapi/modules/model"
@@ -28,14 +31,14 @@ type IMemberLogic interface {
 
 //MemberLogic 用户登录管理
 type MemberLogic struct {
-	cache member.ICacheMember
+	cache cache.ICacheMember
 	db    member.IDBMember
 }
 
 //NewMemberLogic 创建登录对象
 func NewMemberLogic() *MemberLogic {
 	return &MemberLogic{
-		cache: member.NewCacheMember(),
+		cache: cache.NewCacheMember(),
 		db:    member.NewDBMember(),
 	}
 }
