@@ -821,9 +821,11 @@ export default {
             offset: 50,
             duration: 2000
           });
+            document.body.style.overflow = this.lastKnownBodyStyle.overflow;
         })
         .catch(err => {
           console.log(err);
+          document.body.style.overflow = this.lastKnownBodyStyle.overflow;
 
           if (err.response.status == 911) {
             this.$notify({

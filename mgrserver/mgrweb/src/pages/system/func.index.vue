@@ -917,6 +917,7 @@ export default {
           if (err.response) {
             switch (err.response.status) {
               case 909:
+              case 912:
                 this.$notify({
                   title: "错误",
                   message: "请先保存系统根节点",
