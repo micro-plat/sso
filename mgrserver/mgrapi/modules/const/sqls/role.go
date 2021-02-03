@@ -142,27 +142,27 @@ where sys_id = @sys_id and
 	  role_id = @role_id`
 
 // //QuerySysMenucList 系统菜单获取
-const QuerySysMenucList = `select t.id,
+const QuerySysMenucList = `
+
+select  t.id,
 t.name title,
 t.parent,
 t.sys_id,
 t.level_id,
-(case
-	when t.id in (select menu_id
-					from sso_role_menu rm
-				   where rm.role_id = @role_id
-					 and rm.sys_id = @sys_id) then
-	 1
-	else
-	 0
-  end) checked,
+rm.id rid ,
+if(rm.id is null, 0,1) checked,
 t.icon,
 t.path,
 t.enable,
 t.create_time,
-t.sortrank
-from sso_system_menu t
-where t.sys_id = @sys_id
+t.sortrank 
+from  sso_system_menu t
+left join  sso_role_menu rm
+				   on rm.role_id = @role_id
+					 and rm.sys_id = t.sys_id
+                     and rm.menu_id = t.id
+where t.sys_id = @sys_id and t.enable = 1     
+
 `
 
 const QueryRoleDataPermission = `

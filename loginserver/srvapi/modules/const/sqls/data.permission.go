@@ -53,12 +53,17 @@ select
 	s.sys_id,
 	s.level_id,
  	s.path  ,
-    s2.path tag
+    m.menu_id,
+    s2.path tag   
  from sso_role_info rinfo 
 inner join sso_system_info sys on sys.ident  = @ident  and rinfo.role_id = @role_id and rinfo.status = 0
-inner join sso_role_menu m on m.role_id = @role_id  and sys.id=m.sys_id and  m.enable=1 
+inner join sso_role_menu m on m.role_id = @role_id   and sys.id=m.sys_id and  m.enable=1 
 inner join sso_system_menu s on s.sys_id=sys.id and s.id=m.menu_id and s.enable=1 and s.level_id in (3)
-left join sso_system_menu s2 on s2.parent =s.id and s2.enable = 1
+left join (
+select sm.path,sm.parent,sm.id from sso_system_menu sm 
+inner join sso_system_info si on sm.sys_id = si.id and si.ident =  @ident and sm.enable = 1  
+inner join sso_role_menu rm on sm.id = rm .menu_id  and rm.role_id = @role_id 
+) s2  on s2.parent = s.id 
 
 order by s.parent asc,s.level_id desc,s.sortrank asc
 `
