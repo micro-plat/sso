@@ -78,7 +78,9 @@ Sys.prototype.getTitle = function(path){
 //递归查找父级菜单
 Sys.prototype.findMenuItem = function(menus, path){   
     path = path || window.location.pathname;
-
+    if(path != "/" && path[path.length-1] == '/'){
+        path = path.substring(0,path.length-1);
+    }
     //递归查找父级菜单
     var cur = getMenuItem(menus, path);
     if (!cur){                
@@ -86,9 +88,12 @@ Sys.prototype.findMenuItem = function(menus, path){
         if (!path){
             return {}
         }
-        cur = this.findMenuItem(menus,path)
+        cur = getMenuItem(menus,path);
     }
-    return cur
+    if(!cur){
+        cur = getMenuItem(menus,'/');
+    }
+    return cur;
 }
 
 //getMenus获取菜单数据

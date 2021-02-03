@@ -46,7 +46,24 @@
         password2: "",
         errorMsg: "",
         copyRight: (this.$env.conf.copyright.company||"") + "Copyright©" + new Date().getFullYear() +"版权所有",
-         
+        errorTemplate:{
+            901: "系统被锁定",
+            902: "用户被锁定",
+            903: "用户被禁用",
+            905: "用户不存在",
+            906: "没有相关系统权限",
+            907: "用户名或密码错误",
+            908: "用户名原密码错误",
+            912: "请先绑定手机号",
+            913: "验证码不能为空",
+            914: "验证码过期或不存在,重新发送验证码",
+            915: "验证码错误",
+            922: "密码错误,还有5次机会",
+            923: "密码错误,还有4次机会",
+            924: "密码错误,还有3次机会",
+            925: "密码错误,还有2次机会",
+            926: "密码错误,还有1次机会"
+        }
       }
     },
     created() {
@@ -94,16 +111,19 @@
                          this.$router.push(jumpLogin(this.ident));
                      }, 1000);
                 }).catch(err => {
-                    switch (err.response.status) {
-                        case 403:
-                            this.$router.push({path:jumpLogin(this.ident), query :{ changepwd: 1 }});
-                            break;
-                        case 908:
-                            this.errorMsg = "原密码错误";
-                            break;
-                        default:
-                            this.errorMsg = "网络错误,请稍后再试";
+                    if (!err.response){
+                        console.log(err)
                     }
+                    if (err.response.status == 403){
+                        this.$router.push({path:jumpLogin(this.ident), query :{ changepwd: 1 }});
+                        return
+                    }                         
+                    var status = err.response.status;
+                    var msg = this.errorTemplate[status];
+                    if(!msg){
+                        msg = "网络错误,请稍后再试"
+                    }
+                    this.errorMsg = msg ;
                 })
         }
     }
