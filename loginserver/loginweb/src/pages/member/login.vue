@@ -92,7 +92,7 @@
       }
       document.title = "登录";
       this.returnURL = this.$route.query.returnurl;
-      this.ident = this.$route.params.ident || "sso";
+      this.ident = this.$route.params.ident || "";
 
       this.controlLoginType();
     },
@@ -140,7 +140,7 @@
           .then(res => {
             setTimeout(() => { 
               var parmscode={code:res.code} 
-              if(that.returnURL){
+              if(that.returnURL && res.code){
                 window.location.href = JoinUrlParams(decodeURIComponent(that.returnURL),parmscode);
                 return 
               }

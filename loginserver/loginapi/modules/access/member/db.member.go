@@ -124,6 +124,9 @@ func (l *DBMember) Query(u, p, ident string) (s *model.MemberState, err error) {
 		LastLoginTime: row.GetString("last_login_time"),
 	}
 
+	if ident == "" {
+		return s, nil
+	}
 	count, err := db.Scalar(sqls.QueryUserHasRoleMenuCount, map[string]interface{}{
 		"user_id": data.Get(0).GetInt64("user_id", -1),
 		"ident":   ident,
@@ -179,7 +182,7 @@ func (l *DBMember) ChangePwd(userID int, newpassword string) (err error) {
 	return nil
 }
 
-//UpdateUserLoginTime　记录用户成功登录时间
+//UpdateUserLoginTime 记录用户成功登录时间
 func (l *DBMember) UpdateUserLoginTime(userID int64) error {
 	db := components.Def.DB().GetRegularDB()
 	_, err := db.Execute(sqls.UpdateUserLoginTime, map[string]interface{}{
