@@ -92,7 +92,7 @@
       }
       document.title = "登录";
       this.returnURL = this.$route.query.returnurl;
-      this.ident = this.$route.params.ident || "";
+      this.ident = this.$route.params.ident || "sso";
 
       this.controlLoginType();
     },
