@@ -10,6 +10,9 @@ type User struct {
 	Email     string `json:"email,omitempty"`
 	ExtParams string `json:"ext_params,omitempty"`
 	Status    string `json:"status,omitempty"`
+	Name      string `json:"name,omitempty"`
+	Value     string `json:"value,omitempty"`
+	Type      string `json:"type,omitempty"`
 }
 
 //LoginState 用户信息
