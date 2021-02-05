@@ -41,7 +41,7 @@ where
 	and t.user_id=@user_id`
 
 const QueryAllUserInfo = `
-sso_user_infoselect 
+select 
 	user_id,
 	user_name,
 	full_name,
