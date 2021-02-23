@@ -18,8 +18,8 @@ import (
 //Archive 压缩包名称
 var Archive = "login.static.zip"
 var staticOpts = []static.Option{
-	static.WithArchive(Archive),
-	static.WithRewriters("/", "/index.htm", "/default.html", "/default.htm", "/choose", "/refresh", "/errpage", "/bindnotice", "/wxcallback", "/bindwx", "/*/changepwd", "/*/jump", "/*/login"),
+	static.WithAssetsPath(Archive),
+	static.WithAutoRewrite(),
 }
 
 //bindConf 绑定启动配置， 启动时检查注册中心配置是否存在，不存在则引导用户输入配置参数并自动创建到注册中心
