@@ -3,9 +3,9 @@ package rpc
 import (
 	"encoding/json"
 	"fmt"
-	"net/http"
 	"time"
 
+	"github.com/micro-plat/hydra/pkgs"
 	"github.com/micro-plat/lib4go/types"
 
 	"github.com/micro-plat/hydra/components/rpcs/balancer"
@@ -15,7 +15,6 @@ import (
 
 	"golang.org/x/net/context"
 	"google.golang.org/grpc"
-	"google.golang.org/grpc/resolver"
 )
 
 //Client rpc client, 用于构建基础的RPC调用,并提供基于服务器的限流工具，轮询、本地优先等多种负载算法
@@ -26,10 +25,11 @@ type Client struct {
 	service string
 	log     *logger.Logger
 	*rpcconf.RPCConf
-	client        pb.RPCClient
-	hasRunChecker bool
-	IsConnect     bool
-	isClose       bool
+	client          pb.RPCClient
+	balancerBuilder *balancer.ResolverBuilder
+	hasRunChecker   bool
+	IsConnect       bool
+	isClose         bool
 }
 
 //NewClient .
@@ -56,7 +56,7 @@ func NewClientByConf(address, plat, service string, conf *rpcconf.RPCConf) (*Cli
 }
 
 //Request 发送Request请求
-func (c *Client) Request(ctx context.Context, service string, form map[string]interface{}, opts ...RequestOption) (res *Response, err error) {
+func (c *Client) Request(ctx context.Context, service string, form map[string]interface{}, opts ...RequestOption) (res *pkgs.Rspns, err error) {
 	//处理可选参数
 	buff, err := json.Marshal(form)
 	if err != nil {
@@ -70,7 +70,7 @@ func (c *Client) Request(ctx context.Context, service string, form map[string]in
 }
 
 //RequestByString 发送Request请求
-func (c *Client) RequestByString(ctx context.Context, service string, form string, opts ...RequestOption) (res *Response, err error) {
+func (c *Client) RequestByString(ctx context.Context, service string, form string, opts ...RequestOption) (res *pkgs.Rspns, err error) {
 	//处理可选参数
 	o := newOption()
 	for _, opt := range opts {
@@ -79,9 +79,9 @@ func (c *Client) RequestByString(ctx context.Context, service string, form strin
 	o.service = service
 	response, err := c.clientRequest(ctx, o, form)
 	if err != nil {
-		return NewResponseByStatus(http.StatusInternalServerError, err), err
+		return pkgs.NewRspns(err), err
 	}
-	return NewResponse(int(response.Status), response.GetHeader(), response.GetResult()), err
+	return pkgs.NewRspnsByHD(int(response.Status), response.GetHeader(), response.GetResult()), err
 }
 
 //Close 关闭RPC客户端连接
@@ -90,6 +90,7 @@ func (c *Client) Close() {
 	if c.conn != nil {
 		c.conn.Close()
 	}
+	c.balancerBuilder.Close()
 }
 
 //Connect 连接到RPC服务器，如果当前无法连接系统会定时自动重连
@@ -106,8 +107,7 @@ func (c *Client) connect() (err error) {
 		c.Balancer = rpcconf.LocalFirst
 	}
 
-	var rb resolver.Builder
-	rb, err = balancer.NewResolverBuilder(c.address, c.plat, c.service, c.SortPrefix)
+	c.balancerBuilder, err = balancer.NewResolverBuilder(c.address, c.plat, c.service, c.SortPrefix)
 	if err != nil {
 		return
 	}
@@ -117,7 +117,7 @@ func (c *Client) connect() (err error) {
 		c.address+"/rpcsrv",
 		grpc.WithInsecure(),
 		grpc.WithBalancerName(c.Balancer),
-		grpc.WithResolvers(rb))
+		grpc.WithResolvers(c.balancerBuilder))
 
 	if err != nil {
 		return

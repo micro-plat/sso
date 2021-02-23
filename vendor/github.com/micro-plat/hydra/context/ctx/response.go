@@ -3,7 +3,9 @@ package ctx
 import (
 	"encoding/json"
 	"fmt"
+	"mime"
 	"net/http"
+	"path/filepath"
 	"reflect"
 	"strings"
 
@@ -68,9 +70,6 @@ func (c *response) Header(k string, v string) {
 
 //Header 获取头信息
 func (c *response) GetHeaders() types.XMap {
-	if c.headers != nil {
-		return c.headers
-	}
 	hds := c.ctx.WHeaders()
 	c.headers = make(map[string]interface{})
 	for k, v := range hds {
@@ -106,16 +105,17 @@ func (c *response) Abort(s int, content ...interface{}) {
 }
 
 //File 将文件写入到响应流,并终止应用
-func (c *response) File(path string) {
+func (c *response) File(path string, fs http.FileSystem) {
 	defer c.ctx.Abort()
 	if c.noneedWrite || c.ctx.Written() {
 		return
 	}
 	c.noneedWrite = true
-	c.raw.status = http.StatusOK
-	c.final.status = http.StatusOK
-	c.ctx.WStatus(http.StatusOK)
-	c.ctx.File(path)
+	c.ContentType(mime.TypeByExtension(filepath.Ext(path)))
+	status := c.ctx.ServeContent(path, fs)
+	c.ctx.WStatus(status)
+	c.raw.status = status
+	c.final.status = status
 }
 
 //NoNeedWrite 无需写入响应数据到缓存
@@ -166,7 +166,15 @@ func (c *response) Data(code int, contentType string, data interface{}) interfac
 //WriteAny 使用已设置的Content-Type输出内容，未设置时自动根据内容识别输出格式，内容无法识别时(map,struct)使用application/json
 //格式输出内容
 func (c *response) WriteAny(v interface{}) error {
-	return c.Write(http.StatusOK, v)
+	if v == nil {
+		return nil
+	}
+	switch v.(type) {
+	case *context.EmptyResult:
+		return nil
+	}
+
+	return c.Write(c.final.status, v)
 }
 
 //Write 使用已设置的Content-Type输出内容，未设置时自动根据内容识别输出格式，内容无法识别时(map,struct)使用application/json
@@ -185,7 +193,8 @@ func (c *response) Write(status int, ct ...interface{}) error {
 	switch content.(type) {
 	case context.EmptyResult:
 		return nil
-
+	case *context.EmptyResult:
+		return nil
 	}
 
 	//2. 修改当前结果状态码与内容
@@ -195,7 +204,6 @@ func (c *response) Write(status int, ct ...interface{}) error {
 	if strings.Contains(c.final.contentType, "%s") {
 		c.final.contentType = fmt.Sprintf(c.final.contentType, c.path.GetEncoding())
 	}
-
 	if c.hasWrite {
 		return nil
 	}
@@ -216,32 +224,45 @@ func (c *response) getContentType() string {
 	return headers["Content-Type"]
 }
 
-func (c *response) swapBytp(status int, content interface{}) (rs int, rc interface{}) {
-	//处理状态码与响应内容的默认
-	rs, rc = types.DecodeInt(status, 0, http.StatusOK), content
+func (c *response) swapBytp(status int, content interface{}) (rs int, rc interface{}) { //处理状态码与响应内容的默认
+
 	switch v := content.(type) {
 	case errs.IError:
 		c.log.Error(content)
 
+		//处理状态码与内容
 		if global.IsDebug {
 			rs, rc = v.GetCode(), v.GetError().Error()
 		} else {
 			rs, rc = v.GetCode(), types.DecodeString(http.StatusText(v.GetCode()), "", "Internal Server Error")
 		}
+
+		//处理状态码与内容
+		rs = types.DecodeInt(rs, 0, c.final.status) //当c.final.status为200-400时使用400状态码，否则使用rs错误码
+		if rs == 0 || c.final.status >= http.StatusOK && c.final.status < http.StatusBadRequest {
+			rs = http.StatusBadRequest
+		}
 	case error:
 		c.log.Error(content)
 
-		if status >= http.StatusOK && status < http.StatusBadRequest {
+		//处理状态码
+		rs = types.DecodeInt(status, 0, c.final.status)
+		if rs == 0 || rs >= http.StatusOK && rs < http.StatusBadRequest {
 			rs = http.StatusBadRequest
 		}
+
+		//处理返回内容
 		if global.IsDebug {
 			rc = v.Error()
 		} else {
 			rc = types.DecodeString(http.StatusText(rs), "", "Internal Server Error")
 		}
-	}
-	if content == nil {
-		rc = ""
+	default:
+		//处理非错误
+		rs, rc = types.DecodeInt(status, 0, http.StatusOK), content
+		if content == nil {
+			rc = ""
+		}
 	}
 	return rs, rc
 }
@@ -253,7 +274,6 @@ func (c *response) swapByctp(content interface{}) (string, string) {
 	if ctp := c.getContentType(); ctp != "" {
 		return ctp, c.getStringByCP(ctp, vtpKind, content)
 	}
-
 	//根据content确定 content-type
 	if vtpKind == reflect.String {
 		text := fmt.Sprint(content)
@@ -281,7 +301,13 @@ func (c *response) swapByctp(content interface{}) (string, string) {
 }
 
 func (c *response) getStringByCP(ctp string, tpkind reflect.Kind, content interface{}) string {
+	if tpkind == reflect.Invalid {
+		//非法无效的类型
+		return ""
+	}
+
 	if tpkind != reflect.Map && tpkind != reflect.Struct && tpkind != reflect.Slice && tpkind != reflect.Array {
+
 		return fmt.Sprint(content)
 	}
 
@@ -305,6 +331,9 @@ func (c *response) getStringByCP(ctp string, tpkind reflect.Kind, content interf
 			return string(buff)
 		}
 	default:
+		if content == nil {
+			return ""
+		}
 		return fmt.Sprint(content)
 	}
 }
@@ -383,6 +412,12 @@ func (c *response) GetRaw() interface{} {
 //GetRawResponse 获取响应内容信息
 func (c *response) GetRawResponse() (int, interface{}, string) {
 	return c.raw.status, c.raw.content, c.raw.contentType
+}
+
+//GetHTTPReponse 获取http response原生对象
+func (c *response) GetHTTPReponse() http.ResponseWriter {
+	_, response := c.ctx.GetHTTPReqResp()
+	return response
 }
 
 //GetFinalResponse 获取响应内容信息

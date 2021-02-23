@@ -1,6 +1,7 @@
 package middleware
 
 import (
+	"fmt"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -12,8 +13,10 @@ import (
 
 type imiddle interface {
 	Next()
+	FullPath() string
 	Find(path string) bool
 	Service(string)
+	ClearAuth(c ...bool) bool
 }
 
 //IMiddleContext 中间件转换器，在context.IContext中扩展next函数
@@ -21,15 +24,12 @@ type IMiddleContext interface {
 	imiddle
 	context.IContext
 	Trace(...interface{})
-	GetHttpReqResp() (*http.Request, http.ResponseWriter)
 }
 
 //MiddleContext 中间件转换器，在context.IContext中扩展next函数
 type MiddleContext struct {
 	context.IContext
 	imiddle
-	req  *http.Request
-	resp http.ResponseWriter
 }
 
 //Trace 输出调试日志
@@ -39,14 +39,9 @@ func (m *MiddleContext) Trace(s ...interface{}) {
 	}
 }
 
-//GetHttpReqResp 获取http请求与响应对象
-func (m *MiddleContext) GetHttpReqResp() (*http.Request, http.ResponseWriter) {
-	return m.req, m.resp
-}
-
-//newMiddleContext 构建中间件处理handler
-func newMiddleContext(c context.IContext, n imiddle, req *http.Request, resp http.ResponseWriter) IMiddleContext {
-	return &MiddleContext{IContext: c, imiddle: n, req: req, resp: resp}
+//NewMiddleContext 构建中间件处理handler
+func NewMiddleContext(c context.IContext, n imiddle) IMiddleContext {
+	return &MiddleContext{IContext: c, imiddle: n}
 }
 
 //Handler 通用的中间件处理服务
@@ -57,10 +52,14 @@ func (h Handler) GinFunc(tps ...string) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		v, ok := c.Get("__middle_context__")
 		if !ok {
+			if err := recover(); err != nil {
+				global.Def.Log().Errorf("-----[Recovery] panic recovered:\n%s\n%s 构建context出现错误", err, global.GetStack())
+				c.AbortWithError(http.StatusNotExtended, fmt.Errorf("%v", "Server Error"))
+			}
 			rawCtx := &ginCtx{Context: c}
 			nctx := ctx.NewCtx(rawCtx, tps[0])
 			nctx.Meta().SetValue("__context_", c)
-			v = newMiddleContext(nctx, rawCtx, c.Request, c.Writer)
+			v = NewMiddleContext(nctx, rawCtx)
 			c.Set("__middle_context__", v)
 		}
 		h(v.(IMiddleContext))
@@ -72,10 +71,14 @@ func (h Handler) DispFunc(tps ...string) dispatcher.HandlerFunc {
 	return func(c *dispatcher.Context) {
 		v, ok := c.Get("__middle_context__")
 		if !ok {
+			if err := recover(); err != nil {
+				global.Def.Log().Errorf("-----[Recovery] panic recovered:\n%s\n%s 构建context出现错误", err, global.GetStack())
+				c.AbortWithError(http.StatusNotExtended, fmt.Errorf("%v", "Server Error"))
+			}
 			rawCtx := &dispCtx{Context: c}
 			nctx := ctx.NewCtx(rawCtx, tps[0])
 			nctx.Meta().SetValue("__context_", c)
-			v = newMiddleContext(nctx, rawCtx, nil, nil)
+			v = NewMiddleContext(nctx, rawCtx)
 			c.Set("__middle_context__", v)
 		}
 		h(v.(IMiddleContext))

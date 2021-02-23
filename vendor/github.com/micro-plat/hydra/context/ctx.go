@@ -3,11 +3,14 @@ package context
 import (
 	"context"
 	"io"
+	"net/http"
+	"net/url"
 	"time"
 
 	"github.com/micro-plat/hydra/conf"
 	"github.com/micro-plat/hydra/conf/app"
 	"github.com/micro-plat/hydra/conf/server/router"
+	"github.com/micro-plat/hydra/pkgs"
 	"github.com/micro-plat/lib4go/logger"
 	"github.com/micro-plat/lib4go/types"
 )
@@ -94,6 +97,7 @@ type IGetter interface {
 
 //IPath 请求参数
 type IPath interface {
+
 	//GetMethod 获取服务请求方法GET POST PUT DELETE 等
 	GetMethod() string
 
@@ -110,7 +114,7 @@ type IPath interface {
 	GetRequestPath() string
 
 	//GetURL 获取请求的URL信息
-	GetURL() string
+	GetURL() *url.URL
 
 	//Limit 设置限流信息
 	Limit(isLimit bool, fallback bool)
@@ -138,6 +142,10 @@ type IFile interface {
 
 //IRequest 请求信息
 type IRequest interface {
+
+	//GetHTTPRequest 获取http request原生对象
+	GetHTTPRequest() *http.Request
+
 	//Path 地址、头、cookie相关信息
 	Path() IPath
 
@@ -146,6 +154,9 @@ type IRequest interface {
 
 	//Check 检查指定的字段是否有值
 	Check(field ...string) error
+
+	//CheckMap 传入验证Map[字段名]验证规则，并使用govalidator.ValidateMap进行参数验证
+	CheckMap(vdt map[string]interface{}) error
 
 	//GetMap 将当前请求转换为map并返回
 	GetMap() types.XMap
@@ -175,6 +186,9 @@ type IRequest interface {
 
 //IResponse 响应信息
 type IResponse interface {
+
+	//GetHTTPReponse 获取http response原生对象
+	GetHTTPReponse() http.ResponseWriter
 
 	//AddSpecial 添加特殊标记，用于在打印响应内容时知道当前请求进行了哪些特殊处理
 	AddSpecial(t string)
@@ -224,7 +238,7 @@ type IResponse interface {
 	Write(s int, v ...interface{}) error
 
 	//File 向响应流中写入文件(立即写入)
-	File(path string)
+	File(path string, fs http.FileSystem)
 
 	//Abort 停止当前服务执行(立即写入)
 	Abort(int, ...interface{})
@@ -252,6 +266,9 @@ type IAuth interface {
 
 	//Bind 将请求的认证对象绑定为特定的结构体
 	Bind(out interface{}) error
+
+	//Clear 清除用户登录信息
+	Clear()
 }
 
 //IUser 用户相关信息
@@ -263,8 +280,8 @@ type IUser interface {
 	//GetClientIP 获取客户端请求IP
 	GetClientIP() string
 
-	//GetRequestID 获取请求编号
-	GetRequestID() string
+	//GetTraceID 获取链路跟踪编号
+	GetTraceID() string
 
 	//Auth 认证信息
 	Auth() IAuth
@@ -298,7 +315,7 @@ type IContext interface {
 	Tracer() ITracer
 
 	//Invoke 调用本地服务
-	Invoke(service string) interface{}
+	Invoke(service string) *pkgs.Rspns
 
 	//Close 关闭并释放资源
 	Close()

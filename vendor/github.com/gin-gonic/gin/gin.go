@@ -11,6 +11,7 @@ import (
 	"net/http"
 	"os"
 	"path"
+	"runtime/debug"
 	"sync"
 
 	"github.com/gin-gonic/gin/internal/bytesconv"
@@ -486,7 +487,7 @@ func redirectRequest(c *Context) {
 	req := c.Request
 	rPath := req.URL.Path
 	rURL := req.URL.String()
-
+	debug.PrintStack()
 	code := http.StatusMovedPermanently // Permanent redirect, request with GET method
 	if req.Method != http.MethodGet {
 		code = http.StatusTemporaryRedirect

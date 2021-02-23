@@ -6,13 +6,28 @@ import (
 	"reflect"
 	"strings"
 
+	"github.com/micro-plat/lib4go/envs"
 	"github.com/micro-plat/lib4go/types"
 )
 
 var def = ""
 
+//兼容hydra0-1版本的mqc服务
+var queues01 = map[string]string{}
+
+func init() {
+	lst := strings.Split(envs.GetString("hydra01queues"), ",")
+	for _, i := range lst {
+		queues01[i] = ""
+	}
+}
+
 //GetStringByHeader 设置头信息
-func GetStringByHeader(content interface{}, hd ...string) string {
+func GetStringByHeader(name string, content interface{}, hd ...string) string {
+	//兼容老版本
+	if _, ok := queues01[name]; ok {
+		return GetString(content)
+	}
 
 	header := make(map[string]string, 0)
 	if len(hd)%2 == 0 {
@@ -21,6 +36,7 @@ func GetStringByHeader(content interface{}, hd ...string) string {
 		}
 	}
 
+	//新版本hydra
 	out := types.NewXMap()
 	out.SetValue("__data__", types.StringToBytes(GetString(content)))
 	out.SetValue("__header__", header)

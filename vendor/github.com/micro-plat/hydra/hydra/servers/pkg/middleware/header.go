@@ -2,16 +2,27 @@ package middleware
 
 import (
 	"net/http"
+	"strings"
+
+	"github.com/micro-plat/lib4go/types"
 )
 
 var originName = "Origin"
+var hostName = "Host"
 
 //Header 响应头设置
 func Header() Handler {
 
 	return func(ctx IMiddleContext) {
 
-		//1. 获取header配置
+		//1. 业务处理
+		ctx.Next()
+
+		if strings.Contains(ctx.Response().GetSpecials(), "static") {
+			return
+		}
+
+		//2. 获取header配置
 		headers, err := ctx.APPConf().GetHeaderConf()
 		if err != nil {
 			ctx.Response().Abort(http.StatusNotExtended, err)
@@ -20,15 +31,12 @@ func Header() Handler {
 		if len(headers) > 0 {
 			ctx.Response().AddSpecial("hdr")
 		}
-
 		//3. 处理响应header参数
 		origin := ctx.Request().Headers().GetString(originName)
-		hds := headers.GetHeaderByOrigin(origin)
+		hds := headers.GetHeaderByOrigin(types.GetString(origin, ctx.Response().GetHeaders().GetString(hostName)))
 		for k, v := range hds {
 			ctx.Response().Header(k, v)
 		}
 
-		//2. 业务处理
-		ctx.Next()
 	}
 }

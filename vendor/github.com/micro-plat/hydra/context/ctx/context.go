@@ -11,6 +11,7 @@ import (
 	"github.com/micro-plat/hydra/context"
 	"github.com/micro-plat/hydra/context/ctx/internal"
 	"github.com/micro-plat/hydra/global"
+	"github.com/micro-plat/hydra/pkgs"
 	"github.com/micro-plat/hydra/services"
 	"github.com/micro-plat/lib4go/logger"
 )
@@ -53,10 +54,10 @@ func NewCtx(c context.IInnerContext, tp string) *Ctx {
 	ctx.user = NewUser(c, ctx.meta)
 	context.Cache(ctx)
 	ctx.request = NewRequest(c, ctx.appConf, ctx.meta)
-	ctx.log = logger.GetSession(ctx.appConf.GetServerConf().GetServerName(), ctx.User().GetRequestID())
+	ctx.log = logger.GetSession(ctx.appConf.GetServerConf().GetServerName(), ctx.User().GetTraceID())
 	ctx.response = NewResponse(c, ctx.appConf, ctx.log, ctx.meta)
 	timeout := time.Duration(ctx.appConf.GetServerConf().GetMainConf().GetInt("", 30))
-	ctx.ctx, ctx.cancelFunc = r.WithTimeout(r.WithValue(r.Background(), "X-Request-Id", ctx.user.GetRequestID()), time.Second*timeout)
+	ctx.ctx, ctx.cancelFunc = r.WithTimeout(r.WithValue(r.Background(), "X-Request-Id", ctx.user.GetTraceID()), time.Second*timeout)
 	ctx.tracer = newTracer(c.GetURL().Path, ctx.log, ctx.appConf)
 	return ctx
 }
@@ -102,20 +103,19 @@ func (c *Ctx) Tracer() context.ITracer {
 }
 
 //Invoke 调用本地服务
-func (c *Ctx) Invoke(service string) interface{} {
+func (c *Ctx) Invoke(service string) *pkgs.Rspns {
 	proto, addr, err := global.ParseProto(service)
 	if err != nil {
-		c.Log().Errorf("调用服务出错:%s,%+v", service, err)
-		return err
+		err = fmt.Errorf("调用服务出错:%s,%w", service, err)
+		return pkgs.NewRspns(err)
 	}
 	switch proto {
 	case global.ProtoRPC:
 		return internal.CallRPC(c, addr)
 	case global.ProtoInvoker:
-		return services.Def.Call(c, addr)
+		return services.Def.Invoke(c, addr)
 	}
-	return fmt.Errorf("不支持%s的服务调用%s", proto, service)
-
+	return pkgs.NewRspns(fmt.Errorf("不支持服务类型%s(%s)", proto, service))
 }
 
 //Close 关闭并释放所有资源

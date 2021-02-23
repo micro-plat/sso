@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"net/url"
 	"reflect"
 	"regexp"
 	"strings"
@@ -224,7 +225,7 @@ func (q XMap) Append(kv ...interface{}) {
 	if len(kv) == 0 || len(kv)%2 != 0 {
 		return
 	}
-	for i := 0; i < len(kv)/2; i++ {
+	for i := 0; i < len(kv); i = i + 2 {
 		q.SetValue(fmt.Sprint(kv[i]), kv[i+1])
 	}
 	return
@@ -369,8 +370,15 @@ func (q XMap) GetXMap(name string) (c XMap) {
 	if !ok {
 		return map[string]interface{}{}
 	}
-	if data, ok := v.(map[string]interface{}); ok {
-		return data
+	switch value := v.(type) {
+	case map[string]interface{}:
+		return value
+	case IXMap:
+		return value.ToMap()
+	case XMap:
+		return value
+	case map[string]string:
+		return NewXMapBySMap(value)
 	}
 	return map[string]interface{}{}
 }
@@ -458,16 +466,45 @@ func (q XMap) ToSMap() map[string]string {
 	return rmap
 }
 
-//Translate 翻译带参数的变量支持格式有 @abc,{@abc}
+//Translate 翻译带参数的变量支持格式有 @abc,{@abc},转义符@
 func (q XMap) Translate(format string) string {
-	brackets, _ := regexp.Compile(`\{@\w+[\.]?\w*[\.]?\w*[\.]?\w*[\.]?\w*[\.]?\w*\}`)
-	result := brackets.ReplaceAllStringFunc(format, func(s string) string {
+	word := regexp.MustCompile(`[\w^@]*(\{@\w+[\.]?\w*[\.]?\w*[\.]?\w*[\.]?\w*[\.]?\w*\})`)
+	result := word.ReplaceAllStringFunc(format, func(s string) string {
+		if strings.HasPrefix(s, "@{@") {
+			return s[1:]
+		}
 		return q.GetString(s[2 : len(s)-1])
 	})
-	word, _ := regexp.Compile(`@\w+[\.]?\w*[\.]?\w*[\.]?\w*[\.]?\w*[\.]?\w*`)
+	word = regexp.MustCompile(`[\w^#]*(\{#\w+[\.]?\w*[\.]?\w*[\.]?\w*[\.]?\w*[\.]?\w*\})`)
 	result = word.ReplaceAllStringFunc(result, func(s string) string {
+		if strings.HasPrefix(s, "#{#") {
+			return s[1:]
+		}
+		return url.QueryEscape(q.GetString(s[2 : len(s)-1]))
+	})
+
+	word = regexp.MustCompile(`[\w^@{}]*(@\w+[\.]?\w*[\.]?\w*[\.]?\w*[\.]?\w*[\.]?\w*)`)
+	result = word.ReplaceAllStringFunc(result, func(s string) string {
+		if strings.HasPrefix(s, "@@") {
+			return s[1:]
+		}
+		if strings.HasPrefix(s, "{@") {
+			return s
+		}
 		return q.GetString(s[1:])
 	})
+
+	word = regexp.MustCompile(`[\w^#{}]*(#\w+[\.]?\w*[\.]?\w*[\.]?\w*[\.]?\w*[\.]?\w*)`)
+	result = word.ReplaceAllStringFunc(result, func(s string) string {
+		if strings.HasPrefix(s, "##") {
+			return s[1:]
+		}
+		if strings.HasPrefix(s, "{#") {
+			return s
+		}
+		return url.QueryEscape(q.GetString(s[1:]))
+	})
+
 	return result
 }
 

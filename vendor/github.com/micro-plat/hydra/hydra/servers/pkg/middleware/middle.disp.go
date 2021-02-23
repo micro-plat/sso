@@ -10,6 +10,7 @@ import (
 	"net/http"
 	"net/url"
 
+	"github.com/micro-plat/hydra/global"
 	"github.com/micro-plat/hydra/hydra/servers/pkg/dispatcher"
 	"github.com/micro-plat/lib4go/types"
 )
@@ -28,7 +29,8 @@ func NewDispCtx() *dispCtx {
 
 type dispCtx struct {
 	*dispatcher.Context
-	service string
+	service       string
+	needClearAuth bool
 }
 
 //
@@ -36,7 +38,11 @@ func (g *dispCtx) GetRouterPath() string {
 	return g.Context.Request.GetName()
 }
 func (g *dispCtx) GetParams() map[string]interface{} {
-	return nil
+	params := make(map[string]interface{})
+	for _, v := range g.Context.Params {
+		params[v.Key] = v.Value
+	}
+	return params
 }
 func (g *dispCtx) GetBody() io.ReadCloser {
 	text := g.Request.GetForm()["__body__"]
@@ -62,7 +68,11 @@ func (g *dispCtx) GetMethod() string {
 	return g.Context.Request.GetMethod()
 }
 func (g *dispCtx) GetURL() *url.URL {
-	u, _ := url.ParseRequestURI(g.Context.Request.GetService())
+	u, err := url.ParseRequestURI(g.Context.Request.GetService())
+	if err != nil {
+		global.Def.Log().Error("service不是有效的路径，转换为URL失败", err)
+		return &url.URL{}
+	}
 	return u
 }
 func (g *dispCtx) GetHeaders() http.Header {
@@ -125,4 +135,23 @@ func (g *dispCtx) File(name string) {
 
 func (g *dispCtx) GetFile(fileKey string) (string, io.ReadCloser, int64, error) {
 	return "", nil, 0, nil
+}
+
+//GetHTTPReqResp 获取http请求与响应对象
+func (g *dispCtx) GetHTTPReqResp() (*http.Request, http.ResponseWriter) {
+	return nil, nil
+}
+func (g *dispCtx) ClearAuth(c ...bool) bool {
+	if len(c) == 0 {
+		return g.needClearAuth
+	}
+	g.needClearAuth = types.GetBoolByIndex(c, 0, false)
+	return g.needClearAuth
+}
+
+func (g *dispCtx) ServeContent(filepath string, fs http.FileSystem) int {
+	return http.StatusOK
+}
+func (g *dispCtx) FullPath() string {
+	return g.service
 }

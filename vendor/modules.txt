@@ -102,7 +102,7 @@ github.com/leodido/go-urn
 github.com/lib4dev/cli
 github.com/lib4dev/cli/cmds
 github.com/lib4dev/cli/logger
-# github.com/lib4dev/vcs v1.0.0
+# github.com/lib4dev/vcs v1.0.0 => ../../../github.com/lib4dev/vcs
 ## explicit
 github.com/lib4dev/vcs
 github.com/lib4dev/vcs/modules/const/cachekey
@@ -126,7 +126,7 @@ github.com/mholt/archiver
 # github.com/micro-plat/gmq v1.0.1
 github.com/micro-plat/gmq/mqtt
 github.com/micro-plat/gmq/mqtt/client
-# github.com/micro-plat/hydra v1.0.5
+# github.com/micro-plat/hydra v1.0.5 => ../../../github.com/micro-plat/hydra
 ## explicit
 github.com/micro-plat/hydra
 github.com/micro-plat/hydra/components
@@ -221,6 +221,7 @@ github.com/micro-plat/hydra/hydra/servers/http/ws
 github.com/micro-plat/hydra/hydra/servers/pkg/dispatcher
 github.com/micro-plat/hydra/hydra/servers/pkg/dispatcher/render
 github.com/micro-plat/hydra/hydra/servers/pkg/middleware
+github.com/micro-plat/hydra/pkgs
 github.com/micro-plat/hydra/registry
 github.com/micro-plat/hydra/registry/pub
 github.com/micro-plat/hydra/registry/registry/filesystem
@@ -232,13 +233,14 @@ github.com/micro-plat/hydra/registry/watcher
 github.com/micro-plat/hydra/registry/watcher/wchild
 github.com/micro-plat/hydra/registry/watcher/wvalue
 github.com/micro-plat/hydra/services
-# github.com/micro-plat/lib4go v1.0.10
+# github.com/micro-plat/lib4go v1.0.10 => ../../../github.com/micro-plat/lib4go
 ## explicit
 github.com/micro-plat/lib4go/concurrent/cmap
 github.com/micro-plat/lib4go/db
 github.com/micro-plat/lib4go/db/tpl
 github.com/micro-plat/lib4go/encoding
 github.com/micro-plat/lib4go/encoding/base64
+github.com/micro-plat/lib4go/envs
 github.com/micro-plat/lib4go/errs
 github.com/micro-plat/lib4go/file
 github.com/micro-plat/lib4go/jsons
@@ -427,3 +429,6 @@ google.golang.org/protobuf/types/known/timestamppb
 gopkg.in/yaml.v2
 # gopkg.in/yaml.v3 v3.0.0-20200615113413-eeeca48fe776
 gopkg.in/yaml.v3
+# github.com/micro-plat/hydra => ../../../github.com/micro-plat/hydra
+# github.com/micro-plat/lib4go => ../../../github.com/micro-plat/lib4go
+# github.com/lib4dev/vcs => ../../../github.com/lib4dev/vcs

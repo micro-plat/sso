@@ -3,6 +3,12 @@ package jwt
 //Option jwt配置选项
 type Option func(*JWTAuth)
 
+//AuthorizationHeader AuthorizationHeader
+const AuthorizationHeader = "Authorization"
+
+//TokenBearerPrefix TokenBearerPrefix
+const TokenBearerPrefix = "Bearer "
+
 const SourceHeader = "HEADER"
 const SourceHeaderShort = "H"
 const SourceCookie = "COOKIE"

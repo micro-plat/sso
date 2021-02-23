@@ -1,6 +1,7 @@
 package redis
 
 import (
+	"errors"
 	"fmt"
 
 	"github.com/micro-plat/hydra/conf"
@@ -28,9 +29,9 @@ func New(addrs string, opts ...Option) *Redis {
 	r := &Redis{
 		Addrs:        types.Split(addrs, ","),
 		DbIndex:      0,
-		DialTimeout:  10,
-		ReadTimeout:  10,
-		WriteTimeout: 10,
+		DialTimeout:  3,
+		ReadTimeout:  3,
+		WriteTimeout: 3,
 		PoolSize:     10,
 	}
 	for _, opt := range opts {
@@ -54,7 +55,7 @@ func NewByRaw(raw string) *Redis {
 //GetConf GetConf
 func GetConf(varConf conf.IVarConf, name string) (redis *Redis, err error) {
 	js, err := varConf.GetConf("redis", name)
-	if err == conf.ErrNoSetting {
+	if errors.Is(err, conf.ErrNoSetting) {
 		return nil, fmt.Errorf("未配置：/var/redis/%s", name)
 	}
 	if err != nil {

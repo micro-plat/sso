@@ -39,14 +39,14 @@ func (s *Code) Send(info *SendRequest, platName string) (result types.XMap, err 
 		return nil, err
 	}
 
-	//3.请求发送短信
+	//3.请求发送消息
 	r, err := s.SendRequest(info)
 	if err != nil {
 		return
 	}
 
 	//4 保存验证码到缓存
-	err = s.cache.Save(sdkCache, platName, info.Ident, info.PhoneNo, info.Keywords)
+	err = s.cache.Save(sdkCache, platName, info.Ident, info.UserAccount, info.Keywords)
 	if err != nil {
 		return
 	}

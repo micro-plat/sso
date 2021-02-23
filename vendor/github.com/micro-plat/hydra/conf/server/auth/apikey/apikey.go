@@ -3,12 +3,14 @@ package apikey
 import (
 	"crypto/rand"
 	"encoding/base64"
+	"errors"
 	"fmt"
 	"io"
 	"strings"
 
 	"github.com/asaskevich/govalidator"
 	"github.com/micro-plat/hydra/conf"
+	"github.com/micro-plat/hydra/pkgs"
 	"github.com/micro-plat/hydra/registry"
 	"github.com/micro-plat/lib4go/security/md5"
 	"github.com/micro-plat/lib4go/security/sha1"
@@ -41,7 +43,7 @@ type APIKeyAuth struct {
 	Excludes []string      `json:"excludes,omitempty" toml:"excludes,omitempty"` //排除不验证的路径
 	Disable  bool          `json:"disable,omitempty" toml:"disable,omitempty"`
 	Invoker  string        `json:"invoker,omitempty" toml:"invoker,omitempty"`
-	invoker  *conf.Invoker `json:"-"`
+	invoker  *pkgs.Invoker `json:"-"`
 	*conf.PathMatch
 }
 
@@ -56,20 +58,23 @@ func New(secret string, opts ...Option) *APIKeyAuth {
 		opt(f)
 	}
 	f.PathMatch = conf.NewPathMatch(f.Excludes...)
-	f.invoker = conf.NewInvoker(f.Invoker)
-	if f.invoker.Allow() {
-		f.Mode = ModeSRVC
+	if f.Invoker != "" {
+		f.invoker = pkgs.NewInvoker(f.Invoker)
+		if f.invoker.Allow() {
+			f.Mode = ModeSRVC
+		}
 	}
 	return f
 }
 
 //Verify 验证签名是否通过
-func (a *APIKeyAuth) Verify(raw string, sign string, invoke conf.FnInvoker) error {
-	//检查并执行本地服务调用
-	if ok, _, err := a.invoker.CheckAndInvoke(invoke); ok {
-		return err
+func (a *APIKeyAuth) Verify(raw string, sign string, invoke pkgs.FnInvoker) error {
+	if a.Invoker != "" {
+		//检查并执行本地服务调用
+		if ok, rspns := a.invoker.CheckAndInvoke(invoke); ok {
+			return rspns.GetError()
+		}
 	}
-
 	//根据配置进行签名验证
 	var expect string
 	switch strings.ToUpper(a.Mode) {
@@ -93,15 +98,17 @@ func (a *APIKeyAuth) Verify(raw string, sign string, invoke conf.FnInvoker) erro
 func GetConf(cnf conf.IServerConf) (*APIKeyAuth, error) {
 	f := APIKeyAuth{}
 	_, err := cnf.GetSubObject(registry.Join(ParNodeName, SubNodeName), &f)
-	if err == conf.ErrNoSetting {
+	if errors.Is(err, conf.ErrNoSetting) {
 		return &APIKeyAuth{Disable: true, PathMatch: conf.NewPathMatch()}, nil
 	}
 	if err != nil {
 		return nil, fmt.Errorf("apikey配置格式有误:%v", err)
 	}
-	f.invoker = conf.NewInvoker(f.Invoker)
-	if f.invoker.Allow() {
-		f.Mode = ModeSRVC
+	if f.Invoker != "" {
+		f.invoker = pkgs.NewInvoker(f.Invoker)
+		if f.invoker.Allow() {
+			f.Mode = ModeSRVC
+		}
 	}
 	if b, err := govalidator.ValidateStruct(&f); !b {
 		return nil, fmt.Errorf("apikey配置数据有误:%v", err)

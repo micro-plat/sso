@@ -1,6 +1,7 @@
 package rpc
 
 import (
+	"errors"
 	"fmt"
 
 	"github.com/asaskevich/govalidator"
@@ -35,7 +36,7 @@ type Server struct {
 	Address        string `json:"address,omitempty" toml:"address,omitempty"`
 	Status         string `json:"status,omitempty" valid:"in(start|stop)" toml:"status,omitempty" label:"rpc服务状态"`
 	Host           string `json:"host,omitempty" toml:"host,omitempty"`
-	Domain         string `json:"dn,omitempty" toml:"dn,omitempty"`
+	Domain         string `json:"dns,omitempty" toml:"dns,omitempty"`
 	Trace          bool   `json:"trace,omitempty" toml:"trace,omitempty"`
 	MaxRecvMsgSize int    `json:"maxRecvMsgSize,omitempty" toml:"maxRecvMsgSize,omitempty"`
 	MaxSendMsgSize int    `json:"maxSendMsgSize,omitempty" toml:"maxSendMsgSize,omitempty"`
@@ -79,7 +80,7 @@ func GetConf(cnf conf.IServerConf) (s *Server, err error) {
 	}
 
 	_, err = cnf.GetMainObject(s)
-	if err == conf.ErrNoSetting {
+	if errors.Is(err, conf.ErrNoSetting) {
 		return nil, fmt.Errorf("/%s :%w", cnf.GetServerPath(), err)
 	}
 	if err != nil {

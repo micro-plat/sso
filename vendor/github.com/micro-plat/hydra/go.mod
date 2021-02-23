@@ -1,6 +1,6 @@
 module github.com/micro-plat/hydra
 
-go 1.15
+go 1.16
 
 require (
 	github.com/BurntSushi/toml v0.3.1
@@ -29,6 +29,7 @@ require (
 	github.com/pkg/profile v1.2.1
 	github.com/pkg/sftp v1.12.0
 	github.com/robfig/cron/v3 v3.0.1
+	github.com/stretchr/testify v1.6.1
 	github.com/ugorji/go/codec v1.2.2
 	github.com/ulikunitz/xz v0.5.9 // indirect
 	github.com/urfave/cli v1.22.5
@@ -42,7 +43,8 @@ require (
 	golang.org/x/sys v0.0.0-20201221093633-bc327ba9c2f0
 	golang.org/x/time v0.0.0-20201208040808-7e3f01d25324
 	google.golang.org/grpc v1.34.0
+	gopkg.in/yaml.v2 v2.3.0
 	gopkg.in/yaml.v3 v3.0.0-20200615113413-eeeca48fe776
 )
 
-// replace github.com/micro-plat/lib4go => ../../../github.com/micro-plat/lib4go
+replace github.com/micro-plat/lib4go => ../../../github.com/micro-plat/lib4go

@@ -20,7 +20,7 @@ func GetImgCode(w io.Writer, ident, account, platName string) (err error) {
 
 //VerifyImgCode 验证图形验证码
 //platName-->平台名,ident-->系统标识,account-->账号,code-->验证码
-func VerifyImgCode(i interface{}, ident, account, code, platName string) (err error) {
+func VerifyImgCode(ident, account, code, platName string) (err error) {
 
 	obj, err := imgcode.NewCode()
 	if err != nil {

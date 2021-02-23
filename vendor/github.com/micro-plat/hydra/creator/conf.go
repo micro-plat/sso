@@ -10,7 +10,6 @@ import (
 	"github.com/micro-plat/hydra/conf/server/cron"
 	"github.com/micro-plat/hydra/conf/server/mqc"
 	"github.com/micro-plat/hydra/conf/server/rpc"
-	"github.com/micro-plat/hydra/conf/server/static"
 	"github.com/micro-plat/hydra/global"
 	"github.com/micro-plat/hydra/hydra/servers"
 	"github.com/micro-plat/hydra/services"
@@ -77,25 +76,22 @@ var Conf = New()
 //New 构建新的配置
 func New() *conf {
 	return &conf{
-		data:         make(map[string]iCustomerBuilder),
-		vars:         make(map[string]map[string]interface{}),
-		routerLoader: services.GetRouter,
+		data: make(map[string]iCustomerBuilder),
+		vars: make(map[string]map[string]interface{}),
 	}
 }
 
 //NewByLoader 设置路由加载器
 func NewByLoader(routerLoader func(string) *services.ORouter) *conf {
 	return &conf{
-		data:         make(map[string]iCustomerBuilder),
-		vars:         make(map[string]map[string]interface{}),
-		routerLoader: routerLoader,
+		data: make(map[string]iCustomerBuilder),
+		vars: make(map[string]map[string]interface{}),
 	}
 }
 
 type conf struct {
-	data         map[string]iCustomerBuilder
-	vars         map[string]map[string]interface{}
-	routerLoader func(string) *services.ORouter
+	data map[string]iCustomerBuilder
+	vars map[string]map[string]interface{}
 }
 
 //Load 加载所有配置
@@ -131,7 +127,7 @@ func (c *conf) Load() error {
 
 //API api服务器配置
 func (c *conf) API(address string, opts ...api.Option) *httpBuilder {
-	api := newHTTP(global.API, address, c.routerLoader, opts...)
+	api := newHTTP(global.API, address, opts...)
 	c.data[global.API] = api
 	return api
 }
@@ -147,8 +143,7 @@ func (c *conf) GetAPI() *httpBuilder {
 
 //Web web服务器配置
 func (c *conf) Web(address string, opts ...api.Option) *httpBuilder {
-	web := newHTTP(global.Web, address, c.routerLoader, opts...)
-	web.Static(static.WithArchive(global.AppName))
+	web := newHTTP(global.Web, address, opts...)
 	c.data[global.Web] = web
 	return web
 }
@@ -163,8 +158,7 @@ func (c *conf) GetWeb() *httpBuilder {
 
 //Ws websocket服务器配置
 func (c *conf) WS(address string, opts ...api.Option) *httpBuilder {
-	ws := newHTTP(global.WS, address, c.routerLoader, opts...)
-	//ws.Static(static.WithArchive(global.AppName))
+	ws := newHTTP(global.WS, address, opts...)
 	c.data[global.WS] = ws
 	return ws
 }
@@ -179,7 +173,7 @@ func (c *conf) GetWS() *httpBuilder {
 
 //RPC rpc服务器配置
 func (c *conf) RPC(address string, opts ...rpc.Option) *rpcBuilder {
-	rpc := newRPC(address, c.routerLoader, opts...)
+	rpc := newRPC(address, opts...)
 	c.data[global.RPC] = rpc
 	return rpc
 }

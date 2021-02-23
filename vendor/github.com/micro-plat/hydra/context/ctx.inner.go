@@ -21,14 +21,17 @@ type IInnerContext interface {
 	ContentType() string
 
 	Abort()
-	WStatus(int)              //c.Context.Writer.WriteHeader(s)
-	Status() int              //Context.Writer.Status()
-	Written() bool            //Context.Writer.Written()
-	WHeaders() http.Header    //c.Context.Writer.Header()
-	WHeader(string) string    //c.Context.Writer.Header().Get
-	File(string)              //Context.File(path)
+	WStatus(int)           //c.Context.Writer.WriteHeader(s)
+	Status() int           //Context.Writer.Status()
+	Written() bool         //Context.Writer.Written()
+	WHeaders() http.Header //c.Context.Writer.Header()
+	WHeader(string) string //c.Context.Writer.Header().Get
+	// File(string)           //Context.File(path)
+	ServeContent(filepath string, fs http.FileSystem) int
 	Data(int, string, []byte) //c.Context.Data(status, tpName, v)
 	Redirect(int, string)
 	GetService() string
 	GetFile(fileKey string) (string, io.ReadCloser, int64, error)
+	GetHTTPReqResp() (*http.Request, http.ResponseWriter)
+	ClearAuth(c ...bool) bool
 }

@@ -1,16 +1,20 @@
 package static
 
 import (
-	"fmt"
-	"io/ioutil"
-	"os"
-	"strings"
+	"io/fs"
+	"net/http"
+	"path"
 )
 
-//GetGzFile 获取gz 压缩包
-func (s *Static) GetGzFile(rPath string) string {
+//FileInfo 压缩文件保存
+type gzFileInfo struct {
+	GzFile string
+	HasGz  bool
+}
 
-	fi, ok := s.FileMap[rPath]
+//GetGzFile 获取gz 压缩包
+func (s *Static) getGzFile(rPath string) string {
+	fi, ok := s.gzipfileMap[rPath]
 	if !ok {
 		return ""
 	}
@@ -20,41 +24,78 @@ func (s *Static) GetGzFile(rPath string) string {
 	return fi.GzFile
 }
 
-//RereshData 刷新配置数据
-func (s *Static) RereshData() {
-	s.recursiveDir(strings.TrimPrefix(s.Dir, "./"))
+//GetGzip GetGzip
+func (s *Static) GetGzip() interface{} {
+	return s.gzipfileMap
 }
 
-//GetFileMap 获取静态文件中的gz文件字典
-func (s *Static) GetFileMap() map[string]FileInfo {
-	return s.FileMap
-}
-
-func (s *Static) recursiveDir(dir string) {
-	children := []string{}
-	const suffix = ".gz"
-	list, err := ioutil.ReadDir(dir)
+func (s *Static) refreshGzip() {
+	//root := s.fs.GetRoot()
+	root := ""
+	entrys, err := s.fs.GetDirEntrys(root)
 	if err != nil {
 		return
 	}
-	var cur os.FileInfo
-	for i := range list {
-		cur = list[i]
-		if !cur.IsDir() {
-			if strings.HasSuffix(cur.Name(), suffix) {
-				fpath := fmt.Sprintf("%s/%s", dir, strings.TrimSuffix(cur.Name(), suffix))
-				s.FileMap[fpath] = FileInfo{
-					HasGz:  true,
-					GzFile: fpath + suffix,
-				}
-			}
-			continue
-		}
-		children = append(children, fmt.Sprintf("%s/%s", dir, cur.Name()))
+	for _, e := range entrys {
+		s.deepSearch(root, e)
 	}
+}
 
-	for i := range children {
-		s.recursiveDir(children[i])
+func (s *Static) deepSearch(parent string, entry fs.DirEntry) {
+	cur := path.Join(parent, entry.Name())
+	if entry.IsDir() {
+		list, err := s.fs.GetDirEntrys(cur)
+		if err != nil {
+			return
+		}
+		for _, item := range list {
+			s.deepSearch(cur, item)
+		}
+		return
+	}
+	gzfileName := cur + ".gz"
+	if s.fs.Has(gzfileName) {
+		s.gzipfileMap["/"+cur] = gzFileInfo{
+			GzFile: gzfileName,
+			HasGz:  true,
+		}
+	}
+}
+
+type gzipFSWrapper struct {
+	orgFs  IFS
+	static *Static
+}
+
+//NewGzip NewGzip
+func NewGzip(org IFS, static *Static) IFS {
+	static.fs = org
+	static.refreshGzip()
+	return &gzipFSWrapper{
+		orgFs:  org,
+		static: static,
+	}
+}
+
+func (w *gzipFSWrapper) ReadFile(name string) (fs http.FileSystem, realPath string, err error) {
+	fs, realPath, err = w.orgFs.ReadFile(name)
+	if err != nil {
+		return
+	}
+	if gzfile := w.static.getGzFile(name); gzfile != "" {
+		realPath = path.Join(w.GetRoot(), gzfile)
 	}
 	return
+}
+
+func (w *gzipFSWrapper) Has(name string) bool {
+	return w.orgFs.Has(name)
+}
+
+func (w *gzipFSWrapper) GetRoot() string {
+	return w.orgFs.GetRoot()
+}
+
+func (w *gzipFSWrapper) GetDirEntrys(path string) (dirs []fs.DirEntry, err error) {
+	return w.orgFs.GetDirEntrys(path)
 }

@@ -67,7 +67,7 @@ func (g *UnitGroup) storeService(name string, handler context.IHandler, htype ha
 	path, service, actions := g.getPaths(g.Path, name)
 	unit, ok := g.Services[service]
 	if !ok {
-		unit = &Unit{Group: g, Path: path, Service: service}
+		unit = &Unit{Group: g, Path: path, Service: service, rawUnit: &rawUnit{RawPath: g.Path, RawMTag: name}}
 		g.Services[service] = unit
 	}
 

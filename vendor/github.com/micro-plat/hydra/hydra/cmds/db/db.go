@@ -1,3 +1,8 @@
+// +build dev
+
+//数据库安装存在一定的风险，特别是SQL语句中包含有删除表，修改表等指令
+//所以编译项目时只有明确指定tags为"dev"时，才将此功能编译进二进制文件(go install -tags="dev")
+//生成生产环境二进制文件时，建议直接编译不要指定"dev"
 package db
 
 import (
@@ -6,6 +11,7 @@ import (
 
 	"github.com/lib4dev/cli/cmds"
 	logs "github.com/lib4dev/cli/logger"
+	"github.com/manifoldco/promptui"
 	"github.com/micro-plat/hydra/components"
 	"github.com/micro-plat/hydra/conf/app"
 	"github.com/micro-plat/hydra/global"
@@ -70,6 +76,9 @@ func install(c *cli.Context) (err error) {
 		if err != nil {
 			return err
 		}
+		if !checkContinue() {
+			return nil
+		}
 		for _, sql := range sqls {
 			if _, err := db.Execute(sql, nil); err != nil {
 				err = fmt.Errorf("%32s\t%w", getMessage(sql), err)
@@ -105,7 +114,38 @@ func getMessage(input string) string {
 	return nstr
 }
 
-/*
-raw := input[:types.GetMin(32, len(input))]
-	return strings.TrimSpace(strings.Replace(raw, "\n" "", -1))
-*/
+func checkContinue() bool {
+	y := "Yes,继续执行"
+	n := "No,中止执行"
+	prompt := promptui.Select{
+		Label: "执行数据库操作(可能造成无法恢复的影响),是否继续?",
+		Items: []string{y, n},
+	}
+	_, result, err := prompt.Run()
+	return err == nil && result == y
+}
+
+var dbName = "db"
+var skip bool
+
+//getInstallFlags 获取运行时的参数
+func getInstallFlags() []cli.Flag {
+	flags := pkgs.GetBaseFlags()
+	flags = append(flags, cli.BoolFlag{
+		Name:        "debug,d",
+		Destination: &global.FlagVal.IsDebug,
+		Usage:       `-调试模式，打印更详细的系统运行日志`,
+	})
+	flags = append(flags, cli.StringFlag{
+		Name:        "db",
+		Destination: &dbName,
+		Usage:       `-数据库节点名,注册中配置的数据库节点名`,
+	})
+	flags = append(flags, cli.BoolFlag{
+		Name:        "skip",
+		Destination: &skip,
+		Usage:       `-跳过执行失败的SQL语句`,
+	})
+	flags = append(flags, global.DBCli.GetFlags()...)
+	return flags
+}

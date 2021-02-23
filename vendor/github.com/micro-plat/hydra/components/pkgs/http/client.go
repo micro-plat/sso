@@ -13,7 +13,6 @@ import (
 
 	varhttp "github.com/micro-plat/hydra/conf/vars/http"
 	"github.com/micro-plat/hydra/context"
-	"github.com/micro-plat/hydra/global"
 	"github.com/micro-plat/lib4go/encoding"
 )
 
@@ -39,23 +38,28 @@ func (c *Client) Request(method string, url string, params string, charset strin
 		req.Header.Set(i, strings.Join(v, ","))
 	}
 
-	req.Header.Set(context.XRequestID, global.RID.GetXRequestID())
-	c.Response, err = c.client.Do(req)
-	if c.Response != nil {
-		defer c.Response.Body.Close()
+	if ctx, ok := context.GetContext(); ok {
+		req.Header.Set(context.XRequestID, ctx.User().GetTraceID())
+	}
+	response, err := c.client.Do(req)
+	if response != nil {
+		defer response.Body.Close()
 	}
 	if err != nil {
-		return
+		return nil, 0, fmt.Errorf("client.Do err:%v", err)
 	}
-	body, err := ioutil.ReadAll(c.Response.Body)
+	body, err := ioutil.ReadAll(response.Body)
 	if err != nil {
-		c.printResponseError(method, url, c.Response.Status, time.Now().Sub(start), err)
-		return
+		c.printResponseError(method, url, response.Status, time.Now().Sub(start), err)
+		return nil, 0, fmt.Errorf("body ReadAll err:%v", err)
 	}
 
-	c.printResponse(method, url, c.Response.Status, time.Now().Sub(start), string(body))
-	status = c.Response.StatusCode
+	c.printResponse(method, url, response.Status, time.Now().Sub(start), string(body))
+	status = response.StatusCode
 	ct, err := encoding.DecodeBytes(body, charset)
+	if err != nil {
+		return nil, 0, fmt.Errorf("body charset err:%v", err)
+	}
 	content = ct
 	return
 }

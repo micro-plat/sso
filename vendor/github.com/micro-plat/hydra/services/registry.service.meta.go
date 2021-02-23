@@ -7,24 +7,27 @@ import (
 )
 
 type metaServices struct {
-	services  []string
-	handlers  map[string]context.IHandler
-	fallbacks map[string]context.IHandler
+	services   []string
+	rawService map[string]*rawUnit
+	handlers   map[string]context.IHandler
+	fallbacks  map[string]context.IHandler
 }
 
 func newService() *metaServices {
 	return &metaServices{
-		services:  make([]string, 0, 1),
-		handlers:  make(map[string]context.IHandler),
-		fallbacks: make(map[string]context.IHandler),
+		services:   make([]string, 0, 1),
+		rawService: make(map[string]*rawUnit),
+		handlers:   make(map[string]context.IHandler),
+		fallbacks:  make(map[string]context.IHandler),
 	}
 }
 
-func (s *metaServices) AddHanler(service string, h context.IHandler) error {
+func (s *metaServices) AddHanler(service string, h context.IHandler, r *rawUnit) error {
 	if _, ok := s.handlers[service]; ok {
 		return fmt.Errorf("服务不能重复注册，%s找到有多次注册%v", service, s.handlers)
 	}
 	s.handlers[service] = h
+	s.rawService[service] = r
 	s.services = append(s.services, service)
 	return nil
 }
@@ -48,9 +51,25 @@ func (s *metaServices) remove(service string) {
 	}
 }
 
+//Has 是否包含服务
+func (s *metaServices) Has(service string) (ok bool) {
+	_, ok = s.handlers[service]
+	return
+}
+
+//GetHandlers 获取服务的处理对象
 func (s *metaServices) GetHandlers(service string) (h context.IHandler, ok bool) {
 	h, ok = s.handlers[service]
 	return
+}
+
+//GetRawPathAndTag 获取服务原始注册路径与方法名
+func (s *metaServices) GetRawPathAndTag(service string) (path string, tagName string, ok bool) {
+	u, ok := s.rawService[service]
+	if ok {
+		return u.RawPath, u.RawMTag, true
+	}
+	return "", "", false
 }
 
 //GetServices 获取已注册的服务

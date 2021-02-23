@@ -10,8 +10,12 @@ import (
 	"github.com/urfave/cli"
 )
 
+var isFixed bool
+
 func init() {
 	cmds.RegisterFunc(func() cli.Command {
+		flags := pkgs.GetFixedFlags(&isFixed)
+		flags = append(flags, getFlags()...)
 		return cli.Command{
 			Name:   "install",
 			Usage:  "安装服务，以服务方式安装到本地系统",
@@ -37,7 +41,7 @@ func doInstall(c *cli.Context) (err error) {
 	args := []string{"run"}
 	args = append(args, os.Args[2:]...)
 	//3.创建本地服务
-	hydraSrv, err := pkgs.GetService(c, args...)
+	hydraSrv, err := pkgs.GetService(c, isFixed, args...)
 	if err != nil {
 		return err
 	}

@@ -4,16 +4,19 @@ import (
 	"io"
 	"net/http"
 	"net/url"
+	"os"
 	"sync"
 
 	"github.com/gin-gonic/gin"
 	"github.com/gin-gonic/gin/binding"
+	"github.com/micro-plat/lib4go/types"
 )
 
 type ginCtx struct {
 	*gin.Context
-	once    sync.Once
-	service string
+	once          sync.Once
+	service       string
+	needClearAuth bool
 }
 
 func NewGinCtx(c *gin.Context) *ginCtx {
@@ -35,7 +38,6 @@ func (g *ginCtx) GetParams() map[string]interface{} {
 	return params
 }
 func (g *ginCtx) GetRouterPath() string {
-
 	return g.Context.FullPath()
 }
 
@@ -56,14 +58,18 @@ func (g *ginCtx) GetURL() *url.URL {
 	return g.Request.URL
 }
 func (g *ginCtx) GetHeaders() http.Header {
-	return g.Request.Header
+	hd := g.Request.Header
+	if _, ok := hd["Host"]; !ok {
+		hd["Host"] = []string{types.GetString(g.Request.Host, g.GetURL().Host)}
+	}
+	return hd
 }
 
 func (g *ginCtx) GetCookies() []*http.Cookie {
 	return g.Request.Cookies()
 }
 func (g *ginCtx) Find(path string) bool {
-	return true
+	return g.FullPath() == path
 
 }
 func (g *ginCtx) Next() {
@@ -112,4 +118,47 @@ func (g *ginCtx) GetFile(fileKey string) (string, io.ReadCloser, int64, error) {
 		return "", nil, 0, err
 	}
 	return header.Filename, f, header.Size, nil
+}
+
+//GetHTTPReqResp 获取GetHttpReqResp请求与响应对象
+func (g *ginCtx) GetHTTPReqResp() (*http.Request, http.ResponseWriter) {
+	return g.Request, g.Writer
+}
+func (g *ginCtx) ClearAuth(c ...bool) bool {
+	if len(c) == 0 {
+		return g.needClearAuth
+	}
+	g.needClearAuth = types.GetBoolByIndex(c, 0, false)
+	return g.needClearAuth
+}
+
+func (g *ginCtx) ServeContent(filepath string, fs http.FileSystem) (status int) {
+	f, err := fs.Open(filepath)
+	if err != nil {
+		status = toHTTPError(err)
+		g.AbortWithError(status, err)
+		return
+	}
+
+	d, err := f.Stat()
+	if err != nil {
+		status = toHTTPError(err)
+		g.AbortWithError(status, err)
+		return
+	}
+
+	status = http.StatusOK
+	http.ServeContent(g.Writer, g.Request, filepath, d.ModTime(), f)
+	return
+}
+
+func toHTTPError(err error) int {
+	if os.IsNotExist(err) {
+		return http.StatusNotFound
+	}
+	if os.IsPermission(err) {
+		return http.StatusForbidden
+	}
+	// Default:
+	return http.StatusInternalServerError
 }

@@ -9,6 +9,7 @@ import (
 	rpcconf "github.com/micro-plat/hydra/conf/vars/rpc"
 	rc "github.com/micro-plat/hydra/context"
 	"github.com/micro-plat/hydra/global"
+	npkgs "github.com/micro-plat/hydra/pkgs"
 	"github.com/micro-plat/lib4go/concurrent/cmap"
 	"github.com/micro-plat/lib4go/types"
 )
@@ -19,13 +20,13 @@ var requests = cmap.New(4)
 type IRequest interface {
 
 	//Request request 请求
-	Request(service string, input interface{}, opts ...rpc.RequestOption) (res *rpc.Response, err error)
+	Request(service string, input interface{}, opts ...rpc.RequestOption) (res *npkgs.Rspns, err error)
 
 	//Swap 将当前请求参数作为RPC参数并发送RPC请求
-	Swap(service string, ctx rc.IContext) (res *rpc.Response, err error)
+	Swap(service string, ctx rc.IContext) (res *npkgs.Rspns, err error)
 
 	//RequestByCtx RPC请求，可通过context撤销请求
-	RequestByCtx(ctx context.Context, service string, input interface{}, opts ...rpc.RequestOption) (res *rpc.Response, err error)
+	RequestByCtx(ctx context.Context, service string, input interface{}, opts ...rpc.RequestOption) (res *npkgs.Rspns, err error)
 }
 
 //Request RPC Request
@@ -44,25 +45,26 @@ func NewRequest(version int32, conf *rpcconf.RPCConf) *Request {
 }
 
 //Request request 请求
-func (r *Request) Request(service string, input interface{}, opts ...rpc.RequestOption) (res *rpc.Response, err error) {
+func (r *Request) Request(service string, input interface{}, opts ...rpc.RequestOption) (res *npkgs.Rspns, err error) {
 
 	//处理链路跟踪
 	nopts := make([]rpc.RequestOption, 0, 2)
 	nopts = append(nopts, opts...)
-	nopts = append(opts, rpc.WithXRequestID(global.RID.GetXRequestID()))
-
+	if ctx, ok := rc.GetContext(); ok {
+		nopts = append(opts, rpc.WithTraceID(ctx.User().GetTraceID()))
+	}
 	//发送请求
-	return r.RequestByCtx(context.Background(), service, input, opts...)
+	return r.RequestByCtx(context.Background(), service, input, nopts...)
 }
 
 //Swap 将当前请求参数作为RPC参数并发送RPC请求
-func (r *Request) Swap(service string, ctx rc.IContext) (res *rpc.Response, err error) {
+func (r *Request) Swap(service string, ctx rc.IContext) (res *npkgs.Rspns, err error) {
 
 	//获取内容
 	input := ctx.Request().GetMap()
 	//处理链路跟踪
 	opts := make([]rpc.RequestOption, 0, 2)
-	opts = append(opts, rpc.WithXRequestID(ctx.User().GetRequestID()))
+	opts = append(opts, rpc.WithTraceID(ctx.User().GetTraceID()))
 
 	//复制请求头
 	hd := make(map[string][]string)
@@ -77,7 +79,7 @@ func (r *Request) Swap(service string, ctx rc.IContext) (res *rpc.Response, err 
 }
 
 //RequestByCtx RPC请求，可通过context撤销请求
-func (r *Request) RequestByCtx(ctx context.Context, service string, input interface{}, opts ...rpc.RequestOption) (res *rpc.Response, err error) {
+func (r *Request) RequestByCtx(ctx context.Context, service string, input interface{}, opts ...rpc.RequestOption) (res *npkgs.Rspns, err error) {
 	isip, rservice, platName, err := rpc.ResolvePath(service, global.Current().GetPlatName())
 	if err != nil {
 		return
@@ -98,7 +100,11 @@ func (r *Request) RequestByCtx(ctx context.Context, service string, input interf
 	nopts := make([]rpc.RequestOption, 0, len(opts)+1)
 	nopts = append(nopts, opts...)
 	if reqid := types.GetString(ctx.Value(rc.XRequestID)); reqid != "" {
-		nopts = append(nopts, rpc.WithXRequestID(reqid))
+		nopts = append(nopts, rpc.WithTraceID(reqid))
+	} else {
+		if ctx, ok := rc.GetContext(); ok {
+			nopts = append(opts, rpc.WithTraceID(ctx.User().GetTraceID()))
+		}
 	}
 	fm := pkgs.GetString(input)
 	return client.RequestByString(ctx, rservice, fm, nopts...)

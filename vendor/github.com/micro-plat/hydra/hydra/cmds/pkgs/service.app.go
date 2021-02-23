@@ -21,9 +21,9 @@ type HydraService struct {
 }
 
 //GetService GetService
-func GetService(c *cli.Context, args ...string) (hydraSrv *HydraService, err error) {
+func GetService(c *cli.Context, isFixed bool, args ...string) (hydraSrv *HydraService, err error) {
 	//1. 构建服务配置
-	cfg := GetSrvConfig(args...)
+	cfg := GetSrvConfig(isFixed, args...)
 
 	//2.创建本地服务
 	appSrv, err := service.New(GetSrvApp(c), cfg)
@@ -40,13 +40,16 @@ func GetService(c *cli.Context, args ...string) (hydraSrv *HydraService, err err
 }
 
 //GetSrvConfig SrvCfg
-func GetSrvConfig(args ...string) *service.Config {
-	srvname := global.Def.GetLongAppName()
-	parties := strings.Split(srvname, "_")
-	dispName := fmt.Sprintf("%s(%s)", strings.Join(parties[:len(parties)-1], "_"), parties[len(parties)-1])
-
+func GetSrvConfig(isFixed bool, args ...string) *service.Config {
+	svcName := global.AppName
+	dispName := svcName
+	if !isFixed {
+		svcName = global.Def.GetLongAppName()
+		parties := strings.Split(svcName, "_")
+		dispName = fmt.Sprintf("%s(%s)", strings.Join(parties[:len(parties)-1], "_"), parties[len(parties)-1])
+	}
 	cfg := &service.Config{
-		Name:        srvname,
+		Name:        svcName,
 		DisplayName: dispName,
 		Description: global.Usage,
 		Arguments:   args,

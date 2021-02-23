@@ -48,7 +48,7 @@ func (s *CodeCache) CheckErrorLimit(c caches.ICache, platName, ident, phone stri
 	key := types.Translate(cachekey.SmsCodeErrorCountCacheKey, "platname", platName, "ident", ident, "phone", phone)
 
 	if !c.Exists(key) {
-		return "", errs.NewError(errorcode.HTTPErrorKeyNotExistError, "短信验证码错误次数缓存不存在")
+		return "", errs.NewError(errorcode.HTTPErrorKeyNotExistError, "消息验证码错误次数缓存不存在")
 	}
 	value, err := c.Get(key)
 	if err != nil {
@@ -58,7 +58,7 @@ func (s *CodeCache) CheckErrorLimit(c caches.ICache, platName, ident, phone stri
 
 	//校验次数
 	if types.GetInt(value, 0) >= conf.SmsCodeSetting.SmsCodeErrorLimit {
-		err = errs.NewError(errorcode.HTTPErrorFailedCodeErrorCountError, "短信验证码错误次数太多")
+		err = errs.NewError(errorcode.HTTPErrorFailedCodeErrorCountError, "消息验证码错误次数太多")
 		return
 	}
 
@@ -71,12 +71,12 @@ func (s *CodeCache) Verify(c caches.ICache, platName, ident, phone, code, errCou
 	key := types.Translate(cachekey.SmsCodeCachekey, "platname", platName, "ident", ident, "phone", phone)
 
 	if !c.Exists(key) {
-		return errs.NewError(errorcode.HTTPErrorKeyNotExistError, "短信验证码缓存不存在")
+		return errs.NewError(errorcode.HTTPErrorKeyNotExistError, "消息验证码缓存不存在")
 	}
 
-	cacheCode, err1 := c.Get(key)
-	if err1 != nil {
-		err = fmt.Errorf("VerifySmsCode:获取缓存中的验证码失败,err%+v", err1)
+	cacheCode, err := c.Get(key)
+	if err != nil {
+		err = fmt.Errorf("VerifySmsCode:获取缓存中的验证码失败,err%+v", err)
 		return
 	}
 
@@ -89,7 +89,7 @@ func (s *CodeCache) Verify(c caches.ICache, platName, ident, phone, code, errCou
 			err = fmt.Errorf("VerifySmsCode:设置%s的缓存出错%+v", errCountKey, err1)
 			return
 		}
-		return errs.NewError(errorcode.HTTPErrorFailedCodeCheckedError, "短信验证码不正确")
+		return errs.NewError(errorcode.HTTPErrorFailedCodeCheckedError, "消息验证码不正确")
 	}
 
 	//3 删除验证码和错误次数

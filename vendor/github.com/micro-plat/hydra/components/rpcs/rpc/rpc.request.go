@@ -7,12 +7,13 @@ import (
 	"time"
 
 	"github.com/micro-plat/hydra/global"
+	"github.com/micro-plat/hydra/pkgs"
 	"golang.org/x/net/context"
 )
 
 //IRequest RPC请求
 type IRequest interface {
-	Request(ctx context.Context, service string, form map[string]interface{}, opts ...RequestOption) (res *Response, err error)
+	Request(ctx context.Context, service string, form map[string]interface{}, opts ...RequestOption) (res *pkgs.Rspns, err error)
 }
 
 type requestOption struct {
@@ -72,8 +73,8 @@ func WithHost(s ...string) RequestOption {
 	}
 }
 
-//WithXRequestID 设置请求编号
-func WithXRequestID(s string) RequestOption {
+//WithTraceID 设置链路跟踪编号
+func WithTraceID(s string) RequestOption {
 	return func(o *requestOption) {
 		o.headers["X-Request-Id"] = s
 	}

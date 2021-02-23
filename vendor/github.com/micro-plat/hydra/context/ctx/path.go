@@ -1,6 +1,7 @@
 package ctx
 
 import (
+	"net/url"
 	"strings"
 
 	"github.com/micro-plat/hydra/conf"
@@ -8,6 +9,7 @@ import (
 	"github.com/micro-plat/hydra/conf/server/router"
 	"github.com/micro-plat/hydra/context"
 	"github.com/micro-plat/hydra/global"
+	"github.com/micro-plat/hydra/services"
 	"github.com/micro-plat/lib4go/encoding"
 	"github.com/micro-plat/lib4go/types"
 )
@@ -59,6 +61,7 @@ func (c *rpath) GetEncoding() string {
 	//从router配置获取
 	routerObj, err := c.GetRouter()
 	if err != nil {
+		c.encoding = encoding.UTF8
 		return c.encoding
 	}
 	if c.encoding = routerObj.Encoding; c.encoding != "" {
@@ -83,9 +86,10 @@ func (c *rpath) GetEncoding() string {
 
 //GetRouter 获取路由信息
 func (c *rpath) GetRouter() (*router.Router, error) {
-	switch c.appConf.GetServerConf().GetServerType() {
+	tp := c.appConf.GetServerConf().GetServerType()
+	switch tp {
 	case global.API, global.Web, global.WS:
-		routerObj, err := c.appConf.GetRouterConf()
+		routerObj, err := services.GetRouter(tp).GetRouters()
 		if err != nil {
 			return nil, err
 		}
@@ -97,8 +101,8 @@ func (c *rpath) GetRouter() (*router.Router, error) {
 }
 
 //GetURL 获取请求路径
-func (c *rpath) GetURL() string {
-	return c.ctx.GetURL().String()
+func (c *rpath) GetURL() *url.URL {
+	return c.ctx.GetURL()
 }
 
 //GetRequestPath 获取请求路径
