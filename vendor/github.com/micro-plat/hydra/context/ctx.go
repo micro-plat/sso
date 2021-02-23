@@ -107,6 +107,12 @@ type IPath interface {
 	//Param 路由参数
 	Params() types.XMap
 
+	//GetGroup 获取当前服务注册的group名
+	GetGroup() string
+
+	//GetPageAndTag 获取服务对应的页面路径与tag标签(page:静态文件prefix+服务原始注册路径,tag：对象中的函数名)
+	GetPageAndTag() (page string, tag string, ok bool)
+
 	//GetRouter 获取当前请求对应的路由信息
 	GetRouter() (*router.Router, error)
 
