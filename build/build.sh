@@ -15,8 +15,8 @@ echo ""
 echo "---------打包-start-----------------" 
 echo ""
 
-#sh login.web.sh $pkg
-#sh mgr.web.sh $pkg
+sh login.web.sh $pkg
+sh mgr.web.sh $pkg
 
 tags=" -tags=none "
 

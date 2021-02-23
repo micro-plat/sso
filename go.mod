@@ -1,6 +1,6 @@
 module github.com/micro-plat/sso
 
-go 1.15
+go 1.16
 
 replace github.com/micro-plat/hydra => ../../../github.com/micro-plat/hydra
 

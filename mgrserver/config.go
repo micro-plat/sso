@@ -15,7 +15,6 @@ import (
 //Archive 压缩包名称
 var Archive = "mgr.static.zip"
 var staticOpts = []static.Option{
-	static.WithAssetsPath(Archive),
 	static.WithAutoRewrite(),
 }
 
@@ -42,7 +41,8 @@ func devConf() {
 	hydra.Conf.Vars().DB().MySQL("db", "root", "rTo0CesHi2018Qx", "192.168.0.36:3306", "sso_new", db.WithConnect(20, 10, 600))
 	hydra.Conf.Vars().Cache().Redis("redis", `192.168.0.111:6379,192.168.0.112:6379,192.168.0.113:6379,192.168.0.114:6379,192.168.0.115:6379,192.168.0.116:6379`, cacheredis.WithDbIndex(1))
 
-	hydra.Conf.Web("6677", api.WithDNS("ssov4.100bm0.com")).Static(staticOpts...).
+	hydra.Conf.Web("6677", api.WithDNS("ssov4.100bm0.com")).
+		Static(append(staticOpts, static.WithAssetsPath(Archive))...).
 		Header(header.WithCrossDomain()).
 		Jwt(jwt.WithMode("HS512"),
 			jwt.WithSecret("bf8f3171946d8d5a13cca23aa6080c8e"),
@@ -66,7 +66,8 @@ func prodConf() {
 	hydra.Conf.Vars().DB().MySQLByConnStr("db", conf.ByInstall, db.WithConnect(20, 10, 600))
 	hydra.Conf.Vars().Cache().Redis("redis", conf.ByInstall, cacheredis.WithDbIndex(1))
 
-	hydra.Conf.Web(conf.ByInstall, api.WithDNS("http://web.sso.18jiayou.com")).Static(staticOpts...).
+	hydra.Conf.Web(conf.ByInstall, api.WithDNS("http://web.sso.18jiayou.com")).
+		Static(append(staticOpts, static.WithAssetsPath(Archive))...).
 		Jwt(jwt.WithMode("HS512"),
 			jwt.WithSecret("bf8f3171946d8d5a13cca23aa6080c8e"),
 			jwt.WithExpireAt(36000),

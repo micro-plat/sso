@@ -18,7 +18,6 @@ import (
 //Archive 压缩包名称
 var Archive = "login.static.zip"
 var staticOpts = []static.Option{
-	static.WithAssetsPath(Archive),
 	static.WithAutoRewrite(),
 }
 
@@ -58,7 +57,7 @@ func devConf() {
 
 	//登录的界面配置
 	hydra.Conf.Web("6687", api.WithTimeout(300, 300), api.WithDNS("ssov4.100bm0.com")).
-		Static(staticOpts...).
+		Static(append(staticOpts, static.WithAssetsPath(Archive))...).
 		Header(header.WithCrossDomain(), header.WithAllowHeaders("X-Requested-With", "Content-Type")).
 		Jwt(jwt.WithMode("HS512"),
 			jwt.WithSecret("bf8f3171946d8d5a13cca23aa6080c8e"),
@@ -90,7 +89,7 @@ func prodConf() {
 		APIKEY("ivk:///check_sign", apikey.WithInvoker("ivk:///check_sign"))
 
 	hydra.Conf.Web(conf.ByInstall, api.WithTimeout(300, 300), api.WithDNS("login.sso.18jiayou.com")).
-		Static(staticOpts...).
+		Static(append(staticOpts, static.WithAssetsPath(Archive))...).
 		Jwt(jwt.WithMode("HS512"),
 			jwt.WithSecret("f0abd74b09bcc61449d66ae5d8128c18"),
 			jwt.WithExpireAt(36000),

@@ -3,6 +3,7 @@ package sso
 import (
 	"github.com/micro-plat/hydra"
 	"github.com/micro-plat/lib4go/errs"
+
 	//"github.com/micro-plat/sso/sso/errorcode"
 	"net/http"
 )
