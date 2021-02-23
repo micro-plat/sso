@@ -11,14 +11,6 @@ echo ""
 
 
 
-echo "0. 检查 go-bindata " 
-which go-bindata > /dev/null
-if [ $? -ne 0 ]; then
- 	echo "go-bindata 未安装"
-	echo "请到https://github.com/go-bindata/go-bindata.git下载安装"
-	exit 1	  
-fi 
-
 
 cd $rootdir/loginserver/loginweb
 
@@ -42,23 +34,16 @@ mkdir -p ${rootdir}/out
 
 mv $filename ${rootdir}/out/
 sleep 0.1
-
-echo "3. 生成资源文件:loginserver/static.go"
-
+ 
 
 rm -f ${rootdir}/loginserver/static.go
 rm -f ${rootdir}/loginserver/web.go
 
-
+echo "3. 生成资源文件:loginserver/web.go"
 if [ "$pkg" != "none" ] ; then 
 	echo "3.1. 整合$filename文件"
-	cd ${rootdir}/out
-	go-bindata -o=${rootdir}/loginserver/static.go -pkg=main  $filename > /dev/null
-	if [ $? -ne 0 ]; then
-		echo "go-bindata 整合static出错"
-		exit 1
-	fi 
-	sh $rootdir/build/empty.asset.sh ${rootdir}/loginserver 
+	cp  ${rootdir}/out/$filename  $rootdir/loginserver
+	sh $rootdir/build/empty.asset.sh ${rootdir}/loginserver $filename
 
 fi
 echo ""

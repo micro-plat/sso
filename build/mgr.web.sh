@@ -36,19 +36,14 @@ sleep 0.1
 rm -f ${rootdir}/mgrserver/static.go
 rm -f ${rootdir}/mgrserver/web.go
 
-echo "3. 生成资源文件:loginserver/loginapi/web/static.go" 
+echo "3. 生成资源文件:mgrserver/web.go" 
 if [ "$pkg" != "none" ] ; then 
 	echo "3.1. 整合$filename文件"
-	sleep 0.1
-	cd $rootdir/out
-	go-bindata -o=${rootdir}/mgrserver/static.go -pkg=main $filename > /dev/null
-	if [ $? -ne 0 ]; then
-		echo "go-bindata 整合static出错"
-		exit 1
-	fi
-	sh $rootdir/build/empty.asset.sh ${rootdir}/mgrserver 
-fi
+	cp  ${rootdir}/out/$filename  $rootdir/mgrserver
+	sh $rootdir/build/empty.asset.sh ${rootdir}/mgrserver $filename
 
+fi
+ 
 echo ""
 echo "---------打包mgrserver(mgrweb)-success------------------" 
 echo ""
