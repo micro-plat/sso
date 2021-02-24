@@ -15,3 +15,7 @@ out/
 
 /mgrserver/static.go
 /mgrserver/web.go
+
+/loginserver/*.zip
+/mgrserver/*.zip
+
