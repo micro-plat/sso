@@ -76,10 +76,9 @@ func prodConf() {
 			jwt.WithExcludes("/sso/login/verify", "/image/upload", "/dds/dictionary/get")).
 		Processor(processor.WithServicePrefix("/ssoapi")).
 		Sub("app", &model.Conf{
-			PicHost:    "http://bj.images.18jiayou.com",
+			PicHost:    conf.ByInstall,
 			Secret:     "B128F779D5741E701923346F7FA9F95C",
-			SSOApiHost: "http://api.sso.18jiayou.com",
+			SSOApiHost: conf.ByInstall,
 			Ident:      "sso",
 		})
-
 }

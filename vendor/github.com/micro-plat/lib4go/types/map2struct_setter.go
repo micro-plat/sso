@@ -50,6 +50,7 @@ func SetWithProperType(val interface{}, value reflect.Value, field reflect.Struc
 	case reflect.Float64:
 		return setFloatField(fmt.Sprint(val), 64, value)
 	case reflect.String:
+		fmt.Println("setstring:", val, value, value.Type(), value.Interface(), value.CanAddr())
 		value.SetString(fmt.Sprint(val))
 	case reflect.Struct, reflect.Slice, reflect.Array, reflect.Ptr:
 		switch value.Interface().(type) {
