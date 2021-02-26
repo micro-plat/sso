@@ -130,7 +130,7 @@ export default {
   },
   methods: {
     back: function() {
-      this.$router.push({path: '/pages/role/index'})
+      this.$router.push({path: '/role/index'})
     }, 
     //保存数据权限
     saveAuth: function() {

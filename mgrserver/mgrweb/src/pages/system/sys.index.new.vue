@@ -1164,14 +1164,14 @@ export default {
         });
     },
     manage(id, ident) {
-      this.$emit("addTab", "菜单配置(" + ident + ")", "/pages/sys/index/func?id=" + id);
+      this.$emit("addTab", "菜单配置(" + ident + ")", "/sys/index/func?id=" + id);
     },
     //管理数据权限数据
     managePermission(id, ident) {
       this.$emit(
         "addTab",
         "数据规则配置(" + ident + ")",
-        "/pages/sys/index/datapermission?id=" + id
+        "/sys/index/datapermission?id=" + id
       );
 
       // this.$router.push({

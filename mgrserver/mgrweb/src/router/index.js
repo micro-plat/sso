@@ -28,34 +28,34 @@ export default new Router({
       name:"用户权限系统"
     },
     children: [{
-      path: 'pages/user/index',
+      path: 'user/index',
       name: 'userindex',
       component: userindex
     }, {
-      path: "pages/sys/index",
+      path: "sys/index",
       name: "sysindex",
       component: sysindex
     }, {
-      path: "pages/sys/index/func",
+      path: "sys/index/func",
       name: "sysfunc",
       component: sysfunc
     },
     {
-      path: "pages/sys/index/datapermission",
+      path: "sys/index/datapermission",
       name: "datapermission",
       component: datapermission
     },
     {
-      path: 'pages/role/index',
+      path: 'role/index',
       name: 'userrole',
       component: roleindex
     }, {
-      path: 'pages/role/index/auth',
+      path: 'role/index/auth',
       name: 'roleauth',
       component: roleauth
     },
     {
-      path: 'pages/role/index/dataauth',
+      path: 'role/index/dataauth',
       name: 'dataauth',
       component: dataauth
     }

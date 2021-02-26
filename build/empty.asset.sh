@@ -20,7 +20,7 @@ var archiveBytes []byte
 
 func init() {
 	hydra.OnReady(func() {
-		staticOpts = append(staticOpts, static.WithEmbedBytes(Archive, archiveBytes))
+		staticOpts = append(staticOpts,static.WithAutoRewrite(), static.WithEmbedBytes(Archive, archiveBytes))
 		hydra.Conf.GetWeb().Static(staticOpts...)
 	})
 }

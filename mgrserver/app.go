@@ -10,7 +10,9 @@ import (
 	_ "github.com/micro-plat/sso/mgrserver/mgrapi/dds"
 	_ "github.com/micro-plat/sso/mgrserver/mgrapi/modules/const/sqls/mysql"
 	"github.com/micro-plat/sso/mgrserver/mgrapi/modules/model"
+
 	//cmodel "github.com/micro-plat/sso/mgrserver/mgrapi/modules/model"
+	"github.com/micro-plat/sso/mgrserver/mgrapi/dds"
 	"github.com/micro-plat/sso/mgrserver/mgrapi/services/base"
 	"github.com/micro-plat/sso/mgrserver/mgrapi/services/function"
 	"github.com/micro-plat/sso/mgrserver/mgrapi/services/image"
@@ -18,7 +20,6 @@ import (
 	"github.com/micro-plat/sso/mgrserver/mgrapi/services/role"
 	"github.com/micro-plat/sso/mgrserver/mgrapi/services/system"
 	"github.com/micro-plat/sso/mgrserver/mgrapi/services/user"
-	"github.com/micro-plat/sso/mgrserver/mgrapi/dds"
 	ssoSdk "github.com/micro-plat/sso/sso"
 )
 
@@ -71,7 +72,7 @@ func checkMgrConf(appConf app.IAPPConf) error {
 	if err := ssoSdk.Config(conf.SsoApiHost, conf.Ident, conf.Secret, ssoSdk.WithAuthorityIgnore("/dds/*", "/base/**")); err != nil {
 		return err
 	}
-	dds.Config( )
+	dds.Config()
 
 	return nil
 

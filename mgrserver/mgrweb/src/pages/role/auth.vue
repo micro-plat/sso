@@ -115,7 +115,7 @@ export default {
 
     },
     back: function () {
-      this.$router.push({ path: "/pages/role/index" });
+      this.$router.push({ path: "/role/index" });
     },
     saveAuth: function () {
       this.selectAuth = [];

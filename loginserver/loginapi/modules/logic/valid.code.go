@@ -6,6 +6,8 @@ import (
 	"strings"
 
 	"github.com/lib4dev/vcs"
+	"github.com/lib4dev/vcs/structs"
+
 	"github.com/micro-plat/hydra"
 	"github.com/micro-plat/hydra/components/uuid"
 	"github.com/micro-plat/lib4go/errs"
@@ -38,7 +40,7 @@ func (l *ValidCodeLogic) SendSmsCode(userInfo types.XMap, ident, validCode strin
 	}
 
 	reqID := uuid.GetSUUID("validcode").Get().ToString("SSO")
-	params := &vcs.SendRequest{
+	params := &structs.SendRequest{
 		ReqID:       reqID,
 		Ident:       ident,
 		UserAccount: userInfo.GetString("mobile"),
@@ -72,7 +74,7 @@ func (l *ValidCodeLogic) SendWechatCode(userInfo types.XMap, ident, validCode st
 
 	loginCfg := model.GetLoginConf()
 	reqID := uuid.GetSUUID("validcode").Get().ToString("SSO")
-	params := &vcs.SendRequest{
+	params := &structs.SendRequest{
 		ReqID:       reqID,
 		Ident:       ident,
 		UserAccount: userInfo.GetString("wx_openid"),
