@@ -6,6 +6,7 @@ import (
 	"github.com/micro-plat/hydra/conf/server/auth/apikey"
 	"github.com/micro-plat/hydra/conf/server/auth/jwt"
 	"github.com/micro-plat/hydra/conf/server/header"
+	"github.com/micro-plat/hydra/conf/server/processor"
 	"github.com/micro-plat/hydra/conf/server/static"
 	"github.com/micro-plat/hydra/conf/vars/cache/cacheredis"
 	"github.com/micro-plat/hydra/conf/vars/db"
@@ -64,7 +65,8 @@ func devConf() {
 			jwt.WithExpireAt(36000),
 			jwt.WithHeader(),
 			jwt.WithExcludes("/dds/dictionary/get", "/loginweb/system/config/get", "/loginweb/member/login", "/loginweb/member/bind/*", "/loginweb/member/sendcode"),
-		)
+		).
+		Processor(processor.WithServicePrefix("/ssoapi"))
 
 }
 
@@ -95,6 +97,7 @@ func prodConf() {
 			jwt.WithExpireAt(36000),
 			jwt.WithHeader(),
 			jwt.WithExcludes("/dds/dictionary/get", "/loginweb/system/config/get", "/loginweb/member/login", "/loginweb/member/bind/*", "/loginweb/member/sendcode"),
-		)
+		).
+		Processor(processor.WithServicePrefix("/ssoapi"))
 
 }

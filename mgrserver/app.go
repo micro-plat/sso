@@ -69,7 +69,7 @@ func checkMgrConf(appConf app.IAPPConf) error {
 		return err
 	}
 	//
-	if err := ssoSdk.Config(conf.SsoApiHost, conf.Ident, conf.Secret, ssoSdk.WithAuthorityIgnore("/dds/*", "/base/**")); err != nil {
+	if err := ssoSdk.Config(conf.SSOApiHost, conf.Ident, conf.Secret, ssoSdk.WithAuthorityIgnore("/dds/**", "/base/**")); err != nil {
 		return err
 	}
 	dds.Config()

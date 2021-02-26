@@ -6,6 +6,7 @@ import (
 	"github.com/micro-plat/hydra/conf/server/api"
 	"github.com/micro-plat/hydra/conf/server/auth/jwt"
 	"github.com/micro-plat/hydra/conf/server/header"
+	"github.com/micro-plat/hydra/conf/server/processor"
 	"github.com/micro-plat/hydra/conf/server/static"
 	"github.com/micro-plat/hydra/conf/vars/cache/cacheredis"
 	"github.com/micro-plat/hydra/conf/vars/db"
@@ -49,13 +50,13 @@ func devConf() {
 			jwt.WithExpireAt(36000),
 			jwt.WithHeader(),
 			jwt.WithExcludes("/sso/login/verify", "/image/upload", "/dds/dictionary/get")).
-		Sub("app", model.Conf{
+		Processor(processor.WithServicePrefix("/ssoapi")).
+		Sub("app", &model.Conf{
 			PicHost:    "https://static.100bm.cn",
 			Secret:     "B128F779D5741E701923346F7FA9F95C",
-			SsoApiHost: "http://ssov4.100bm0.com:6689",
+			SSOApiHost: "http://ssov4.100bm0.com:6689",
 			Ident:      "sso",
 		})
-
 }
 
 //生产环境配置
@@ -66,17 +67,18 @@ func prodConf() {
 	hydra.Conf.Vars().DB().MySQLByConnStr("db", conf.ByInstall, db.WithConnect(20, 10, 600))
 	hydra.Conf.Vars().Cache().Redis("redis", conf.ByInstall, cacheredis.WithDbIndex(1))
 
-	hydra.Conf.Web(conf.ByInstall, api.WithDNS("http://web.sso.18jiayou.com")).
+	hydra.Conf.Web(conf.ByInstall, api.WithDNS(conf.ByInstall)).
 		Static(append(staticOpts, static.WithAssetsPath(Archive))...).
 		Jwt(jwt.WithMode("HS512"),
 			jwt.WithSecret("bf8f3171946d8d5a13cca23aa6080c8e"),
 			jwt.WithExpireAt(36000),
 			jwt.WithHeader(),
 			jwt.WithExcludes("/sso/login/verify", "/image/upload", "/dds/dictionary/get")).
-		Sub("app", model.Conf{
+		Processor(processor.WithServicePrefix("/ssoapi")).
+		Sub("app", &model.Conf{
 			PicHost:    "http://bj.images.18jiayou.com",
 			Secret:     "B128F779D5741E701923346F7FA9F95C",
-			SsoApiHost: "http://api.sso.18jiayou.com",
+			SSOApiHost: "http://api.sso.18jiayou.com",
 			Ident:      "sso",
 		})
 
