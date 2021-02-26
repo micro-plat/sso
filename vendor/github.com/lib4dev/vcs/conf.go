@@ -27,9 +27,9 @@ func WithSmsConfig(c *conf.SmsCodeConf) Option {
 }
 
 //WithCacheConfig 缓存配置
-func WithCacheConfig(cacheName, httpName string) Option {
+func WithCacheConfig(cacheName, remoteName string) Option {
 	return func() {
-		conf.Config(cacheName, httpName)
+		conf.Config(cacheName, remoteName)
 	}
 }
 

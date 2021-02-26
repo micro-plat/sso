@@ -125,7 +125,7 @@ type Image struct {
 }
 
 func init() {
-	rand.Seed(int64(time.Second))
+	rand.Seed(time.Now().UnixNano())
 
 }
 

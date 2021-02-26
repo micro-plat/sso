@@ -1,4 +1,4 @@
-package smscode
+package structs
 
 import (
 	"fmt"

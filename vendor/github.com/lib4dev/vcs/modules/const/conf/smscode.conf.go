@@ -2,6 +2,7 @@ package conf
 
 import (
 	"fmt"
+	"strings"
 
 	"github.com/asaskevich/govalidator"
 )
@@ -20,6 +21,11 @@ func (c *SmsCodeConf) Valid() error {
 		return fmt.Errorf("SmsCodeConf 配置有误:%v", err)
 	}
 	return nil
+}
+
+func (c *SmsCodeConf) IsHTTP() bool {
+	return strings.HasPrefix(c.SmsCodeSendRequestURL, "http://") ||
+		strings.HasPrefix(c.SmsCodeSendRequestURL, "https://")
 }
 
 func NewSmsCodeConf() *SmsCodeConf {

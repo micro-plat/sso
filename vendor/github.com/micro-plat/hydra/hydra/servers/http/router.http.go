@@ -14,7 +14,8 @@ func (s *Server) addHttpRouters(routers ...*router.Router) {
 	}
 	s.engine = gin.New()
 	s.engine.Use(middleware.Recovery().GinFunc(s.serverType))
-	s.engine.Use(middleware.Logging().GinFunc()) //记录请求日志
+	s.engine.Use(middleware.Logging().GinFunc())   //记录请求日志
+	s.engine.Use(middleware.Processor().GinFunc()) //前缀处理
 	s.engine.Use(middleware.Recovery().GinFunc())
 	s.engine.Use(s.metric.Handle().GinFunc()) //生成metric报表
 	// s.engine.Use(middleware.APM().GinFunc())       //链数跟踪
@@ -25,8 +26,8 @@ func (s *Server) addHttpRouters(routers ...*router.Router) {
 	s.engine.Use(middleware.Delay().GinFunc())     //
 	s.engine.Use(middleware.Limit().GinFunc())     //限流处理
 	s.engine.Use(middleware.Header().GinFunc())    //设置请求头
-	s.engine.Use(middleware.Options().GinFunc())   //处理option响应
 	s.engine.Use(middleware.Static().GinFunc())    //处理静态文件
+	s.engine.Use(middleware.Options().GinFunc())   //处理option响应
 	s.engine.Use(middleware.BasicAuth().GinFunc()) //
 	s.engine.Use(middleware.APIKeyAuth().GinFunc())
 	s.engine.Use(middleware.RASAuth().GinFunc())
@@ -44,7 +45,7 @@ func (s *Server) addHttpRouters(routers ...*router.Router) {
 func (s *Server) addRouter(routers ...*router.Router) {
 	for _, router := range routers {
 		for _, method := range router.Action {
-			s.engine.Handle(strings.ToUpper(method), router.Path, middleware.ExecuteHandler(router.Service).GinFunc())
+			s.engine.Handle(strings.ToUpper(method), router.RealPath, middleware.ExecuteHandler(router.Service).GinFunc())
 		}
 	}
 }

@@ -111,6 +111,7 @@ github.com/lib4dev/vcs/modules/const/errorcode
 github.com/lib4dev/vcs/modules/imgcode
 github.com/lib4dev/vcs/modules/smscode
 github.com/lib4dev/vcs/modules/util
+github.com/lib4dev/vcs/structs
 # github.com/lunixbochs/vtclean v0.0.0-20180621232353-2d01aacdc34a
 github.com/lunixbochs/vtclean
 # github.com/manifoldco/promptui v0.8.0
@@ -173,6 +174,7 @@ github.com/micro-plat/hydra/conf/server/cron
 github.com/micro-plat/hydra/conf/server/header
 github.com/micro-plat/hydra/conf/server/metric
 github.com/micro-plat/hydra/conf/server/mqc
+github.com/micro-plat/hydra/conf/server/processor
 github.com/micro-plat/hydra/conf/server/queue
 github.com/micro-plat/hydra/conf/server/render
 github.com/micro-plat/hydra/conf/server/router

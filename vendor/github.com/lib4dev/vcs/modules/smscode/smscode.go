@@ -2,6 +2,7 @@ package smscode
 
 import (
 	"github.com/lib4dev/vcs/modules/const/conf"
+	"github.com/lib4dev/vcs/structs"
 	"github.com/micro-plat/hydra/components"
 	"github.com/micro-plat/lib4go/types"
 )
@@ -26,7 +27,7 @@ func NewCode() (*Code, error) {
 
 }
 
-func (s *Code) Send(info *SendRequest, platName string) (result types.XMap, err error) {
+func (s *Code) Send(info *structs.SendRequest, platName string) (result types.XMap, err error) {
 
 	//1.验证参数
 	if err = info.Valid(); err != nil {
