@@ -88,6 +88,14 @@ func (u *SystemLogic) ChangeStatus(sysID int, status int) (err error) {
 
 //Edit 编辑系统
 func (u *SystemLogic) Edit(input *model.SystemEditInput) (err error) {
+	count, err := u.db.ExistsNameOrIdent(input.Name, input.Ident)
+	if err != nil {
+		return err
+	}
+	if count > 0 {
+		return errs.NewError(errorcode.ERR_SYS_NAMEORIDENTEXISTS, "系统名称和英文名称已存在")
+	}
+
 	if err = u.db.Edit(input); err != nil {
 		return
 	}

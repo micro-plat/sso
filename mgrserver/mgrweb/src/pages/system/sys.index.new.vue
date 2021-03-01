@@ -1123,7 +1123,7 @@ export default {
     },
     editPost() {
       let str = "";
-      let edit = this.editData;
+      let edit = Object.assign({}, this.editData);
       this.editData.layout.forEach((item, index) => {
         str += item + " ";
       });
@@ -1154,6 +1154,16 @@ export default {
           });
         })
         .catch(err => {
+          if (err.response && err.response.status == 911) {
+            this.$notify({
+              title: "失败",
+              message: "系统名称或英文名称已存在",
+              type: "error",
+              offset: 50,
+              duration: 2000
+            });
+            return
+          }
           this.$notify({
             title: "错误",
             message: "网络错误,请稍后再试",

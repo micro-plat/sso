@@ -98,6 +98,12 @@ func (m *LoginLogic) ChangePwd(userID int, expassword string, newpassword string
 	if err != nil {
 		return err
 	}
+	if userInfo.GetInt("status") != enum.UserNormal {
+		if userInfo.GetInt("status") == enum.UserLock {
+			return errs.NewError(errorcode.ERR_USER_LOCKED, "用户被锁定，请联系管理员")
+		}
+		return errs.NewError(errorcode.ERR_USER_FORBIDDEN, "用户被禁用，请联系管理员")
+	}
 
 	if strings.EqualFold(strings.ToLower(expassword), strings.ToLower(data.Get(0).GetString("password"))) {
 		m.cache.SetLoginSuccess(userInfo.GetString("user_name"))

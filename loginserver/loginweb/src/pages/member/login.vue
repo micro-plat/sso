@@ -54,26 +54,8 @@
 
         codeLabel:this.$env.conf.system.codeLabel,
         codeHolder:this.$env.conf.system.codeHolder,
-        sendBtnLabel:this.$env.conf.system.sendBtnLabel,
-
-
-        errorTemplate:{
-            901: "系统被锁定,不能登录",
-            902: "用户被锁定,不能登录",
-            903: "用户被禁用,不能登录",
-            905: "用户不存在",
-            906: "没有相关系统权限,不能登录",
-            907: "用户名或密码错误",
-            912: "请先绑定手机号",
-            913: "验证码不能为空",
-            914: "验证码过期或不存在,重新发送验证码",
-            915: "验证码错误",
-            922: "密码错误,还有5次机会",
-            923: "密码错误,还有4次机会",
-            924: "密码错误,还有3次机会",
-            925: "密码错误,还有2次机会",
-            926: "密码错误,还有1次机会"
-          }
+        sendBtnLabel:this.$env.conf.system.sendBtnLabel, 
+        errorTemplate:this.$env.conf.system.errcodeTemplate       
       }
     },
     components:{ 
