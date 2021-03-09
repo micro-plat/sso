@@ -10,10 +10,10 @@ import (
 )
 
 //ExecuteHandler 业务处理Handler
-func ExecuteHandler(service string) Handler {
+func ExecuteHandler() Handler {
 	return func(ctx IMiddleContext) {
+		service := ctx.Request().Path().GetService()
 		//检查是否被限流
-		ctx.Service(service) //保存服务信息
 		if ctx.Request().Path().IsLimited() {
 			//降级处理
 			fallback(ctx, service)
@@ -34,8 +34,10 @@ func ExecuteHandler(service string) Handler {
 			return
 		}
 
-		//处理本地服务调用
-		if services.Def.Has(ctx.APPConf().GetServerConf().GetServerType(), service, ctx.Request().Path().GetMethod()) {
+		serverType := ctx.APPConf().GetServerConf().GetServerType()
+		method := ctx.Request().Path().GetMethod()
+
+		if services.Def.Has(serverType, service, method) {
 			result := services.Def.Call(ctx, service)
 			ctx.Response().WriteAny(result)
 			return

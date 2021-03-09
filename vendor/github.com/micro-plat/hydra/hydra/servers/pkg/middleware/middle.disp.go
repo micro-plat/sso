@@ -23,6 +23,7 @@ func (b *buffer) Close() error {
 	return nil
 }
 
+//NewDispCtx NewDispCtx
 func NewDispCtx() *dispCtx {
 	return &dispCtx{Context: &dispatcher.Context{}}
 }
@@ -150,11 +151,6 @@ func (g *dispCtx) ServeContent(filepath string, fs http.FileSystem) int {
 	return http.StatusOK
 }
 
-//
 func (g *dispCtx) GetRouterPath() string {
-	return g.Context.Request.GetService()
-}
-
-func (g *dispCtx) ServicePrefix(prefix string) {
-	g.servicePrefix = prefix
+	return g.Context.FullPath()
 }

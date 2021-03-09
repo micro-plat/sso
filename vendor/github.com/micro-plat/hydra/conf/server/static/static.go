@@ -34,11 +34,13 @@ type Static struct {
 	unrewriteMatch *conf.PathMatch       `json:"-"`
 	fs             IFS                   `json:"-"`
 	gzipfileMap    map[string]gzFileInfo `json:"-"`
+	serverType     string
 }
 
 //New 构建静态文件配置信息
-func New(opts ...Option) *Static {
+func New(serverType string, opts ...Option) *Static {
 	a := &Static{
+		serverType:  serverType,
 		HomePage:    DefaultHome,
 		Excludes:    DefaultExclude,
 		Unrewrites:  DefaultUnrewrite,
@@ -64,6 +66,21 @@ func (s *Static) Has(name string) bool {
 		return true
 	}
 	if s.AutoRewrite && !s.IsUnrewrite(name) {
+		return true
+	}
+	return false
+}
+
+//OptionsCheck 检查文件是否存在
+func (s *Static) OptionsCheck(name string) bool {
+	if s.fs == nil {
+		return false
+	}
+	//排除内容
+	if s.IsExclude(name) {
+		return false
+	}
+	if s.fs.Has(name) {
 		return true
 	}
 	return false
@@ -126,10 +143,17 @@ func (s *Static) AllowRequest(m string) bool {
 
 //GetConf 设置static
 func GetConf(cnf conf.IServerConf) (*Static, error) {
-	static := New()
+	static := New(cnf.GetServerType())
 	_, err := cnf.GetSubObject(TypeNodeName, static)
-	if err != nil && !errors.Is(err, conf.ErrNoSetting) {
+	if err != nil {
+		if errors.Is(err, conf.ErrNoSetting) {
+			static.Disable = true
+			return static, nil
+		}
 		return nil, fmt.Errorf("static配置格式有误:%v", err)
+	}
+	if static.Disable {
+		return static, nil
 	}
 	static.unrewriteMatch = conf.NewPathMatch(static.Unrewrites...)
 	//转换配置文件
@@ -139,7 +163,9 @@ func GetConf(cnf conf.IServerConf) (*Static, error) {
 	}
 	if fs == nil {
 		//转换本地内嵌文件
-		fs, err = defEmbedFs.getFileEmbed()
+		if nfs, ok := defEmbedFs[static.serverType]; ok {
+			fs, err = nfs.getFileEmbed()
+		}
 	}
 	if err != nil {
 		return nil, err

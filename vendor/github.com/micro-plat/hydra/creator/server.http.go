@@ -13,6 +13,7 @@ import (
 	"github.com/micro-plat/hydra/conf/server/auth/jwt"
 	"github.com/micro-plat/hydra/conf/server/auth/ras"
 	"github.com/micro-plat/hydra/conf/server/header"
+	"github.com/micro-plat/hydra/conf/server/processor"
 	"github.com/micro-plat/hydra/conf/server/render"
 	"github.com/micro-plat/hydra/conf/server/static"
 )
@@ -84,7 +85,7 @@ func (b *httpBuilder) Header(opts ...header.Option) *httpBuilder {
 
 //Static 静态文件配置
 func (b *httpBuilder) Static(opts ...static.Option) *httpBuilder {
-	b.BaseBuilder[static.TypeNodeName] = static.New(opts...)
+	b.BaseBuilder[static.TypeNodeName] = static.New(b.tp, opts...)
 	return b
 }
 
@@ -105,5 +106,11 @@ func (b *httpBuilder) Proxy(script string) *httpBuilder {
 //Render 响应渲染配置
 func (b *httpBuilder) Render(script string) *httpBuilder {
 	b.BaseBuilder[render.TypeNodeName] = script
+	return b
+}
+
+//Processor 构建APM配置
+func (b *httpBuilder) Processor(opts ...processor.Option) *httpBuilder {
+	b.BaseBuilder[processor.TypeNodeName] = processor.New(opts...)
 	return b
 }

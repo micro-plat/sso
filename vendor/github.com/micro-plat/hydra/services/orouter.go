@@ -13,16 +13,16 @@ import (
 )
 
 //API  路由信息
-var API = NewORouter()
+var API = NewORouter("API")
 
 //WEB web服务的路由信息
-var WEB = NewORouter()
+var WEB = NewORouter("WEB")
 
 //WS web socket路由信息
-var WS = NewORouter()
+var WS = NewORouter("WS")
 
 //RPC rpc服务的路由信息
-var RPC = NewORouter()
+var RPC = NewORouter("RPC")
 
 //GetRouter 获取服务器的路由配置
 func GetRouter(tp string) *ORouter {
@@ -40,19 +40,23 @@ func GetRouter(tp string) *ORouter {
 	}
 }
 
+//ORouter ORouter
 type ORouter struct {
+	name        string
 	routers     *router.Routers
 	pathRouters map[string]*pathRouter
 }
 
 //NewORouter 构建路由管理器
-func NewORouter() *ORouter {
+func NewORouter(name string) *ORouter {
 	return &ORouter{
+		name:        name,
 		routers:     router.NewRouters(),
 		pathRouters: make(map[string]*pathRouter),
 	}
 }
 
+//Add 添加路由
 func (s *ORouter) Add(path string, service string, action []string, opts ...interface{}) error {
 	if _, ok := s.pathRouters[path]; !ok {
 		s.pathRouters[path] = newPathRouter(path)
@@ -63,18 +67,41 @@ func (s *ORouter) Add(path string, service string, action []string, opts ...inte
 	return nil
 }
 
-//GetRouters 获取所有路由配置
-func (s *ORouter) GetRouters() (*router.Routers, error) {
-	if len(s.routers.Routers) != 0 {
-		return s.routers, nil
-	}
-	for _, p := range s.pathRouters {
-		routers, err := p.GetRouters()
+//BuildRouters 根据前缀处理路由数据
+func (s *ORouter) BuildRouters(prefix string) (*router.Routers, error) {
+	s.routers = router.NewRouters()
+	s.routers.ServicePrefix = prefix
+	for _, prouter := range s.pathRouters {
+		routers, err := prouter.GetRouters()
 		if err != nil {
 			return nil, err
 		}
-		s.routers.Routers = append(s.routers.Routers, routers...)
+		tmplist := make([]*router.Router, len(routers))
+		for i, r := range routers {
+			var t = *r
+			tmplist[i] = &t
+			tmplist[i].Path = fmt.Sprintf("%s%s", prefix, r.Path)
+			s.fillActs(tmplist[i])
+		}
+		s.routers.Routers = append(s.routers.Routers, tmplist...)
 	}
+
+	return s.routers, nil
+}
+
+func (s *ORouter) fillActs(r *router.Router) {
+	array, ok := s.routers.MapPath[r.Path]
+	if !ok {
+		array = make(map[string]string)
+	}
+	for i := range r.Action {
+		array[r.Action[i]] = r.Service
+	}
+	s.routers.MapPath[r.Path] = array
+}
+
+//GetRouters 获取所有路由配置
+func (s *ORouter) GetRouters() (*router.Routers, error) {
 	return s.routers, nil
 }
 

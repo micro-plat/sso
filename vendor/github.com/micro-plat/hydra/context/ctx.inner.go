@@ -15,7 +15,6 @@ type IInnerContext interface {
 	GetHeaders() http.Header    //Request.Header
 	GetCookies() []*http.Cookie //Request.Cookies()
 	GetParams() map[string]interface{}
-	GetRouterPath() string //Context.FullPath()
 	GetPostForm() url.Values
 	GetRawForm() map[string]interface{}
 	ContentType() string
@@ -30,7 +29,7 @@ type IInnerContext interface {
 	ServeContent(filepath string, fs http.FileSystem) int
 	Data(int, string, []byte) //c.Context.Data(status, tpName, v)
 	Redirect(int, string)
-	GetService() string
+	GetRouterPath() string
 	GetFile(fileKey string) (string, io.ReadCloser, int64, error)
 	GetHTTPReqResp() (*http.Request, http.ResponseWriter)
 	ClearAuth(c ...bool) bool

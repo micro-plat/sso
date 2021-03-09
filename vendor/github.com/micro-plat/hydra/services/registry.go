@@ -262,8 +262,11 @@ func (s *regist) OnHandleExecuted(h context.Handler, tps ...string) {
 }
 
 //Has 服务器是否注册了某个服务
-func (s *regist) Has(serverType string, service string, method string) (ok bool) {
-	return s.get(serverType).Has(service) || s.get(serverType).Has(registry.Join(service, "$"+strings.ToLower(method)))
+func (s *regist) Has(serverType string, service, method string) (ok bool) {
+	if s.get(serverType).Has(service) {
+		return true
+	}
+	return s.get(serverType).Has(fmt.Sprintf("%s$%s", service, method))
 }
 
 //GetHandleExecutings 获取handle预处理勾子

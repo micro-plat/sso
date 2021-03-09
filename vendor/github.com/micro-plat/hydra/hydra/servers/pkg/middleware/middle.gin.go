@@ -5,7 +5,6 @@ import (
 	"net/http"
 	"net/url"
 	"os"
-	"strings"
 	"sync"
 
 	"github.com/gin-gonic/gin"
@@ -15,10 +14,9 @@ import (
 
 type ginCtx struct {
 	*gin.Context
+	tp            string
 	once          sync.Once
-	service       string
 	needClearAuth bool
-	servicePrefix string
 }
 
 func NewGinCtx(c *gin.Context) *ginCtx {
@@ -41,19 +39,9 @@ func (g *ginCtx) GetParams() map[string]interface{} {
 }
 
 func (g *ginCtx) GetRouterPath() string {
-	path := g.Context.FullPath()
-	if g.servicePrefix != "" {
-		path = strings.TrimPrefix(path, g.servicePrefix)
-	}
-	return path
+	return g.Context.FullPath()
 }
 
-func (g *ginCtx) GetService() string {
-	return g.service
-}
-func (g *ginCtx) Service(service string) {
-	g.service = service
-}
 func (g *ginCtx) GetBody() io.ReadCloser {
 	g.load()
 	return g.Request.Body
@@ -157,14 +145,6 @@ func (g *ginCtx) ServeContent(filepath string, fs http.FileSystem) (status int) 
 	http.ServeContent(g.Writer, g.Request, filepath, d.ModTime(), f)
 	status = g.Writer.Status()
 	return
-}
-
-func (g *ginCtx) ServicePrefix(prefix string) {
-	g.servicePrefix = prefix
-	if prefix != "" && g.Request.URL != nil {
-		g.Request.URL.Path = strings.TrimPrefix(g.Request.URL.Path, prefix)
-		g.Request.URL.RawPath = strings.TrimPrefix(g.Request.URL.RawPath, prefix)
-	}
 }
 
 func toHTTPError(err error) int {

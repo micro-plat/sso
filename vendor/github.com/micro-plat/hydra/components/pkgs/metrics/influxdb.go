@@ -223,8 +223,8 @@ func (r *reporter) send() error {
 					"m1":      ms.Rate1(),
 					"m5":      ms.Rate5(),
 					"m15":     ms.Rate15(),
-					"mean":    ms.RateMean(),
-					"fstatus": types.GetInt64(tags["status"]),
+					"mean":    types.GetInt64(fmt.Sprintf("%.f", ms.RateMean())),
+					"fstatus": types.GetInt32(tags["status"]),
 				},
 				Time: now,
 			})
