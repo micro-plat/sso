@@ -59,6 +59,13 @@ func init() {
 }
 
 func checkMgrConf(appConf app.IAPPConf) error {
+	proc, err := appConf.GetProcessorConf()
+	if err != nil {
+		return err
+	}
+
+	prefix := proc.ServicePrefix
+
 	//检查配置信息
 	var conf model.Conf
 	if _, err := appConf.GetServerConf().GetSubObject("app", &conf); err != nil {
@@ -69,7 +76,10 @@ func checkMgrConf(appConf app.IAPPConf) error {
 		return err
 	}
 	//
-	if err := ssoSdk.Config(conf.SSOApiHost, conf.Ident, conf.Secret, ssoSdk.WithAuthorityIgnore("/dds/**", "/base/**")); err != nil {
+	if err := ssoSdk.Config(conf.SSOApiHost,
+		conf.Ident,
+		conf.Secret,
+		ssoSdk.WithAuthIgnore(prefix, conf.AuthIgnores...)); err != nil {
 		return err
 	}
 	dds.Config()

@@ -50,10 +50,15 @@ func WithCahce(expireTime, clearupTime time.Duration) Option {
 	}
 }
 
-//WithAuthorityIgnore 忽略授权检查地址(可通配/*, /** 等)
-func WithAuthorityIgnore(urls ...string) Option {
+//WithAuthIgnore 忽略授权检查地址(可通配/*, /** 等)
+func WithAuthIgnore(prefix string, urls ...string) Option {
 	return func() {
-		authorityIgnoreURLs = append(urls, "/sso/**")
+		results := make([]string, 0, len(urls)+1)
+		for i := range urls {
+			results = append(results, fmt.Sprintf("%s%s", prefix, urls[i]))
+		}
+		results = append(results, fmt.Sprintf("%s%s", prefix, "/sso/**"))
+		authorityIgnoreURLs = results
 	}
 }
 

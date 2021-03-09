@@ -49,13 +49,14 @@ func devConf() {
 			jwt.WithSecret("bf8f3171946d8d5a13cca23aa6080c8e"),
 			jwt.WithExpireAt(36000),
 			jwt.WithHeader(),
-			jwt.WithExcludes("/sso/login/verify", "/image/upload", "/dds/dictionary/get")).
+			jwt.WithExcludes("/ssoapi/sso/login/verify", "/ssoapi/image/upload", "/ssoapi/dds/dictionary/get")).
 		Processor(processor.WithServicePrefix("/ssoapi")).
 		Sub("app", &model.Conf{
-			PicHost:    "https://static.100bm.cn",
-			Secret:     "B128F779D5741E701923346F7FA9F95C",
-			SSOApiHost: "http://ssov4.100bm0.com:6689",
-			Ident:      "sso",
+			PicHost:     "https://static.100bm.cn",
+			Secret:      "B128F779D5741E701923346F7FA9F95C",
+			SSOApiHost:  "http://ssov4.100bm0.com:6689",
+			AuthIgnores: []string{"/dds/**", "/base/**"},
+			Ident:       "sso",
 		})
 }
 
@@ -73,12 +74,13 @@ func prodConf() {
 			jwt.WithSecret("bf8f3171946d8d5a13cca23aa6080c8e"),
 			jwt.WithExpireAt(36000),
 			jwt.WithHeader(),
-			jwt.WithExcludes("/sso/login/verify", "/image/upload", "/dds/dictionary/get")).
+			jwt.WithExcludes("/ssoapi/sso/login/verify", "/ssoapi/image/upload", "/ssoapi/dds/dictionary/get")).
 		Processor(processor.WithServicePrefix("/ssoapi")).
 		Sub("app", &model.Conf{
-			PicHost:    conf.ByInstall,
-			Secret:     "B128F779D5741E701923346F7FA9F95C",
-			SSOApiHost: conf.ByInstall,
-			Ident:      "sso",
+			PicHost:     conf.ByInstall,
+			Secret:      "B128F779D5741E701923346F7FA9F95C",
+			SSOApiHost:  conf.ByInstall,
+			AuthIgnores: []string{"/dds/**", "/base/**"},
+			Ident:       "sso",
 		})
 }

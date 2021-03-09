@@ -64,7 +64,13 @@ func devConf() {
 			jwt.WithSecret("bf8f3171946d8d5a13cca23aa6080c8e"),
 			jwt.WithExpireAt(36000),
 			jwt.WithHeader(),
-			jwt.WithExcludes("/dds/dictionary/get", "/loginweb/system/config/get", "/loginweb/member/login", "/loginweb/member/bind/*", "/loginweb/member/sendcode"),
+			jwt.WithExcludes(
+				"/ssoapi/dds/dictionary/get",
+				"/ssoapi/loginweb/system/config/get",
+				"/ssoapi/loginweb/member/login",
+				"/ssoapi/loginweb/member/bind/*",
+				"/ssoapi/loginweb/member/sendcode",
+			),
 		).
 		Processor(processor.WithServicePrefix("/ssoapi"))
 
@@ -96,7 +102,13 @@ func prodConf() {
 			jwt.WithSecret("f0abd74b09bcc61449d66ae5d8128c18"),
 			jwt.WithExpireAt(36000),
 			jwt.WithHeader(),
-			jwt.WithExcludes("/dds/dictionary/get", "/loginweb/system/config/get", "/loginweb/member/login", "/loginweb/member/bind/*", "/loginweb/member/sendcode"),
+			jwt.WithExcludes(
+				"/ssoapi/dds/dictionary/get",
+				"/ssoapi/loginweb/system/config/get",
+				"/ssoapi/loginweb/member/login",
+				"/ssoapi/loginweb/member/bind/*",
+				"/ssoapi/loginweb/member/sendcode",
+			),
 		).
 		Processor(processor.WithServicePrefix("/ssoapi"))
 

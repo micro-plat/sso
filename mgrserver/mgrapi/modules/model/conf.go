@@ -11,10 +11,11 @@ import (
 
 //Conf 应用程序配置
 type Conf struct {
-	PicHost    string `json:"pic_host" valid:"required" label:"图片服务器域名"`
-	Secret     string `json:"secret" valid:"ascii,required" label:"SSO系统签名秘钥"`
-	SSOApiHost string `json:"sso_api_host" valid:"ascii,required" label:"SSO接口地址"`
-	Ident      string `json:"ident"  valid:"ascii,required" label:"SSO系统编号"`
+	PicHost     string   `json:"pic_host" valid:"required" label:"图片服务器域名"`
+	Secret      string   `json:"secret" valid:"ascii,required" label:"SSO系统签名秘钥"`
+	SSOApiHost  string   `json:"sso_api_host" valid:"ascii,required" label:"SSO接口地址"`
+	AuthIgnores []string `json:"auth_ignores" valid:"ascii" label:"忽略页面授权检查地址"`
+	Ident       string   `json:"ident"  valid:"ascii,required" label:"SSO系统编号"`
 }
 
 //Valid 验证配置参数是否合法
