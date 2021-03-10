@@ -8,6 +8,7 @@ import (
 	"github.com/lib4dev/vcs"
 	"github.com/micro-plat/hydra"
 	"github.com/micro-plat/lib4go/errs"
+	"github.com/micro-plat/lib4go/types"
 	"github.com/micro-plat/sso/loginserver/loginapi/modules/access/cache"
 	"github.com/micro-plat/sso/loginserver/loginapi/modules/access/member"
 	"github.com/micro-plat/sso/loginserver/loginapi/modules/access/system"
@@ -54,7 +55,7 @@ func (m *LoginLogic) CheckValidCode(userName, ident, validCode string) error {
 	default:
 		return errs.NewError(errorcode.ERR_VALID_CODE_TYPE_ERROR, fmt.Errorf("无效的ValidCodeType:%s", conf.ValidCodeType))
 	}
-	return vcs.VerifySmsCode(ident, userAccount, validCode, hydra.G.GetPlatName())
+	return vcs.VerifySmsCode(types.GetString(ident, "sso"), userAccount, validCode, hydra.G.GetPlatName())
 }
 
 //CheckUserIsLocked 检查用户是否被锁定

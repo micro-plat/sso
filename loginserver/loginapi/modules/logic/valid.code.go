@@ -42,7 +42,7 @@ func (l *ValidCodeLogic) SendSmsCode(userInfo types.XMap, ident, validCode strin
 	reqID := uuid.GetSUUID("validcode").Get().ToString("SSO")
 	params := &structs.SendRequest{
 		ReqID:       reqID,
-		Ident:       ident,
+		Ident:       types.GetString(ident, "sso"),
 		UserAccount: userInfo.GetString("mobile"),
 		TemplateID:  loginCfg.SMSTemplateID,
 		Keywords:    validCode,
@@ -65,7 +65,6 @@ func (l *ValidCodeLogic) SendWechatCode(userInfo types.XMap, ident, validCode st
 	}
 	sysTitle := ""
 	if !strings.EqualFold(ident, "") {
-		fmt.Println("ident:", ident)
 		system, _ := l.sysDB.QuerySysInfoByIdent(ident)
 		if system != nil {
 			sysTitle = system.GetString("name")
@@ -76,7 +75,7 @@ func (l *ValidCodeLogic) SendWechatCode(userInfo types.XMap, ident, validCode st
 	reqID := uuid.GetSUUID("validcode").Get().ToString("SSO")
 	params := &structs.SendRequest{
 		ReqID:       reqID,
-		Ident:       ident,
+		Ident:       types.GetString(ident, "sso"),
 		UserAccount: userInfo.GetString("wx_openid"),
 		TemplateID:  loginCfg.SMSTemplateID,
 		ExtParams: types.XMap{

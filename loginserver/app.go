@@ -78,7 +78,7 @@ func checkLoginConf(appConf app.IAPPConf) (err error) {
 		return err
 	}
 
-	vcs.Config(vcs.WithCacheConfig("redis", "http"), vcs.WithSmsSendURL(loginCfg.SmsSendURL))
+	vcs.Config(vcs.WithCacheConfig("redis", loginCfg.SmsReomteName), vcs.WithSmsSendURL(loginCfg.SmsSendURL))
 
 	return
 }

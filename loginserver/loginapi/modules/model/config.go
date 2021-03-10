@@ -26,6 +26,8 @@ type LoginConf struct {
 	//SmsSendURL 消息发送地址
 	SmsSendURL string `json:"sms_send_url"`
 
+	//SmsReomteName 远程调用配置名称
+	SmsReomteName string `json:"sms_remote_name"`
 	//UserLoginFailLimit 用户可以输入几次错误密码,之后用户被锁定
 	UserLoginFailLimit int `json:"user_loginfail_limit" valid:"required"`
 
