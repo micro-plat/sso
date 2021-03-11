@@ -15,7 +15,7 @@ type IDbSystem interface {
 	GetAll(userId int64) (s db.QueryRows, err error)
 	Query(name string, status string, pi int, ps int) (data db.QueryRows, count int, err error)
 	Delete(id int) (err error)
-	ExistsNameOrIdent(name, ident string) (int, error)
+	ExistsNameOrIdent(name, ident, id string) (int, error)
 	Add(input *model.AddSystemInput) (err error)
 	ChangeStatus(sysID int, status int) (err error)
 	Edit(input *model.SystemEditInput) (err error)
@@ -86,11 +86,12 @@ func (u *DbSystem) Delete(id int) (err error) {
 }
 
 //ExistsNameOrIdent xx
-func (u *DbSystem) ExistsNameOrIdent(name, ident string) (int, error) {
+func (u *DbSystem) ExistsNameOrIdent(name, ident, id string) (int, error) {
 	db := components.Def.DB().GetRegularDB()
 	count, err := db.Scalar(sqls.ExistsNameOrIdent, map[string]interface{}{
 		"name":  name,
 		"ident": ident,
+		"id":    id,
 	})
 	if err != nil {
 		return 0, err

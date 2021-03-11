@@ -64,7 +64,7 @@ func (u *SystemLogic) Delete(id int) (err error) {
 func (u *SystemLogic) Add(input *model.AddSystemInput) (err error) {
 	//1验证系统名称,ident是否重复
 
-	count, err := u.db.ExistsNameOrIdent(input.Name, input.Ident)
+	count, err := u.db.ExistsNameOrIdent(input.Name, input.Ident, "")
 	if err != nil {
 		return err
 	}
@@ -88,7 +88,7 @@ func (u *SystemLogic) ChangeStatus(sysID int, status int) (err error) {
 
 //Edit 编辑系统
 func (u *SystemLogic) Edit(input *model.SystemEditInput) (err error) {
-	count, err := u.db.ExistsNameOrIdent(input.Name, input.Ident)
+	count, err := u.db.ExistsNameOrIdent(input.Name, input.Ident, input.Id)
 	if err != nil {
 		return err
 	}
