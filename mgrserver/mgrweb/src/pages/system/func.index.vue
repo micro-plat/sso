@@ -223,19 +223,14 @@
                   <span v-show="errors.first('path')">地址不能为空</span>
                 </div>
               </div>
-              <div class="form-group">
-                <label>排序编号</label>
-                <input
-                  class="form-control"
-                  placeholder
-                  v-validate="'required'"
-                  name="sortrank"
-                  v-model="currentData.sortrank"
-                  type="text"
-                />
-                <div class="form-height text-danger">
-                  <span v-show="errors.first('sortrank')">排序编号不能为空</span>
-                </div>
+             <div class="form-group menu-type">
+                <label>页面类型</label>
+       
+  <el-radio-group v-model="currentData.menu_type" >
+      <el-radio :label="1">菜单</el-radio>  
+      <el-radio :label="2">页面</el-radio>
+    </el-radio-group>
+
               </div>
               <div class="form-group">
                 <label>图标</label>
@@ -562,6 +557,15 @@
                 </div>
                 <input class="form-control" placeholder v-model="currentData.id" type="hidden" />
               </div>
+              <div class="form-group menu-type">
+                <label>页面类型</label>
+       
+  <el-radio-group v-model="currentData.menu_type" >
+      <el-radio :label="1">菜单</el-radio>  
+      <el-radio :label="2">页面</el-radio>
+    </el-radio-group>
+
+              </div>
               <div class="form-group">
                 <label>地址</label>
                 <input
@@ -576,12 +580,7 @@
                   <span v-show="errors.first('path3')">地址不能为空</span>
                 </div>
               </div>
-              <!--<div class="form-group">
-                <label>排序编号</label>
-                <input class="form-control" placeholder="" v-validate="'required'" name="sortrank" 
-                      v-model="currentData.sortrank" type="text">
-                <div class="form-height text-danger"><span v-show="errors.first('sortrank')"></span></div>
-              </div>-->
+ 
               <div class="form-group">
                 <label>图标</label>
                 <span class="fa-stack fa-lg">
@@ -879,6 +878,7 @@ export default {
           id: data.id,
           name: data.name,
           sortrank: data.sortrank,
+          menu_type: data.menu_type,
           icon: icon,
           path: data.path,
           is_open: data.is_open
@@ -904,6 +904,7 @@ export default {
           parentlevel: this.currentData.parentLevel,
           sysid: this.id,
           sortrank: this.currentData.sortrank,
+          menu_type: this.currentData.menu_type,
           name: this.currentData.name,
           icon: this.currentData.iconTemp + " " + this.currentData.color,
           path: this.currentData.path,
@@ -940,6 +941,7 @@ export default {
 
     // 点击节点
     nodeClick: function(d) {
+      d.menu_type = d.menu_type || 1;
       /*排序 */
       if (d.isSort === true) {
         this.initData();
@@ -1023,3 +1025,13 @@ export default {
   }
 };
 </script>
+
+
+<style scoped>
+.menu-type .el-radio-group{
+  padding-left:10px;
+}
+.menu-type .el-radio{
+  margin-left:10px;
+}
+</style>

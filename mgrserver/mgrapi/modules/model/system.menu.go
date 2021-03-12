@@ -15,4 +15,5 @@ type MenuInfo struct {
 	Enable   string `form:"enable" json:"enable"`
 	Sortrank string `form:"sortrank" json:"sortrank"`
 	IsOpen   string `form:"is_open" json:"is_open"`
+	MenuType string `form:"menu_type" json:"menu_type"`
 }

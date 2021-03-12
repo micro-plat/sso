@@ -15,6 +15,7 @@ CREATE TABLE  sso_system_menu (
 	create_time datetime default current_timestamp not null  comment '创建时间' ,
 	sortrank bigint(20)  not null  comment '排序编号' ,
 	is_open tinyint(1) default 0   comment '是否展开' ,
+	menu_type  tinyint(1) default 0   comment '菜单类型' ,
 	PRIMARY KEY (id)) ENGINE=InnoDB  DEFAULT CHARSET=utf8mb4 COMMENT='功能表(菜单数据)';
 
 `

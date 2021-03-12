@@ -14,7 +14,7 @@ import (
 )
 
 type IDbRole interface {
-	Get(sysID int, roleID int, path string) (data db.QueryRows, err error)
+	//Get(sysID int, roleID int, path string) (data db.QueryRows, err error)
 	Query(input *model.QueryRoleInput) (data db.QueryRows, count int, err error)
 	ChangeStatus(roleID string, status int) (err error)
 	Delete(roleID int) (err error)
@@ -47,20 +47,6 @@ func (r *DbRole) QueryRoleInfoByName(roleName string) (data db.QueryRow, err err
 		return nil, nil
 	}
 	return result.Get(0), nil
-}
-
-//Get 获取页面授权信息
-func (r *DbRole) Get(sysID int, roleID int, path string) (data db.QueryRows, err error) {
-	db := components.Def.DB().GetRegularDB()
-	data, err = db.Query(sqls.GetPageAuth, map[string]interface{}{
-		"sys_id":  sysID,
-		"role_id": roleID,
-		"path":    path,
-	})
-	if err != nil {
-		return nil, fmt.Errorf("获取系统管理列表发生错误(err:%v)", err)
-	}
-	return data, err
 }
 
 //Query 获取角色信息列表
@@ -164,7 +150,7 @@ func (r *DbRole) Auth(input *model.RoleAuthInput) (err error) {
 		return fmt.Errorf("开启DB事务出错(err:%v)", err)
 	}
 
-	checkResult, err := db.Query(sqls.CheckSysMeun, map[string]interface{}{
+	checkResult, err := db.Query(sqls.CheckSysMenu, map[string]interface{}{
 		"sys_id":      input.SysID,
 		"select_auth": input.SelectAuth,
 	})

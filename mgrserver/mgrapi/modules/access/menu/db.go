@@ -112,15 +112,16 @@ func (l *DbSystemMenu) insertLevelData(trans db.IDBTrans, oldIDMaping map[string
 			}
 		}
 		id, _, err := trans.Executes(sqls.AddSystemMenu, map[string]interface{}{
-			"name":     val.Name,
-			"parent":   newParent,
-			"sys_id":   sysID,
-			"level_id": val.LevelID,
-			"icon":     val.Icon,
-			"path":     val.Path,
-			"enable":   val.Enable,
-			"sortrank": val.Sortrank,
-			"is_open":  val.IsOpen,
+			"name":      val.Name,
+			"parent":    newParent,
+			"sys_id":    sysID,
+			"level_id":  val.LevelID,
+			"icon":      val.Icon,
+			"path":      val.Path,
+			"enable":    val.Enable,
+			"sortrank":  val.Sortrank,
+			"is_open":   val.IsOpen,
+			"menu_type": val.MenuType,
 		})
 		if err != nil {
 			trans.Rollback()

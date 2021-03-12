@@ -12,7 +12,8 @@ select
 	path,
 	enable,
 	sortrank,
-	IFNULL(is_open, 0) as is_open
+	IFNULL(is_open, 0) as is_open,
+	menu_type
 from sso_system_menu
 where sys_id = @sys_id
 `
@@ -35,7 +36,8 @@ insert into sso_system_menu(
 	path,
 	enable,
 	sortrank,
-	is_open
+	is_open,
+	menu_type
 )
 values(
 	@name,
@@ -46,6 +48,7 @@ values(
 	@path,
 	@enable,
 	@sortrank,
-	@is_open
+	@is_open,
+	@menu_type
 )
 `

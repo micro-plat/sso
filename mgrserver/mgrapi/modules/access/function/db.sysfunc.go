@@ -116,12 +116,13 @@ func (u *DbSystemFunc) Delete(id int) (err error) {
 func (u *DbSystemFunc) Edit(input *model.SystemFuncEditInput) (err error) {
 	db := components.Def.DB().GetRegularDB()
 	params := map[string]interface{}{
-		"id":       input.Id,
-		"name":     input.Name,
-		"sortrank": input.Sortrank,
-		"icon":     input.Icon,
-		"path":     input.Path,
-		"is_open":  input.IsOpen,
+		"id":        input.Id,
+		"name":      input.Name,
+		"sortrank":  input.Sortrank,
+		"icon":      input.Icon,
+		"path":      input.Path,
+		"is_open":   input.IsOpen,
+		"menu_type": input.MenuType,
 	}
 	_, err = db.Execute(sqls.EditSysFunc, params)
 	if err != nil {
@@ -134,13 +135,14 @@ func (u *DbSystemFunc) Add(input *model.SystemFuncAddInput) (err error) {
 	db := components.Def.DB().GetRegularDB()
 
 	params := map[string]interface{}{
-		"sys_id":   input.Sysid,
-		"name":     input.Name,
-		"icon":     input.Icon,
-		"path":     input.Path,
-		"parent":   input.Parentid,
-		"level_id": input.ParentLevel + 1,
-		"is_open":  input.IsOpen,
+		"sys_id":    input.Sysid,
+		"name":      input.Name,
+		"icon":      input.Icon,
+		"path":      input.Path,
+		"parent":    input.Parentid,
+		"level_id":  input.ParentLevel + 1,
+		"is_open":   input.IsOpen,
+		"menu_type": input.MenuType,
 	}
 	var (
 		sortrank interface{}
@@ -151,8 +153,6 @@ func (u *DbSystemFunc) Add(input *model.SystemFuncAddInput) (err error) {
 	if err != nil {
 		return fmt.Errorf("添加系统功能发生错误(err:%v)", err)
 	}
-
-	fmt.Println(sortrank)
 
 	params["sortrank"] = sortrank
 	_, err = db.Execute(sqls.AddSysFunc, params)

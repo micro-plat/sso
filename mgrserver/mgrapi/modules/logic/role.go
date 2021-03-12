@@ -9,7 +9,7 @@ import (
 )
 
 type IRoleLogic interface {
-	Get(sysID int, roleID int, path string) (data db.QueryRows, err error)
+	//Get(sysID int, roleID int, path string) (data db.QueryRows, err error)
 	Query(input *model.QueryRoleInput) (data db.QueryRows, count int, err error)
 	ChangeStatus(roleID string, status int) (err error)
 	Delete(roleID int) (err error)
@@ -34,14 +34,14 @@ func NewRoleLogic() *RoleLogic {
 	}
 }
 
-//Get 获取页面权限
-func (r *RoleLogic) Get(sysID int, roleID int, path string) (data db.QueryRows, err error) {
-	if data, err = r.db.Get(sysID, roleID, path); err != nil {
-		return nil, err
-	}
-	return data, nil
+// //Get 获取页面权限
+// func (r *RoleLogic) Get(sysID int, roleID int, path string) (data db.QueryRows, err error) {
+// 	if data, err = r.db.Get(sysID, roleID, path); err != nil {
+// 		return nil, err
+// 	}
+// 	return data, nil
 
-}
+// }
 
 //Query 获取角色信息列表
 func (r *RoleLogic) Query(input *model.QueryRoleInput) (data db.QueryRows, count int, err error) {

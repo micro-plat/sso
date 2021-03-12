@@ -44,18 +44,18 @@ set
 	t.icon=@icon,
 	t.path=@path,
 	t.is_open=@is_open,
-	t.sortrank=@sortrank
+	t.sortrank=@sortrank,
+	t.menu_type=@menu_type
 where 
 	t.id=@id
 `
 
 // AddSysFunc .
 const AddSysFunc = `
-insert into 
-	sso_system_menu
-	(name,parent,sys_id,level_id,icon,path,sortrank,is_open)
+insert into sso_system_menu
+	(name,parent,sys_id,level_id,icon,path,sortrank,is_open,menu_type)
 values
-	(@name,@parent,@sys_id,@level_id,@icon,@path,@sortrank,@is_open)`
+	(@name,@parent,@sys_id,@level_id,@icon,@path,@sortrank,@is_open,@menu_type)`
 
 //GetSysFuncSortRank 查询目录结构下的最大sortrank
 const GetSysFuncSortRank = `

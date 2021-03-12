@@ -117,8 +117,8 @@ values(
 	@role_id, 
 	@permission_config_id)`
 
-//CheckSysMeun
-const CheckSysMeun = `
+//CheckSysMenu
+const CheckSysMenu = `
 SELECT
 t.id
 FROM sso_system_menu t
@@ -180,34 +180,8 @@ where t.sys_id = @sys_id and
       t.status = 0
 `
 
-//GetPageAuth 获取页面授权tag
-const GetPageAuth = `select t1.id,t1.path,t2.enable 
-from sso_system_menu t1 
-left join sso_role_menu t2 on t1.id = t2.menu_id
-where t1.parent = (select id from sso_system_menu where path=@path) 
-	and t2.sys_id=@sys_id 
-	and t2.role_id=@role_id
-`
-
 //QueryRoleInfoByName 通过名称查询角色信息
 const QueryRoleInfoByName = `select role_id, name, status, create_time from sso_role_info where name=@role_name`
-
-// const QueryRoleDataPermission = `
-// SELECT
-//   id,
-//   sys_id,
-//   role_id,
-//   table_name,
-//   operate_action,
-//   permissions,
-//   status,
-//   name,
-//   DATE_FORMAT(create_time, '%y-%m-%d %h:%i:%s') as create_time
-// from  sso_role_datapermission
-// where sys_id = @sys_id and
-// 	  role_id = @role_id
-// limit @start, @ps
-// `
 
 const QueryRoleDataPermissionCount = `
 SELECT  

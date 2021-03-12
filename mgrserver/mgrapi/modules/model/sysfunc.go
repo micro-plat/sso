@@ -8,6 +8,7 @@ type SystemFuncAddInput struct {
 	Icon        string `form:"icon" json:"icon" valid:"required"`
 	Path        string `form:"path" json:"path" valid:"required"`
 	IsOpen      int    `form:"is_open" json:"is_open"`
+	MenuType    int    `form:"menu_type" json:"menu_type"`
 }
 
 type SystemFuncEditInput struct {
@@ -17,4 +18,5 @@ type SystemFuncEditInput struct {
 	Path     string `form:"path" json:"path" valid:"required"`
 	IsOpen   int    `form:"is_open" json:"is_open"`
 	Sortrank string `form:"sortrank" json:"sortrank" valid:"required"`
+	MenuType int    `form:"menu_type" json:"menu_type"`
 }

@@ -4,10 +4,10 @@
     class="modal fade background-darken"
     tabindex="-1"
     role="dialog"
-    :class="{in:isOpen,show:isShow}"
+    :class="{ in: isOpen, show: isShow }"
     @keyup.esc="close()"
   >
-    <div class="modal-dialog" style="width:600px;" role="document">
+    <div class="modal-dialog" style="width: 600px" role="document">
       <div class="modal-content">
         <div class="modal-header">
           <button
@@ -16,7 +16,9 @@
             data-dismiss="modal"
             aria-label="Close"
             @click="close()"
-          >&times;</button>
+          >
+            &times;
+          </button>
           <h4 class="modal-title" align="center">添加系统</h4>
         </div>
 
@@ -46,7 +48,7 @@
                 </div>
               </el-col>
               <el-col :span="12">
-                <div class="form-group" style="margin-left:10px;">
+                <div class="form-group" style="margin-left: 10px">
                   <label>系统英文名称</label>
                   <input
                     class="form-control"
@@ -57,7 +59,9 @@
                     type="text"
                   />
                   <div class="form-height text-danger">
-                    <span v-show="errors.first('name-e')">系统英文名称不能为空且为字母</span>
+                    <span v-show="errors.first('name-e')"
+                      >系统英文名称不能为空且为字母</span
+                    >
                   </div>
                 </div>
               </el-col>
@@ -78,7 +82,9 @@
             </div>
 
             <div class="form-group">
-              <label>sso登录后回调子系统的地址(如:http://www.123.com/abc)</label>
+              <label
+                >sso登录后回调子系统的地址(如:http://www.123.com/abc)</label
+              >
               <input
                 class="form-control"
                 placeholder="请输入回调地址"
@@ -187,7 +193,9 @@
                       </div>
                     </div>
                     <div class="col col-lg-2-4">
-                      <div class="wrapper b-t b-light bg-light lter r-b ng-scope">
+                      <div
+                        class="wrapper b-t b-light bg-light lter r-b ng-scope"
+                      >
                         <div class="row row-sm">
                           <div class="col-xs-6">
                             <label
@@ -215,7 +223,9 @@
                                 <span
                                   class="active pos-abt w-full h-full bg-black-opacity text-center"
                                 >
-                                  <i class="glyphicon glyphicon-ok text-white m-t-xs"></i>
+                                  <i
+                                    class="glyphicon glyphicon-ok text-white m-t-xs"
+                                  ></i>
                                 </span>
                                 <b class="bg-black header"></b>
                                 <b class="bg-white header"></b>
@@ -248,7 +258,9 @@
                                 <span
                                   class="active pos-abt w-full h-full bg-black-opacity text-center"
                                 >
-                                  <i class="glyphicon glyphicon-ok text-white m-t-xs"></i>
+                                  <i
+                                    class="glyphicon glyphicon-ok text-white m-t-xs"
+                                  ></i>
                                 </span>
                                 <b class="bg-dark header"></b>
                                 <b class="bg-white header"></b>
@@ -281,7 +293,9 @@
                                 <span
                                   class="active pos-abt w-full h-full bg-black-opacity text-center"
                                 >
-                                  <i class="glyphicon glyphicon-ok text-white m-t-xs"></i>
+                                  <i
+                                    class="glyphicon glyphicon-ok text-white m-t-xs"
+                                  ></i>
                                 </span>
                                 <b class="bg-white header"></b>
                                 <b class="bg-white header"></b>
@@ -314,7 +328,9 @@
                                 <span
                                   class="active pos-abt w-full h-full bg-black-opacity text-center"
                                 >
-                                  <i class="glyphicon glyphicon-ok text-white m-t-xs"></i>
+                                  <i
+                                    class="glyphicon glyphicon-ok text-white m-t-xs"
+                                  ></i>
                                 </span>
                                 <b class="bg-primary header"></b>
                                 <b class="bg-white header"></b>
@@ -347,7 +363,9 @@
                                 <span
                                   class="active pos-abt w-full h-full bg-black-opacity text-center"
                                 >
-                                  <i class="glyphicon glyphicon-ok text-white m-t-xs"></i>
+                                  <i
+                                    class="glyphicon glyphicon-ok text-white m-t-xs"
+                                  ></i>
                                 </span>
                                 <b class="bg-info header"></b>
                                 <b class="bg-white header"></b>
@@ -380,7 +398,9 @@
                                 <span
                                   class="active pos-abt w-full h-full bg-black-opacity text-center"
                                 >
-                                  <i class="glyphicon glyphicon-ok text-white m-t-xs"></i>
+                                  <i
+                                    class="glyphicon glyphicon-ok text-white m-t-xs"
+                                  ></i>
                                 </span>
                                 <b class="bg-success header"></b>
                                 <b class="bg-white header"></b>
@@ -403,7 +423,9 @@
                                 <span
                                   class="active pos-abt w-full h-full bg-black-opacity text-center"
                                 >
-                                  <i class="glyphicon glyphicon-ok text-white m-t-xs"></i>
+                                  <i
+                                    class="glyphicon glyphicon-ok text-white m-t-xs"
+                                  ></i>
                                 </span>
                                 <b class="bg-danger header"></b>
                                 <b class="bg-white header"></b>
@@ -425,7 +447,9 @@
                                 <span
                                   class="active pos-abt w-full h-full bg-black-opacity text-center"
                                 >
-                                  <i class="glyphicon glyphicon-ok text-white m-t-xs"></i>
+                                  <i
+                                    class="glyphicon glyphicon-ok text-white m-t-xs"
+                                  ></i>
                                 </span>
                                 <b class="bg-danger header"></b>
                                 <b class="bg-white header"></b>
@@ -459,7 +483,9 @@
                                 <span
                                   class="active pos-abt w-full h-full bg-black-opacity text-center"
                                 >
-                                  <i class="glyphicon glyphicon-ok text-white m-t-xs"></i>
+                                  <i
+                                    class="glyphicon glyphicon-ok text-white m-t-xs"
+                                  ></i>
                                 </span>
                                 <b class="bg-black header"></b>
                                 <b class="bg-black header"></b>
@@ -492,7 +518,9 @@
                                 <span
                                   class="active pos-abt w-full h-full bg-black-opacity text-center"
                                 >
-                                  <i class="glyphicon glyphicon-ok text-white m-t-xs"></i>
+                                  <i
+                                    class="glyphicon glyphicon-ok text-white m-t-xs"
+                                  ></i>
                                 </span>
                                 <b class="bg-dark header"></b>
                                 <b class="bg-dark header"></b>
@@ -525,7 +553,9 @@
                                 <span
                                   class="active pos-abt w-full h-full bg-black-opacity text-center"
                                 >
-                                  <i class="glyphicon glyphicon-ok text-white m-t-xs"></i>
+                                  <i
+                                    class="glyphicon glyphicon-ok text-white m-t-xs"
+                                  ></i>
                                 </span>
                                 <b class="bg-info header"></b>
                                 <b class="bg-info header"></b>
@@ -558,7 +588,9 @@
                                 <span
                                   class="active pos-abt w-full h-full bg-black-opacity text-center"
                                 >
-                                  <i class="glyphicon glyphicon-ok text-white m-t-xs"></i>
+                                  <i
+                                    class="glyphicon glyphicon-ok text-white m-t-xs"
+                                  ></i>
                                 </span>
                                 <b class="bg-primary header"></b>
                                 <b class="bg-primary header"></b>
@@ -591,7 +623,9 @@
                                 <span
                                   class="active pos-abt w-full h-full bg-black-opacity text-center"
                                 >
-                                  <i class="glyphicon glyphicon-ok text-white m-t-xs"></i>
+                                  <i
+                                    class="glyphicon glyphicon-ok text-white m-t-xs"
+                                  ></i>
                                 </span>
                                 <b class="bg-info header"></b>
                                 <b class="bg-info header"></b>
@@ -624,7 +658,9 @@
                                 <span
                                   class="active pos-abt w-full h-full bg-black-opacity text-center"
                                 >
-                                  <i class="glyphicon glyphicon-ok text-white m-t-xs"></i>
+                                  <i
+                                    class="glyphicon glyphicon-ok text-white m-t-xs"
+                                  ></i>
                                 </span>
                                 <b class="bg-success header"></b>
                                 <b class="bg-success header"></b>
@@ -648,7 +684,9 @@
                                 <span
                                   class="active pos-abt w-full h-full bg-black-opacity text-center"
                                 >
-                                  <i class="glyphicon glyphicon-ok text-white m-t-xs"></i>
+                                  <i
+                                    class="glyphicon glyphicon-ok text-white m-t-xs"
+                                  ></i>
                                 </span>
                                 <b class="bg-danger header"></b>
                                 <b class="bg-danger header"></b>
@@ -670,7 +708,9 @@
                                 <span
                                   class="active pos-abt w-full h-full bg-black-opacity text-center"
                                 >
-                                  <i class="glyphicon glyphicon-ok text-white m-t-xs"></i>
+                                  <i
+                                    class="glyphicon glyphicon-ok text-white m-t-xs"
+                                  ></i>
                                 </span>
                                 <b class="bg-danger header"></b>
                                 <b class="bg-danger header"></b>
@@ -689,8 +729,20 @@
         </div>
         <div class="modal-footer">
           <slot name="footer">
-            <button data-dismiss="modal" @click="cancelSubmit" class="btn btn-default">取消</button>
-            <button type="button" @click="submit('addform1')" class="btn m-b-xs w-xs btn-success">保存</button>
+            <button
+              data-dismiss="modal"
+              @click="cancelSubmit"
+              class="btn btn-default"
+            >
+              取消
+            </button>
+            <button
+              type="button"
+              @click="submit('addform1')"
+              class="btn m-b-xs w-xs btn-success"
+            >
+              保存
+            </button>
           </slot>
         </div>
       </div>
@@ -708,10 +760,10 @@ export default {
         target: this.$env.conf.api.host + "/image/upload", //上传地址
         testChunks: false,
         withCredentials: true, //携带jwt
-        singleFile: true //单文件上传
+        singleFile: true, //单文件上传
       },
       attrs: {
-        accept: "image/*"
+        accept: "image/*",
       },
       errorImg: "",
       statusText: {
@@ -719,7 +771,7 @@ export default {
         error: "出错了",
         uploading: "上传中",
         paused: "暂停中",
-        waiting: "等待中"
+        waiting: "等待中",
       },
       addData: {
         name: "",
@@ -729,23 +781,23 @@ export default {
         ident: "",
         secret: "",
         wechat_status: "1",
-        callbackurl: ""
+        callbackurl: "",
       },
       isOpen: false,
       isShow: false,
       isSubmit: false,
       lastKnownBodyStyle: {
-        overflow: "auto"
-      }
+        overflow: "auto",
+      },
     };
   },
 
   computed: {
     headers() {
       return {
-        __sso_jwt__: localStorage.getItem("__sso_jwt__")
+        __sso_jwt__: localStorage.getItem("__sso_jwt__"),
       };
-    }
+    },
   },
 
   methods: {
@@ -767,7 +819,7 @@ export default {
         message: "上传成功",
         type: "success",
         offset: 50,
-        duration: 2000
+        duration: 2000,
       });
     },
     //上传失败事件
@@ -777,7 +829,7 @@ export default {
         message: "上传失败，请稍后再试",
         type: "error",
         offset: 50,
-        duration: 2000
+        duration: 2000,
       });
     },
     submit() {
@@ -792,7 +844,7 @@ export default {
           message: msg,
           type: "error",
           offset: 50,
-          duration: 2000
+          duration: 2000,
         });
         return;
       }
@@ -806,9 +858,9 @@ export default {
           theme: this.addData.theme,
           ident: this.addData.ident,
           secret: this.addData.secret,
-          wechat_status: this.addData.wechat_status
+          wechat_status: this.addData.wechat_status,
         })
-        .then(res => {
+        .then((res) => {
           this.resetForm();
           this.isSubmit = true;
           this.isOpen = false;
@@ -819,11 +871,11 @@ export default {
             message: "添加成功",
             type: "success",
             offset: 50,
-            duration: 2000
+            duration: 2000,
           });
-            document.body.style.overflow = this.lastKnownBodyStyle.overflow;
+          document.body.style.overflow = this.lastKnownBodyStyle.overflow;
         })
-        .catch(err => {
+        .catch((err) => {
           console.log(err);
           document.body.style.overflow = this.lastKnownBodyStyle.overflow;
 
@@ -833,7 +885,7 @@ export default {
               message: "系统名称或英文名称已存在",
               type: "error",
               offset: 50,
-              duration: 2000
+              duration: 2000,
             });
           } else {
             this.$notify({
@@ -841,7 +893,7 @@ export default {
               message: "网络错误,请稍后再试",
               type: "error",
               offset: 50,
-              duration: 2000
+              duration: 2000,
             });
           }
         });
@@ -864,7 +916,7 @@ export default {
         this.$confirm("是否退出添加系统 ？", "提示", {
           cancelButtonText: "取消",
           confirmButtonText: "确定",
-          type: "warning"
+          type: "warning",
         })
           .then(() => {
             this.isOpen = false;
@@ -878,7 +930,7 @@ export default {
               }, 100);
             });
           })
-          .catch(err => {
+          .catch((err) => {
             console.log("err messagebox", err);
           });
       } else {
@@ -931,8 +983,8 @@ export default {
       this.addData.secret = "";
       this.addData.wechat_status = "1";
       this.addData.callbackurl = "";
-    }
-  }
+    },
+  },
 };
 </script>
 
