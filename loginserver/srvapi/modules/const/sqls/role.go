@@ -92,36 +92,3 @@ where
 	sys_id = @sys_id
 	and role_id = @role_id
 `
-
-//QuerySysMenucList 系统菜单获取
-const QuerySysMenucList = `select t.id, 
-t.name title, 
-t.parent, 
-t.sys_id, 
-t.level_id,  
-(case
-	when t.id in (select menu_id
-					from sso_role_menu rm
-				   where rm.role_id = @role_id
-					 and rm.sys_id = @sys_id) then
-	 1
-	else
-	 0
-  end) checked,
-t.icon, 
-t.path, 
-t.enable, 
-t.create_time, 
-t.sortrank 
-from sso_system_menu t 
-where t.sys_id = @sys_id 
-`
-
-//GetPageAuth 获取页面授权tag
-const GetPageAuth = `select t1.id,t1.path,t2.enable 
-from sso_system_menu t1 
-left join sso_role_menu t2 on t1.id = t2.menu_id
-where t1.parent = (select id from sso_system_menu where path=@path) 
-	and t2.sys_id=@sys_id 
-	and t2.role_id=@role_id
-`

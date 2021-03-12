@@ -198,7 +198,6 @@
       },
       // 新增节点
       addNode(nodeModel) {
-        console.log(nodeModel)
         if (nodeModel.level_id >= 4) {
           return false
         }
@@ -219,6 +218,7 @@
             isExpand: false,
             hover: false,
             loadNode: 0,
+            menu_type: (nodeModel.level_id == 2 && 1) || 0,
             children: []
           });
           nodeModel.isFolder = true;

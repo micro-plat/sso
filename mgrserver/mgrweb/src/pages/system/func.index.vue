@@ -227,8 +227,8 @@
                 <label>页面类型</label>
        
   <el-radio-group v-model="currentData.menu_type" >
-      <el-radio :label="1">菜单</el-radio>  
-      <el-radio :label="2">页面</el-radio>
+      <el-radio label="1">菜单</el-radio>  
+      <el-radio label="2">页面</el-radio>
     </el-radio-group>
 
               </div>
@@ -560,7 +560,7 @@
               <div class="form-group menu-type">
                 <label>页面类型</label>
        
-  <el-radio-group v-model="currentData.menu_type" >
+  <el-radio-group v-model="currentData.menu_type" @change="change">
       <el-radio :label="1">菜单</el-radio>  
       <el-radio :label="2">页面</el-radio>
     </el-radio-group>
@@ -826,6 +826,9 @@ export default {
     this.initData();
   },
   methods: {
+    change(a,b,c){
+      console.log(a,b,c,this.currentData.menu_type)
+    },
     initData() {
       this.id = this.$route.query.id;
 
@@ -941,8 +944,7 @@ export default {
 
     // 点击节点
     nodeClick: function(d) {
-      d.menu_type = d.menu_type || 1;
-      /*排序 */
+       /*排序 */
       if (d.isSort === true) {
         this.initData();
       } else {
@@ -951,6 +953,7 @@ export default {
         this.$set(d, "iconTemp", "");
         this.obj = d;
         if (d.isNew == true) {
+          console.log("new:",d)
           //添加
           if (d.parentLevel == 3 || d.level_id == 4) {
             this.currentData = d;
@@ -976,6 +979,7 @@ export default {
             this.$refs.editModal4.open();
           }
           if (d.level_id == 3 || d.parentLevel == 2) {
+            console.log("editModal3:",d)
             this.currentData = d;
             this.$refs.editModal3.open();
           }
