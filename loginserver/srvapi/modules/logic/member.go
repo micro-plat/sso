@@ -23,7 +23,7 @@ type IMemberLogic interface {
 	QueryUserInfo(u string, ident string) (info db.QueryRow, err error)
 	GetUserInfoByCode(code, ident string) (res *model.LoginState, err error)
 	QueryUserSystem(userID int, ident string) (s db.QueryRows, err error)
-	QueryAllUserInfo(source string, sourceID string) (s db.QueryRows, err error)
+	QueryAllUserInfo(ident, source, sourceID string) (s db.QueryRows, err error)
 	GetAllUserInfoByUserRole(userID int, ident string) (string, error)
 	GetRoleMenus(roleID int, ident string) (types.XMaps, error)
 	GenerateVerifyCode(userName string) (string, error)
@@ -49,8 +49,8 @@ func (m *MemberLogic) QueryUserSystem(userID int, ident string) (s db.QueryRows,
 }
 
 //QueryAllUserInfo 获取所有用户信息
-func (m *MemberLogic) QueryAllUserInfo(source string, sourceID string) (s db.QueryRows, err error) {
-	return m.db.QueryAllUserInfo(source, sourceID)
+func (m *MemberLogic) QueryAllUserInfo(ident, source, sourceID string) (s db.QueryRows, err error) {
+	return m.db.QueryAllUserInfo(ident, source, sourceID)
 }
 
 // QueryUserInfo 返回用户信息

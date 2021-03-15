@@ -41,15 +41,22 @@ where
 	and t.user_id=@user_id`
 
 const QueryAllUserInfo = `
-select 
-	user_id,
-	user_name,
-	full_name,
-	status,
-    user_id value,
-    full_name name,
+SELECT 
+    ui.user_id,
+    ui.user_name,
+    ui.full_name,
+    ui.status,
+    ui.user_id value,
+    ui.full_name name,
     'userinfo' type
-from sso_user_info
-where (@source = '' or source =  @source) and
-	  ((@source_id = '' or @source_id=0) or source_id = @source_id)
+FROM
+    sso_user_info ui
+WHERE
+    (@source = '' OR ui.source = @source)
+        AND ((@source_id = '' OR @source_id = 0)
+        OR ui.source_id = @source_id)
+		AND ui.user_id 
+		IN (SELECT ur.user_id FROM  sso_user_role ur
+			 WHERE  ur.sys_id = @sys_id)
+
 `

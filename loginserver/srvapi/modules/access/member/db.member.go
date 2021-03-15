@@ -20,7 +20,7 @@ type IDBMember interface {
 	QueryByUserName(u string, ident string) (info db.QueryRow, err error)
 	QueryByID(uid int, ident string) (s *model.MemberState, err error)
 	QueryUserSystem(userID int, ident string) (s db.QueryRows, err error)
-	QueryAllUserInfo(source string, sourceID string) (s db.QueryRows, err error)
+	QueryAllUserInfo(ident, source, sourceID string) (s db.QueryRows, err error)
 	GetAllUserInfoByUserRole(userID int, ident string) (string, error)
 	GetRoleMenus(roleID int, ident string) (types.XMaps, error)
 }
@@ -35,11 +35,25 @@ func NewDBMember() *DBMember {
 }
 
 //QueryAllUserInfo 获取全部用户
-func (l *DBMember) QueryAllUserInfo(source string, sourceID string) (s db.QueryRows, err error) {
+func (l *DBMember) QueryAllUserInfo(ident, source, sourceID string) (s db.QueryRows, err error) {
 	db := components.Def.DB().GetRegularDB()
-	data, err := db.Query(sqls.QueryAllUserInfo, map[string]interface{}{
+
+	data, err := db.Query(commsqls.QuerySysInfoByIdent, map[string]interface{}{
+		"ident": ident,
+	})
+	if err != nil {
+		return nil, err
+	}
+	if data.IsEmpty() {
+		return nil, fmt.Errorf("ident错误：%s", ident)
+	}
+
+	sysID := data.Get(0).GetString("id")
+
+	data, err = db.Query(sqls.QueryAllUserInfo, map[string]interface{}{
 		"source":    source,
 		"source_id": sourceID,
+		"sys_id":    sysID,
 	})
 	if err != nil {
 		return nil, err

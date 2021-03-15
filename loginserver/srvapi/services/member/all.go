@@ -22,9 +22,11 @@ func NewMemberGetAllHandler() (u *MemberGetAllHandler) {
  */
 func (u *MemberGetAllHandler) Handle(ctx hydra.IContext) (r interface{}) {
 	ctx.Log().Info("-------获取所有用户信息---------")
-
-	ctx.Log().Info("1. 查询数据")
-	members, err := u.m.QueryAllUserInfo(ctx.Request().GetString("source"), ctx.Request().GetString("source_id"))
+	source := ctx.Request().GetString("source")
+	sourceID := ctx.Request().GetString("source_id")
+	ident := ctx.Request().GetString("ident")
+	ctx.Log().Info("1. 查询数据", ident, source, sourceID)
+	members, err := u.m.QueryAllUserInfo(ident, source, sourceID)
 	if err != nil {
 		return err
 	}
