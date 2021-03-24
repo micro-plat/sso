@@ -4,14 +4,14 @@ import (
 	"fmt"
 
 	"github.com/micro-plat/hydra/components"
-	"github.com/micro-plat/lib4go/db"
+	"github.com/micro-plat/lib4go/types"
 	"github.com/micro-plat/sso/mgrserver/mgrapi/modules/const/sqls"
 )
 
 type IBase interface {
-	QueryUserRoleList() (data db.QueryRows, err error)
-	QuerySysList() (data db.QueryRows, err error)
-	GetPermissTypes(sysID string) (data db.QueryRows, err error)
+	QueryUserRoleList() (data types.XMaps, err error)
+	QuerySysList() (data types.XMaps, err error)
+	GetPermissTypes(sysID string) (data types.XMaps, err error)
 }
 
 type Base struct {
@@ -22,7 +22,7 @@ func NewBase() *Base {
 }
 
 //QueryUserRoleList 获取用户角色列表
-func (u *Base) QueryUserRoleList() (data db.QueryRows, err error) {
+func (u *Base) QueryUserRoleList() (data types.XMaps, err error) {
 	db := components.Def.DB().GetRegularDB()
 	data, err = db.Query(sqls.GetUserRoleList, map[string]interface{}{})
 	if err != nil {
@@ -33,7 +33,7 @@ func (u *Base) QueryUserRoleList() (data db.QueryRows, err error) {
 }
 
 //QuerySysList 获取系统列表
-func (u *Base) QuerySysList() (data db.QueryRows, err error) {
+func (u *Base) QuerySysList() (data types.XMaps, err error) {
 	db := components.Def.DB().GetRegularDB()
 	data, err = db.Query(sqls.GetSysList, map[string]interface{}{})
 	if err != nil {
@@ -43,7 +43,7 @@ func (u *Base) QuerySysList() (data db.QueryRows, err error) {
 }
 
 //GetPermissTypes typeslist
-func (u *Base) GetPermissTypes(sysID string) (data db.QueryRows, err error) {
+func (u *Base) GetPermissTypes(sysID string) (data types.XMaps, err error) {
 	db := components.Def.DB().GetRegularDB()
 	data, err = db.Query(sqls.GetPermissTypes, map[string]interface{}{
 		"sys_id": sysID,

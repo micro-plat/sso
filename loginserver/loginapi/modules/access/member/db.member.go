@@ -7,7 +7,6 @@ import (
 	"strings"
 
 	"github.com/micro-plat/hydra/components"
-	"github.com/micro-plat/lib4go/db"
 	"github.com/micro-plat/lib4go/errs"
 	"github.com/micro-plat/lib4go/security/md5"
 	"github.com/micro-plat/lib4go/types"
@@ -20,17 +19,17 @@ import (
 type IDBMember interface {
 	Query(u, p, ident string) (s *model.MemberState, err error)
 	xChangePwd(userID int, expassword string, newpassword string) (err error)
-	//QueryByID(uid int64) (db.QueryRow, error)
+	//QueryByID(uid int64) (types.IXMap, error)
 	//CheckUserHasAuth(ident string, userID int64) error
-	GetUserInfo(userName string) (db.QueryRow, error)
+	GetUserInfo(userName string) (types.IXMap, error)
 	//UpdateUserStatus(userID int64, status int) error
 	//UnLock(userName string) error
 
 	//UpdateUserOpenID(data map[string]string) error
 
-	QueryUserOldPwd(userID int) (db.QueryRows, error)
+	QueryUserOldPwd(userID int) (types.XMaps, error)
 	ChangePwd(userID int, newpassword string) (err error)
-	QueryByID(uid int) (db.QueryRow, error)
+	QueryByID(uid int) (types.IXMap, error)
 	CheckUserHasAuth(ident string, userID int64) error
 	UpdateUserStatus(userID int, status int) error
 	UnLock(userName string) error
@@ -48,7 +47,7 @@ func NewDBMember() *DBMember {
 }
 
 //GetUserInfo 根据用户名获取用户信息
-func (l *DBMember) GetUserInfo(userName string) (db.QueryRow, error) {
+func (l *DBMember) GetUserInfo(userName string) (types.IXMap, error) {
 	db := components.Def.DB().GetRegularDB()
 
 	userInfo, err := db.Query(sqls.QueryUserByUserName, map[string]interface{}{
@@ -158,7 +157,7 @@ func (l *DBMember) Query(u, p, ident string) (s *model.MemberState, err error) {
 }
 
 //QueryUserOldPwd 查询原密码
-func (l *DBMember) QueryUserOldPwd(userID int) (db.QueryRows, error) {
+func (l *DBMember) QueryUserOldPwd(userID int) (types.XMaps, error) {
 	db := components.Def.DB().GetRegularDB()
 	data, err := db.Query(sqls.QueryOldPwd, map[string]interface{}{
 		"user_id": userID,
@@ -211,7 +210,7 @@ func (l *DBMember) CheckUserHasAuth(ident string, userID int64) error {
 }
 
 //QueryByID 根据用户编号获取用户信息
-func (l *DBMember) QueryByID(uid int) (db.QueryRow, error) {
+func (l *DBMember) QueryByID(uid int) (types.IXMap, error) {
 	db := components.Def.DB().GetRegularDB()
 	data, err := db.Query(sqls.QueryUserInfoByUID, map[string]interface{}{
 		"user_id": uid,
@@ -286,7 +285,7 @@ func (l *DBMember) CheckUserHasAuth(ident string, userID int64) error {
 
 
 //QueryByID 根据用户编号获取用户信息
-func (l *DBMember) QueryByID(uid int64) (db.QueryRow, error) {
+func (l *DBMember) QueryByID(uid int64) (types.IXMap, error) {
 	db := components.Def.DB().GetRegularDB()
 	data, err := db.Query(sqls.QueryUserInfoByUID, map[string]interface{}{
 		"user_id": uid,

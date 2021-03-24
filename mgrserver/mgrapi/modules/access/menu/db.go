@@ -12,7 +12,7 @@ import (
 
 //IDbSystemMenu interface
 type IDbSystemMenu interface {
-	Export(sysID int) (s db.QueryRows, err error)
+	Export(sysID int) (s types.XMaps, err error)
 	Import(req *model.ImportReq) error
 	Exists(sysID string) (bool, error)
 }
@@ -27,7 +27,7 @@ func NewDbSystemMenu() *DbSystemMenu {
 }
 
 //Export 导出菜单
-func (l *DbSystemMenu) Export(sysID int) (s db.QueryRows, err error) {
+func (l *DbSystemMenu) Export(sysID int) (s types.XMaps, err error) {
 	db := components.Def.DB().GetRegularDB()
 	data, err := db.Query(sqls.QuerySystemMenuInfo, map[string]interface{}{
 		"sys_id": sysID,

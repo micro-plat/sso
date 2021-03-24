@@ -1,12 +1,12 @@
 package logic
 
 import (
-	"github.com/micro-plat/lib4go/db"
+	"github.com/micro-plat/lib4go/types"
 	"github.com/micro-plat/sso/loginserver/srvapi/modules/access/system"
 )
 
 type ISystemLogic interface {
-	Get(ident string) (s db.QueryRow, err error)
+	Get(ident string) (s types.IXMap, err error)
 }
 
 type SystemLogic struct {
@@ -22,7 +22,7 @@ func NewSystemLogic() *SystemLogic {
 }
 
 //Get 从数据库中获取系统信息
-func (u *SystemLogic) Get(ident string) (s db.QueryRow, err error) {
+func (u *SystemLogic) Get(ident string) (s types.IXMap, err error) {
 	if s, err = u.db.Get(ident); err != nil {
 		return nil, err
 	}

@@ -5,7 +5,6 @@ import (
 	"strings"
 
 	"github.com/micro-plat/hydra/components"
-	"github.com/micro-plat/lib4go/db"
 	"github.com/micro-plat/lib4go/errs"
 	"github.com/micro-plat/lib4go/types"
 	"github.com/micro-plat/sso/mgrserver/mgrapi/modules/const/enum"
@@ -14,16 +13,16 @@ import (
 )
 
 type IDbRole interface {
-	//Get(sysID int, roleID int, path string) (data db.QueryRows, err error)
-	Query(input *model.QueryRoleInput) (data db.QueryRows, count int, err error)
+	//Get(sysID int, roleID int, path string) (data types.XMaps, err error)
+	Query(input *model.QueryRoleInput) (data types.XMaps, count int, err error)
 	ChangeStatus(roleID string, status int) (err error)
 	Delete(roleID int) (err error)
 	Edit(input *model.RoleEditInput) (err error)
 	Add(input *model.RoleEditInput) (err error)
 	Auth(input *model.RoleAuthInput) (err error)
 	QueryAuthMenu(sysID int64, roleID int64) (results []map[string]interface{}, err error)
-	QueryRoleInfoByName(roleName string) (data db.QueryRow, err error)
-	QueryAuthDataPermission(req model.RolePermissionQueryReq) (data db.QueryRows, err error)
+	QueryRoleInfoByName(roleName string) (data types.IXMap, err error)
+	QueryAuthDataPermission(req model.RolePermissionQueryReq) (data types.XMaps, err error)
 	SaveRolePermission(req model.RolePermissionReq) error
 	ChangeRolePermissionStatus(id string, status int) error
 	DelRolePermission(id string) error
@@ -37,7 +36,7 @@ func NewDbRole() *DbRole {
 }
 
 //QueryRoleInfoByName 通过名称查询角色信息
-func (r *DbRole) QueryRoleInfoByName(roleName string) (data db.QueryRow, err error) {
+func (r *DbRole) QueryRoleInfoByName(roleName string) (data types.IXMap, err error) {
 	db := components.Def.DB().GetRegularDB()
 	result, err := db.Query(sqls.QueryRoleInfoByName, map[string]interface{}{"role_name": roleName})
 	if err != nil {
@@ -50,7 +49,7 @@ func (r *DbRole) QueryRoleInfoByName(roleName string) (data db.QueryRow, err err
 }
 
 //Query 获取角色信息列表
-func (r *DbRole) Query(input *model.QueryRoleInput) (data db.QueryRows, count int, err error) {
+func (r *DbRole) Query(input *model.QueryRoleInput) (data types.XMaps, count int, err error) {
 	db := components.Def.DB().GetRegularDB()
 	if err != nil {
 		return nil, 0, fmt.Errorf("Struct2Map Error(err:%v)", err)
@@ -264,7 +263,7 @@ func (r *DbRole) QueryAuthMenu(sysID int64, roleID int64) (results []map[string]
 }
 
 //QueryAuthDataPermission 查询角色与数据权限的关联关系
-func (r *DbRole) QueryAuthDataPermission(req model.RolePermissionQueryReq) (data db.QueryRows, err error) {
+func (r *DbRole) QueryAuthDataPermission(req model.RolePermissionQueryReq) (data types.XMaps, err error) {
 	db := components.Def.DB().GetRegularDB()
 	// c, q, a, err := db.Scalar(sqls.QueryRoleDataPermissionCount, map[string]interface{}{
 	// 	"sys_id":  req.SysID,

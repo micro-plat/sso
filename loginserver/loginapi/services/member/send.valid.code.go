@@ -51,9 +51,9 @@ func (u *SendValidCodeHandler) Handle(ctx hydra.IContext) (r interface{}) {
 	ident := ctx.Request().GetString("ident")
 	switch conf.ValidCodeType {
 	case enum.ValidCodeTypeSMS:
-		err = u.validcode.SendSmsCode(userInfo, ident, validCode)
+		err = u.validcode.SendSmsCode(userInfo.ToMap(), ident, validCode)
 	case enum.ValidCodeTypeWechat:
-		err = u.validcode.SendWechatCode(userInfo, ident, validCode)
+		err = u.validcode.SendWechatCode(userInfo.ToMap(), ident, validCode)
 	default:
 		err = errs.NewError(errorcode.ERR_VALID_CODE_TYPE_ERROR, fmt.Errorf("无效的ValidCodeType:%s", conf.ValidCodeType))
 	}

@@ -9,7 +9,6 @@ import (
 	"time"
 
 	"github.com/micro-plat/hydra/components"
-	"github.com/micro-plat/lib4go/db"
 	"github.com/micro-plat/lib4go/errs"
 	"github.com/micro-plat/lib4go/net"
 	"github.com/micro-plat/lib4go/security/md5"
@@ -37,8 +36,8 @@ type IMemberLogic interface {
 	GenerateWxStateCode(userID int64) (string, error)
 	ValidStateAndGetOpenID(stateCode, wxCode string) (map[string]string, error)
 	UpdateUserOpenID(data map[string]string) error
-	QueryUserInfoByID(uid int64) (db.QueryRow, error)
-	GetUserInfo(userName string) (db.QueryRow, error)
+	QueryUserInfoByID(uid int64) (types.IXMap, error)
+	GetUserInfo(userName string) (types.IXMap, error)
 }
 
 //MemberLogic 用户登录管理
@@ -194,7 +193,7 @@ func (m *MemberLogic) UpdateUserOpenID(data map[string]string) error {
 }
 
 //QueryUserInfoByID 通过user_id获取用户信息
-func (m *MemberLogic) QueryUserInfoByID(uid int64) (db.QueryRow, error) {
+func (m *MemberLogic) QueryUserInfoByID(uid int64) (types.IXMap, error) {
 	return m.db.QueryByID(int(uid))
 }
 
@@ -224,6 +223,6 @@ func (m *MemberLogic) GetWxUserOpID(url string) (string, error) {
 }
 
 //GetUserInfo 验证用户是否存在并获取用户信息
-func (m *MemberLogic) GetUserInfo(userName string) (db.QueryRow, error) {
+func (m *MemberLogic) GetUserInfo(userName string) (types.IXMap, error) {
 	return m.db.GetUserInfo(userName)
 }

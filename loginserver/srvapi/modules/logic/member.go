@@ -4,7 +4,6 @@ import (
 	"fmt"
 
 	"github.com/Owen-Zhang/base64Captcha"
-	"github.com/micro-plat/lib4go/db"
 	"github.com/micro-plat/lib4go/errs"
 	"github.com/micro-plat/lib4go/types"
 	"github.com/micro-plat/sso/sso/errorcode"
@@ -20,10 +19,10 @@ import (
 
 //IMemberLogic 用户登录
 type IMemberLogic interface {
-	QueryUserInfo(u string, ident string) (info db.QueryRow, err error)
+	QueryUserInfo(u string, ident string) (info types.IXMap, err error)
 	GetUserInfoByCode(code, ident string) (res *model.LoginState, err error)
-	QueryUserSystem(userID int, ident string) (s db.QueryRows, err error)
-	QueryAllUserInfo(ident, source, sourceID string) (s db.QueryRows, err error)
+	QueryUserSystem(userID int, ident string) (s types.XMaps, err error)
+	QueryAllUserInfo(ident, source, sourceID string) (s types.XMaps, err error)
 	GetAllUserInfoByUserRole(userID int, ident string) (string, error)
 	GetRoleMenus(roleID int, ident string) (types.XMaps, error)
 	GenerateVerifyCode(userName string) (string, error)
@@ -44,17 +43,17 @@ func NewMemberLogic() *MemberLogic {
 }
 
 //QueryUserSystem 查询用户可用的子系统
-func (m *MemberLogic) QueryUserSystem(userID int, ident string) (s db.QueryRows, err error) {
+func (m *MemberLogic) QueryUserSystem(userID int, ident string) (s types.XMaps, err error) {
 	return m.db.QueryUserSystem(userID, ident)
 }
 
 //QueryAllUserInfo 获取所有用户信息
-func (m *MemberLogic) QueryAllUserInfo(ident, source, sourceID string) (s db.QueryRows, err error) {
+func (m *MemberLogic) QueryAllUserInfo(ident, source, sourceID string) (s types.XMaps, err error) {
 	return m.db.QueryAllUserInfo(ident, source, sourceID)
 }
 
 // QueryUserInfo 返回用户信息
-func (m *MemberLogic) QueryUserInfo(u string, ident string) (ls db.QueryRow, err error) {
+func (m *MemberLogic) QueryUserInfo(u string, ident string) (ls types.IXMap, err error) {
 	if ls, err = m.db.QueryByUserName(u, ident); err != nil {
 		return nil, err
 	}

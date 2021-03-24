@@ -6,7 +6,6 @@ import (
 	"net/http"
 
 	"github.com/micro-plat/hydra/components"
-	"github.com/micro-plat/lib4go/db"
 	"github.com/micro-plat/lib4go/errs"
 	"github.com/micro-plat/lib4go/types"
 )
@@ -19,10 +18,10 @@ const (
 )
 
 type ICacheSystem interface {
-	Save(s db.QueryRow) (err error)
-	SaveSysInfo(name string, status string, pi int, ps int, s db.QueryRows, count int) (err error)
-	Query(ident string) (ls db.QueryRow, err error)
-	QuerySysInfo(name string, status string, pi int, ps int) (ls db.QueryRows, count int, err error)
+	Save(s types.IXMap) (err error)
+	SaveSysInfo(name string, status string, pi int, ps int, s types.XMaps, count int) (err error)
+	Query(ident string) (ls types.IXMap, err error)
+	QuerySysInfo(name string, status string, pi int, ps int) (ls types.XMaps, count int, err error)
 	FreshSysInfo() (err error)
 }
 
@@ -38,7 +37,7 @@ func NewCacheSystem() *CacheSystem {
 }
 
 //Save 缓存用户信息
-func (l *CacheSystem) Save(s db.QueryRow) (err error) {
+func (l *CacheSystem) Save(s types.IXMap) (err error) {
 	buff, err := json.Marshal(s)
 	if err != nil {
 		return err
@@ -49,7 +48,7 @@ func (l *CacheSystem) Save(s db.QueryRow) (err error) {
 }
 
 //Query 用户登录
-func (l *CacheSystem) Query(ident string) (ls db.QueryRow, err error) {
+func (l *CacheSystem) Query(ident string) (ls types.IXMap, err error) {
 	//从缓存中查询用户数据
 	cache := components.Def.Cache().GetRegularCache("redis")
 	key := types.Translate(cacheFormat, "ident", ident)
@@ -60,7 +59,7 @@ func (l *CacheSystem) Query(ident string) (ls db.QueryRow, err error) {
 	if v == "" {
 		return nil, errs.NewError(http.StatusForbidden, "ident无效")
 	}
-	nmap := make(map[string]interface{})
+	nmap := make(types.XMap)
 	if err = json.Unmarshal([]byte(v), &nmap); err != nil {
 		return nil, err
 	}
@@ -69,7 +68,7 @@ func (l *CacheSystem) Query(ident string) (ls db.QueryRow, err error) {
 }
 
 //SaveSysInfo  写入系统数据缓存
-func (l *CacheSystem) SaveSysInfo(name string, status string, pi int, ps int, s db.QueryRows, count int) (err error) {
+func (l *CacheSystem) SaveSysInfo(name string, status string, pi int, ps int, s types.XMaps, count int) (err error) {
 	buff, err := json.Marshal(s)
 	if err != nil {
 		return err
@@ -84,7 +83,7 @@ func (l *CacheSystem) SaveSysInfo(name string, status string, pi int, ps int, s 
 }
 
 //QuerySysInfo  获取缓存系统数据
-func (l *CacheSystem) QuerySysInfo(name string, status string, pi int, ps int) (ls db.QueryRows, count int, err error) {
+func (l *CacheSystem) QuerySysInfo(name string, status string, pi int, ps int) (ls types.XMaps, count int, err error) {
 	//从缓存中获取系统数据
 	cache := components.Def.Cache().GetRegularCache("redis")
 	keyData := types.Translate(cacheFormatSys, "name", name, "status", status, "pi", pi, "ps", ps)
@@ -96,7 +95,7 @@ func (l *CacheSystem) QuerySysInfo(name string, status string, pi int, ps int) (
 	if v == "" {
 		return nil, 0, errs.NewError(http.StatusForbidden, "无数据")
 	}
-	var nmap db.QueryRows
+	var nmap types.XMaps
 	if err = json.Unmarshal([]byte(v), &nmap); err != nil {
 		return nil, 0, err
 	}

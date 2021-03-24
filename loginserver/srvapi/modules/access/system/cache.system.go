@@ -5,7 +5,6 @@ import (
 	"net/http"
 
 	"github.com/micro-plat/hydra/components"
-	"github.com/micro-plat/lib4go/db"
 	"github.com/micro-plat/lib4go/errs"
 	"github.com/micro-plat/lib4go/types"
 )
@@ -18,8 +17,8 @@ const (
 )
 
 type ICacheSystem interface {
-	Save(s db.QueryRow) (err error)
-	Query(ident string) (ls db.QueryRow, err error)
+	Save(s types.IXMap) (err error)
+	Query(ident string) (ls types.IXMap, err error)
 }
 
 type CacheSystem struct {
@@ -34,7 +33,7 @@ func NewCacheSystem() *CacheSystem {
 }
 
 //Save 缓存用户信息
-func (l *CacheSystem) Save(s db.QueryRow) (err error) {
+func (l *CacheSystem) Save(s types.IXMap) (err error) {
 	buff, err := json.Marshal(s)
 	if err != nil {
 		return err
@@ -45,7 +44,7 @@ func (l *CacheSystem) Save(s db.QueryRow) (err error) {
 }
 
 //Query 获取系统信息
-func (l *CacheSystem) Query(ident string) (ls db.QueryRow, err error) {
+func (l *CacheSystem) Query(ident string) (ls types.IXMap, err error) {
 	cache := components.Def.Cache().GetRegularCache("redis")
 	key := types.Translate(cacheFormat, "ident", ident)
 	v, err := cache.Get(key)
@@ -55,7 +54,7 @@ func (l *CacheSystem) Query(ident string) (ls db.QueryRow, err error) {
 	if v == "" {
 		return nil, errs.NewError(http.StatusBadRequest, "ident无效")
 	}
-	nmap := make(map[string]interface{})
+	nmap := make(types.XMap)
 	if err = json.Unmarshal([]byte(v), &nmap); err != nil {
 		return nil, err
 	}

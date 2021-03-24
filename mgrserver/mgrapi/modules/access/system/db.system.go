@@ -4,23 +4,22 @@ import (
 	"fmt"
 
 	"github.com/micro-plat/hydra/components"
-	"github.com/micro-plat/lib4go/db"
 	"github.com/micro-plat/lib4go/types"
 	"github.com/micro-plat/sso/mgrserver/mgrapi/modules/const/sqls"
 	"github.com/micro-plat/sso/mgrserver/mgrapi/modules/model"
 )
 
 type IDbSystem interface {
-	Get(ident string) (s db.QueryRow, err error)
-	GetAll(userId int64) (s db.QueryRows, err error)
-	Query(name string, status string, pi int, ps int) (data db.QueryRows, count int, err error)
+	Get(ident string) (s types.IXMap, err error)
+	GetAll(userId int64) (s types.XMaps, err error)
+	Query(name string, status string, pi int, ps int) (data types.XMaps, count int, err error)
 	Delete(id int) (err error)
 	ExistsNameOrIdent(name, ident, id string) (int, error)
 	Add(input *model.AddSystemInput) (err error)
 	ChangeStatus(sysID int, status int) (err error)
 	Edit(input *model.SystemEditInput) (err error)
 	Sort(sysID, sortRank, levelID, id, parentId int, isUp bool) (err error)
-	GetUsers(systemName string) (user db.QueryRows, allUser db.QueryRows, err error)
+	GetUsers(systemName string) (user types.XMaps, allUser types.XMaps, err error)
 	ChangeSecret(id int, secret string) error
 }
 
@@ -32,7 +31,7 @@ func NewDbSystem() *DbSystem {
 }
 
 //Get 从数据库中获取系统信息
-func (l *DbSystem) Get(ident string) (s db.QueryRow, err error) {
+func (l *DbSystem) Get(ident string) (s types.IXMap, err error) {
 	db := components.Def.DB().GetRegularDB()
 	data, err := db.Query(sqls.QuerySystemInfo, map[string]interface{}{
 		"ident": ident,
@@ -40,7 +39,7 @@ func (l *DbSystem) Get(ident string) (s db.QueryRow, err error) {
 	return data.Get(0), err
 }
 
-func (l *DbSystem) GetAll(userId int64) (s db.QueryRows, err error) {
+func (l *DbSystem) GetAll(userId int64) (s types.XMaps, err error) {
 	db := components.Def.DB().GetRegularDB()
 	data, err := db.Query(sqls.QueryAllSystemInfo, map[string]interface{}{
 		"user_id": userId,
@@ -50,7 +49,7 @@ func (l *DbSystem) GetAll(userId int64) (s db.QueryRows, err error) {
 }
 
 //Query 获取用系统列表
-func (u *DbSystem) Query(name string, status string, pi int, ps int) (data db.QueryRows, count int, err error) {
+func (u *DbSystem) Query(name string, status string, pi int, ps int) (data types.XMaps, count int, err error) {
 	db := components.Def.DB().GetRegularDB()
 	c, err := db.Scalar(sqls.QuerySubSystemTotalCount, map[string]interface{}{
 		"name":   " and name like '%" + name + "%'",
@@ -222,7 +221,7 @@ func (u *DbSystem) Sort(sysID, sortRank, levelID, id, parentId int, isUp bool) (
 }
 
 //GetUsers 获取系统下所有用户
-func (u *DbSystem) GetUsers(systemName string) (user db.QueryRows, allUser db.QueryRows, err error) {
+func (u *DbSystem) GetUsers(systemName string) (user types.XMaps, allUser types.XMaps, err error) {
 
 	db := components.Def.DB().GetRegularDB()
 	data, err := db.Query(sqls.GetUsers, map[string]interface{}{

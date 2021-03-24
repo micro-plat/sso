@@ -5,16 +5,15 @@ import (
 	"fmt"
 
 	"github.com/micro-plat/hydra/components"
-	"github.com/micro-plat/lib4go/db"
 	"github.com/micro-plat/lib4go/types"
 	"github.com/micro-plat/sso/mgrserver/mgrapi/modules/model"
 )
 
 type ICacheRole interface {
-	Get(sysID, roleID int, path string) (data db.QueryRows, err error)
-	SetPageAuth(sysID int, roleID int, path string, data db.QueryRows) error
-	Query(s *model.QueryRoleInput) (data db.QueryRows, count int, err error)
-	Save(s *model.QueryRoleInput, data db.QueryRows, count int) error
+	Get(sysID, roleID int, path string) (data types.XMaps, err error)
+	SetPageAuth(sysID int, roleID int, path string, data types.XMaps) error
+	Query(s *model.QueryRoleInput) (data types.XMaps, count int, err error)
+	Save(s *model.QueryRoleInput, data types.XMaps, count int) error
 	Delete() error
 	SaveAuthMenu(sysID int64, roleID int64, data []map[string]interface{}) error
 	QueryAuthMenu(sysID int64, roleID int64) (data []map[string]interface{}, err error)
@@ -43,7 +42,7 @@ func NewCacheRole() *CacheRole {
 		cacheTime: 3600 * 24,
 	}
 }
-func (l *CacheRole) Get(sysID, roleID int, path string) (data db.QueryRows, err error) {
+func (l *CacheRole) Get(sysID, roleID int, path string) (data types.XMaps, err error) {
 	cache := components.Def.Cache().GetRegularCache("redis")
 	key := types.Translate(cachePageAuth, "sysID", sysID, "roleID", roleID, "path", path)
 	v, err := cache.Get(key)
@@ -53,14 +52,14 @@ func (l *CacheRole) Get(sysID, roleID int, path string) (data db.QueryRows, err 
 	if v == "" {
 		return nil, fmt.Errorf("无数据")
 	}
-	nmap := make(db.QueryRows, 0, 0)
+	nmap := make(types.XMaps, 0, 0)
 	if err = json.Unmarshal([]byte(v), &nmap); err != nil {
 		return nil, err
 	}
 	return nmap, err
 }
 
-func (l *CacheRole) SetPageAuth(sysID int, roleID int, path string, data db.QueryRows) error {
+func (l *CacheRole) SetPageAuth(sysID int, roleID int, path string, data types.XMaps) error {
 	buff, err := json.Marshal(data)
 	if err != nil {
 		return err
@@ -71,7 +70,7 @@ func (l *CacheRole) SetPageAuth(sysID int, roleID int, path string, data db.Quer
 }
 
 //Save 缓存角色列表信息
-func (l *CacheRole) Save(s *model.QueryRoleInput, data db.QueryRows, count int) error {
+func (l *CacheRole) Save(s *model.QueryRoleInput, data types.XMaps, count int) error {
 	buff, err := json.Marshal(data)
 	if err != nil {
 		return err
@@ -86,7 +85,7 @@ func (l *CacheRole) Save(s *model.QueryRoleInput, data db.QueryRows, count int) 
 }
 
 //Query 获取角色列表数据
-func (l *CacheRole) Query(s *model.QueryRoleInput) (data db.QueryRows, count int, err error) {
+func (l *CacheRole) Query(s *model.QueryRoleInput) (data types.XMaps, count int, err error) {
 	//从缓存中查询角色列表数据
 	cache := components.Def.Cache().GetRegularCache("redis")
 	keyData := types.Translate(cacheRoleListFormat, "roleName", s.RoleName, "pageSize", s.PageSize, "pageIndex", s.PageIndex)
@@ -98,7 +97,7 @@ func (l *CacheRole) Query(s *model.QueryRoleInput) (data db.QueryRows, count int
 	if v == "" {
 		return nil, 0, fmt.Errorf("无角色列表数据")
 	}
-	nmap := make(db.QueryRows, 0, 8)
+	nmap := make(types.XMaps, 0, 8)
 	if err = json.Unmarshal([]byte(v), &nmap); err != nil {
 		return nil, 0, err
 	}

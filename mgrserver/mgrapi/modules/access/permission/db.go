@@ -4,14 +4,13 @@ import (
 	"fmt"
 
 	"github.com/micro-plat/hydra/components"
-	"github.com/micro-plat/lib4go/db"
 	"github.com/micro-plat/lib4go/types"
 	"github.com/micro-plat/sso/mgrserver/mgrapi/modules/const/sqls"
 	"github.com/micro-plat/sso/mgrserver/mgrapi/modules/model"
 )
 
 type IDbDataPermission interface {
-	Query(sysID, name, tableName string, pi int, ps int) (data db.QueryRows, count int, err error)
+	Query(sysID, name, tableName string, pi int, ps int) (data types.XMaps, count int, err error)
 	Delete(id int) (err error)
 	Add(input *model.DataPermissionReq) (err error)
 	Edit(input *model.DataPermissionReq) (err error)
@@ -26,7 +25,7 @@ func NewDbDataPermission() *DbDataPermission {
 }
 
 //Query 获取数据权限 数据
-func (u *DbDataPermission) Query(sysID, name, tableName string, pi int, ps int) (data db.QueryRows, count int, err error) {
+func (u *DbDataPermission) Query(sysID, name, tableName string, pi int, ps int) (data types.XMaps, count int, err error) {
 	db := components.Def.DB().GetRegularDB()
 	c, err := db.Scalar(sqls.QueryDataPermissionTotalCount, map[string]interface{}{
 		"sys_id":     sysID,

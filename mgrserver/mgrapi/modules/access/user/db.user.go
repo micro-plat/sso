@@ -5,7 +5,6 @@ import (
 	"strings"
 
 	"github.com/micro-plat/hydra/components"
-	"github.com/micro-plat/lib4go/db"
 	"github.com/micro-plat/lib4go/errs"
 	"github.com/micro-plat/lib4go/security/md5"
 	"github.com/micro-plat/lib4go/types"
@@ -17,17 +16,17 @@ import (
 )
 
 type IDbUser interface {
-	Query(input *model.QueryUserInput) (data db.QueryRows, total int, err error)
+	Query(input *model.QueryUserInput) (data types.XMaps, total int, err error)
 	ChangeStatus(userID int, status int) (err error)
-	Get(userID int) (data db.QueryRow, err error)
-	GetAll(sysID, pi, ps int) (data db.QueryRows, count int, err error)
+	Get(userID int) (data types.IXMap, err error)
+	GetAll(sysID, pi, ps int) (data types.XMaps, count int, err error)
 	Delete(userID int) (err error)
 	Edit(input *model.UserInputNew) (err error)
 	Add(input *model.UserInputNew) (err error)
 	EditInfo(username string, tel string, email string) (err error)
 	ResetPwd(userID int) (err error)
-	GetUserInfoByName(userName string) (data db.QueryRow, err error)
-	GetUserInfoByFullName(fullName string) (data db.QueryRow, err error)
+	GetUserInfoByName(userName string) (data types.IXMap, err error)
+	GetUserInfoByFullName(fullName string) (data types.IXMap, err error)
 }
 
 type DbUser struct{}
@@ -37,7 +36,7 @@ func NewDbUser() *DbUser {
 }
 
 //Query 获取用户信息列表
-func (u *DbUser) Query(input *model.QueryUserInput) (data db.QueryRows, total int, err error) {
+func (u *DbUser) Query(input *model.QueryUserInput) (data types.XMaps, total int, err error) {
 	db := components.Def.DB().GetRegularDB()
 	params := map[string]interface{}{
 		"role_id":   input.RoleID,
@@ -141,7 +140,7 @@ func (u *DbUser) Delete(userID int) (err error) {
 }
 
 //Get 查询用户信息
-func (u *DbUser) Get(userID int) (data db.QueryRow, err error) {
+func (u *DbUser) Get(userID int) (data types.IXMap, err error) {
 	db := components.Def.DB().GetRegularDB()
 	result, err := db.Query(sqls.QueryUserInfo, map[string]interface{}{
 		"user_id": userID,
@@ -157,7 +156,7 @@ func (u *DbUser) Get(userID int) (data db.QueryRow, err error) {
 	return result.Get(0), nil
 }
 
-func (u *DbUser) GetAll(sysID, pi, ps int) (data db.QueryRows, count int, err error) {
+func (u *DbUser) GetAll(sysID, pi, ps int) (data types.XMaps, count int, err error) {
 	db := components.Def.DB().GetRegularDB()
 	c, err := db.Scalar(sqls.QueryUserBySysCount, map[string]interface{}{
 		"sys_id": sysID,
@@ -284,7 +283,7 @@ func (u *DbUser) ResetPwd(userID int) (err error) {
 }
 
 //GetUserInfoByName 根据用户名查询用户信息
-func (u *DbUser) GetUserInfoByName(userName string) (data db.QueryRow, err error) {
+func (u *DbUser) GetUserInfoByName(userName string) (data types.IXMap, err error) {
 	db := components.Def.DB().GetRegularDB()
 	result, err := db.Query(sqls.GetUserInfoByName, map[string]interface{}{"user_name": userName})
 	if err != nil {
@@ -297,7 +296,7 @@ func (u *DbUser) GetUserInfoByName(userName string) (data db.QueryRow, err error
 }
 
 //GetUserInfoByFullName 根据姓名查询用户信息
-func (u *DbUser) GetUserInfoByFullName(fullName string) (data db.QueryRow, err error) {
+func (u *DbUser) GetUserInfoByFullName(fullName string) (data types.IXMap, err error) {
 	db := components.Def.DB().GetRegularDB()
 	result, err := db.Query(sqls.GetUserInfoByFullName, map[string]interface{}{"full_name": fullName})
 	if err != nil {

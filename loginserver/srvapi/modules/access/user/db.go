@@ -4,7 +4,6 @@ import (
 	"fmt"
 
 	"github.com/micro-plat/hydra/components"
-	"github.com/micro-plat/lib4go/db"
 	"github.com/micro-plat/lib4go/errs"
 	"github.com/micro-plat/lib4go/security/md5"
 	"github.com/micro-plat/lib4go/types"
@@ -83,7 +82,7 @@ func (l *DBUser) AddUser(req model.UserInputNew) error {
 }
 
 //GetUserInfoByName 根据用户名查询用户信息
-func (l *DBUser) GetUserInfoByName(userName string) (data db.QueryRow, err error) {
+func (l *DBUser) GetUserInfoByName(userName string) (data types.IXMap, err error) {
 	db := components.Def.DB().GetRegularDB()
 	result, err := db.Query(sqls.GetUserInfoByName, map[string]interface{}{"user_name": userName})
 	if err != nil {

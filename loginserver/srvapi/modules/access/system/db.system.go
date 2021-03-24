@@ -4,12 +4,12 @@ import (
 	"fmt"
 
 	"github.com/micro-plat/hydra/components"
-	"github.com/micro-plat/lib4go/db"
+	"github.com/micro-plat/lib4go/types"
 	"github.com/micro-plat/sso/loginserver/srvapi/modules/const/sqls"
 )
 
 type IDbSystem interface {
-	Get(ident string) (s db.QueryRow, err error)
+	Get(ident string) (s types.IXMap, err error)
 	QuerySystemStatus(ident string) (s int, err error)
 }
 
@@ -22,7 +22,7 @@ func NewDbSystem() *DbSystem {
 }
 
 //Get 从数据库中获取系统信息
-func (l *DbSystem) Get(ident string) (s db.QueryRow, err error) {
+func (l *DbSystem) Get(ident string) (s types.IXMap, err error) {
 	db := components.Def.DB().GetRegularDB()
 	data, err := db.Query(sqls.QuerySystemInfo, map[string]interface{}{
 		"ident": ident,

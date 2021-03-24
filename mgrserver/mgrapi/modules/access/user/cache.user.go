@@ -5,21 +5,20 @@ import (
 	"fmt"
 
 	"github.com/micro-plat/hydra/components"
-	"github.com/micro-plat/lib4go/db"
 	"github.com/micro-plat/lib4go/types"
 	cacheConst "github.com/micro-plat/sso/mgrserver/mgrapi/modules/const/cache"
 	"github.com/micro-plat/sso/mgrserver/mgrapi/modules/model"
 )
 
 type ICacheUser interface {
-	Query(s *model.QueryUserInput) (data db.QueryRows, total int, err error)
-	Save(s *model.QueryUserInput, data db.QueryRows, total int) error
+	Query(s *model.QueryUserInput) (data types.XMaps, total int, err error)
+	Save(s *model.QueryUserInput, data types.XMaps, total int) error
 	Delete() error
-	SaveUser(userID int, data db.QueryRow) error
-	QueryUser(userID int) (data db.QueryRow, err error)
+	SaveUser(userID int, data types.IXMap) error
+	QueryUser(userID int) (data types.IXMap, err error)
 	DeleteUser() error
-	QueryUserBySys(sysID, pi, ps int) (data db.QueryRows, counr int, err error)
-	SaveUserBySys(sysID, pi, ps int, data db.QueryRows, count int) (err error)
+	QueryUserBySys(sysID, pi, ps int) (data types.XMaps, counr int, err error)
+	SaveUserBySys(sysID, pi, ps int, data types.XMaps, count int) (err error)
 
 	DeleteLockUserInfo(userName string) error
 }
@@ -43,7 +42,7 @@ func (l *CacheUser) DeleteLockUserInfo(userName string) error {
 	return cache.Delete(key)
 }
 
-func (l *CacheUser) QueryUserBySys(sysID, pi, ps int) (data db.QueryRows, counr int, err error) {
+func (l *CacheUser) QueryUserBySys(sysID, pi, ps int) (data types.XMaps, counr int, err error) {
 	//从缓存中查询用户列表数据
 	cache := components.Def.Cache().GetRegularCache("redis")
 	keyData := types.Translate(cacheConst.CacheUserSysFormat, "sysID", sysID, "pi", pi, "ps", ps)
@@ -55,7 +54,7 @@ func (l *CacheUser) QueryUserBySys(sysID, pi, ps int) (data db.QueryRows, counr 
 	if v == "" {
 		return nil, 0, fmt.Errorf("无用户列表数据")
 	}
-	nmap := make(db.QueryRows, 0)
+	nmap := make(types.XMaps, 0)
 	if err = json.Unmarshal([]byte(v), &nmap); err != nil {
 		return nil, 0, err
 	}
@@ -67,7 +66,7 @@ func (l *CacheUser) QueryUserBySys(sysID, pi, ps int) (data db.QueryRows, counr 
 	return nmap, types.GetInt(c, 0), err
 }
 
-func (l *CacheUser) SaveUserBySys(sysID, pi, ps int, data db.QueryRows, count int) (err error) {
+func (l *CacheUser) SaveUserBySys(sysID, pi, ps int, data types.XMaps, count int) (err error) {
 	buff, err := json.Marshal(data)
 	if err != nil {
 		return err
@@ -83,7 +82,7 @@ func (l *CacheUser) SaveUserBySys(sysID, pi, ps int, data db.QueryRows, count in
 }
 
 //Save 缓存用户列表信息
-func (l *CacheUser) Save(s *model.QueryUserInput, data db.QueryRows, count int) error {
+func (l *CacheUser) Save(s *model.QueryUserInput, data types.XMaps, count int) error {
 	buff, err := json.Marshal(data)
 	if err != nil {
 		return err
@@ -99,7 +98,7 @@ func (l *CacheUser) Save(s *model.QueryUserInput, data db.QueryRows, count int) 
 }
 
 //Query 获取用户列表数据
-func (l *CacheUser) Query(s *model.QueryUserInput) (data db.QueryRows, total int, err error) {
+func (l *CacheUser) Query(s *model.QueryUserInput) (data types.XMaps, total int, err error) {
 	//从缓存中查询用户列表数据
 	cache := components.Def.Cache().GetRegularCache("redis")
 	keyData := types.Translate(cacheConst.CacheUserListFormat, "userName", s.UserName, "roleID", s.RoleID, "pageSize", s.PageSize, "pageIndex", s.PageIndex)
@@ -111,7 +110,7 @@ func (l *CacheUser) Query(s *model.QueryUserInput) (data db.QueryRows, total int
 	if v == "" {
 		return nil, 0, fmt.Errorf("无用户列表数据")
 	}
-	nmap := make(db.QueryRows, 0)
+	nmap := make(types.XMaps, 0)
 	if err = json.Unmarshal([]byte(v), &nmap); err != nil {
 		return nil, 0, err
 	}
@@ -133,7 +132,7 @@ func (l *CacheUser) Delete() error {
 }
 
 //SaveUser 缓存用户信息
-func (l *CacheUser) SaveUser(userID int, data db.QueryRow) error {
+func (l *CacheUser) SaveUser(userID int, data types.IXMap) error {
 	buff, err := json.Marshal(data)
 	if err != nil {
 		return err
@@ -144,7 +143,7 @@ func (l *CacheUser) SaveUser(userID int, data db.QueryRow) error {
 }
 
 //QueryUser 获取用户数据
-func (l *CacheUser) QueryUser(userID int) (data db.QueryRow, err error) {
+func (l *CacheUser) QueryUser(userID int) (data types.IXMap, err error) {
 	//从缓存中查询用户数据
 	cache := components.Def.Cache().GetRegularCache("redis")
 	key := types.Translate(cacheConst.CacheUserFormat, "userID", userID)
@@ -155,7 +154,7 @@ func (l *CacheUser) QueryUser(userID int) (data db.QueryRow, err error) {
 	if v == "" {
 		return nil, fmt.Errorf("无用户数据")
 	}
-	nmap := make(db.QueryRow)
+	nmap := make(types.XMap)
 	if err = json.Unmarshal([]byte(v), &nmap); err != nil {
 		return nil, err
 	}

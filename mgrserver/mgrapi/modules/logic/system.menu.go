@@ -1,8 +1,8 @@
 package logic
 
 import (
-	"github.com/micro-plat/lib4go/db"
 	"github.com/micro-plat/lib4go/errs"
+	"github.com/micro-plat/lib4go/types"
 	"github.com/micro-plat/sso/mgrserver/mgrapi/modules/access/menu"
 	"github.com/micro-plat/sso/mgrserver/mgrapi/modules/model"
 	"github.com/micro-plat/sso/sso/errorcode"
@@ -10,7 +10,7 @@ import (
 
 //ISystemMenuLogic interface
 type ISystemMenuLogic interface {
-	Export(sysID int) (s db.QueryRows, err error)
+	Export(sysID int) (s types.XMaps, err error)
 	Import(req *model.ImportReq) error
 }
 
@@ -27,7 +27,7 @@ func NewSystemMenuLogic() *SystemMenuLogic {
 }
 
 //Export 导出系统菜单
-func (u *SystemMenuLogic) Export(sysID int) (s db.QueryRows, err error) {
+func (u *SystemMenuLogic) Export(sysID int) (s types.XMaps, err error) {
 	if s, err = u.db.Export(sysID); err != nil {
 		return nil, err
 	}

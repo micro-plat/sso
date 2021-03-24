@@ -1,23 +1,23 @@
 package logic
 
 import (
-	"github.com/micro-plat/lib4go/db"
 	"github.com/micro-plat/lib4go/errs"
+	"github.com/micro-plat/lib4go/types"
 	"github.com/micro-plat/sso/mgrserver/mgrapi/modules/access/system"
 	"github.com/micro-plat/sso/mgrserver/mgrapi/modules/model"
 	"github.com/micro-plat/sso/sso/errorcode"
 )
 
 type ISystemLogic interface {
-	Get(ident string) (s db.QueryRow, err error)
-	GetAll(userId int64) (s db.QueryRows, err error)
-	Query(name string, status string, pi int, ps int) (data db.QueryRows, count int, err error)
+	Get(ident string) (s types.IXMap, err error)
+	GetAll(userId int64) (s types.XMaps, err error)
+	Query(name string, status string, pi int, ps int) (data types.XMaps, count int, err error)
 	Delete(id int) (err error)
 	Add(input *model.AddSystemInput) (err error)
 	ChangeStatus(sysId int, status int) (err error)
 	Edit(input *model.SystemEditInput) (err error)
 	Sort(sysID, sortrank, levelID, id, parentId int, isUp bool) (err error)
-	GetUsers(systemName string) (user db.QueryRows, allUser db.QueryRows, err error)
+	GetUsers(systemName string) (user types.XMaps, allUser types.XMaps, err error)
 	ChangeSecret(id int, secret string) error
 }
 
@@ -32,19 +32,19 @@ func NewSystemLogic() *SystemLogic {
 }
 
 //Get 从数据库中获取系统信息
-func (u *SystemLogic) Get(ident string) (s db.QueryRow, err error) {
+func (u *SystemLogic) Get(ident string) (s types.IXMap, err error) {
 	if s, err = u.db.Get(ident); err != nil {
 		return nil, err
 	}
 	return s, nil
 }
 
-func (u *SystemLogic) GetAll(userId int64) (s db.QueryRows, err error) {
+func (u *SystemLogic) GetAll(userId int64) (s types.XMaps, err error) {
 	return u.db.GetAll(userId)
 }
 
 //Query 获取用系统管理列表
-func (u *SystemLogic) Query(name string, status string, pi int, ps int) (data db.QueryRows, count int, err error) {
+func (u *SystemLogic) Query(name string, status string, pi int, ps int) (data types.XMaps, count int, err error) {
 	data, count, err = u.db.Query(name, status, pi, ps)
 	if err != nil {
 		return nil, 0, err
@@ -111,7 +111,7 @@ func (u *SystemLogic) Sort(sysID, sortrank, levelID, id, parentId int, isUp bool
 }
 
 //GetUsers 获取系统下所有用户
-func (u *SystemLogic) GetUsers(systemName string) (user db.QueryRows, allUser db.QueryRows, err error) {
+func (u *SystemLogic) GetUsers(systemName string) (user types.XMaps, allUser types.XMaps, err error) {
 	return u.db.GetUsers(systemName)
 }
 

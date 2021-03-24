@@ -1,22 +1,22 @@
 package logic
 
 import (
-	"github.com/micro-plat/lib4go/db"
 	"github.com/micro-plat/lib4go/errs"
+	"github.com/micro-plat/lib4go/types"
 	"github.com/micro-plat/sso/mgrserver/mgrapi/modules/access/role"
 	"github.com/micro-plat/sso/mgrserver/mgrapi/modules/model"
 	"github.com/micro-plat/sso/sso/errorcode"
 )
 
 type IRoleLogic interface {
-	//Get(sysID int, roleID int, path string) (data db.QueryRows, err error)
-	Query(input *model.QueryRoleInput) (data db.QueryRows, count int, err error)
+	//Get(sysID int, roleID int, path string) (data types.XMaps, err error)
+	Query(input *model.QueryRoleInput) (data types.XMaps, count int, err error)
 	ChangeStatus(roleID string, status int) (err error)
 	Delete(roleID int) (err error)
 	Save(input *model.RoleEditInput) (err error)
 	Auth(input *model.RoleAuthInput) (err error)
 	QueryAuthMenu(sysID int64, roleID int64) (results []map[string]interface{}, err error)
-	QueryAuthDataPermission(req model.RolePermissionQueryReq) (data db.QueryRows, err error)
+	QueryAuthDataPermission(req model.RolePermissionQueryReq) (data types.XMaps, err error)
 	SaveRolePermission(req model.RolePermissionReq) error
 	ChangeRolePermissionStatus(id string, status int) error
 	DelRolePermission(id string) error
@@ -35,7 +35,7 @@ func NewRoleLogic() *RoleLogic {
 }
 
 // //Get 获取页面权限
-// func (r *RoleLogic) Get(sysID int, roleID int, path string) (data db.QueryRows, err error) {
+// func (r *RoleLogic) Get(sysID int, roleID int, path string) (data types.XMaps, err error) {
 // 	if data, err = r.db.Get(sysID, roleID, path); err != nil {
 // 		return nil, err
 // 	}
@@ -44,7 +44,7 @@ func NewRoleLogic() *RoleLogic {
 // }
 
 //Query 获取角色信息列表
-func (r *RoleLogic) Query(input *model.QueryRoleInput) (data db.QueryRows, count int, err error) {
+func (r *RoleLogic) Query(input *model.QueryRoleInput) (data types.XMaps, count int, err error) {
 	if data, count, err = r.db.Query(input); err != nil {
 		return nil, 0, err
 	}
@@ -99,7 +99,7 @@ func (r *RoleLogic) QueryAuthMenu(sysID int64, roleID int64) (results []map[stri
 }
 
 //QueryAuthDataPermission 查询角色与数据权限的关联关系
-func (r *RoleLogic) QueryAuthDataPermission(req model.RolePermissionQueryReq) (data db.QueryRows, err error) {
+func (r *RoleLogic) QueryAuthDataPermission(req model.RolePermissionQueryReq) (data types.XMaps, err error) {
 	return r.db.QueryAuthDataPermission(req)
 }
 

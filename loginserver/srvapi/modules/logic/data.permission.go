@@ -1,7 +1,7 @@
 package logic
 
 import (
-	"github.com/micro-plat/lib4go/db"
+	"github.com/micro-plat/lib4go/types"
 
 	"github.com/micro-plat/sso/loginserver/srvapi/modules/access/datapermission"
 	"github.com/micro-plat/sso/loginserver/srvapi/modules/model"
@@ -9,7 +9,7 @@ import (
 
 //IDataPermissionLogic 数据权限
 type IDataPermissionLogic interface {
-	GetUserDataPermissionConfigs(req model.DataPermissionGetReq) (result db.QueryRows, err error)
+	GetUserDataPermissionConfigs(req model.DataPermissionGetReq) (result types.XMaps, err error)
 }
 
 //DataPermissionLogic 数据权限
@@ -25,6 +25,6 @@ func NewDataPermissionLogic() *DataPermissionLogic {
 }
 
 //GetUserDataPermissionConfigs 获取用户有权限的　[数据权限]　规则信息
-func (m *DataPermissionLogic) GetUserDataPermissionConfigs(req model.DataPermissionGetReq) (result db.QueryRows, err error) {
+func (m *DataPermissionLogic) GetUserDataPermissionConfigs(req model.DataPermissionGetReq) (result types.XMaps, err error) {
 	return m.db.GetUserDataPermissionConfigs(req)
 }

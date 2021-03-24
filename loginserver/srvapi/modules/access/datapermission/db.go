@@ -4,13 +4,13 @@ import (
 	"fmt"
 
 	"github.com/micro-plat/hydra/components"
-	"github.com/micro-plat/lib4go/db"
+	"github.com/micro-plat/lib4go/types"
 	"github.com/micro-plat/sso/loginserver/srvapi/modules/const/sqls"
 	"github.com/micro-plat/sso/loginserver/srvapi/modules/model"
 )
 
 type IDBDataPermission interface {
-	GetUserDataPermissionConfigs(req model.DataPermissionGetReq) (result db.QueryRows, err error)
+	GetUserDataPermissionConfigs(req model.DataPermissionGetReq) (result types.XMaps, err error)
 }
 
 //DBDataPermission 数据权限
@@ -23,7 +23,7 @@ func NewDBDataPermission() *DBDataPermission {
 }
 
 //GetUserDataPermissionConfigs 获取某个用户的数据权限规则配置信息
-func (l *DBDataPermission) GetUserDataPermissionConfigs(req model.DataPermissionGetReq) (result db.QueryRows, err error) {
+func (l *DBDataPermission) GetUserDataPermissionConfigs(req model.DataPermissionGetReq) (result types.XMaps, err error) {
 	db := components.Def.DB().GetRegularDB()
 	data, err := db.Query(sqls.QueryUserDataPermission, map[string]interface{}{
 		"user_id":        req.UserID,

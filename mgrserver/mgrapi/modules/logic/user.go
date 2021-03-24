@@ -7,7 +7,6 @@ import (
 	"time"
 
 	"github.com/jmz331/gpinyin"
-	"github.com/micro-plat/lib4go/db"
 	"github.com/micro-plat/lib4go/errs"
 	"github.com/micro-plat/lib4go/net"
 	"github.com/micro-plat/lib4go/security/md5"
@@ -20,11 +19,11 @@ import (
 )
 
 type IUserLogic interface {
-	Query(input *model.QueryUserInput) (data db.QueryRows, count int, err error)
+	Query(input *model.QueryUserInput) (data types.XMaps, count int, err error)
 	ChangeStatus(userID int, status int, userName string) (err error)
 	Delete(userID int) (err error)
-	Get(userID int) (data db.QueryRow, err error)
-	GetAll(sysID, pi, ps int) (data db.QueryRows, count int, err error)
+	Get(userID int) (data types.IXMap, err error)
+	GetAll(sysID, pi, ps int) (data types.XMaps, count int, err error)
 	Save(input *model.UserInputNew) (err error)
 	Add(input *model.UserInputNew) (err error)
 	Edit(username string, tel string, email string) (err error)
@@ -46,7 +45,7 @@ func NewUserLogic() *UserLogic {
 }
 
 //Query 获取用户信息列表
-func (u *UserLogic) Query(input *model.QueryUserInput) (data db.QueryRows, count int, err error) {
+func (u *UserLogic) Query(input *model.QueryUserInput) (data types.XMaps, count int, err error) {
 	if data, count, err = u.db.Query(input); err != nil {
 		return nil, 0, err
 	}
@@ -67,7 +66,7 @@ func (u *UserLogic) Delete(userID int) (err error) {
 }
 
 //Get 查询用户信息
-func (u *UserLogic) Get(userID int) (data db.QueryRow, err error) {
+func (u *UserLogic) Get(userID int) (data types.IXMap, err error) {
 	if data, err = u.db.Get(userID); err != nil {
 		return nil, err
 	}
@@ -76,7 +75,7 @@ func (u *UserLogic) Get(userID int) (data db.QueryRow, err error) {
 }
 
 //GetAll GetAll
-func (u *UserLogic) GetAll(sysID, pi, ps int) (data db.QueryRows, count int, err error) {
+func (u *UserLogic) GetAll(sysID, pi, ps int) (data types.XMaps, count int, err error) {
 	if data, count, err = u.db.GetAll(sysID, pi, ps); err != nil {
 		return nil, 0, err
 	}

@@ -6,7 +6,6 @@ import (
 	"strings"
 
 	"github.com/micro-plat/hydra/components"
-	"github.com/micro-plat/lib4go/db"
 	"github.com/micro-plat/lib4go/types"
 
 	"github.com/micro-plat/lib4go/errs"
@@ -17,10 +16,10 @@ import (
 )
 
 type IDBMember interface {
-	QueryByUserName(u string, ident string) (info db.QueryRow, err error)
+	QueryByUserName(u string, ident string) (info types.IXMap, err error)
 	QueryByID(uid int, ident string) (s *model.MemberState, err error)
-	QueryUserSystem(userID int, ident string) (s db.QueryRows, err error)
-	QueryAllUserInfo(ident, source, sourceID string) (s db.QueryRows, err error)
+	QueryUserSystem(userID int, ident string) (s types.XMaps, err error)
+	QueryAllUserInfo(ident, source, sourceID string) (s types.XMaps, err error)
 	GetAllUserInfoByUserRole(userID int, ident string) (string, error)
 	GetRoleMenus(roleID int, ident string) (types.XMaps, error)
 }
@@ -35,7 +34,7 @@ func NewDBMember() *DBMember {
 }
 
 //QueryAllUserInfo 获取全部用户
-func (l *DBMember) QueryAllUserInfo(ident, source, sourceID string) (s db.QueryRows, err error) {
+func (l *DBMember) QueryAllUserInfo(ident, source, sourceID string) (s types.XMaps, err error) {
 	db := components.Def.DB().GetRegularDB()
 
 	data, err := db.Query(commsqls.QuerySysInfoByIdent, map[string]interface{}{
@@ -62,7 +61,7 @@ func (l *DBMember) QueryAllUserInfo(ident, source, sourceID string) (s db.QueryR
 }
 
 // QueryByUserName 根据用户名查询用户信息
-func (l *DBMember) QueryByUserName(u string, ident string) (info db.QueryRow, err error) {
+func (l *DBMember) QueryByUserName(u string, ident string) (info types.IXMap, err error) {
 	//根据用户名，查询用户信息
 	db := components.Def.DB().GetRegularDB()
 	data, err := db.Query(commsqls.QueryUserByUserName, map[string]interface{}{
@@ -84,13 +83,13 @@ func (l *DBMember) QueryByUserName(u string, ident string) (info db.QueryRow, er
 	}
 
 	userData := data.Get(0)
-	userData["ident"] = ident
+	userData.SetValue("ident", ident)
 
 	return userData, err
 }
 
 //QueryUserSystem 查询用户可用的子系统
-func (l *DBMember) QueryUserSystem(userID int, ident string) (s db.QueryRows, err error) {
+func (l *DBMember) QueryUserSystem(userID int, ident string) (s types.XMaps, err error) {
 	db := components.Def.DB().GetRegularDB()
 	data, err := db.Query(sqls.QueryUserSystem, map[string]interface{}{
 		"user_id": userID,
