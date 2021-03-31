@@ -3,7 +3,7 @@
 *dist/
 .vscode/
 logs/
-conf/
+conf/logger.toml
 conf/logger.json
 /loginserver/loginserver
 /mgrserver/mgrserver

@@ -223,6 +223,16 @@ App.OnHandleExecuting(func(ctx hydra.IContext) (rt interface{}) {
 
 ```go
 
+//AppConfig 应用程序配置
+type AppConfig struct {
+  Secret      string   `json:"secret" valid:"ascii,required" label:"SSO系统签名秘钥"`
+  SSOApiHost  string   `json:"sso_api_host" valid:"ascii,required" label:"SSO接口地址"`
+  AuthIgnores []string `json:"auth_ignores" valid:"ascii" label:"忽略页面授权检查地址"`
+  Ident       string   `json:"ident"  valid:"ascii,required" label:"SSO系统编号"`
+}
+
+
+//初始化参数
 App.OnStarting(func(appConf app.IAPPConf) error {
     //检查配置信息
     var appcfg model.AppConfig
@@ -233,13 +243,11 @@ App.OnStarting(func(appConf app.IAPPConf) error {
     if err != nil {
       return err
     }
-
-    prefix := procObj.ServicePrefix
   
     if err := ssoSdk.Config(appcfg.SSOApiHost,
       appcfg.Ident,
       appcfg.Secret,
-      ssoSdk.WithAuthIgnore(prefix, appcfg.AuthIgnores...)); err != nil {
+      ssoSdk.WithAuthIgnore(procObj.ServicePrefix, appcfg.AuthIgnores...)); err != nil {
       return err
     }
 }
@@ -257,7 +265,7 @@ SsoApiHost:
 
 hydra.OnReady(func() error {
     hydra.Conf.Web("8181"). //端口根据业务自定定义
-    Jwt(jwt.WithExcludes("/sso/login/verify"))
+    Jwt(jwt.WithExcludes(sso.SSOVerifyURL))
 })
 /*
 注：
@@ -265,10 +273,3 @@ hydra.OnReady(func() error {
 */
 ```
 
-```go
-var Archive="mgr.static.zip"
-hydra.OnReady(func() error {
-    hydra.Conf.Web("8181"). //端口根据业务自定定义
-    Static(static.WithAutoRewrite(),static.WithAssetsPath(Archive))
-})
-```

@@ -2,9 +2,9 @@ module github.com/micro-plat/sso
 
 go 1.16
 
-replace github.com/micro-plat/hydra => ../../../github.com/micro-plat/hydra
+//replace github.com/micro-plat/hydra => ../../../github.com/micro-plat/hydra
 
-replace github.com/micro-plat/lib4go => ../../../github.com/micro-plat/lib4go
+//replace github.com/micro-plat/lib4go => ../../../github.com/micro-plat/lib4go
 
 //replace github.com/lib4dev/vcs => ../../../github.com/lib4dev/vcs
 

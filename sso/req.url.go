@@ -17,3 +17,5 @@ const passwordLogin = "/api/user/login"              //用户名密码登录
 const changePassword = "/api/user/changepwd"         //修改密码
 const forgetPassword = "/api/forget/password/change" //忘记密码并修改密码
 
+//SSO code 验证的服务地址
+const SSOVerifyURL = "/sso/login/verify"
