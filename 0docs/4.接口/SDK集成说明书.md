@@ -51,61 +51,29 @@ SSO系统集成分"前端项目"集成和"后端服务"接口集成以及部分�
 
 ```javascript
 //1. 添加引用（ services 是js包存放的位置）
-import utility from './services'
+import utility from './utility'
 Vue.use(utility);
 
-```
 
-#### 1.3  src/App.vue 文件调整（需读取服务端配置才调整）
-
-1.  直接复制下面内容到App.vue文件
-
-```vue
-
-<template>
-  <div id="vapp">
-    <router-view v-if="hasLoaded"/>
-  </div>
-</template>
-
-<script>
-export default {
-  name: 'App',
-  data(){
-    return{
-      hasLoaded: false
-    }
-  },
-  created(){ 
-    this.getWebconfig()
-  },
-  methods:{
-    async getWebconfig(){
-      var that = this;
-      await this.$env.load(async function(){
-        var data = await that.$http.get("/system/webconfig");
-        that.hasLoaded = true
-        return data;
-      });
-    }
+//2. 增加路由拦截处理
+router.beforeEach((to, from, next) => {
+  /* 路由发生变化修改页面title */
+  Vue.prototype.$sys.checkAuthCode(to)
+  if (to.path != "/") {
+      document.title = Vue.prototype.$sys.getTitle(to.path)
   }
-}
-</script>
+  next()
+})
 
 
 ```
-2. 后端提供配置读取服务：/system/webconfig
+ 
+2. 后端提供配置读取服务(如果需要)
 
-```go
-	App.Micro("/system/webconfig", system.WebConfigHandler)    
-
-//WebConfigHandler WebConfigHandler
-func WebConfigHandler(ctx hydra.IContext) interface{} {
-  //读取服务端配置
-  configData := map[string]interface{}{}
-	 
-	return configData
-}
+```text
+	请配置env.conf.json 文件中 api.confURL 为后端配置提供地址
+  注：
+     1. 接口地址必须返回json 格式数据
 
 ```
 
@@ -114,7 +82,7 @@ func WebConfigHandler(ctx hydra.IContext) interface{} {
 
 1. 直接将下面内容复制到项目内(src/pages/member/menu.vue)
 
-```vue
+```vue 
 <template>
   <div id="app">
     <nav-menu
@@ -135,79 +103,69 @@ func WebConfigHandler(ctx hydra.IContext) interface{} {
 </template>
 
 <script>
-  import navMenu from 'nav-menu'; // 引入
-  export default {
-    name: 'app',
-    data () {
-      return {
-        logo: "",
-        copyright: (this.$env.conf.copyright.company||"") + "Copyright©" + new Date().getFullYear() +"版权所有",
-        copyrightcode: this.$env.conf.copyright.code ,
-        themes: "", //顶部左侧背景颜色,顶部右侧背景颜色,右边菜单背景颜色
-        menus: [{}],  //菜单数据
-        systemName: "",  //系统名称
-        userinfo:{},
-        items:[]
-      }
+import navMenu from "nav-menu"; // 引入
+export default {
+  name: "app",
+  data() {
+    return {
+      logo: "",
+      copyright:
+        (this.$env.conf.copyright.company || "") +
+        "Copyright©" +
+        new Date().getFullYear() +
+        "版权所有",
+      copyrightcode: this.$env.conf.copyright.code,
+      themes: "", //顶部左侧背景颜色,顶部右侧背景颜色,右边菜单背景颜色
+      menus: [{}], //菜单数据
+      systemName: "", //系统名称
+      userinfo: {},
+      items: [],
+    };
+  },
+  components: {
+    //注册插件
+    navMenu,
+  },
+  created() {
+  },
+  mounted() {
+    console.log("----------", this.$route.query);
+    this.getMenu();
+    this.getSystemInfo();
+    this.userinfo = this.$sys.getUserInfo();
+  },
+  methods: {
+    pwd() {
+        this.$sys.changePwd();
     },
-    components:{ //注册插件
-      navMenu
+    signOutM() {
+      this.$sys.logout();
     },
-    created(){
-     
+    getMenu() {
+      this.$sys.getMenus().then((res) => {
+        this.menus = res;
+        this.getUserOtherSys();
+        var cur = this.$sys.findMenuItem(res)
+        this.$refs.NewTap.open(cur.name, cur.path);
+      });
     },
-    mounted(){
-      console.log("----------",this.$route.query)
-      this.$auth.checkAuthCode(this)
-      this.getMenu();
-      this.getSystemInfo();
-
-      this.setDocmentTitle();
-      this.userinfo = this.$auth.getUserInfo()
+    //获取系统的相关数据
+    getSystemInfo() {
+      this.$sys.getSystemInfo().then((res) => {
+        this.themes = res.theme;
+        this.systemName = res.name;
+        this.logo = res.logo;
+      });
     },
-    methods:{
-      pwd(){
-        this.$http.clearAuthorization();
-
-      //清除cookie 
-       var logoutURL = this.$env.conf.api.logoutURL;
-        if (logoutURL){
-            that.$http.xget(logoutURL);
-        }
-        var url = this.$env.conf.sso.host + "/"+ this.$env.conf.sso.ident + "/changepwd"
-        window.location.href = url;
-      },
-      signOutM() {
-        this.$auth.logout();
-      },
-      getMenu(){
-          this.$auth.getMenus(this).then(res=>{
-            this.menus =res ;
-            this.getUserOtherSys();
-          });
-      },
-      //获取系统的相关数据
-      getSystemInfo() { 
-         this.$auth.getSystemInfo().then(res=>{
-            this.themes = res.theme;
-            this.systemName = res.name;
-            this.logo = res.logo;
-         })
-      },
-      //用户可用的其他系统
-      getUserOtherSys() {
-        this.$auth.getSystemList().then(res=>{
-          this.items = res;
-        }) 
-      },
-      setDocmentTitle() {
-        document.title = this.$env.conf.name;
-      }
-    
+    //用户可用的其他系统
+    getUserOtherSys() {
+      this.$sys.getSystemList().then((res) => {
+        this.items = res;
+      });
     }
-  }
+  },
+};
 </script>
-
 
 ```
  
@@ -240,6 +198,7 @@ export default new Router({
 ### 2. 后端项目集成
 
 1. 引入sdk包
+2. 
 ```go
 
 import "github.com/micro-plat/sso/sso"
@@ -250,13 +209,13 @@ import "github.com/micro-plat/sso/sso"
 
 ```go 
 
-	App.OnHandleExecuting(func(ctx hydra.IContext) (rt interface{}) {
- 		//验证jwt并缓存登录用户信息
-		if err := sso.CheckAndSetMember(ctx); err != nil {
-			return err
-		}
-		return nil
-	})
+App.OnHandleExecuting(func(ctx hydra.IContext) (rt interface{}) {
+  //验证jwt并缓存登录用户信息
+  if err := sso.CheckAndSetMember(ctx); err != nil {
+    return err
+  }
+  return nil
+})
 	
 ```
 
@@ -270,12 +229,19 @@ App.OnStarting(func(appConf app.IAPPConf) error {
     if _, err := appConf.GetServerConf().GetSubObject("app", &appcfg);err != nil {
         return fmt.Errorf("获取appconf配置失败,err:%v", err)
     }
-        
-    //初始化sso必须数据
-    if err := sso.Config(appcfg.SsoApiHost, appcfg.Ident,appcfg.SsoSecret); err != nil {
-        return fmt.Errorf("sso-配置失败,err:%v", err)
+    procObj, err := appConf.GetProcessorConf()
+    if err != nil {
+      return err
     }
-    return nil
+
+    prefix := procObj.ServicePrefix
+  
+    if err := ssoSdk.Config(appcfg.SSOApiHost,
+      appcfg.Ident,
+      appcfg.Secret,
+      ssoSdk.WithAuthIgnore(prefix, appcfg.AuthIgnores...)); err != nil {
+      return err
+    }
 }
 /*
 SsoApiHost:
@@ -299,92 +265,10 @@ hydra.OnReady(func() error {
 */
 ```
 
-4. static rewriters 配置处理
-
 ```go
-//WithRewriters 增加:"/ssocallback"
-
+var Archive="mgr.static.zip"
 hydra.OnReady(func() error {
     hydra.Conf.Web("8181"). //端口根据业务自定定义
-    Static(static.WithPrefix("/pages"),static.WithRewriters("/", "/index.htm", "/pages/**"))
+    Static(static.WithAutoRewrite(),static.WithAssetsPath(Archive))
 })
 ```
-
-### 3. sdk接口说明
- 
-#### 3.1  根据⽤⼾名获取⽤⼾信息
-``` go
-GetUserInfoByName(userName string)
-```
-输⼊参数
-
-| 参数     |  类型  |  说明  |
-| -------- | :----: | :----: |
-| userName | string | ⽤⼾名称 |
-
-输出
-
-| 参数      |  类型  |          说明           |
-| --------- | :----: | :---------------------: |
-| userName  | string |         ⽤⼾名称          |
-| WxOpID    | string |       微信openID        |
-| ExtParams | string | ⽤⼾扩展参数(⼀个json对象) |
-| UserID    | string |         ⽤⼾标识          |
-
-#### 3.2 获取⽤⼾在某个⼦系统下的菜单数据
-```go
-GetUserMenu(userID int)
-```
-输⼊参数
-
-| 参数   | 类型  |  说明  |
-| ------ | :---: | :----: |
-| userID |  int  | ⽤⼾标识 |
-
-输出
-
-| 参数     |   类型   |   说明   |
-| -------- | :------: | :------: |
-| ID       |  string  | 菜单标识 |
-| Name     |  string  | 菜单名称 |
-| Level    |  string  |   级次   |
-| IsOpen   |  string  | 是否展开 |
-| Icon     |  string  |   图标   |
-| SystemID |  string  | 系统标识 |
-| Parent   |  string  | ⽗级编号  |
-| Path     |  string  | 路由地址 |
-| Sortrank |  string  | 排序编号 |
-| Children | 对象数组 |  ⼦菜单   |
-
-#### 3.3获取⼦系统信息
-``` go
-GetSystemInfo()
-```
-输⼊参数(无)
-
-输出
-
-| 参数   |  类型  |        说明        |
-| ------ | :----: | :----------------: |
-| ID     | string |      系统标识      |
-| Ident  | string | 系统ident(英⽂名称) |
-| Name   | string |      系统名称      |
-| Theme  | string |      主题样式      |
-| Layout | string |     ⻚⾯布局样式     |
-| Logo   | string |    系统图标地址    |
-
-
-#### 3.4 获取当前用户可访问的其他子系统
-``` go
-GetUserOtherSystems()
-```
-输⼊参数(无)
-
-输出
-
-| 参数     |  类型  |        说明        |
-| -------- | :----: | :----------------: |
-| ID       | string |      系统标识      |
-| Ident    | string | 系统ident(英⽂名称) |
-| Name     | string |      系统名称      |
-| IndexUrl | string |   ⼦系统地址 host   |
