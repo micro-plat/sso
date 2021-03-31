@@ -127,7 +127,7 @@ github.com/mholt/archiver
 # github.com/micro-plat/gmq v1.0.1
 github.com/micro-plat/gmq/mqtt
 github.com/micro-plat/gmq/mqtt/client
-# github.com/micro-plat/hydra v1.1.1
+# github.com/micro-plat/hydra v1.1.2
 ## explicit
 github.com/micro-plat/hydra
 github.com/micro-plat/hydra/components
@@ -236,7 +236,7 @@ github.com/micro-plat/hydra/registry/watcher
 github.com/micro-plat/hydra/registry/watcher/wchild
 github.com/micro-plat/hydra/registry/watcher/wvalue
 github.com/micro-plat/hydra/services
-# github.com/micro-plat/lib4go v1.1.0
+# github.com/micro-plat/lib4go v1.1.2
 ## explicit
 github.com/micro-plat/lib4go/concurrent/cmap
 github.com/micro-plat/lib4go/db
