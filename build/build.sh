@@ -47,6 +47,10 @@ fi
 
 rm -f $rootdir/mgrserver/mgr.static.zip
 
+if [ "$pkg" != "none" ]; then
+	rm -f $rootdir/out/*.zip
+fi
+
 echo ""
 echo "---------打包-success----------------" 
 echo "---------目录:${rootdir}/out"
